@@ -1,0 +1,13 @@
+__pycache__/
+.vscode/
+test/
+data/
+
+*.pyc
+*.psd
+test.py
+
+build/
+dist/
+main.spec
+

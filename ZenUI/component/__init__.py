@@ -6,5 +6,6 @@ from .button.transbutton import ZenTransButton
 from .button.pushbutton import ZenPushButton
 
 from .window.mainwindow import ZenMainWindow
+from .window.titlebar import ZenTitlebar
 
-from .container.zencontainer import ZenContainer
+from .container.container import ZenContainer

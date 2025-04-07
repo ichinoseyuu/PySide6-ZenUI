@@ -5,9 +5,15 @@ from ZenUI.component.widget.widget import ZenWidget
 from ZenUI.core import Zen,ColorTool,ColorSheet
 
 class ZenContainer(ZenWidget):
-    def __init__(self, parent=None, name=None, layout = Zen.Layout.Vertical):
+    'ZenUI基本容器类'
+    def __init__(self, parent: QWidget = None, name: str = None, layout = Zen.Layout.Vertical):
         super().__init__(parent, name)
         self.setLayout(layout)
+
+
+    # region Override
+    def _init_style(self):
+        super()._init_style()
         self._color_sheet = ColorSheet(Zen.WidgetType.Container)
         self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
         self._bg_color_b = self._color_sheet.getColor(Zen.ColorRole.Background_B)
@@ -15,10 +21,8 @@ class ZenContainer(ZenWidget):
         self._anim_bg_color_a.setCurrent(ColorTool.toArray(self._bg_color_a))
         self._anim_bg_color_b.setCurrent(ColorTool.toArray(self._bg_color_b))
         self._anim_border_color.setCurrent(ColorTool.toArray(self._border_color))
-        self._schedule_update()
 
-
-    # region StyleSheet
+    
     def reloadStyleSheet(self):
         if self.isWidgetFlagOn(Zen.WidgetFlag.GradientColor):
             x1, y1, x2, y2 = self._gradient_anchor
@@ -38,11 +42,12 @@ class ZenContainer(ZenWidget):
             else:
                 return f"#{self.objectName()}"+"{\n"+ sheet +"\n}"
 
-    # region Slot
     def _theme_changed_handler(self, theme):
         self.setColorTo(self._color_sheet.getColor(theme,Zen.ColorRole.Background_A),self._color_sheet.getColor(theme,Zen.ColorRole.Background_B))
         self.setBorderColorTo(self._color_sheet.getColor(theme,Zen.ColorRole.Border))
 
+
+    # region New
     def setLayout(self,layout:Zen.Layout):
         if layout is Zen.Layout.Horizontal:
             self._layout = QHBoxLayout(self)

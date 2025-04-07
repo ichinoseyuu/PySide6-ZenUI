@@ -5,6 +5,8 @@
 ### install
 
 ```powershell
+pip install pyside6
+pip install pywin32
 python setup.py sdist
 pip install ./dist/zenui-0.1.0.tar.gz
 ```

@@ -4,8 +4,9 @@ from PySide6.QtGui import *
 from ZenUI.component.button.abcbutton import ABCButton
 from ZenUI.core import Zen, ColorTool, ColorSheet
 class ZenPushButton(ABCButton):
-    def __init__(self, parent=None, name=None, text=None, icon=None):
-        super().__init__(parent, name, text, icon)
+    # region Override
+    def _init_style(self):
+        super()._init_style()
         self._color_sheet = ColorSheet(Zen.WidgetType.PushButton) 
         self._fixed_stylesheet = 'border: 1px solid transparent;\nborder-radius: 2px;'
         self.flashLayer()._fixed_stylesheet = self._fixed_stylesheet
@@ -17,9 +18,7 @@ class ZenPushButton(ABCButton):
         self._anim_bg_color_a.setCurrent(ColorTool.toArray(self._bg_color_a))
         self._anim_bg_color_b.setCurrent(ColorTool.toArray(self._bg_color_b))
         self._anim_text_color.setCurrent(ColorTool.toArray(self._text_color))
-        self._schedule_update()
 
-    # region StyleSheet
     def reloadStyleSheet(self):
         if self.isWidgetFlagOn(Zen.WidgetFlag.GradientColor):
             x1, y1, x2, y2 = self._gradient_anchor
@@ -39,7 +38,7 @@ class ZenPushButton(ABCButton):
             else:
                 return f"#{self.objectName()}"+"{\n"+ sheet +"\n}"
 
-    # region Slot
+
     def _theme_changed_handler(self, theme):
         self.setColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Background_A), self._color_sheet.getColor(theme, Zen.ColorRole.Background_B))
         self.setTextColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Text))

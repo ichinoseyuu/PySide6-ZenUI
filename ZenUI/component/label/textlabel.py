@@ -13,7 +13,7 @@ class ZenTextLabel(ABCLabel):
         self._fixed_stylesheet = 'background-color: transparent;'
         self._schedule_update()
 
-    # region StyleSheet
+    # region Override
     def reloadStyleSheet(self):
         sheet = f'color: {self._text_color};'
         if not self.objectName(): raise ValueError("Widget must have a name when StyleSheetApplyToChildren is False")
@@ -22,7 +22,6 @@ class ZenTextLabel(ABCLabel):
         else:
             return f"#{self.objectName()}"+"{\n"+ sheet +"\n}"
 
-    # region Slot
     def _theme_changed_handler(self, theme):
         self.setTextColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Text))
 

@@ -10,7 +10,7 @@ from ZenUI.component.window.utils.c_structures import LPNCCALCSIZE_PARAMS
 from ZenUI.component.window.utils.window_effect import WindowEffect
 from ZenUI.component.window.titlebar import ZenTitlebar
 class ZenMainWindow(QWidget):
-    """ZenUI窗口"""
+    """ZenUI主窗口"""
     border_width = 5
     def __init__(self, parent=None):
         super().__init__(parent=parent)

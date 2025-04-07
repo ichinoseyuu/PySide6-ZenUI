@@ -30,8 +30,6 @@ class ZenUIDemo(ZenMainWindow):
         self.btnTest.setText('btnTest')
         self.btnTest.setFixedSize(120, 40)
         self.Board.addWidget(self.btnTest)
-        # import ZenUI
-        # print(ZenUI.component.)
 
 
     def light(self):

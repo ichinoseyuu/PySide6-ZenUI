@@ -8,10 +8,9 @@ from ZenUI.component.label.textlabel import ZenTextLabel
 from ZenUI.core import Zen,ZenGlobal,ColorSheet,ColorTool
 
 class TitlebarButton(ZenTransButton):
-    def __init__(self, parent=None, name=None, text=None, icon=None):
-        super().__init__(parent, name, text, icon)
-        self.setFixedStyleSheet("")
-        self._schedule_update()
+    def _init_style(self):
+        super()._init_style()
+        self._fixed_stylesheet = ''
 
 class ThemeButton(TitlebarButton):
     def _theme_changed_handler(self, theme):
@@ -21,7 +20,7 @@ class ThemeButton(TitlebarButton):
 
 class ABCTitlebar(ZenWidget):
     '''标题栏基类'''
-    class Obj(Enum):
+    class Widget(Enum):
         """ 标题栏内部控件
         Attributes:
             Icon (auto()): 图标
@@ -32,23 +31,27 @@ class ABCTitlebar(ZenWidget):
         """
         Icon = auto()
         Title = auto()
+        BtnTheme = auto()
         BtnMin = auto()
         BtnMax = auto()
         BtnExit = auto()
 
     def __init__(self, parent):
         super().__init__(parent=parent,name="titleBar")
+        self._setup_ui()
+        self._btnConnect()
+
+    # region Override
+    def _init_style(self):
+        super()._init_style()
         self._color_sheet = ColorSheet(Zen.WidgetType.Titlebar)
         self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
         self._border_color = self._color_sheet.getColor(Zen.ColorRole.Border)
         self._anim_bg_color_a.setCurrent(ColorTool.toArray(self._bg_color_a))
         self._anim_border_color.setCurrent(ColorTool.toArray(self._border_color))
         self._fixed_stylesheet = "border-bottom-width: 1px;\nborder-style: solid;"
-        self._schedule_update()
-        self._init_style()
-        self._btnConnect()
 
-    # region StyleSheet
+
     def reloadStyleSheet(self):
         sheet = f'background-color: {self._bg_color_a};\nborder-color: {self._border_color};'
         if not self.objectName(): raise ValueError("Widget must have a name when StyleSheetApplyToChildren is False")
@@ -57,13 +60,14 @@ class ABCTitlebar(ZenWidget):
         else:
             return f"#{self.objectName()}"+"{\n"+ sheet +"\n}"
 
-    # region Slot
+
     def _theme_changed_handler(self, theme):
         self.setColorTo(self._color_sheet.getColor(theme,Zen.ColorRole.Background_A))
         self.setBorderColorTo(self._color_sheet.getColor(theme,Zen.ColorRole.Border))
 
 
-    def _init_style(self):
+    # region New
+    def _setup_ui(self):
         """创建ui"""
         self._layout = QHBoxLayout(self)
         self._layout.setContentsMargins(0, 0, 0, 0)
@@ -88,23 +92,21 @@ class ABCTitlebar(ZenWidget):
         self._layout.addWidget(self.btnMin)
 
         self.btnMax = TitlebarButton(self, name="btnMax")
-        #self.btnMax.setFixedStyleSheet("width: 30px;")
         self.btnMax.setCheckable(True)
         self._layout.addWidget(self.btnMax)
 
         self.btnExit = TitlebarButton(self, name="btnExit")
         self._layout.addWidget(self.btnExit)
 
-
-
     def _btnConnect(self):
         '''按钮连接'''
-        self.btnTheme.clicked.connect(self.changeTheme)
+        self.btnTheme.clicked.connect(self._changeTheme)
         self.btnMin.clicked.connect(self.window().showMinimized)
         self.btnMax.clicked.connect(self._maxWindow)
         self.btnExit.clicked.connect(self.window().close)
 
-    def changeTheme(self):
+    def _changeTheme(self):
+        '切换主题'
         if ZenGlobal.ui.theme_manager.theme() == Zen.Theme.Dark:
             ZenGlobal.ui.theme_manager.setTheme(Zen.Theme.Light)
         else:
@@ -118,21 +120,23 @@ class ABCTitlebar(ZenWidget):
             self.window().showMaximized()
 
 
-    def hideObj(self, *args: Obj):
+    def hideWidget(self, *args: Widget):
         '''隐藏指定对象'''
-        for obj in args:
-            if obj == self.Obj.Icon:
+        for widget in args:
+            if widget == self.Widget.Icon:
                 self.icon.hide()
-            elif obj == self.Obj.Title:
+            elif widget == self.Widget.Title:
                 self.title.hide()
-            elif obj == self.Obj.BtnMin:
+            elif widget == self.Widget.BtnTheme:
+                self.btnTheme.hide()
+            elif widget == self.Widget.BtnMin:
                 self.btnMin.hide()
-            elif obj == self.Obj.BtnMax:
+            elif widget == self.Widget.BtnMax:
                 self.btnMax.hide()
-            elif obj == self.Obj.BtnExit:
+            elif widget == self.Widget.BtnExit:
                 self.btnExit.hide()
             else:
-                raise ValueError(f"Unknown TitleBarObj: {obj}")
+                raise ValueError(f"Unknown TitleBarObj: {widget}")
 
 
     def setTitle(self, title: str):

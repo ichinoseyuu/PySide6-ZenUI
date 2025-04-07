@@ -197,12 +197,12 @@ class ColorSheet:
     def getColor(self, role: Zen.ColorRole) -> Optional[str]:
         """获取当前主题下颜色对象的颜色"""
         pass
-    
+
     @overload
     def getColor(self, theme: Zen.Theme, role: Zen.ColorRole) -> Optional[str]:
         """获取指定主题下颜色对象的颜色"""
         pass
-    
+
     def getColor(self, *args) -> Optional[str]:
         """根据传入的参数获取颜色"""
         if len(args) == 1:
@@ -220,12 +220,12 @@ class ColorSheet:
     def setColor(self, role: Zen.ColorRole, color: Optional[str]) -> None:
         """设置当前主题下颜色对象的颜色"""
         pass
-    
+
     @overload
     def setColor(self, theme: Zen.Theme, role: Zen.ColorRole, color: Optional[str]) -> None:
         """设置指定主题下颜色对象的颜色"""
         pass
-    
+
     def setColor(self, *args) -> None:
         """根据传入的参数设置颜色"""
         if len(args) == 2:

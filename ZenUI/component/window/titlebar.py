@@ -5,9 +5,9 @@ from ZenUI.core import ZenGlobal
 from ZenUI.component.window.abctitlebar import ABCTitlebar
 class ZenTitlebar(ABCTitlebar):
     '''ZenUI标题栏'''
-    def _init_style(self):
-        '''设置标题栏样式'''
-        super()._init_style()
+    # region Override
+    def _setup_ui(self):
+        super()._setup_ui()
         # 设置标题栏高度
         self.setMinimumHeight(ZenGlobal.config.TITLEBAR_HEIGHT)
         self.setMaximumHeight(ZenGlobal.config.TITLEBAR_HEIGHT)

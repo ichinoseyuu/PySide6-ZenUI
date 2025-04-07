@@ -2,14 +2,6 @@ from enum import Enum, auto
 
 class Zen:
     """ ZenUI的各种枚举类型"""
-    class Layout(Enum):
-        """ 布局类型
-        Attributes:
-            Horizontal: 水平布局
-            Vertical: 垂直布局
-        """
-        Horizontal = auto()
-        Vertical = auto()
     class Theme(Enum):
         """ 主题类型
         Attributes:
@@ -66,7 +58,6 @@ class Zen:
         Flash = auto()
         Text = auto()
         Border = auto()
-        Disabled = auto()
         Icon = auto()
 
 
@@ -83,3 +74,33 @@ class Zen:
         TextLabel = auto()
         Titlebar = auto()
 
+    class Layout(Enum):
+        """ 布局类型
+        Attributes:
+            Horizontal: 水平布局
+            Vertical: 垂直布局
+        """
+        Horizontal = auto()
+        Vertical = auto()
+
+    class Direction(Enum):
+        """ 方向类型
+        Attributes:
+            Left: 左
+            Right: 右
+            Top: 上
+            Bottom: 下
+        """
+        Left = auto()
+        Right = auto()
+        Top = auto()
+        Bottom = auto()
+
+    class State(Enum):
+        """ 状态类型
+        Attributes:
+            Normal: 正常
+            Collapsed: 折叠
+        """
+        Normal = auto()
+        Collapsed = auto()

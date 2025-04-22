@@ -181,6 +181,13 @@ class ZenColorConfig(ColorConfig):
                        {Zen.ColorRole.Background_A: '#ffffff',
                         Zen.ColorRole.Border: '#e6e6e6'})
 
+        self.setColors(Zen.WidgetType.ToolTip, Zen.Theme.Dark,
+                       {Zen.ColorRole.Background_A: '#1c191f',
+                        Zen.ColorRole.Flash: '#7fffffff'})
+
+        self.setColors(Zen.WidgetType.ToolTip, Zen.Theme.Light,
+                       {Zen.ColorRole.Background_A: '#ffffff',
+                        Zen.ColorRole.Flash: '#7f999999'})
 class ColorSheet:
     """每个控件的自己的颜色表，同类型控件之间独立，需要从`ColorConfig`中获取相应的颜色表"""
     def __init__(self, widget_type: Zen.WidgetType):

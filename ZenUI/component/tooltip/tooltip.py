@@ -1,145 +1,156 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component import ZenWidget, ZenLayer, ZenTextLabel
-from ZenUI.core import Zen,ColorTool,ColorSheet
-class ToolTip(QWidget):
-    '''ZenUI提示标签'''
+from ZenUI.component import ZenWidget, ZenTextLabel
+from ZenUI.core import Zen,ColorTool,ColorSheet,ZenEffect
+
+class ToolTipBG(ZenWidget):
+    """用于ToolTip的背景层"""
+    def _init_style(self):
+        self._fixed_stylesheet = "border-radius: 2px;\nborder: 1px solid transparent;"
+        self._color_sheet = ColorSheet(Zen.WidgetType.ToolTip)
+        self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
+        self._anim_bg_color_a.setBias(0.1)
+        self._anim_bg_color_a.setCurrent(ColorTool.toArray(self._bg_color_a))
+
+    def reloadStyleSheet(self):
+        if self._fixed_stylesheet:
+            return self._fixed_stylesheet + f'background-color: {self._bg_color_a};'
+        else:
+            return f'background-color: {self._bg_color_a};'
+
+    def _theme_changed_handler(self, theme):
+        self.setColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Background_A))
+
+
+class ToolTipHighlight(ZenWidget):
+    """用于ToolTip的高亮层"""
+    def _init_style(self):
+        self._fixed_stylesheet = "border-radius: 2px;\nborder: 1px solid transparent;"
+        self._anim_bg_color_a.setBias(0.1)
+        self.setColor("#00f0f0f0")
+
+    def reloadStyleSheet(self):
+        return self._fixed_stylesheet + f'background-color: {self._bg_color_a};'
+
+
+
+class ZenToolTip(ZenWidget):
     def __init__(self):
-        super().__init__()
+        super().__init__(name='tooltip')
+        self._is_shown = False
+        self._completely_hide = False # 是否已经完全隐藏 透明度是不是0
+        self._inside_of = None 
+        self._margin = 8 # 周围给阴影预留的间隔空间
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool | Qt.WindowTransparentForInput)
-        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self._setupUi()
-        self._initAnim()
-        self._adjustSize()
-
-    def _setupUi(self):
-        '''初始化UI'''
-        self.setObjectName("tooltip")
-        self._layout = QVBoxLayout(self)
-        self._layout.setSpacing(0)
-        self._layout.setContentsMargins(0, 0, 0, 0)
-
-        self.board = Container(self)
-        self.board.setObjectName(u"board")
-        self.verticalLayout.addWidget(self.board)
-
-
-        self.boardLayout = QVBoxLayout(self.board)
-        self.boardLayout.setSpacing(0)
-        self.boardLayout.setObjectName(u"boardLayout")
-        self.boardLayout.setContentsMargins(9, 6, 9, 6)
-
-        self.tipLabel = ZenTextLabel(self)
-        self.tipLabel.setObjectName(u"tipLabel")
-        #self.tipLabel.setWordWrap(True)
-        self.tipLabel.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        self.boardLayout.addWidget(self.tipLabel)
-
-    def _initAnim(self):
-        self.anim_fade_in = QPropertyAnimation(self, b"windowOpacity")
-        self.anim_fade_in.setDuration(200)
-
-        self.anim_fade_out = QPropertyAnimation(self, b"windowOpacity")
-        self.anim_fade_out.setDuration(200)
-        self.anim_fade_out.finished.connect(self._stopTimer)
-
-        self.anim_resize = QPropertyAnimation(self, b"size")
-        self.anim_resize.setDuration(100)
-
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        ZenEffect.WidgetShadow.applyDropShadowOn(self, (0, 0, 0, 128), blur_radius=int(self._margin*1.5))
+        self._setup_ui()
+        self.setText("", flash=False)  # 通过输入空文本初始化大小
+        
+    # region Override
+    def _init_anim(self):
+        super()._init_anim()
         self.tracker_timer = QTimer()  # 跟踪鼠标的计时器
         self.tracker_timer.setInterval(int(1000/60))
-        self.tracker_timer.timeout.connect(self._refreshPos)
+        self.tracker_timer.timeout.connect(self._refresh_position)
+        self.tracker_timer.start()
+        # 当透明度动画结束时处理隐藏与否
+        self.AnimGroup().fromToken("opacity").finished.connect(self._completely_hid_signal_handler)
 
-    def _playFadeInAnim(self):
-        if self.anim_fade_out.state() == QAbstractAnimation.State.Running:
-            self.anim_fade_out.stop()
-        self.anim_fade_in.setStartValue(self.windowOpacity())
-        self.anim_fade_in.setEndValue(1.0)
-        self.anim_fade_in.start()
 
-    def _playFadeOutAnim(self):
-        if self.anim_fade_in.state() == QAbstractAnimation.State.Running:
-            self.anim_fade_in.stop()
-        self.anim_fade_out.setStartValue(self.windowOpacity())
-        self.anim_fade_out.setEndValue(0.0)
-        self.anim_fade_out.start()
+    # region Private
+    def _setup_ui(self):
+        """创建ui"""
+        self.bgLayer = ToolTipBG(self)
+        self.container = QWidget(self)
+        self.text = ZenTextLabel(self.container)
+        self.text.setWordWrap(True)
+        self.highlightLayer = ToolTipHighlight(self)
+        self.text.setFixedStyleSheet("padding: 8px")
+        self.text.setWidgetFlag(Zen.WidgetFlag.InstantResize)
+        self.text.setWidgetFlag(Zen.WidgetFlag.AdjustSizeOnTextChanged)
+        #self.text.setFont(SiFont.tokenized(GlobalFont.S_NORMAL))
+        # 移动到合适的位置
+        self.bgLayer.move(self._margin, self._margin)
+        self.container.move(self._margin, self._margin)
+        self.highlightLayer.move(self._margin, self._margin)
 
-    def _stopTimer(self):
-        self.tracker_timer.stop()
-        self.close()
 
-    def setTipText(self, tip: str):
-        '''设置提示内容'''
-        self.tipLabel.setText(tip)
+    def _refresh_size(self):
+        """用于设置大小动画结束值并启动动画"""
+        self.text.adjustSize()
+        w = self.text.width()
+        h = self.text.height()
+        self.resizeTo(w + 2 * self._margin, h + 2 * self._margin)  # 设为文字标签的大小加上阴影间距
+
+
+    def _refresh_position(self):
+        pos = QCursor.pos()
+        x, y = pos.x() - self.width() / 2, pos.y()
+        self.moveTo(x , y - self.height())    # 动画跟踪，效果更佳，有了锚点直接输入鼠标坐标即可
+
+
+    def _completely_hid_signal_handler(self, target):
+        if target == 0:
+            self._completely_hide = True
+            self.resize(2 * self._margin, 36 + 2 * self._margin)  # 变单行内容的高度，宽度不足以显示任何内容 # 2024.11.1 宽度设0解决幽灵窗口
+            self.text.setText("")   # 清空文本内容
+        else:
+            self._completely_hide = False
+
+    # region Public
+    def setInsideOf(self, widget):
+        """设置当前位于哪个控件内部"""
+        self._inside_of = widget
+
+
+    def insideOf(self):
+        """返回最后一次被调用显示时的发出者"""
+        return self._inside_of
+
+
+    def setText(self, text, flash=True):
+        """设置工具提示的内容，支持富文本"""
+        text_changed = self.text.text() != text
+        if not text_changed: return
+        self.text.setText(str(text))
+        if flash:
+            QTimer.singleShot(0, lambda:(self._refresh_size(), self.flash()))
+        else:
+            QTimer.singleShot(0, self._refresh_size)
+
+
+
+    def flash(self):
+        """ 激活高光层动画，使高光层闪烁 """
+        self.highlightLayer.setColor(self.bgLayer._color_sheet.getColor(Zen.ColorRole.Flash))
+        self.highlightLayer.setColorTo(ColorTool.trans(self.bgLayer._color_sheet.getColor(Zen.ColorRole.Flash)))
 
 
     def showTip(self):
-        '''显示提示'''
-        QTimer.singleShot(100, self._adjustSize)
-        self.tracker_timer.start()
-        self._playFadeInAnim()
-        self.show()
+        self._is_shown = True
+        self.setOpacityTo(1.0)
 
 
     def hideTip(self):
-        '''隐藏提示'''
-        self._playFadeOutAnim()
+        self._is_shown = False
+        self.setOpacityTo(0)
+
+    # region Event
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        size = event.size()
+        w, h = size.width() - 2 * self._margin, size.height() - 2 * self._margin
+        # 重设内部控件大小
+        self.bgLayer.resize(w, h)
+        self.container.resize(w, h)
+        self.highlightLayer.resize(w, h)
+        # 移动文本位置，阻止重设大小动画进行时奇怪的文字移动
+        # self.text.move(0, h - self.text.height()) 2024.9.23 - 存在快速滑动鼠标时文字错位的情况
+        self.text.move(0, h - self.height() + 16)
 
 
-
-
-    def _adjustSize(self):
-        """根据控件内容调整大小"""
-        # 获取子控件的大小建议
-        size = self.board.sizeHint()
-        # 设置新尺寸，确保不小于最小尺寸
-        new_width = max(size.width(), self.minimumWidth())
-        new_height = max(size.height(), self.minimumHeight())
-        # 调整大小
-        self.anim_resize.setStartValue(QSize(self.width(), self.height()))
-        self.anim_resize.setEndValue(QSize(new_width, new_height))
-        self.anim_resize.start()
-
-
-
-    def _refreshPos(self):
-        '''根据鼠标位置刷新位置'''
-        pos = QCursor.pos()
-        left = pos.x() + TOOLTIP_OFFSET_X
-        top = pos.y() - self.height() + TOOLTIP_OFFSET_Y
-        screen_geometry = QApplication.primaryScreen().availableGeometry()  # 获取屏幕可用区域
-        screen_left = screen_geometry.x()
-        screen_top = screen_geometry.y()
-        screen_width = screen_geometry.width()
-        screen_height = screen_geometry.height()
-        # 确保 tooltip 不会超出屏幕右边或底部
-        new_left = max(left, screen_left)  # 确保 tooltip 不会在屏幕左边界外
-        new_top = max(top, screen_top)    # 确保 tooltip 不会在屏幕上边界外
-        # 如果 tooltip 超出了屏幕的右边界或下边界，调整它的位置
-        if new_left + self.width() > screen_left + screen_width:
-            new_left = screen_left + screen_width - self.width()
-        if new_top + self.height() > screen_top + screen_height:
-            new_top = screen_top + screen_height - self.height()
-        # 移动 tooltip 到新的位置
-        self.move(new_left, new_top)
-
-    # region 已弃用的方法
-    # def _refreshPos(self):
-    #     '''根据鼠标位置刷新位置'''
-    #     pos = QCursor.pos()
-    #     x, y = pos.x(), pos.y()
-    #     left = x + TOOLTIP_OFFSET_X
-    #     top = y - self.geometry().height() + TOOLTIP_OFFSET_Y
-    #     mainwindow = getReference('mainwindow')
-    #     if mainwindow != None and mainwindow.isMaximized():
-    #         new_left = max(left, mainwindow.geometry().left())
-    #         new_top = max(top, mainwindow.geometry().top())
-    #         if new_left + self.width() > mainwindow.geometry().right():
-    #             new_left = min(left, mainwindow.geometry().right()-self.width())
-    #         if new_top + self.height() > mainwindow.geometry().bottom():
-    #             new_top = min(top, mainwindow.geometry().bottom()-self.height())
-    #         self.move(new_left, new_top)
-    #     else:
-    #         self.move(left, top)
-    # endregion
+    def leaveEvent(self, event):
+        super().leaveEvent(event)
+        event.ignore()

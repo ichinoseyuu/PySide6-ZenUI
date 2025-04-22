@@ -24,14 +24,6 @@ pip uninstall ZenUI
 - ZenWidget(QWidget)  
 支持改变背景、透明度、锚点移动、大小等动画效果
 
-    ```python
-    from ZenUI import *
-    widget = ZenWidget()
-    ```
-
-- ZenLayer(QWidget)  
-用于实现物件表面颜色变化的组件
-
 - ZenTextLabel(QLabel)  
 用于显示文本内容，具有根据主题改变文本颜色的动画效果
 
@@ -43,6 +35,15 @@ pip uninstall ZenUI
 
 - ZenTransButton(QPushButton)  
 透明按钮组件，具有悬浮动画效果
+
+- ZenMainWindow(Qwidget)  
+主窗口组件，具有窗口最小化、窗口最大化等动画效果
+
+- ZenTitlebar(ZenWidget)  
+窗口标题栏组件，具有拖动窗口移动、关闭窗口、最小化窗口、最大化窗口、切换主题等功能
+
+- ZenContainer(ZenWidget)  
+容器组件，自带布局
 
 ### core
 

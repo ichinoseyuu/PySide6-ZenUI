@@ -13,16 +13,16 @@ class ZenWidget(QWidget):
             self.setObjectName(name)
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground) #启用样式表
         self._widget_flags = {} # 组件属性，控制是否具备动画等
-        self._fixed_stylesheet = '' #固定样式表
-        self._x1, self._y1, self._x2, self._y2 = None, None, None, None # 组件可移动区域
+        self._fixed_stylesheet = '' # 固有演示表，每次调用`setStyleSheet`方法时，都会在样式表前附加这段固定内容
+        self._x1, self._y1, self._x2, self._y2 = None, None, None, None # 组件可移动区域四个顶点坐标
         self._move_anchor = QPoint(0, 0)  # 移动时的基准点位置
         self._color_sheet = None # 颜色表
         self._theme_manager = ZenGlobal.ui.theme_manager #主题管理器，用于接受主题切换的信号
         self._theme_manager.themeChanged.connect(self._theme_changed_handler) # 主题切换信号连接
-        self._bg_color_a = '' #背景颜色，用于渐变模式的起始点
-        self._bg_color_b = ''  #背景颜色,用于渐变模式的终点
+        self._bg_color_a = '#00000000' #背景颜色，用于渐变模式的起始点
+        self._bg_color_b = '#00000000'  #背景颜色,用于渐变模式的终点
         self._gradient_anchor =[0, 0, 1, 1]  #渐变锚点
-        self._border_color = '' #边框颜色
+        self._border_color = '#00000000' #边框颜色
         self._can_update = True #是否可以更新样式表
         self._init_anim()
         self._init_style()

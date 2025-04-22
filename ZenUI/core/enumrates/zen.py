@@ -64,15 +64,19 @@ class Zen:
     class WidgetType(Enum):
         """ 控件类型
         Attributes:
-            ZenPushButton: 按钮控件
-            ZenContainer: 水平布局控件
-            ZenText: 文本控件
+            PushButton: 按钮控件
+            TansButton: 透明按钮控件
+            Container: 容器控件
+            TextLabel: 文字标签控件
+            Titlebar: 标题栏控件
+            ToolTip: 工具提示控件
         """
         PushButton = auto()
         TansButton = auto()
         Container = auto()
         TextLabel = auto()
         Titlebar = auto()
+        ToolTip = auto()
 
     class Layout(Enum):
         """ 布局类型

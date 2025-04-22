@@ -16,11 +16,10 @@ class ZenTextLabel(ABCLabel):
     # region Override
     def reloadStyleSheet(self):
         sheet = f'color: {self._text_color};'
-        if not self.objectName(): raise ValueError("Widget must have a name when StyleSheetApplyToChildren is False")
         if self._fixed_stylesheet:
-            return f"#{self.objectName()}"+"{\n"+  sheet +'\n'+self._fixed_stylesheet +"\n}"
+            return sheet +'\n'+self._fixed_stylesheet
         else:
-            return f"#{self.objectName()}"+"{\n"+ sheet +"\n}"
+            return sheet
 
     def _theme_changed_handler(self, theme):
         self.setTextColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Text))

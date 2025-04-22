@@ -8,7 +8,7 @@ class ButtonLayer(ZenWidget):
     """用于按钮的背景和高亮层"""
     def _init_style(self):
         super()._init_style()
-        self._anim_bg_color_a.setBias(1/8)
+        self._anim_bg_color_a.setBias(0.1)
 
     def reloadStyleSheet(self):
         if self._fixed_stylesheet:
@@ -394,6 +394,10 @@ class ABCButton(QPushButton):
         # 劫持这个按钮的tooltip，只能设置outfit的tooltip
         self._tooltip = text
 
+    def toolTip(self): 
+        """获取工具提示"""
+        return self._tooltip
+
     def setRepetitiveClicking(self, state):
         """设置是否启用重复点击"""
         self._enabled_repetitive_clicking = state
@@ -440,17 +444,17 @@ class ABCButton(QPushButton):
     def enterEvent(self, event):
         super().enterEvent(event)
         self._hover_layer.setColorTo(self._color_sheet.getColor(Zen.ColorRole.Hover))
-        # if self._tooltip != "" and "TOOL_TIP" in ZenGlobal.ui.windows:
-        #     ZenGlobal.ui.windows["TOOL_TIP"].setNowInsideOf(self)
-        #     ZenGlobal.ui.windows["TOOL_TIP"].show()
-        #     ZenGlobal.ui.windows["TOOL_TIP"].setText(self._tooltip)
+        if self._tooltip != "" and "ToolTip" in ZenGlobal.ui.windows:
+            ZenGlobal.ui.windows["ToolTip"].setText(self._tooltip)
+            ZenGlobal.ui.windows["ToolTip"].setInsideOf(self)
+            ZenGlobal.ui.windows["ToolTip"].showTip()
 
     def leaveEvent(self, event):
         super().leaveEvent(event)
         self._hover_layer.setColorTo(ColorTool.trans(self._color_sheet.getColor(Zen.ColorRole.Hover)))
-        # if self._tooltip != "" and "TOOL_TIP" in ZenGlobal.ui.windows:
-        #     ZenGlobal.ui.windows["TOOL_TIP"].setNowInsideOf(None)
-        #     ZenGlobal.ui.windows["TOOL_TIP"].hide()
+        if self._tooltip != "" and "ToolTip" in ZenGlobal.ui.windows:
+            ZenGlobal.ui.windows["ToolTip"].setInsideOf(None)
+            ZenGlobal.ui.windows["ToolTip"].hideTip()
 
     def mousePressEvent(self, e):
         super().mousePressEvent(e)

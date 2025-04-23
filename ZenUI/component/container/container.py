@@ -22,7 +22,7 @@ class ZenContainer(ZenWidget):
         self._anim_bg_color_b.setCurrent(ColorTool.toArray(self._bg_color_b))
         self._anim_border_color.setCurrent(ColorTool.toArray(self._border_color))
 
-    
+
     def reloadStyleSheet(self):
         if self.isWidgetFlagOn(Zen.WidgetFlag.GradientColor):
             x1, y1, x2, y2 = self._gradient_anchor

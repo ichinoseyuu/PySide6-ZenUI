@@ -134,28 +134,42 @@ class ZenColorConfig(ColorConfig):
                         Zen.ColorRole.Background_B: '#955595',
                         Zen.ColorRole.Hover: '#10ffffff',
                         Zen.ColorRole.Flash: '#20ffffff',
-                        Zen.ColorRole.Text: '#ffffff',
-                        Zen.ColorRole.Icon: '#ffffff'})
+                        Zen.ColorRole.Text: '#dcdcdc',
+                        Zen.ColorRole.Icon: '#dcdcdc'})
 
         self.setColors(Zen.WidgetType.PushButton, Zen.Theme.Light,
-                       {Zen.ColorRole.Background_A: '#3adba1',
-                        Zen.ColorRole.Background_B: '#2cb7d3',
-                        Zen.ColorRole.Hover: '#15000000',
-                        Zen.ColorRole.Flash: '#25000000',
-                        Zen.ColorRole.Text: '#000000',
-                        Zen.ColorRole.Icon: '#000000'})
+                       {Zen.ColorRole.Background_A: '#8adee2',
+                        Zen.ColorRole.Background_B: '#9bf3ff',
+                        Zen.ColorRole.Hover: '#10000000',
+                        Zen.ColorRole.Flash: '#20000000',
+                        Zen.ColorRole.Text: '#1c191f',
+                        Zen.ColorRole.Icon: '#1c191f'})
 
         self.setColors(Zen.WidgetType.TansButton, Zen.Theme.Dark,
                        {Zen.ColorRole.Hover: '#10ffffff',
                         Zen.ColorRole.Flash: '#20ffffff',
-                        Zen.ColorRole.Text: '#ffffff',
-                        Zen.ColorRole.Icon: '#ffffff'})
+                        Zen.ColorRole.Text: '#dcdcdc',
+                        Zen.ColorRole.Icon: '#dcdcdc'})
 
         self.setColors(Zen.WidgetType.TansButton, Zen.Theme.Light,
+                       {Zen.ColorRole.Hover: '#10000000',
+                        Zen.ColorRole.Flash: '#20000000',
+                        Zen.ColorRole.Text: '#2c2a2e',
+                        Zen.ColorRole.Icon: '#2c2a2e'})
+
+        self.setColors(Zen.WidgetType.TabButton, Zen.Theme.Dark,
+                       {Zen.ColorRole.Hover: '#10ffffff',
+                        Zen.ColorRole.Flash: '#20ffffff',
+                        Zen.ColorRole.Text: '#ffdcdcdc',
+                        Zen.ColorRole.Icon: '#ffdcdcdc',
+                        Zen.ColorRole.Selected: '#ff63469f'})
+
+        self.setColors(Zen.WidgetType.TabButton, Zen.Theme.Light,
                        {Zen.ColorRole.Hover: '#15000000',
                         Zen.ColorRole.Flash: '#25000000',
-                        Zen.ColorRole.Text: '#000000',
-                        Zen.ColorRole.Icon: '#000000'})
+                        Zen.ColorRole.Text: '#ff2c2a2e',
+                        Zen.ColorRole.Icon: '#ff2c2a2e',
+                        Zen.ColorRole.Selected: '#ff22a7f2'})
 
         self.setColors(Zen.WidgetType.TextLabel, Zen.Theme.Dark,
                        {Zen.ColorRole.Text: '#ffffff'})
@@ -173,6 +187,16 @@ class ZenColorConfig(ColorConfig):
                         Zen.ColorRole.Background_B: '#fafafa',
                         Zen.ColorRole.Border: '#9f9f9f'})
 
+        self.setColors(Zen.WidgetType.Sidebar, Zen.Theme.Dark,
+                       {Zen.ColorRole.Background_A: '#201c23',
+                        Zen.ColorRole.Background_B: '#201c23',
+                        Zen.ColorRole.Border: '#4e4e4e'})
+
+        self.setColors(Zen.WidgetType.Sidebar, Zen.Theme.Light,
+                       {Zen.ColorRole.Background_A: '#ededed',
+                        Zen.ColorRole.Background_B: '#dedede',
+                        Zen.ColorRole.Border: '#9f9f9f'})
+
         self.setColors(Zen.WidgetType.Titlebar, Zen.Theme.Dark,
                        {Zen.ColorRole.Background_A: '#1c191f',
                         Zen.ColorRole.Border: '#161616'})
@@ -188,6 +212,7 @@ class ZenColorConfig(ColorConfig):
         self.setColors(Zen.WidgetType.ToolTip, Zen.Theme.Light,
                        {Zen.ColorRole.Background_A: '#ffffff',
                         Zen.ColorRole.Flash: '#7f999999'})
+
 class ColorSheet:
     """每个控件的自己的颜色表，同类型控件之间独立，需要从`ColorConfig`中获取相应的颜色表"""
     def __init__(self, widget_type: Zen.WidgetType):

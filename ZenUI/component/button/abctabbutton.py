@@ -3,13 +3,18 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.button.buttonwidgets import ButtonLayer
 from ZenUI.core import ZenExpAnim, AnimGroup, ColorTool, ZenGlobal, Zen
-class ABCButton(QPushButton):
-    """单次触发按钮基类"""
+class ABCTabButton(QPushButton):
+    """开关状态按钮基类"""
     def __init__(self,
                  parent:QWidget = None,
                  name: str = None,
                  text: str = None,
-                 icon: QIcon | QPixmap=None):
+                 icon: QIcon | QPixmap = None,
+                 checked: bool = False,
+                 tab_pos = Zen.Position.Left,
+                 tab_width = 4,
+                 tab_offset = 2,
+                 tab_length_offset = 6):
         super().__init__(parent)
         if name:
             self.setObjectName(name)
@@ -37,7 +42,18 @@ class ABCButton(QPushButton):
         self._flash_layer = ButtonLayer(self) # 闪烁层
         self._flash_layer.stackUnder(self)  # 置于按钮表面的底部
         self._flash_on_clicked = True # 是否在点击时闪烁
+        self.setCheckable(True)
+        self.setChecked(checked)
+        self._tab_pos = tab_pos # 按钮标签位置
+        self._tab_width = tab_width # 按钮标签宽度
+        self._tab_offset = tab_offset # 按钮标签距离与边缘偏移量
+        '''按钮标签距离与边缘偏移量'''
+        self._tab_length_offset = tab_length_offset # 按钮标签长度与按钮的宽或高的差值
+        '''按钮标签长度与按钮的宽或高的差值'''
+        self._tab_layer = ButtonLayer(self) # 标签层
+        self._tab_layer.stackUnder(self)  # 置于按钮表面的底部
         self._enabled_repetitive_clicking = False # 是否允许重复点击
+        self.toggled.connect(self._toggled_handler) # 链接按钮切换信号,用于实现tab样式切换
         self.clicked.connect(self._clicked_handler) # 链接按钮按下信号,用于实现点击动画
         self._repeat_click_timer = QTimer(self) # 重复点击计时器，每隔50ms 触发一次点击信号
         self._repeat_click_timer.setInterval(50)
@@ -48,6 +64,7 @@ class ABCButton(QPushButton):
         self._repeat_click_trigger.setInterval(500)
         self._init_anim()
         self._init_style()
+        self._toggled_handler(checked) # 初始化时，根据checked状态设置tab样式
         self._schedule_update()
 
 
@@ -76,6 +93,12 @@ class ABCButton(QPushButton):
         self._flash_layer._fixed_stylesheet = stylesheet
         self._hover_layer._fixed_stylesheet = stylesheet
 
+    def setTabStyleSheet(self, stylesheet: str):
+        """
+        设置标签样式表
+        - 此后每次运行`setStyleSheet`方法时，标签层都会在样式表前附加这段固定内容
+        """
+        self._tab_layer._fixed_stylesheet = stylesheet
 
     def reloadStyleSheet(self):
         """
@@ -83,6 +106,7 @@ class ABCButton(QPushButton):
         - 子类实现，基类初始化自行调用
         """
         pass
+
 
     def _schedule_update(self):
         """ 调度一次更新样式的方法，避免重复调用 """
@@ -142,6 +166,12 @@ class ABCButton(QPushButton):
     def _run_clicked_ani(self):
         self._flash_layer.setColor(self._color_sheet.getColor(Zen.ColorRole.Flash))
         self._flash_layer.setColorTo(ColorTool.trans(self._color_sheet.getColor(Zen.ColorRole.Flash)))
+
+    def _toggled_handler(self, is_checked):
+        """
+        重写按钮切换状态时的样式切换
+        - 接收到按钮切换状态信号时自动调用
+        """
 
     # region Move
     def moveTo(self, x: int, y: int):
@@ -409,6 +439,9 @@ class ABCButton(QPushButton):
         """获取悬浮层"""
         return self._hover_layer
 
+    def tabLayer(self):
+        '''获取标签层'''
+        return self._tab_layer
 
     def setFlashOnClicked(self, state: bool):
         """设置是否启用点击动画"""
@@ -437,6 +470,19 @@ class ABCButton(QPushButton):
         size = event.size()
         self._hover_layer.resize(size)
         self._flash_layer.resize(size)
+        #self._tab_layer.resize(6, 2*size.height()/3)
+        #self._tab_layer.setMoveAnchor((size.width()-4)/2, self._tab_layer.height()/2)
+        #self._tab_layer.move(size.width()/2, size.height()/2)
+        if self._tab_pos == Zen.Position.Left:
+            self._tab_layer.setGeometry(self._tab_offset, self._tab_length_offset, self._tab_width, size.height()-2*self._tab_length_offset)
+            return
+        if self._tab_pos == Zen.Position.Right:
+            self._tab_layer.setGeometry(size.width()-self._tab_offset-self._tab_width, self._tab_length_offset, self._tab_width, size.height()-2*self._tab_length_offset)
+            return
+        if self._tab_pos == Zen.Position.Top:
+            self._tab_layer.setGeometry(self._tab_length_offset, self._tab_offset, size.width()-2*self._tab_length_offset, self._tab_width)
+            return
+        self._tab_layer.setGeometry(self._tab_length_offset, size.height()-self._tab_offset-self._tab_width, size.width()-2*self._tab_length_offset, self._tab_width)
 
     def enterEvent(self, event):
         super().enterEvent(event)

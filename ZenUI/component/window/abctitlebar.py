@@ -8,9 +8,9 @@ from ZenUI.component.label.textlabel import ZenTextLabel
 from ZenUI.core import Zen,ZenGlobal,ColorSheet,ColorTool
 
 class TitlebarButton(ZenTransButton):
-    def _init_style(self):
-        super()._init_style()
-        self._fixed_stylesheet = ''
+    def reloadStyleSheet(self):
+        return f'color: {self._text_color};\nbackground-color: transparent;'
+
 
 class ThemeButton(TitlebarButton):
     def _theme_changed_handler(self, theme):

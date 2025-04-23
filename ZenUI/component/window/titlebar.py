@@ -22,14 +22,14 @@ class ZenTitlebar(ABCTitlebar):
         self.btnTheme.setMaximumSize(QSize(36, 36))
         icon = QIcon(u":/titlebar/icon/theme.svg")
         self.btnTheme.setIcon(icon)
-        self.btnTheme.setIconSize(QSize(32,32))
+        self.btnTheme.setIconSize(QSize(36,36))
 
         # 最小化按钮
         self.btnMin.setMinimumSize(QSize(36, 36))
         self.btnMin.setMaximumSize(QSize(36, 36))
         icon = QIcon(u":/titlebar/icon/minimize.svg")
         self.btnMin.setIcon(icon)
-        self.btnMin.setIconSize(QSize(32,32))
+        self.btnMin.setIconSize(QSize(36,36))
 
         # 最大化按钮
         self.btnMax.setMinimumSize(QSize(36, 36))
@@ -38,7 +38,7 @@ class ZenTitlebar(ABCTitlebar):
         icon1.addFile(u":/titlebar/icon/maximize.svg", QSize(24, 24), QIcon.Mode.Normal, QIcon.State.Off)
         icon1.addFile(u":/titlebar/icon/windowed.svg", QSize(24, 24), QIcon.Mode.Normal, QIcon.State.On)
         self.btnMax.setIcon(icon1)
-        self.btnMax.setIconSize(QSize(32, 32))
+        self.btnMax.setIconSize(QSize(36, 36))
 
 
         # 关闭按钮
@@ -46,4 +46,4 @@ class ZenTitlebar(ABCTitlebar):
         self.btnExit.setMaximumSize(QSize(36, 36))
         icon = QIcon(u":/titlebar/icon/close.svg",)
         self.btnExit.setIcon(icon)
-        self.btnExit.setIconSize(QSize(32,32))
+        self.btnExit.setIconSize(QSize(36,36))

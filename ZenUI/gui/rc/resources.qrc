@@ -6,4 +6,10 @@
     <file>icon/windowed.svg</file>
     <file>icon/close.svg</file>
   </qresource>
+  <qresource prefix="leftsidemenu">
+    <file>icon/menu.svg</file>
+    <file>icon/home.svg</file>
+    <file>icon/about.svg</file>
+    <file>icon/settings.svg</file>
+  </qresource>
 </RCC>

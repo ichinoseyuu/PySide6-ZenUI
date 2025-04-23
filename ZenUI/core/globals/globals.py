@@ -7,7 +7,7 @@ class UIGlobal(Singleton):
     color_config = ZenColorConfig()
 
 class Config(NoInstanceClass):
-    TITLEBAR_HEIGHT = 36
+    TITLEBAR_HEIGHT = 37
 
 
 class ZenGlobal(NoInstanceClass, metaclass=ImmutableMeta):

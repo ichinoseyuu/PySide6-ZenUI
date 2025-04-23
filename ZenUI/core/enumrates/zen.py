@@ -48,14 +48,17 @@ class Zen:
             Hover: 悬停颜色
             Pressed: 按下颜色
             Flash: 闪烁颜色
+            Selected: 选中颜色
             Text: 文字颜色
             Border: 边框颜色
+            Icon: 图标颜色
         """
         Background_A = auto()
         Background_B = auto()
         Hover = auto()
         Pressed = auto()
         Flash = auto()
+        Selected = auto()
         Text = auto()
         Border = auto()
         Icon = auto()
@@ -66,14 +69,18 @@ class Zen:
         Attributes:
             PushButton: 按钮控件
             TansButton: 透明按钮控件
+            TabButton: 标签按钮控件
             Container: 容器控件
+            Sidebar: 侧边栏控件
             TextLabel: 文字标签控件
             Titlebar: 标题栏控件
             ToolTip: 工具提示控件
         """
         PushButton = auto()
         TansButton = auto()
+        TabButton = auto()
         Container = auto()
+        Sidebar = auto()
         TextLabel = auto()
         Titlebar = auto()
         ToolTip = auto()
@@ -87,8 +94,8 @@ class Zen:
         Horizontal = auto()
         Vertical = auto()
 
-    class Direction(Enum):
-        """ 方向类型
+    class Position(Enum):
+        """ 位置类型
         Attributes:
             Left: 左
             Right: 右
@@ -99,6 +106,23 @@ class Zen:
         Right = auto()
         Top = auto()
         Bottom = auto()
+
+    class Direction(Enum):
+        """ 方向类型
+        Attributes:
+            LeftToRight: 从左到右
+            RightToLeft: 从右到左
+            TopToBottom: 从上到下
+            BottomToTop: 从下到上
+            Horizontal: 水平方向
+            Vertical: 垂直方向
+            """
+        LeftToRight = auto()
+        RightToLeft = auto()
+        TopToBottom = auto()
+        BottomToTop = auto()
+        Horizontal = auto()
+        Vertical = auto()
 
     class State(Enum):
         """ 状态类型

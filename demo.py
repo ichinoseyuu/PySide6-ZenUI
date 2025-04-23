@@ -9,15 +9,24 @@ class ZenUIDemo(ZenMainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi()
+        self.btnConnect()
 
     def setupUi(self):
         self.resize(800, 600)
         self.setWindowTitle('ZenUI')
 
+        self.containerlayout = QHBoxLayout()
+        self.containerlayout.setContentsMargins(0, 0, 0, 0)
+        self.addLayout(self.containerlayout)
+
+
+        self.leftSideMenu = ZenLeftSideMenu(self,name='leftSideMenu')
+
+        self.containerlayout.addWidget(self.leftSideMenu)
+
         self.Board = ZenContainer(self,'Board')
         #self.Board.setWidgetFlag(Zen.WidgetFlag.GradientColor)
-        self.addWidget(self.Board)
-        self.Board.layout().setAlignment(Qt.AlignmentFlag.AlignAbsolute)
+        self.containerlayout.addWidget(self.Board)
 
         text = """<h1 style='color: blue;'>Hello, PySide6!</h1><p>This is a <b>bold</b> and <i>italic</i> text with <font color='green'>green</font> color.</p><p><a href="https://www.qt.io" style="color: red;">Click here to visit Qt</a></p>"""
         #text = 'Hello, PySide6!'
@@ -26,22 +35,18 @@ class ZenUIDemo(ZenMainWindow):
         self.text.setAlignment(Qt.AlignCenter)
         self.Board.addWidget(self.text)
 
-        self.btnTest = ZenPushButton(self, 'btnTest')
-        self.btnTest.setText('btnTest')
-        self.btnTest.setToolTip('''<b>This is bold text</b><br>
-            <i>This is italic text</i><br>
-            <u>This is underlined text</u><br>
-            <font color="red">This is red text</font><br>
-            <font size="5">This is larger text</font><br>
-            <a href="https://www.example.com">Click here for more info</a>''')
-        self.btnTest.setFixedSize(120, 40)
-        self.Board.addWidget(self.btnTest)
-
-        self.btnTest2 = ZenPushButton(self, 'btnTest2')
+        self.btnTest2 = ZenPushButton(self.Board)
+        #self.btnTest2.setWidgetFlag(Zen.WidgetFlag.StyleSheetApplyToChildren)
         self.btnTest2.setText('btnTest2')
-        self.btnTest2.setToolTip("button2.")
-        self.btnTest2.setFixedSize(120, 40)
+        self.btnTest2.setToolTip("btnTest2.")
+        self.btnTest2.setMinimumHeight(50)
         self.Board.addWidget(self.btnTest2)
+
+
+    def btnConnect(self):
+        #self.btnMenuTest.clicked.connect(lambda:self.leftSideMenu.setCollapseDir(Zen.Direction.Horizontal))
+        #self.btnMenu.clicked.connect(self.leftSideMenu.toggleState)
+        pass
 
 
     def light(self):

@@ -1,15 +1,32 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.core import ZenExpAnim, ColorTool, Zen,AnimGroup, ZenGlobal
+from ZenUI.core import ZenExpAnim,ColorTool,Zen,AnimGroup,ZenGlobal
 class ABCLabel(QLabel):
     moved = Signal(object)
     resized = Signal(object)
     opacityChanged = Signal(float)
-    def __init__(self, parent: QWidget=None, name: str = None):
+    def __init__(self,
+                 parent: QWidget = None,
+                 name: str = None,
+                 text: str = None,
+                 word_wrap: bool = False,
+                 icon: QPixmap | QImage = None,
+                 movie: QMovie = None,
+                 alignment: Zen.Alignment = None
+                 ):
         super().__init__(parent)
         if name:
             self.setObjectName(name)
+        if text:
+            self.setText(text)
+        self.setWordWrap(word_wrap)
+        if icon:
+            self.setPixmap(icon)
+        if movie:
+            self.setMovie(movie)
+        if alignment:
+            self.setAlignment(alignment.value)
         self._widget_flags = {} # 组件属性，控制是否具备动画等
         self._fixed_stylesheet = '' #固定样式表
         self._x1, self._y1, self._x2, self._y2 = None, None, None, None # 组件可移动区域

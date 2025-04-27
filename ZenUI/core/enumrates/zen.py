@@ -1,3 +1,6 @@
+from PySide6.QtWidgets import *
+from PySide6.QtCore import *
+from PySide6.QtGui import *
 from enum import Enum, auto
 
 class Zen:
@@ -88,11 +91,65 @@ class Zen:
     class Layout(Enum):
         """ 布局类型
         Attributes:
-            Horizontal: 水平布局
-            Vertical: 垂直布局
+            Row: 行布局
+            Column: 列布局
+            Grid: 网格布局
         """
-        Horizontal = auto()
-        Vertical = auto()
+        Row = auto()
+        Column = auto()
+        Grid = auto()
+
+    class Alignment(Enum):
+        ''' 对齐方式
+        Attributes:
+            Leading: 靠左对齐
+            Left: 靠左对齐
+            Right: 靠右对齐
+            Trailing: 靠右对齐
+            HCenter: 水平居中对齐
+            Justify: 水平对齐
+            Absolute: 绝对对齐
+            Horizontal_Mask: 水平对齐掩码
+            Top: 靠上对齐
+            Bottom: 靠下对齐
+            VCenter: 垂直居中对齐
+            Center: 居中对齐
+            Baseline: 基线对齐
+            Vertical_Mask: 垂直对齐掩码
+        '''
+        Leading = Qt.AlignmentFlag.AlignLeading
+        Left = Qt.AlignmentFlag.AlignLeft
+        Right = Qt.AlignmentFlag.AlignRight
+        Trailing = Qt.AlignmentFlag.AlignTrailing
+        HCenter = Qt.AlignmentFlag.AlignHCenter
+        Justify = Qt.AlignmentFlag.AlignJustify
+        Absolute = Qt.AlignmentFlag.AlignAbsolute
+        Horizontal_Mask = Qt.AlignmentFlag.AlignHorizontal_Mask
+        Top = Qt.AlignmentFlag.AlignTop
+        Bottom = Qt.AlignmentFlag.AlignBottom
+        VCenter = Qt.AlignmentFlag.AlignVCenter
+        Center = Qt.AlignmentFlag.AlignCenter
+        Baseline = Qt.AlignmentFlag.AlignBaseline
+        Vertical_Mask = Qt.AlignmentFlag.AlignVertical_Mask
+
+    class SizePolicy(Enum):
+        ''' 空间策略
+        Attributes:
+            Fixed: 固定大小
+            Minimum: 最小大小
+            MinimumExpanding: 最小扩展大小
+            Maximum: 最大大小
+            Preferred: 预设大小
+            Expanding: 扩展大小
+            Ignored: 忽略大小
+        '''
+        Fixed = QSizePolicy.Policy.Fixed
+        Minimum = QSizePolicy.Policy.Minimum
+        MinimumExpanding = QSizePolicy.Policy.MinimumExpanding
+        Maximum = QSizePolicy.Policy.Maximum
+        Preferred = QSizePolicy.Policy.Preferred
+        Expanding = QSizePolicy.Policy.Expanding
+        Ignored = QSizePolicy.Policy.Ignored
 
     class Position(Enum):
         """ 位置类型
@@ -128,7 +185,9 @@ class Zen:
         """ 状态类型
         Attributes:
             Normal: 正常
+            Expand: 展开
             Collapsed: 折叠
         """
         Normal = auto()
+        Expand = auto()
         Collapsed = auto()

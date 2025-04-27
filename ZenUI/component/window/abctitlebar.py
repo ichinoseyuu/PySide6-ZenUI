@@ -5,6 +5,8 @@ from enum import Enum, auto
 from ZenUI.component.widget.widget import ZenWidget
 from ZenUI.component.button.transbutton import ZenTransButton
 from ZenUI.component.label.textlabel import ZenTextLabel
+from ZenUI.component.layout.spacer import ZenSpacer
+from ZenUI.component.layout.row import ZenRowLayout
 from ZenUI.core import Zen,ZenGlobal,ColorSheet,ColorTool
 
 class TitlebarButton(ZenTransButton):
@@ -69,9 +71,7 @@ class ABCTitlebar(ZenWidget):
     # region New
     def _setup_ui(self):
         """创建ui"""
-        self._layout = QHBoxLayout(self)
-        self._layout.setContentsMargins(0, 0, 0, 0)
-        self._layout.setSpacing(0)
+        self._layout = ZenRowLayout(self)
         self.setLayout(self._layout)
 
         self.icon = ZenTextLabel(self)
@@ -81,7 +81,7 @@ class ABCTitlebar(ZenWidget):
         self.title = ZenTextLabel(self,name="title") # 标题
         self._layout.addWidget(self.title)
 
-        self.spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.spacer = ZenSpacer()
         self._layout.addItem(self.spacer)
 
         self.btnTheme = ThemeButton(self, name="btnTheme")

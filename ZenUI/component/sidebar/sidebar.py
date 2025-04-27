@@ -8,23 +8,29 @@ class ZenSidebar(ZenContainer):
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
-                 state = Zen.State.Normal,
+                 layout: Zen.Layout = None,
+                 can_expand: bool = True,
+                 state = Zen.State.Expand,
                  dir = Zen.Direction.Vertical,
-                 size: tuple[int, int] = (0, 150),
-                 layout = Zen.Layout.Vertical):
+                 collapse_width = 0,
+                 expand_width = 150):
         super().__init__(parent, name, layout)
+        self._can_expand = can_expand
         self._state = state
         self._collapse_dir = dir
-        self._collapse_width = size[0]
-        self._expand_width = size[1]
+        self._collapse_width = collapse_width
+        self._expand_width = expand_width
+
         if self._state == Zen.State.Collapsed:
             self.setMinimumWidth(self._collapse_width)
             self.setMaximumWidth(self._collapse_width)
             self._anim_collapse.setCurrent(self._collapse_width)
-        else:
+        elif self._state == Zen.State.Expand:
             self.setMinimumWidth(self._expand_width)
             self.setMaximumWidth(self._expand_width)
             self._anim_collapse.setCurrent(self._expand_width)
+        else:
+            raise ValueError(f"This state {self._state} is not support")
 
     def _init_style(self):
         self._color_sheet = ColorSheet(Zen.WidgetType.Sidebar)
@@ -56,15 +62,16 @@ class ZenSidebar(ZenContainer):
 
 
     def toggleState(self):
-        '''切换状态'''
-        if self._state == Zen.State.Normal:
+        '''切换侧边栏状态'''
+        if not self._can_expand: return
+        if self._state == Zen.State.Expand:
             self._anim_collapse.setTarget(self._collapse_width)
             self._anim_collapse.start()
             self._state = Zen.State.Collapsed
         else:
             self._anim_collapse.setTarget(self._expand_width)
             self._anim_collapse.start()
-            self._state = Zen.State.Normal
+            self._state = Zen.State.Expand
 
 
     def setCurrentWidth(self, width):
@@ -78,10 +85,10 @@ class ZenSidebar(ZenContainer):
         return self._collapse_width, self._expand_width
 
 
-    def setSidebarWidth(self, size: tuple[int, int]):
+    def setSidebarWidth(self, collapse_width: int, expand_width: int):
         '''设置侧边栏的折叠和展开尺寸'''
-        self._collapse_width = size[0]
-        self._expand_width = size[1]
+        self._collapse_width = collapse_width
+        self._expand_width = expand_width
         self._updateSidebarWidth()
 
 
@@ -98,13 +105,25 @@ class ZenSidebar(ZenContainer):
 
     def _updateSidebarWidth(self):
         '''切换折叠方向和更改折叠尺寸时需要更新控件'''
-        if self._collapse_dir == Zen.Direction.Vertical:
-            self.setMinimumSize(self._collapse_width, 0)
-            self.setMaximumSize(self._collapse_width, 32768)
+        if self._state == Zen.State.Collapsed:
+            if self._collapse_dir == Zen.Direction.Vertical:
+                self.setMinimumSize(self._collapse_width, 0)
+                self.setMaximumSize(self._collapse_width, 32768)
+            else:
+                self.setMinimumSize(0, self._collapse_width)
+                self.setMaximumSize(32768, self._collapse_width)
+            for child in self.children():
+                if isinstance(child, ZenSidebar):
+                    child._updateSidebarWidth()
+                    print('Update SidebarWidth')
         else:
-            self.setMinimumSize(0, self._collapse_width)
-            self.setMaximumSize(32768, self._collapse_width)
-        for child in self.children():
-            if isinstance(child, ZenSidebar):
-                child._updateSidebarWidth()
-                print('Update SidebarWidth')
+            if self._collapse_dir == Zen.Direction.Vertical:
+                self.setMinimumSize(self._expand_width, 0)
+                self.setMaximumSize(self._expand_width, 32768)
+            else:
+                self.setMinimumSize(0, self._expand_width)
+                self.setMaximumSize(32768, self._expand_width)
+            for child in self.children():
+                if isinstance(child, ZenSidebar):
+                    child._updateSidebarWidth()
+                    print('Update SidebarWidth')

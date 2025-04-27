@@ -162,7 +162,7 @@ class ZenColorConfig(ColorConfig):
                         Zen.ColorRole.Flash: '#20ffffff',
                         Zen.ColorRole.Text: '#ffdcdcdc',
                         Zen.ColorRole.Icon: '#ffdcdcdc',
-                        Zen.ColorRole.Selected: '#ff63469f'})
+                        Zen.ColorRole.Selected: '#ff8a5a9f'})
 
         self.setColors(Zen.WidgetType.TabButton, Zen.Theme.Light,
                        {Zen.ColorRole.Hover: '#15000000',

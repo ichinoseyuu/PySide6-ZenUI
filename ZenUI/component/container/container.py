@@ -2,13 +2,19 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.widget.widget import ZenWidget
+from ZenUI.component.layout.column import ZenColumnLayout
+from ZenUI.component.layout.row import ZenRowLayout
 from ZenUI.core import Zen,ColorTool,ColorSheet
 
 class ZenContainer(ZenWidget):
     'ZenUI基本容器类'
-    def __init__(self, parent: QWidget = None, name: str = None, layout = Zen.Layout.Vertical):
+    def __init__(self,
+                 parent: QWidget = None,
+                 name: str = None,
+                 layout: Zen.Layout = Zen.Layout.Column):
         super().__init__(parent, name)
-        self.setLayout(layout)
+        if layout:
+            self.setLayout(layout)
 
 
     # region Override
@@ -48,38 +54,8 @@ class ZenContainer(ZenWidget):
 
 
     # region New
-    def setLayout(self,layout:Zen.Layout):
-        if layout is Zen.Layout.Horizontal:
-            self._layout = QHBoxLayout(self)
-            self._layout.setContentsMargins(0, 0, 0, 0)
-            self._layout.setSpacing(0)
-        elif layout is Zen.Layout.Vertical:
-            self._layout = QVBoxLayout(self)
-            self._layout.setContentsMargins(0, 0, 0, 0)
-            self._layout.setSpacing(0)
-        super().setLayout(self._layout)
-
-    def setContentsMargins(self, left, top, right, bottom):
-        self._layout.setContentsMargins(left, top, right, bottom)
-
-    def setSpacing(self, spacing):
-        self._layout.setSpacing(spacing)
-
-    def addWidget(self, widget):
-        self._layout.addWidget(widget)
-
-    def addLayout(self, layout):
-        self._layout.addLayout(layout)
-
-    def addItem(self, item):
-        self._layout.addItem(item)
-
-    def removeWidget(self, widget):
-        self._layout.removeWidget(widget)
-
-    def count(self):
-        return self._layout.count()
-
-    def insertWidget(self, index, widget):
-        self._layout.insertWidget(index, widget)
-
+    def setLayout(self, layout:Zen.Layout):
+        if layout is Zen.Layout.Row:
+            super().setLayout(ZenRowLayout(self))
+        elif layout is Zen.Layout.Column:
+            super().setLayout(ZenColumnLayout(self))

@@ -15,32 +15,34 @@ class ZenUIDemo(ZenMainWindow):
         self.resize(800, 600)
         self.setWindowTitle('ZenUI')
 
-        self.containerlayout = QHBoxLayout()
-        self.containerlayout.setContentsMargins(0, 0, 0, 0)
+        self.containerlayout = ZenRowLayout()
         self.addLayout(self.containerlayout)
 
-
         self.leftSideMenu = ZenLeftSideMenu(self,name='leftSideMenu')
-
         self.containerlayout.addWidget(self.leftSideMenu)
 
-        self.Board = ZenContainer(self,'Board')
+        self.Board = ZenContainer(parent=self,
+                                  name='Board',
+                                  layout=Zen.Layout.Column)
         #self.Board.setWidgetFlag(Zen.WidgetFlag.GradientColor)
         self.containerlayout.addWidget(self.Board)
 
         text = """<h1 style='color: blue;'>Hello, PySide6!</h1><p>This is a <b>bold</b> and <i>italic</i> text with <font color='green'>green</font> color.</p><p><a href="https://www.qt.io" style="color: red;">Click here to visit Qt</a></p>"""
         #text = 'Hello, PySide6!'
-        self.text = ZenTextLabel(self.Board, 'text')
-        self.text.setText(text)
-        self.text.setAlignment(Qt.AlignCenter)
-        self.Board.addWidget(self.text)
+        self.text = ZenTextLabel(parent=self.Board,
+                                 name='text',
+                                 text=text,
+                                 alignment=Zen.Alignment.Center)
+        self.Board.layout().addWidget(self.text)
 
-        self.btnTest2 = ZenPushButton(self.Board)
+        self.btnTest2 = ZenPushButton(parent=self.Board,
+                                 name='btnTest2',
+                                 text='btnTest2',
+                                 min_height=50,
+                                 tooltip="btnTest2.")
         #self.btnTest2.setWidgetFlag(Zen.WidgetFlag.StyleSheetApplyToChildren)
-        self.btnTest2.setText('btnTest2')
-        self.btnTest2.setToolTip("btnTest2.")
-        self.btnTest2.setMinimumHeight(50)
-        self.Board.addWidget(self.btnTest2)
+        print(self.btnTest2.toolTip())
+        self.Board.layout().addWidget(self.btnTest2)
 
 
     def btnConnect(self):
@@ -49,14 +51,6 @@ class ZenUIDemo(ZenMainWindow):
         pass
 
 
-    def light(self):
-        #self.setOpacityTo(0)
-        #self.widget1.resizeTo(100, 100)
-        #self.widget1.moveTo(100, 100)
-        # self.widget1.setColorTo('#ffffff')
-        # self.widget1.setBorderColorTo('#909999')
-        ZenGlobal.ui.theme_manager.setTheme(Zen.Theme.Light)
-        #print(self._color_group.reference)
 
 
 if __name__ == '__main__':

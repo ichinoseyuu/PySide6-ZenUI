@@ -2,21 +2,41 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.button.buttonwidgets import ButtonLayer
-from ZenUI.core import ZenExpAnim, AnimGroup, ColorTool, ZenGlobal, Zen
+from ZenUI.core import ZenExpAnim,AnimGroup,ColorTool,ZenGlobal,Zen,ZenSize
 class ABCButton(QPushButton):
     """单次触发按钮基类"""
     def __init__(self,
                  parent:QWidget = None,
                  name: str = None,
                  text: str = None,
-                 icon: QIcon | QPixmap=None):
-        super().__init__(parent)
+                 icon: QIcon | QPixmap = None,
+                 icon_size: ZenSize = None,
+                 tooltip: str = None,
+                 min_width: int = None,
+                 min_height: int = None,
+                 max_width: int = None,
+                 max_height: int = None,
+                 sizepolicy: tuple[Zen.SizePolicy, Zen.SizePolicy] = None,
+                 ):
+        super().__init__(parent=parent)
         if name:
             self.setObjectName(name)
         if text:
             self.setText(text)
         if icon:
             self.setIcon(icon)
+        if icon_size:
+            self.setIconSize(icon_size.toQSize())
+        if min_width:
+            self.setMinimumWidth(min_width)
+        if min_height:
+            self.setMinimumHeight(min_height)
+        if max_width:
+            self.setMaximumWidth(max_width)
+        if max_height:
+            self.setMaximumHeight(max_height)
+        if sizepolicy:
+            self.setSizePolicy(sizepolicy[0].value, sizepolicy[1].value)
         self._widget_flags = {} # 组件属性，控制是否具备动画等
         self._fixed_stylesheet = '' #固定样式表
         self._x1, self._y1, self._x2, self._y2 = None, None, None, None # 组件可移动区域
@@ -32,6 +52,8 @@ class ABCButton(QPushButton):
         self._icon_color_is_font_color = False #图标颜色是否跟随字体颜色
         self._can_update = True #是否可以更新样式表
         self._tooltip = '' # 提示信息
+        if tooltip:
+            self._tooltip = tooltip
         self._hover_layer = ButtonLayer(self) # 悬停层
         self._hover_layer.stackUnder(self)  # 置于按钮表面的底部
         self._flash_layer = ButtonLayer(self) # 闪烁层

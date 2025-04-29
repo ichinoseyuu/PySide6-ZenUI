@@ -11,6 +11,14 @@ class LeftMenuBar(ZenLeftSideMenu):
                                   icon_size=self._btn_icon_size)
         self.addButton(self.btnHome)
 
+        self.btnBox = ZenTabButton(parent=self,
+                                  name="btnBox",
+                                  text="\t\t\t\t控件",
+                                  icon=ZenIcon(u":/icons/fluent_ui_filled/box.svg"),
+                                  min_height=self._btn_height,
+                                  icon_size=self._btn_icon_size)
+        self.addButton(self.btnBox)
+
         self.btnAbout = ZenTabButton(parent=self,
                                   name="btnAbout",
                                   text="\t\t\t\t关于",
@@ -18,19 +26,3 @@ class LeftMenuBar(ZenLeftSideMenu):
                                   min_height=self._btn_height,
                                   icon_size=self._btn_icon_size)
         self.addButton(self.btnAbout)
-
-        self.btnSettings = ZenTabButton(parent=self,
-                                  name="btnSettings",
-                                  text="\t\t\t\t设置",
-                                  icon=ZenIcon(u":/icons/fluent_ui_filled/wrench_settings.svg"),
-                                  min_height=self._btn_height,
-                                  icon_size=self._btn_icon_size)
-        self.addButton(self.btnSettings)
-
-        self.btnTest = ZenTransButton(parent=self,
-                                  name="btnTest",
-                                  text="\t\t\t\t测试",
-                                  icon=ZenIcon(u":/icons/fluent_ui_filled/wrench_settings.svg"),
-                                  min_height=self._btn_height,
-                                  icon_size=self._btn_icon_size)
-        self.addButton(self.btnTest)

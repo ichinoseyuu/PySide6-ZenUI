@@ -10,5 +10,8 @@
     <file>fluent_ui_filled/home.svg</file>
     <file>fluent_ui_filled/info.svg</file>
     <file>fluent_ui_filled/wrench_settings.svg</file>
+    <file>fluent_ui_filled/weather_sunny.svg</file>
+    <file>fluent_ui_filled/weather_moon.svg</file>
+    <file>fluent_ui_filled/box.svg</file>
   </qresource>
 </RCC>

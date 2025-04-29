@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QApplication
 from ZenUI import *
 from page_home import PageHome
 from page_about import PageAbout
-from page_settings import PageSettings
+from page_box import PageBox
 from left_menu_bar import LeftMenuBar
 from functools import partial
 
@@ -15,7 +15,7 @@ class ZenUIGallary(ZenMainWindow):
 
     def setupUi(self):
         self.resize(800, 600)
-        self.setWindowTitle('ZenUI')
+        self.setWindowTitle('ZenUIGallary')
 
         self._layout = ZenRowLayout()
         self.addLayout(self._layout)
@@ -34,19 +34,19 @@ class ZenUIGallary(ZenMainWindow):
         self.pageHome = PageHome(self.stackContainer)
         self.stackContainer.addPage(self.pageHome, cover=False, anim=False)
 
+        self.pageBox = PageBox(self.stackContainer)
+        self.stackContainer.addPage(self.pageBox, cover=False, anim=False)
+
         self.pageAbout = PageAbout(self.stackContainer)
         self.stackContainer.addPage(self.pageAbout, cover=False, anim=False)
 
-        self.pageSettings = PageSettings(self.stackContainer)
-        self.stackContainer.addPage(self.pageSettings, cover=False, anim=False)
 
 
     def btnConnect(self):
         self.LeftMenu.btnHome.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageHome'))
         self.LeftMenu.btnAbout.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageAbout'))
-        self.LeftMenu.btnSettings.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageSettings'))
-        # self.LeftMenu.btnTest.clicked.connect(partial(self.stackContainer.addPage,PageHome(self.stackContainer),True))
-        self.LeftMenu.btnTest.clicked.connect(partial(self.stackContainer.removePage,0))
+        self.LeftMenu.btnBox.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageBox'))
+
 
 
 

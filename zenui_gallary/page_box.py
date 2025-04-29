@@ -1,12 +1,12 @@
 from ZenUI import *
 
-class PageSettings(ZenContainer):
-    def __init__(self, parent = None, name = 'pageSettings', layout = Zen.Layout.Column):
+class PageBox(ZenContainer):
+    def __init__(self, parent = None, name = 'pageBox', layout = Zen.Layout.Column):
         super().__init__(parent, name, layout)
         self._setup_ui()
 
     def _setup_ui(self):
-        text = """设置"""
+        text = """控件"""
         self.text = ZenTextLabel(parent=self,
                                  name='text',
                                  text=text,

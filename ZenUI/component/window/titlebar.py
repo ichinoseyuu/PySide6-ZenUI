@@ -15,9 +15,29 @@ class TitlebarButton(ZenTransButton):
 
 
 class ThemeButton(TitlebarButton):
+    def _init_style(self):
+        super()._init_style()
+        self.setCheckable(True)
+        icon = QIcon()
+        if ZenGlobal.ui.theme_manager.theme() == Zen.Theme.Dark:
+            icon.addFile(u":/icons/fluent_ui_filled/weather_sunny.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+            icon.addFile(u":/icons/fluent_ui_filled/weather_moon.svg", QSize(), QIcon.Mode.Normal, QIcon.State.On)
+            self._tooltip = '切换到浅色模式'
+        else:
+            icon.addFile(u":/icons/fluent_ui_filled/weather_sunny.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+            icon.addFile(u":/icons/fluent_ui_filled/weather_moon.svg", QSize(), QIcon.Mode.Normal, QIcon.State.On)
+            self._tooltip = '切换到深色模式'
+        self.setIcon(icon)
+
     def _theme_changed_handler(self, theme):
         super()._theme_changed_handler(theme)
         self.hoverLayer().setColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Hover))
+        if theme == Zen.Theme.Dark:
+            self._tooltip = '切换到浅色模式'
+            ZenGlobal.ui.windows['ToolTip'].setText(self._tooltip)
+        else:
+            self._tooltip = '切换到深色模式'
+            ZenGlobal.ui.windows['ToolTip'].setText(self._tooltip)
 
 
 class ZenTitlebar(ZenWidget):
@@ -72,17 +92,12 @@ class ZenTitlebar(ZenWidget):
 
         self.spacer = ZenSpacer()
         self._layout.addItem(self.spacer)
-        
-        icon1 = QIcon()
-        icon1.addFile(u":/icons/zen_ui/light.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        icon1.addFile(u":/icons/zen_ui/dark.svg", QSize(), QIcon.Mode.Normal, QIcon.State.On)
+
         self.btnTheme = ThemeButton(parent=self,
                                     name="btnTheme",
-                                    icon=icon1,
                                     min_height=self._btn_size,
                                     min_width=self._btn_size,
                                     sizepolicy=self._btn_sizepolicy)
-        self.btnTheme.setCheckable(True)
         self._layout.addWidget(self.btnTheme)
 
         self.btnMin = TitlebarButton(parent=self,

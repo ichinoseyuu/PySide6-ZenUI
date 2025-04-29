@@ -46,7 +46,7 @@ class ABCTitlebar(ZenWidget):
     # region Override
     def _init_style(self):
         super()._init_style()
-        self._color_sheet = ColorSheet(Zen.WidgetType.Titlebar)
+        self._color_sheet = ColorSheet(self, Zen.WidgetType.Titlebar)
         self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
         self._border_color = self._color_sheet.getColor(Zen.ColorRole.Border)
         self._anim_bg_color_a.setCurrent(ColorTool.toArray(self._bg_color_a))

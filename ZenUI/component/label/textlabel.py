@@ -4,7 +4,7 @@ from PySide6.QtGui import *
 from ZenUI.component.label.abclabel import ABCLabel
 from ZenUI.core import Zen,ColorSheet,ColorTool
 class ZenTextLabel(ABCLabel):
-    """ZenUI文本标签"""
+    """文本标签"""
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
@@ -17,7 +17,7 @@ class ZenTextLabel(ABCLabel):
                          text=text,
                          word_wrap=word_wrap,
                          alignment=alignment)
-        self._color_sheet = ColorSheet(Zen.WidgetType.TextLabel) # 颜色表
+        self._color_sheet = ColorSheet(self, Zen.WidgetType.TextLabel) # 颜色表
         self._text_color = self._color_sheet.getColor(Zen.ColorRole.Text)
         self._anim_text_color.setCurrent(ColorTool.toArray(self._text_color))
         self._fixed_stylesheet = 'background-color: transparent;'

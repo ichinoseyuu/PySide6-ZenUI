@@ -4,11 +4,11 @@ from PySide6.QtGui import *
 from ZenUI.component.button.abcbutton import ABCButton
 from ZenUI.core import Zen, ColorTool,ColorSheet
 class ZenTransButton(ABCButton):
-    """ZenUI透明按钮"""
+    """透明按钮"""
     # region Override
     def _init_style(self):
         super()._init_style()
-        self._color_sheet = ColorSheet(Zen.WidgetType.TansButton)
+        self._color_sheet = ColorSheet(self, Zen.WidgetType.TansButton)
         self._fixed_stylesheet = 'border: 1px solid transparent;\nborder-radius: 2px;'
         self._text_color = self._color_sheet.getColor(Zen.ColorRole.Text)
         self._anim_text_color.setCurrent(ColorTool.toArray(self._text_color))

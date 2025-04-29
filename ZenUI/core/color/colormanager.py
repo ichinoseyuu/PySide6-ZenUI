@@ -127,6 +127,7 @@ class ColorConfig:
 
 
 class ZenColorConfig(ColorConfig):
+    '''ZenUi主题色彩配置管理'''
     def __init__(self):
         super().__init__()
         self.setColors(Zen.WidgetType.PushButton, Zen.Theme.Dark, 
@@ -155,20 +156,20 @@ class ZenColorConfig(ColorConfig):
                        {Zen.ColorRole.Hover: '#10000000',
                         Zen.ColorRole.Flash: '#20000000',
                         Zen.ColorRole.Text: '#2c2a2e',
-                        Zen.ColorRole.Icon: '#2c2a2e'})
+                        Zen.ColorRole.Icon: '#8a8a8a'})
 
         self.setColors(Zen.WidgetType.TabButton, Zen.Theme.Dark,
                        {Zen.ColorRole.Hover: '#10ffffff',
                         Zen.ColorRole.Flash: '#20ffffff',
-                        Zen.ColorRole.Text: '#ffdcdcdc',
-                        Zen.ColorRole.Icon: '#ffdcdcdc',
+                        Zen.ColorRole.Text: '#ffb4b4b4',
+                        Zen.ColorRole.Icon: '#ffb4b4b4',
                         Zen.ColorRole.Selected: '#ff8a5a9f'})
 
         self.setColors(Zen.WidgetType.TabButton, Zen.Theme.Light,
                        {Zen.ColorRole.Hover: '#15000000',
                         Zen.ColorRole.Flash: '#25000000',
-                        Zen.ColorRole.Text: '#ff2c2a2e',
-                        Zen.ColorRole.Icon: '#ff2c2a2e',
+                        Zen.ColorRole.Text: '#ff545256',
+                        Zen.ColorRole.Icon: '#ffbfbfbf',
                         Zen.ColorRole.Selected: '#ff22a7f2'})
 
         self.setColors(Zen.WidgetType.TextLabel, Zen.Theme.Dark,
@@ -187,12 +188,12 @@ class ZenColorConfig(ColorConfig):
                         Zen.ColorRole.Background_B: '#fafafa',
                         Zen.ColorRole.Border: '#9f9f9f'})
 
-        self.setColors(Zen.WidgetType.Sidebar, Zen.Theme.Dark,
+        self.setColors(Zen.WidgetType.CollapsibleContainer, Zen.Theme.Dark,
                        {Zen.ColorRole.Background_A: '#201c23',
                         Zen.ColorRole.Background_B: '#201c23',
                         Zen.ColorRole.Border: '#4e4e4e'})
 
-        self.setColors(Zen.WidgetType.Sidebar, Zen.Theme.Light,
+        self.setColors(Zen.WidgetType.CollapsibleContainer, Zen.Theme.Light,
                        {Zen.ColorRole.Background_A: '#ededed',
                         Zen.ColorRole.Background_B: '#dedede',
                         Zen.ColorRole.Border: '#9f9f9f'})
@@ -215,9 +216,10 @@ class ZenColorConfig(ColorConfig):
 
 class ColorSheet:
     """每个控件的自己的颜色表，同类型控件之间独立，需要从`ColorConfig`中获取相应的颜色表"""
-    def __init__(self, widget_type: Zen.WidgetType):
+    def __init__(self, parent, widget_type: Zen.WidgetType):
         from ZenUI.core.globals.globals import ZenGlobal
         self.ui_global = ZenGlobal.ui
+        self.parent = parent
         self.widget_type = widget_type
         self._copyColorSheet()
 
@@ -263,10 +265,14 @@ class ColorSheet:
         if len(args) == 2:
             # 设置当前主题下颜色
             role, color = args
-            self.sheet[self.ui_global.theme_manager.theme()][role] = color
+            theme = self.ui_global.theme_manager.theme()
+            self.sheet[theme][role] = color
+            self.parent._theme_changed_handler(theme)
         elif len(args) == 3:
             # 设置指定主题下颜色
             theme, role, color = args
             self.sheet[theme][role] = color
+            if theme == self.ui_global.theme_manager.theme():
+                self.parent._theme_changed_handler(theme)
         else:
             raise ValueError("Invalid number of arguments. Must be 2 or 3.")

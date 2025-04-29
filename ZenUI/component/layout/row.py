@@ -4,7 +4,7 @@ from PySide6.QtGui import *
 from ZenUI.core import ZenMargins,Zen
 
 class ZenRowLayout(QHBoxLayout):
-    '''水平布局类'''
+    '''水平布局'''
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
@@ -15,7 +15,7 @@ class ZenRowLayout(QHBoxLayout):
         super().__init__(parent)
         if name:
             self.setObjectName(name)
-        self.setContentsMargins(margins.toQMargins())
+        self.setContentsMargins(margins.toQmargins())
         self.setSpacing(spacing)
         if alignment:
             self.setAlignment(alignment.value)

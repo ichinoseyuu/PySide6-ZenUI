@@ -83,7 +83,7 @@ class Zen:
         TansButton = auto()
         TabButton = auto()
         Container = auto()
-        Sidebar = auto()
+        CollapsibleContainer = auto()
         TextLabel = auto()
         Titlebar = auto()
         ToolTip = auto()

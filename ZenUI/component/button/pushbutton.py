@@ -4,10 +4,11 @@ from PySide6.QtGui import *
 from ZenUI.component.button.abcbutton import ABCButton
 from ZenUI.core import Zen, ColorTool, ColorSheet
 class ZenPushButton(ABCButton):
+    '''触发按钮'''
     # region Override
     def _init_style(self):
         super()._init_style()
-        self._color_sheet = ColorSheet(Zen.WidgetType.PushButton) 
+        self._color_sheet = ColorSheet(self, Zen.WidgetType.PushButton)
         self._fixed_stylesheet = 'border: 1px solid transparent;\nborder-radius: 2px;'
         self.setWidgetFlag(Zen.WidgetFlag.GradientColor)
         self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)

@@ -3,13 +3,14 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.button.buttonwidgets import ButtonLayer
 from ZenUI.core import ZenExpAnim,AnimGroup,ColorTool,ZenGlobal,Zen,ZenSize
+from ZenUI.gui import ZenIcon
 class ABCTabButton(QPushButton):
-    """开关状态按钮基类"""
+    """标签按钮基类"""
     def __init__(self,
                  parent:QWidget = None,
                  name: str = None,
                  text: str = None,
-                 icon: QIcon | QPixmap = None,
+                 icon: ZenIcon = None,
                  icon_size: ZenSize = None,
                  tooltip: str = None,
                  min_width: int = None,
@@ -19,9 +20,9 @@ class ABCTabButton(QPushButton):
                  sizepolicy: tuple[Zen.SizePolicy, Zen.SizePolicy] = None,
                  checked: bool = False,
                  tab_pos = Zen.Position.Left,
-                 tab_width = 4,
+                 tab_width = 6,
                  tab_offset = 2,
-                 tab_length_offset = 6):
+                 tab_length_offset = 8):
         super().__init__(parent=parent)
         if name:
             self.setObjectName(name)
@@ -30,7 +31,7 @@ class ABCTabButton(QPushButton):
         if icon:
             self.setIcon(icon)
         if icon_size:
-            self.setIconSize(icon_size.toQSize())
+            self.setIconSize(icon_size.toQsize())
         if min_width:
             self.setMinimumWidth(min_width)
         if min_height:
@@ -514,7 +515,7 @@ class ABCTabButton(QPushButton):
             ZenGlobal.ui.windows["ToolTip"].showTip()
 
     def leaveEvent(self, event):
-        super().leaveEvent(event)
+        #super().leaveEvent(event)
         self._hover_layer.setColorTo(ColorTool.trans(self._color_sheet.getColor(Zen.ColorRole.Hover)))
         if self._tooltip != "" and "ToolTip" in ZenGlobal.ui.windows:
             ZenGlobal.ui.windows["ToolTip"].setInsideOf(None)
@@ -526,7 +527,13 @@ class ABCTabButton(QPushButton):
             self._repeat_click_trigger.start()
 
     def mouseReleaseEvent(self, e):
-        super().mouseReleaseEvent(e)
+        self.released.emit()
+        self.clicked.emit()
+        if self.isCheckable():
+            if self.isChecked():
+                self.setChecked(False)
+            else:
+                self.setChecked(True)
         self._repeat_click_trigger.stop()
         self._repeat_click_timer.stop()
 

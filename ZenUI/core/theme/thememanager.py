@@ -2,6 +2,7 @@ from PySide6.QtCore import QObject,Signal
 from ZenUI.core.enumrates.zen import Zen
 
 class ThemeManager(QObject):
+    '''主题管理器'''
     themeChanged = Signal(object)
     _instance = None
     def __init__(self):

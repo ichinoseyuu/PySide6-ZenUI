@@ -2,15 +2,18 @@ from ZenUI.core.theme.thememanager import ThemeManager
 from ZenUI.core.color.colormanager import ZenColorConfig
 from ZenUI.core.metaclass.metaclass import ImmutableMeta,NoInstanceClass,Singleton
 class UIGlobal(Singleton):
+    '''全局UI配置'''
     windows ={}
     theme_manager = ThemeManager()
     color_config = ZenColorConfig()
 
 class Config(NoInstanceClass):
+    '''全局变量配置'''
     TITLEBAR_HEIGHT = 37
 
 
 class ZenGlobal(NoInstanceClass, metaclass=ImmutableMeta):
+    '''全局配置'''
     ui = UIGlobal()
     config = Config
 

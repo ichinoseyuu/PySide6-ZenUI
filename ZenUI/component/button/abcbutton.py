@@ -3,13 +3,14 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.button.buttonwidgets import ButtonLayer
 from ZenUI.core import ZenExpAnim,AnimGroup,ColorTool,ZenGlobal,Zen,ZenSize
+from ZenUI.gui import ZenIcon
 class ABCButton(QPushButton):
-    """单次触发按钮基类"""
+    """触发按钮基类"""
     def __init__(self,
                  parent:QWidget = None,
                  name: str = None,
                  text: str = None,
-                 icon: QIcon | QPixmap = None,
+                 icon: ZenIcon = None,
                  icon_size: ZenSize = None,
                  tooltip: str = None,
                  min_width: int = None,
@@ -26,7 +27,7 @@ class ABCButton(QPushButton):
         if icon:
             self.setIcon(icon)
         if icon_size:
-            self.setIconSize(icon_size.toQSize())
+            self.setIconSize(icon_size.toQsize())
         if min_width:
             self.setMinimumWidth(min_width)
         if min_height:
@@ -476,12 +477,18 @@ class ABCButton(QPushButton):
             ZenGlobal.ui.windows["ToolTip"].hideTip()
 
     def mousePressEvent(self, e):
-        super().mousePressEvent(e)
+        self.pressed.emit()
         if self._enabled_repetitive_clicking:
             self._repeat_click_trigger.start()
 
     def mouseReleaseEvent(self, e):
-        super().mouseReleaseEvent(e)
+        self.released.emit()
+        self.clicked.emit()
+        if self.isCheckable():
+            if self.isChecked():
+                self.setChecked(False)
+            else:
+                self.setChecked(True)
         self._repeat_click_trigger.stop()
         self._repeat_click_timer.stop()
 

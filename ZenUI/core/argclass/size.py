@@ -3,14 +3,10 @@ from dataclasses import dataclass
 
 @dataclass
 class ZenSize:
-    '''内边距
-    Attributes:
-        width: int = 0
-        height: int = 0
-    '''
+    '''尺寸'''
     width: int = 0
     height: int = 0
 
-    def toQSize(self):
+    def toQsize(self):
         '''转换成QSize'''
         return QSize(self.width, self.height)

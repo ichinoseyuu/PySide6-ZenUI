@@ -2,6 +2,7 @@ __pycache__/
 .vscode/
 test/
 data/
+ZenUi.egg-info/
 
 *.pyc
 *.psd
@@ -10,4 +11,5 @@ test.py
 build/
 dist/
 main.spec
+desktop.ini
 

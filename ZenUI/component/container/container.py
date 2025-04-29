@@ -7,7 +7,7 @@ from ZenUI.component.layout.row import ZenRowLayout
 from ZenUI.core import Zen,ColorTool,ColorSheet
 
 class ZenContainer(ZenWidget):
-    'ZenUI基本容器类'
+    '''基本容器'''
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
@@ -20,7 +20,7 @@ class ZenContainer(ZenWidget):
     # region Override
     def _init_style(self):
         super()._init_style()
-        self._color_sheet = ColorSheet(Zen.WidgetType.Container)
+        self._color_sheet = ColorSheet(self, Zen.WidgetType.Container)
         self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
         self._bg_color_b = self._color_sheet.getColor(Zen.ColorRole.Background_B)
         self._border_color = self._color_sheet.getColor(Zen.ColorRole.Border)

@@ -1,15 +1,6 @@
 from enum import Enum
 from PySide6.QtGui import QFont
-class Font(Enum):
-    class Weight(Enum):
-        """字体粗细"""
-        light = QFont.Weight.Light
-        Normal = QFont.Weight.Normal
-        Medium = QFont.Weight.Medium
-        DemiBold = QFont.Weight.DemiBold
-        Bold = QFont.Weight.Bold
-
-
+class ZenFont(QFont):
     class Family(Enum):
         """字体样式
         Attributes:
@@ -18,46 +9,27 @@ class Font(Enum):
             arial (str = 'Arial'): Arial
             simsun (str =  '宋体'): 宋体
         """
-        yahei = 'Microsoft YaHei'
-        youyuan = '幼圆'
-        arial = 'Arial'
-        simsun = '宋体'
+        YaHei = 'Microsoft YaHei'
+        YouYuan = '幼圆'
+        Arial = 'Arial'
+        Simsun = '宋体'
 
 
     class Size(Enum):
-        """字体大小
-        Attributes:
-            small (int = 9): 小号字体
-            medium (int = 10): 中号字体
-            large (int = 11): 大号字体
-            huge (int = 12): 超大号字体
-        """
-        small = 9
-        medium = 10
-        large = 11
-        huge = 12
-
-
-    class TitleSize(Enum):
-        """标题字体大小
-        Attributes:
-            small (int = 9): 小号字体
-            medium (int = 10): 中号字体
-            large (int = 11): 大号字体
-            huge (int = 12): 超大号字体
-        """
-        small = 14
-        medium = 20
-        large = 24
-        huge = 32
-
-    class Style(Enum):
-        """字体样式
-        Attributes:
-            Normal (QFont.Style.StyleNormal): 正常
-            Italic (QFont.Style.StyleItalic): 斜体
-            Oblique (QFont.Style.StyleOblique): 倾斜
-        """
-        Normal = QFont.Style.StyleNormal
-        Italic = QFont.Style.StyleItalic
-        Oblique = QFont.Style.StyleOblique
+        """字体大小"""
+        Small = 9
+        "小号字体:9"
+        Medium = 10
+        "中号字体:10"
+        Large = 11
+        "大号字体:11"
+        Huge = 12
+        "超大号字体:12"
+        Title_Small = 14
+        "标题小号字体:14"
+        Title_Medium = 20
+        "标题中号字体:20"
+        Title_Large = 24
+        "标题大号字体:24"
+        Title_Huge = 32
+        "标题超大号字体:32"

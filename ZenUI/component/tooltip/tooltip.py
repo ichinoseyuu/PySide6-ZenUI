@@ -8,7 +8,7 @@ class ToolTipBG(ZenWidget):
     """用于ToolTip的背景层"""
     def _init_style(self):
         self._fixed_stylesheet = "border-radius: 2px;\nborder: 1px solid transparent;"
-        self._color_sheet = ColorSheet(Zen.WidgetType.ToolTip)
+        self._color_sheet = ColorSheet(self, Zen.WidgetType.ToolTip)
         self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
         self._anim_bg_color_a.setBias(0.1)
         self._anim_bg_color_a.setCurrent(ColorTool.toArray(self._bg_color_a))
@@ -36,6 +36,7 @@ class ToolTipHighlight(ZenWidget):
 
 
 class ZenToolTip(ZenWidget):
+    '''提示框'''
     def __init__(self):
         super().__init__(name='tooltip')
         self._is_shown = False

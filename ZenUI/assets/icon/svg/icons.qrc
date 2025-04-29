@@ -1,0 +1,14 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>zen_ui/dark.svg</file>
+    <file>zen_ui/light.svg</file>
+    <file>zen_ui/minimize.svg</file>
+    <file>zen_ui/maximize.svg</file>
+    <file>zen_ui/windowed.svg</file>
+    <file>zen_ui/close.svg</file>
+    <file>fluent_ui_filled/list.svg</file>
+    <file>fluent_ui_filled/home.svg</file>
+    <file>fluent_ui_filled/info.svg</file>
+    <file>fluent_ui_filled/wrench_settings.svg</file>
+  </qresource>
+</RCC>

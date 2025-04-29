@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.core import ZenExpAnim,ColorTool,Zen,AnimGroup,ZenGlobal
+from ZenUI.core import ZenExpAnim,ColorTool,Zen,AnimGroup,ZenGlobal,ZenFont
 class ABCLabel(QLabel):
+    '''标签基类'''
     moved = Signal(object)
     resized = Signal(object)
     opacityChanged = Signal(float)

@@ -3,7 +3,7 @@ import numpy
 import re
 import copy
 from ZenUI.core.enumrates.zen import Zen
-class ColorTool:
+class ZColorTool:
     """颜色工具类，提供颜色转换、颜色验证等功能"""
     @staticmethod
     def RGBToARGB(code: str):
@@ -101,7 +101,7 @@ class ColorTool:
         return bool(re.match(hex_color_pattern, color))
 
 
-class ColorConfig:
+class ZColorConfig:
     """颜色配置管理类，继承这个类可以实现一套配置，每套配置独立且互不干扰"""
     def __init__(self):
         self.config: Dict[Zen.WidgetType, Dict[Zen.Theme, Dict[Zen.ColorRole, Optional[str]]]] = {
@@ -126,8 +126,8 @@ class ColorConfig:
         return self.config[widget_type]
 
 
-class ZenColorConfig(ColorConfig):
-    '''ZenUi主题色彩配置管理'''
+class ZThemeColorConfig(ZColorConfig):
+    '''主题色彩配置管理'''
     def __init__(self):
         super().__init__()
         self.setColors(Zen.WidgetType.PushButton, Zen.Theme.Dark, 
@@ -214,7 +214,7 @@ class ZenColorConfig(ColorConfig):
                        {Zen.ColorRole.Background_A: '#ffffff',
                         Zen.ColorRole.Flash: '#7f999999'})
 
-class ColorSheet:
+class ZColorSheet:
     """每个控件的自己的颜色表，同类型控件之间独立，需要从`ColorConfig`中获取相应的颜色表"""
     def __init__(self, parent, widget_type: Zen.WidgetType):
         from ZenUI.core.globals.globals import ZenGlobal

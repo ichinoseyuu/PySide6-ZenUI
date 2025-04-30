@@ -1,13 +1,13 @@
 from ZenUI import *
 
-class PageAbout(ZenContainer):
+class PageAbout(ZContainer):
     def __init__(self, parent = None, name = 'pageAbout', layout = Zen.Layout.Column):
         super().__init__(parent, name, layout)
         self._setup_ui()
 
     def _setup_ui(self):
         text = """关于"""
-        self.text = ZenTextLabel(parent=self,
+        self.text = ZTextLabel(parent=self,
                                  name='text',
                                  text=text,
                                  alignment=Zen.Alignment.Left)

@@ -2,7 +2,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 
-class ZenEffect:
+class ZQuickEffect:
     '''特效类，方便快速设置特效'''
     class WidgetShadow:
         '''设置阴影'''

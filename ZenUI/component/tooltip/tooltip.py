@@ -1,17 +1,17 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component import ZenWidget, ZenTextLabel
-from ZenUI.core import Zen,ColorTool,ColorSheet,ZenEffect
+from ZenUI.component import ZWidget, ZTextLabel
+from ZenUI.core import Zen,ZColorTool,ZColorSheet,ZQuickEffect
 
-class ToolTipBG(ZenWidget):
+class ToolTipBG(ZWidget):
     """用于ToolTip的背景层"""
     def _init_style(self):
         self._fixed_stylesheet = "border-radius: 2px;\nborder: 1px solid transparent;"
-        self._color_sheet = ColorSheet(self, Zen.WidgetType.ToolTip)
+        self._color_sheet = ZColorSheet(self, Zen.WidgetType.ToolTip)
         self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
         self._anim_bg_color_a.setBias(0.1)
-        self._anim_bg_color_a.setCurrent(ColorTool.toArray(self._bg_color_a))
+        self._anim_bg_color_a.setCurrent(ZColorTool.toArray(self._bg_color_a))
 
     def reloadStyleSheet(self):
         if self._fixed_stylesheet:
@@ -23,7 +23,7 @@ class ToolTipBG(ZenWidget):
         self.setColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Background_A))
 
 
-class ToolTipHighlight(ZenWidget):
+class ToolTipHighlight(ZWidget):
     """用于ToolTip的高亮层"""
     def _init_style(self):
         self._fixed_stylesheet = "border-radius: 2px;\nborder: 1px solid transparent;"
@@ -35,7 +35,7 @@ class ToolTipHighlight(ZenWidget):
 
 
 
-class ZenToolTip(ZenWidget):
+class ZToolTip(ZWidget):
     '''提示框'''
     def __init__(self):
         super().__init__(name='tooltip')
@@ -45,7 +45,7 @@ class ZenToolTip(ZenWidget):
         self._margin = 8 # 周围给阴影预留的间隔空间
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool | Qt.WindowTransparentForInput)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        ZenEffect.WidgetShadow.applyDropShadowOn(self, (0, 0, 0, 128), blur_radius=int(self._margin*1.5))
+        ZQuickEffect.WidgetShadow.applyDropShadowOn(self, (0, 0, 0, 128), blur_radius=int(self._margin*1.5))
         self._setup_ui()
         self.setText("", flash=False)  # 通过输入空文本初始化大小
         
@@ -65,7 +65,7 @@ class ZenToolTip(ZenWidget):
         """创建ui"""
         self.bgLayer = ToolTipBG(self)
         self.container = QWidget(self)
-        self.text = ZenTextLabel(self.container)
+        self.text = ZTextLabel(self.container)
         self.text.setWordWrap(True)
         self.highlightLayer = ToolTipHighlight(self)
         self.text.setFixedStyleSheet("padding: 8px")
@@ -126,7 +126,7 @@ class ZenToolTip(ZenWidget):
     def flash(self):
         """ 激活高光层动画，使高光层闪烁 """
         self.highlightLayer.setColor(self.bgLayer._color_sheet.getColor(Zen.ColorRole.Flash))
-        self.highlightLayer.setColorTo(ColorTool.trans(self.bgLayer._color_sheet.getColor(Zen.ColorRole.Flash)))
+        self.highlightLayer.setColorTo(ZColorTool.trans(self.bgLayer._color_sheet.getColor(Zen.ColorRole.Flash)))
 
 
     def showTip(self):

@@ -5,11 +5,12 @@ from ctypes import cast
 from ctypes.wintypes import LPRECT, MSG
 import win32con
 import win32gui
+from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.window.utils.win32_utils import Taskbar, isMaximized, isFullScreen, getResizeBorderThickness
 from ZenUI.component.window.utils.c_structures import LPNCCALCSIZE_PARAMS
 from ZenUI.component.window.utils.window_effect import WindowEffect
-from ZenUI.component.window.titlebar import ZenTitlebar
-class ZenWindow(QWidget):
+from ZenUI.component.window.titlebar import ZTitlebar
+class ZWindow(ZWidget):
     """窗口"""
     border_width = 5
     def __init__(self, parent=None):
@@ -34,7 +35,7 @@ class ZenWindow(QWidget):
         self._container.setContentsMargins(0, 0, 0, 0)
         self._container.setSpacing(0)
         self._layout.addLayout(self._container)
-        self.setTitlebar(ZenTitlebar(self))
+        self.setTitlebar(ZTitlebar(self))
 
     def addWidget(self, widget):
         self._container.addWidget(widget)

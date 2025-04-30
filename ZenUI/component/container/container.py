@@ -1,15 +1,12 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from ZenUI.component.widget.widget import ZenWidget
-from ZenUI.component.layout.column import ZenColumnLayout
-from ZenUI.component.layout.row import ZenRowLayout
-from ZenUI.core import Zen,ColorTool,ColorSheet
+from ZenUI.component.widget.widget import ZWidget
+from ZenUI.component.layout.column import ZColumnLayout
+from ZenUI.component.layout.row import ZRowLayout
+from ZenUI.core import Zen,ZColorTool,ZColorSheet
 
-class ZenContainer(ZenWidget):
+class ZContainer(ZWidget):
     '''基本容器'''
     def __init__(self,
-                 parent: QWidget = None,
+                 parent: ZWidget = None,
                  name: str = None,
                  layout: Zen.Layout = Zen.Layout.Column):
         super().__init__(parent, name)
@@ -20,13 +17,13 @@ class ZenContainer(ZenWidget):
     # region Override
     def _init_style(self):
         super()._init_style()
-        self._color_sheet = ColorSheet(self, Zen.WidgetType.Container)
+        self._color_sheet = ZColorSheet(self, Zen.WidgetType.Container)
         self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
         self._bg_color_b = self._color_sheet.getColor(Zen.ColorRole.Background_B)
         self._border_color = self._color_sheet.getColor(Zen.ColorRole.Border)
-        self._anim_bg_color_a.setCurrent(ColorTool.toArray(self._bg_color_a))
-        self._anim_bg_color_b.setCurrent(ColorTool.toArray(self._bg_color_b))
-        self._anim_border_color.setCurrent(ColorTool.toArray(self._border_color))
+        self._anim_bg_color_a.setCurrent(ZColorTool.toArray(self._bg_color_a))
+        self._anim_bg_color_b.setCurrent(ZColorTool.toArray(self._bg_color_b))
+        self._anim_border_color.setCurrent(ZColorTool.toArray(self._border_color))
 
 
     def reloadStyleSheet(self):
@@ -56,6 +53,6 @@ class ZenContainer(ZenWidget):
     # region New
     def setLayout(self, layout:Zen.Layout):
         if layout is Zen.Layout.Row:
-            super().setLayout(ZenRowLayout(self))
+            super().setLayout(ZRowLayout(self))
         elif layout is Zen.Layout.Column:
-            super().setLayout(ZenColumnLayout(self))
+            super().setLayout(ZColumnLayout(self))

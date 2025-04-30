@@ -2,7 +2,7 @@ from PySide6.QtCore import QSize
 from dataclasses import dataclass
 
 @dataclass
-class ZenSize:
+class ZSize:
     '''尺寸'''
     width: int = 0
     height: int = 0

@@ -1,9 +1,7 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
+from PySide6.QtWidgets import QSpacerItem
 from ZenUI.core import Zen
 
-class ZenSpacer(QSpacerItem):
+class ZSpacer(QSpacerItem):
     '''占位布局'''
     def __init__(self,
                  minW: int = 0,

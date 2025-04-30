@@ -1,15 +1,14 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
+from PySide6.QtGui import QResizeEvent
+
 from typing import overload
-from ZenUI.component.widget.widget import ZenWidget
-from ZenUI.core import ZenPoint
-class ZenStackContainer(ZenWidget):
+from ZenUI.component.widget.widget import ZWidget
+from ZenUI.core import ZPoint
+class ZStackContainer(ZWidget):
     '''堆叠容器'''
     def __init__(self,
-                 parent: QWidget = None,
+                 parent: ZWidget = None,
                  name: str = None,
-                 start_point: ZenPoint = ZenPoint(0, 40),
+                 start_point: ZPoint = ZPoint(0, 40),
                  page_factor: float = 0.1,
                  page_bias: float = 0.5,
                  hide_last_page: bool = True
@@ -25,10 +24,10 @@ class ZenStackContainer(ZenWidget):
         self._hide_last_page = hide_last_page # 是否隐藏上一个页面
 
 
-    def addPage(self, page: ZenWidget, cover: bool = False, anim: bool = False):
+    def addPage(self, page: ZWidget, cover: bool = False, anim: bool = False):
         '''添加页面
         Args:
-            page (ZenWidget): 页面
+            page (ZWidget): 页面
             cover (bool, optional): 是否覆盖当前页面. Defaults to False.
             anim (bool, optional): 是否播放动画. Defaults to True.
         '''
@@ -42,7 +41,7 @@ class ZenStackContainer(ZenWidget):
         self._page_count += 1
 
 
-    def _handle_non_cover_page(self, page: ZenWidget):
+    def _handle_non_cover_page(self, page: ZWidget):
         """处理不覆盖页面的显示逻辑"""
         if self._current_page is None:
             self._current_page = page
@@ -82,7 +81,7 @@ class ZenStackContainer(ZenWidget):
         '''将索引为`index`的页面设置为当前页面'''
         pass
     @overload
-    def setCurrentPage(self, page: ZenWidget, anim: bool = True) -> None:
+    def setCurrentPage(self, page: ZWidget, anim: bool = True) -> None:
         '''将`page`设置为当前页面'''
         pass
 
@@ -91,7 +90,7 @@ class ZenStackContainer(ZenWidget):
             page = self.page(arg)
             if page is not None:
                 self.setCurrentPage(page, anim)
-        elif isinstance(arg, ZenWidget):
+        elif isinstance(arg, ZWidget):
             self._last_page = self._current_page
             self._current_page = arg
             self._current_page.resize(self.width(), self.height())
@@ -131,11 +130,11 @@ class ZenStackContainer(ZenWidget):
 
 
     @overload
-    def page(self, index: int) -> ZenWidget|None:
+    def page(self, index: int) -> ZWidget|None:
         '''获取页面'''
         pass
     @overload
-    def page(self, name: str) -> ZenWidget|None:
+    def page(self, name: str) -> ZWidget|None:
         '''获取页面'''
         pass
 

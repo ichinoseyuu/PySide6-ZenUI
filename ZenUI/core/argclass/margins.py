@@ -2,7 +2,7 @@ from PySide6.QtCore import QMargins
 from dataclasses import dataclass
 
 @dataclass
-class ZenMargins:
+class ZMargins:
     '''内边距'''
     top: int = 0
     left: int = 0

@@ -1,18 +1,15 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from ZenUI.component.button.abctabbutton import ABCTabButton,ButtonLayer
-from ZenUI.core import Zen, ColorTool,ColorSheet
-class ZenTabButton(ABCTabButton):
+from ZenUI.component.button.abctabbutton import ABCTabButton
+from ZenUI.core import Zen, ZColorTool,ZColorSheet
+class ZTabButton(ABCTabButton):
     """标签按钮"""
     # region Override
     def _init_style(self):
         super()._init_style()
-        self._color_sheet = ColorSheet(self, Zen.WidgetType.TabButton)
+        self._color_sheet = ZColorSheet(self, Zen.WidgetType.TabButton)
         self._text_color = self._color_sheet.getColor(Zen.ColorRole.Text)
-        self._anim_text_color.setCurrent(ColorTool.toArray(self._text_color))
+        self._anim_text_color.setCurrent(ZColorTool.toArray(self._text_color))
         self._icon_color = self._color_sheet.getColor(Zen.ColorRole.Icon)
-        self._anim_icon_color.setCurrent(ColorTool.toArray(self._icon_color))
+        self._anim_icon_color.setCurrent(ZColorTool.toArray(self._icon_color))
         self._tab_layer._fixed_stylesheet = 'border-radius: 3px;\nborder: 1px solid transparent;'
         if self._tab_pos == Zen.Position.Left:
             self._fixed_stylesheet = f'text-align: left;\npadding-left: {self._tab_width+2*self._tab_offset}px;\nborder-radius: 4px;\nborder: 1px solid transparent;'
@@ -54,6 +51,6 @@ class ZenTabButton(ABCTabButton):
             self.setTextColorTo(self._color_sheet.getColor(Zen.ColorRole.Selected))
             self.setIconColorTo(self._color_sheet.getColor(Zen.ColorRole.Selected))
             return
-        self._tab_layer.setColorTo(ColorTool.trans(self._color_sheet.getColor(Zen.ColorRole.Selected)))
+        self._tab_layer.setColorTo(ZColorTool.trans(self._color_sheet.getColor(Zen.ColorRole.Selected)))
         self.setTextColorTo(self._color_sheet.getColor(Zen.ColorRole.Text))
         self.setIconColorTo(self._color_sheet.getColor(Zen.ColorRole.Icon))

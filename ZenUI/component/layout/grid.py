@@ -1,14 +1,13 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from ZenUI.core import ZenMargins,Zen
+from PySide6.QtWidgets import QGridLayout
+from ZenUI.component.widget.widget import ZWidget
+from ZenUI.core import ZMargins,Zen
 
-class ZenGridLayout(QGridLayout):
+class ZGridLayout(QGridLayout):
     '''网格布局'''
     def __init__(self,
-                 parent: QWidget = None,
+                 parent: ZWidget = None,
                  name: str = None,
-                 margins: ZenMargins = ZenMargins(0, 0, 0, 0),
+                 margins: ZMargins = ZMargins(0, 0, 0, 0),
                  spacing: int = 0,
                  alignment: Zen.Alignment = None
                  ):

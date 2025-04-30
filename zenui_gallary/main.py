@@ -7,7 +7,7 @@ from page_box import PageBox
 from left_menu_bar import LeftMenuBar
 from functools import partial
 
-class ZenUIGallary(ZenMainWindow):
+class ZenUIGallary(ZMainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi()
@@ -17,16 +17,16 @@ class ZenUIGallary(ZenMainWindow):
         self.resize(800, 600)
         self.setWindowTitle('ZenUIGallary')
 
-        self._layout = ZenRowLayout()
+        self._layout = ZRowLayout()
         self.addLayout(self._layout)
 
         self.LeftMenu = LeftMenuBar(self,'leftSideMenu')
         self._layout.addWidget(self.LeftMenu)
 
-        self.Board = ZenContainer(parent=self, name='Board', layout=Zen.Layout.Column)
+        self.Board = ZContainer(parent=self, name='Board', layout=Zen.Layout.Column)
         self._layout.addWidget(self.Board)
 
-        self.stackContainer= ZenStackContainer(parent=self.Board,
+        self.stackContainer= ZStackContainer(parent=self.Board,
                                                name='stackContainer',
                                                hide_last_page=True,)
         self.Board.layout().addWidget(self.stackContainer)

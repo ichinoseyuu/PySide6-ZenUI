@@ -1,7 +1,12 @@
 <svg width="128" height="128" xmlns="http://www.w3.org/2000/svg">
  <g>
-  <title>Layer maximize</title>
-  <path stroke="null" id="svg_1" p-id="4766" fill="#bfbfbf" d="m108,107.89006l-88.00001,0l0,-87.78013l88.00001,0l0,87.78013zm-82.13334,-5.852l76.26668,0l0,-76.07611l-76.26668,0l0,76.07611z"/>
+  <title>Layer 1</title>
+  <g id="svg_2">
+   <rect x="20.2069" y="99.12293" width="87.93103" height="8" fill="#bfbfbf" id="svg_1" stroke="null"/>
+   <rect x="67.09279" y="59.71851" width="74.11769" height="8" fill="#bfbfbf" id="svg_1" stroke="null" transform="rotate(90 104.152 63.7185)"/>
+   <path fill="#bfbfbf" opacity="undefined" d="m-12.51136,59.45605l73.46552,0l0,8l-73.46552,0l0,-8z" id="svg_1" stroke="null" transform="rotate(90 24.2214 63.4561)"/>
+   <rect x="20.2069" y="20.53224" width="87.93103" height="8" fill="#bfbfbf" id="svg_1" stroke="null"/>
+  </g>
  </g>
 
 </svg>

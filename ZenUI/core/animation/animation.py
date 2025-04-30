@@ -161,7 +161,7 @@ class ABCAnim(QObject):
         return not self.isActive()
 
 
-class ZenExpAnim(ABCAnim):
+class ZExpAnim(ABCAnim):
     """ 级数动画类，每次动画的进行步长都与当前进度有关 """
 
     def __init__(self, parent=None):
@@ -229,7 +229,7 @@ class ZenExpAnim(ABCAnim):
         return (self._distance() == 0).all()
 
 
-class ExpAccelerateAnim(ZenExpAnim):
+class ExpAccelerateAnim(ZExpAnim):
     def __init__(self, parent=None):
         super().__init__(parent)
 

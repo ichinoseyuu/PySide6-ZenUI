@@ -1,12 +1,10 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from ZenUI.component.container.container import ZenContainer
-from ZenUI.core import Zen, ZenExpAnim, ColorSheet, ColorTool
-class ZenCollapsibleContainer(ZenContainer):
+from ZenUI.component.widget.widget import ZWidget
+from ZenUI.component.container.container import ZContainer
+from ZenUI.core import Zen, ZExpAnim, ZColorSheet, ZColorTool
+class ZCollapsibleContainer(ZContainer):
     '''可折叠容器'''
     def __init__(self,
-                 parent: QWidget = None,
+                 parent: ZWidget = None,
                  name: str = None,
                  layout: Zen.Layout = None,
                  can_expand: bool = True,
@@ -35,18 +33,18 @@ class ZenCollapsibleContainer(ZenContainer):
             raise ValueError(f"This state {self._state} is not support")
 
     def _init_style(self):
-        self._color_sheet = ColorSheet(self, Zen.WidgetType.CollapsibleContainer)
+        self._color_sheet = ZColorSheet(self, Zen.WidgetType.CollapsibleContainer)
         self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
         self._bg_color_b = self._color_sheet.getColor(Zen.ColorRole.Background_B)
         self._border_color = self._color_sheet.getColor(Zen.ColorRole.Border)
-        self._anim_bg_color_a.setCurrent(ColorTool.toArray(self._bg_color_a))
-        self._anim_bg_color_b.setCurrent(ColorTool.toArray(self._bg_color_b))
-        self._anim_border_color.setCurrent(ColorTool.toArray(self._border_color))
+        self._anim_bg_color_a.setCurrent(ZColorTool.toArray(self._bg_color_a))
+        self._anim_bg_color_b.setCurrent(ZColorTool.toArray(self._bg_color_b))
+        self._anim_border_color.setCurrent(ZColorTool.toArray(self._border_color))
 
 
     def _init_anim(self):
         super()._init_anim()
-        self._anim_collapse = ZenExpAnim(self)
+        self._anim_collapse = ZExpAnim(self)
         self._anim_collapse.setBias(0.25)
         self._anim_collapse.setFactor(0.2)
         self._anim_collapse.ticked.connect(self._collapse_handler)
@@ -115,7 +113,7 @@ class ZenCollapsibleContainer(ZenContainer):
                 self.setMinimumSize(0, self._collapse_width)
                 self.setMaximumSize(32768, self._collapse_width)
             for child in self.children():
-                if isinstance(child, ZenCollapsibleContainer):
+                if isinstance(child, ZCollapsibleContainer):
                     child._updateSidebarWidth()
                     print('Update SidebarWidth')
         else:
@@ -126,6 +124,6 @@ class ZenCollapsibleContainer(ZenContainer):
                 self.setMinimumSize(0, self._expand_width)
                 self.setMaximumSize(32768, self._expand_width)
             for child in self.children():
-                if isinstance(child, ZenCollapsibleContainer):
+                if isinstance(child, ZCollapsibleContainer):
                     child._updateSidebarWidth()
                     print('Update SidebarWidth')

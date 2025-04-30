@@ -1,19 +1,21 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.core import ZenExpAnim,ColorTool,Zen,AnimGroup,ZenGlobal,ZenFont
+from ZenUI.component.widget.widget import ZWidget
+from ZenUI.core import ZExpAnim,ZColorTool,Zen,AnimGroup,ZenGlobal
+from ZenUI.gui import ZPixmap,ZImage,ZMovie
 class ABCLabel(QLabel):
     '''标签基类'''
     moved = Signal(object)
     resized = Signal(object)
     opacityChanged = Signal(float)
     def __init__(self,
-                 parent: QWidget = None,
+                 parent: ZWidget = None,
                  name: str = None,
                  text: str = None,
                  word_wrap: bool = False,
-                 icon: QPixmap | QImage = None,
-                 movie: QMovie = None,
+                 image: ZPixmap|ZImage = None,
+                 movie: ZMovie = None,
                  alignment: Zen.Alignment = None
                  ):
         super().__init__(parent)
@@ -22,8 +24,8 @@ class ABCLabel(QLabel):
         if text:
             self.setText(text)
         self.setWordWrap(word_wrap)
-        if icon:
-            self.setPixmap(icon)
+        if image:
+            self.setPixmap(image)
         if movie:
             self.setMovie(movie)
         if alignment:
@@ -117,19 +119,19 @@ class ABCLabel(QLabel):
         self.setOpacity(opacity)
 
     def _bg_color_a_handler(self, color_value):
-        self._bg_color_a = ColorTool.toCode(color_value)
+        self._bg_color_a = ZColorTool.toCode(color_value)
         self._schedule_update()
 
     def _bg_color_b_handler(self, color_value):
-        self._bg_color_b = ColorTool.toCode(color_value)
+        self._bg_color_b = ZColorTool.toCode(color_value)
         self._schedule_update()
 
     def _border_color_handler(self, color_value):
-        self._border_color = ColorTool.toCode(color_value)
+        self._border_color = ZColorTool.toCode(color_value)
         self._schedule_update()
 
     def _text_color_handler(self, color_value):
-        self._text_color = ColorTool.toCode(color_value)
+        self._text_color = ZColorTool.toCode(color_value)
         self._schedule_update()
 
     # region Move
@@ -261,12 +263,12 @@ class ABCLabel(QLabel):
             self.setColor(code_1, code_2) if is_gradient else self.setColor(code_1)
             return
         # 启动动画：根据是否是渐变色来处理
-        color_value_1 = ColorTool.toArray(code_1)
+        color_value_1 = ZColorTool.toArray(code_1)
         self._anim_bg_color_a.setTarget(color_value_1)
         self._anim_bg_color_a.try_to_start()
 
         if is_gradient and code_2 is not None:
-            color_value_2 = ColorTool.toArray(code_2)
+            color_value_2 = ZColorTool.toArray(code_2)
             self._anim_bg_color_b.setTarget(color_value_2)
             self._anim_bg_color_b.try_to_start()
 
@@ -278,12 +280,12 @@ class ABCLabel(QLabel):
             code_1: 颜色代码，格式为 `#AARRGGBB` 或 `#RRGGBB`
             code_2: 第二个颜色代码，仅当渐变模式启用时使用
         """
-        color_value_1 = ColorTool.toArray(code_1)
+        color_value_1 = ZColorTool.toArray(code_1)
         self._anim_bg_color_a.setCurrent(color_value_1)
         self._bg_color_a_handler(color_value_1)
 
         if code_2 is not None:
-            color_value_2 = ColorTool.toArray(code_2)
+            color_value_2 = ZColorTool.toArray(code_2)
             self._anim_bg_color_b.setCurrent(color_value_2)
             self._bg_color_b_handler(color_value_2)
         #print("setColor", color_value_1, color_value_2)
@@ -311,7 +313,7 @@ class ABCLabel(QLabel):
         Args:
             code: 格式为`#AARRGGBB`或者`#RRGGBB`
         """
-        self._anim_border_color.setTarget(ColorTool.toArray(code))
+        self._anim_border_color.setTarget(ZColorTool.toArray(code))
         self._anim_border_color.try_to_start()
 
     def setBorderColor(self, code):
@@ -320,7 +322,7 @@ class ABCLabel(QLabel):
         Args:
             code: 格式为`#AARRGGBB`或者`#RRGGBB`
         """
-        color_value = ColorTool.toArray(code)
+        color_value = ZColorTool.toArray(code)
         self._anim_border_color.setCurrent(color_value)
         self._border_color_handler(color_value)
 
@@ -332,7 +334,7 @@ class ABCLabel(QLabel):
         Args:
             code: 格式为`#AARRGGBB`或者`#RRGGBB`
         """
-        self._anim_text_color.setTarget(ColorTool.toArray(code))
+        self._anim_text_color.setTarget(ZColorTool.toArray(code))
         self._anim_text_color.try_to_start()
 
     def setTextColor(self, code):
@@ -341,7 +343,7 @@ class ABCLabel(QLabel):
         Args:
             code: 格式为`#AARRGGBB`或者`#RRGGBB`
         """
-        color_value = ColorTool.toArray(code)
+        color_value = ZColorTool.toArray(code)
         self._anim_text_color.setCurrent(color_value)
         self._text_color_handler(color_value)
 
@@ -353,41 +355,41 @@ class ABCLabel(QLabel):
         创建动画，并添加到动画组
         - 需要创建新动画时，调用此方法，以初始化动画
         """
-        self._anim_move = ZenExpAnim(self)
+        self._anim_move = ZExpAnim(self)
         self._anim_move.setFactor(0.25)
         self._anim_move.setBias(1)
         self._anim_move.setCurrent([0, 0])
         self._anim_move.setTarget([0, 0])
         self._anim_move.ticked.connect(self._move_anim_handler)
 
-        self._anim_resize = ZenExpAnim(self)
+        self._anim_resize = ZExpAnim(self)
         self._anim_resize.setFactor(0.25)
         self._anim_resize.setBias(1)
         self._anim_resize.setCurrent([0, 0])
         self._anim_resize.setTarget([0, 0])
         self._anim_resize.ticked.connect(self._resize_anim_handler)
 
-        self._anim_opacity = ZenExpAnim(self)
+        self._anim_opacity = ZExpAnim(self)
         self._anim_opacity.setFactor(0.25)
         self._anim_opacity.setBias(0.01)
         self._anim_opacity.ticked.connect(self._opacity_anim_handler)
 
-        self._anim_bg_color_a = ZenExpAnim(self)
+        self._anim_bg_color_a = ZExpAnim(self)
         self._anim_bg_color_a.setFactor(0.25)
         self._anim_bg_color_a.setBias(1)
         self._anim_bg_color_a.ticked.connect(self._bg_color_a_handler)
 
-        self._anim_bg_color_b = ZenExpAnim(self)
+        self._anim_bg_color_b = ZExpAnim(self)
         self._anim_bg_color_b.setFactor(0.25)
         self._anim_bg_color_b.setBias(1)
         self._anim_bg_color_b.ticked.connect(self._bg_color_b_handler)
 
-        self._anim_border_color = ZenExpAnim(self)
+        self._anim_border_color = ZExpAnim(self)
         self._anim_border_color.setFactor(0.25)
         self._anim_border_color.setBias(1)
         self._anim_border_color.ticked.connect(self._border_color_handler)
 
-        self._anim_text_color = ZenExpAnim(self)
+        self._anim_text_color = ZExpAnim(self)
         self._anim_text_color.setFactor(0.25)
         self._anim_text_color.setBias(1)
         self._anim_text_color.ticked.connect(self._text_color_handler)

@@ -1,15 +1,14 @@
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
-from enum import Enum, auto
-from ZenUI.component.widget.widget import ZenWidget
-from ZenUI.component.button.transbutton import ZenTransButton
-from ZenUI.component.label.textlabel import ZenTextLabel
-from ZenUI.component.layout.spacer import ZenSpacer
-from ZenUI.component.layout.row import ZenRowLayout
-from ZenUI.core import Zen,ZenGlobal,ColorSheet,ColorTool
+from ZenUI.component.widget.widget import ZWidget
+from ZenUI.component.button.transbutton import ZTransButton
+from ZenUI.component.label.textlabel import ZTextLabel
+from ZenUI.component.layout.spacer import ZSpacer
+from ZenUI.component.layout.row import ZRowLayout
+from ZenUI.core import Zen,ZenGlobal,ZColorSheet,ZColorTool
 
-class TitlebarButton(ZenTransButton):
+class TitlebarButton(ZTransButton):
     def reloadStyleSheet(self):
         return f'color: {self._text_color};\nbackground-color: transparent;'
 
@@ -40,8 +39,8 @@ class ThemeButton(TitlebarButton):
             ZenGlobal.ui.windows['ToolTip'].setText(self._tooltip)
 
 
-class ZenTitlebar(ZenWidget):
-    '''标题栏基类'''
+class ZTitlebar(ZWidget):
+    '''标题栏'''
     def __init__(self, parent):
         super().__init__(parent=parent,name="titleBar")
         self._btn_size = 36
@@ -52,11 +51,11 @@ class ZenTitlebar(ZenWidget):
     # region Override
     def _init_style(self):
         super()._init_style()
-        self._color_sheet = ColorSheet(self, Zen.WidgetType.Titlebar)
+        self._color_sheet = ZColorSheet(self, Zen.WidgetType.Titlebar)
         self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
         self._border_color = self._color_sheet.getColor(Zen.ColorRole.Border)
-        self._anim_bg_color_a.setCurrent(ColorTool.toArray(self._bg_color_a))
-        self._anim_border_color.setCurrent(ColorTool.toArray(self._border_color))
+        self._anim_bg_color_a.setCurrent(ZColorTool.toArray(self._bg_color_a))
+        self._anim_border_color.setCurrent(ZColorTool.toArray(self._border_color))
         self._fixed_stylesheet = "border-bottom-width: 1px;\nborder-style: solid;"
 
 
@@ -79,18 +78,18 @@ class ZenTitlebar(ZenWidget):
         """创建ui"""
         self.setMinimumHeight(ZenGlobal.config.TITLEBAR_HEIGHT)
         self.setMaximumHeight(ZenGlobal.config.TITLEBAR_HEIGHT)
-        self._layout = ZenRowLayout(self)
+        self._layout = ZRowLayout(self)
         self.setLayout(self._layout)
 
-        self.icon = ZenTextLabel(parent=self,
+        self.icon = ZTextLabel(parent=self,
                                  name="icon")
         self._layout.addWidget(self.icon)
 
-        self.title = ZenTextLabel(parent=self,
+        self.title = ZTextLabel(parent=self,
                                   name="title") # 标题
         self._layout.addWidget(self.title)
 
-        self.spacer = ZenSpacer()
+        self.spacer = ZSpacer()
         self._layout.addItem(self.spacer)
 
         self.btnTheme = ThemeButton(parent=self,

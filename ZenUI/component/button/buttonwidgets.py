@@ -1,10 +1,6 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from ZenUI.component.widget.widget import ZenWidget
-from ZenUI.core import ZenExpAnim, AnimGroup, ColorTool, ZenGlobal, Zen
+from ZenUI.component.widget.widget import ZWidget
 
-class ButtonLayer(ZenWidget):
+class ButtonLayer(ZWidget):
     """按钮层级，用于按钮的背景和高亮层"""
     def _init_style(self):
         super()._init_style()

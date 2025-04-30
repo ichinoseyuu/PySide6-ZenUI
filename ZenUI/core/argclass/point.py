@@ -2,7 +2,7 @@ from PySide6.QtCore import QPoint,QPointF
 from dataclasses import dataclass
 
 @dataclass
-class ZenPoint:
+class ZPoint:
     '''点坐标'''
     x: int = 0
     y: int = 0
@@ -16,7 +16,7 @@ class ZenPoint:
         return QPointF(float(self.x), float(self.y))
 
 @dataclass
-class ZenPointF:
+class ZPointF:
     '''点坐标'''
     x: float = 0.0
     y: float = 0.0

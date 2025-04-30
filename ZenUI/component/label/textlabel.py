@@ -1,12 +1,10 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
 from ZenUI.component.label.abclabel import ABCLabel
-from ZenUI.core import Zen,ColorSheet,ColorTool
-class ZenTextLabel(ABCLabel):
+from ZenUI.component.widget.widget import ZWidget
+from ZenUI.core import Zen,ZColorSheet,ZColorTool
+class ZTextLabel(ABCLabel):
     """文本标签"""
     def __init__(self,
-                 parent: QWidget = None,
+                 parent: ZWidget = None,
                  name: str = None,
                  text: str = None,
                  word_wrap: bool = False,
@@ -17,9 +15,9 @@ class ZenTextLabel(ABCLabel):
                          text=text,
                          word_wrap=word_wrap,
                          alignment=alignment)
-        self._color_sheet = ColorSheet(self, Zen.WidgetType.TextLabel) # 颜色表
+        self._color_sheet = ZColorSheet(self, Zen.WidgetType.TextLabel) # 颜色表
         self._text_color = self._color_sheet.getColor(Zen.ColorRole.Text)
-        self._anim_text_color.setCurrent(ColorTool.toArray(self._text_color))
+        self._anim_text_color.setCurrent(ZColorTool.toArray(self._text_color))
         self._fixed_stylesheet = 'background-color: transparent;'
         self._schedule_update()
 

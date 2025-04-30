@@ -1,7 +1,16 @@
 <svg width="128" height="128" xmlns="http://www.w3.org/2000/svg">
  <g>
-  <title>Layer windowed</title>
-  <path stroke="null" id="svg_1" p-id="5088" fill="#bfbfbf" d="m113.69531,14.86746l-83.09185,0l0,16.11419l-16.29877,0l0,82.15089l83.09185,0l0,-16.11419l16.29877,0l0,-82.15089zm-22.69045,91.94577l-70.30847,0l0,-69.51228l70.30847,0l0,69.51228zm16.29877,-16.11419l-9.90711,0l0,-59.7174l-60.40139,0l0,-9.79492l70.30847,0l0,69.51228l0.00003,0.00003z"/>
+  <title>Layer 1</title>
+  <g id="svg_2">
+   <rect stroke="null" id="svg_1" fill="#bfbfbf" height="8" width="80" y="104.06131" x="16.05807"/>
+   <rect transform="rotate(90 91.9155 72.1051)" id="svg_1" fill="#bfbfbf" height="8" width="65.15217" y="68.10508" x="59.33943" stroke="null"/>
+   <path transform="rotate(90 20.0725 71.8425)" id="svg_1" d="m-12.17735,67.84243l64.5,0l0,8l-64.5,0l0,-8z" opacity="undefined" stroke="null" fill="#bfbfbf"/>
+   <rect stroke="null" id="svg_1" fill="#bfbfbf" height="8" width="80" y="32.02235" x="16.05807"/>
+   <rect id="svg_1" fill="#bfbfbf" height="8" width="79.34783" y="15.93868" x="32.59411" stroke="null"/>
+   <rect transform="rotate(90 107.817 59.6327)" id="svg_1" fill="#bfbfbf" height="8" width="73.08696" y="55.63277" x="71.27305" stroke="null"/>
+   <rect id="svg_1" fill="#bfbfbf" height="8" width="15.43478" y="88.11259" x="93.68107" stroke="null"/>
+   <rect transform="rotate(90 36.4222 26.0159)" id="svg_1" fill="#bfbfbf" height="8" width="15.44828" y="22.01584" x="28.6981" stroke="null"/>
+  </g>
  </g>
 
 </svg>

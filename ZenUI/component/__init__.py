@@ -1,26 +1,26 @@
-from .widget.widget import ZenWidget
+from .widget.widget import ZWidget
 
-from .button.transbutton import ZenTransButton
-from .button.pushbutton import ZenPushButton
-from .button.tabbutton import ZenTabButton
+from .button.transbutton import ZTransButton
+from .button.pushbutton import ZPushButton
+from .button.tabbutton import ZTabButton
 
-from .container.container import ZenContainer
-from .container.collapsiblecontainer import ZenCollapsibleContainer
-from .container.stackcontainer import ZenStackContainer
+from .container.container import ZContainer
+from .container.collapsiblecontainer import ZCollapsibleContainer
+from .container.stackcontainer import ZStackContainer
 
-from .label.textlabel import ZenTextLabel
+from .label.textlabel import ZTextLabel
 
-from .layout.column import ZenColumnLayout
-from .layout.row import ZenRowLayout
-from .layout.grid import ZenGridLayout
-from .layout.spacer import ZenSpacer
+from .layout.column import ZColumnLayout
+from .layout.row import ZRowLayout
+from .layout.grid import ZGridLayout
+from .layout.spacer import ZSpacer
 
-from .menubar.leftsidemenu import ZenLeftSideMenu
+from .menubar.leftsidemenu import ZLeftSideMenu
 
-from .tooltip.tooltip import ZenToolTip
+from .tooltip.tooltip import ZToolTip
 
-from .window.titlebar import ZenTitlebar
-from .window.window import ZenWindow
-from .window.mainwindow import ZenMainWindow
+from .window.titlebar import ZTitlebar
+from .window.window import ZWindow
+from .window.mainwindow import ZMainWindow
 
 

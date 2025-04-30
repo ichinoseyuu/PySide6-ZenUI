@@ -1,6 +1,6 @@
 from enum import Enum
 from PySide6.QtGui import QFont
-class ZenFont(QFont):
+class ZFont(QFont):
     class Family(Enum):
         """字体样式
         Attributes:

@@ -1,3 +1,3 @@
 from PySide6.QtGui import QPixmap
-class ZenPixmap(QPixmap):
+class ZPixmap(QPixmap):
     pass

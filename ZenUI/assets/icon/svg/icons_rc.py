@@ -422,28 +422,49 @@ roke=\x22null\x22 fill\
 -3.54545,-3.5454\
 5l-70.90909,0z\x22/\
 >\x0a </g>\x0a\x0a</svg>\
-\x00\x00\x014\
+\x00\x00\x02\x8c\
 <\
 svg width=\x22128\x22 \
 height=\x22128\x22 xml\
 ns=\x22http://www.w\
 3.org/2000/svg\x22>\
 \x0a <g>\x0a  <title>L\
-ayer maximize</t\
-itle>\x0a  <path st\
-roke=\x22null\x22 id=\x22\
-svg_1\x22 p-id=\x22476\
-6\x22 fill=\x22#bfbfbf\
-\x22 d=\x22m108,107.89\
-006l-88.00001,0l\
-0,-87.78013l88.0\
-0001,0l0,87.7801\
-3zm-82.13334,-5.\
-852l76.26668,0l0\
-,-76.07611l-76.2\
-6668,0l0,76.0761\
-1z\x22/>\x0a </g>\x0a\x0a</s\
-vg>\
+ayer 1</title>\x0a \
+ <g id=\x22svg_2\x22>\x0a\
+   <rect x=\x2220.2\
+069\x22 y=\x2299.12293\
+\x22 width=\x2287.9310\
+3\x22 height=\x228\x22 fi\
+ll=\x22#bfbfbf\x22 id=\
+\x22svg_1\x22 stroke=\x22\
+null\x22/>\x0a   <rect\
+ x=\x2267.09279\x22 y=\
+\x2259.71851\x22 width\
+=\x2274.11769\x22 heig\
+ht=\x228\x22 fill=\x22#bf\
+bfbf\x22 id=\x22svg_1\x22\
+ stroke=\x22null\x22 t\
+ransform=\x22rotate\
+(90 104.152 63.7\
+185)\x22/>\x0a   <path\
+ fill=\x22#bfbfbf\x22 \
+opacity=\x22undefin\
+ed\x22 d=\x22m-12.5113\
+6,59.45605l73.46\
+552,0l0,8l-73.46\
+552,0l0,-8z\x22 id=\
+\x22svg_1\x22 stroke=\x22\
+null\x22 transform=\
+\x22rotate(90 24.22\
+14 63.4561)\x22/>\x0a \
+  <rect x=\x2220.20\
+69\x22 y=\x2220.53224\x22\
+ width=\x2287.93103\
+\x22 height=\x228\x22 fil\
+l=\x22#bfbfbf\x22 id=\x22\
+svg_1\x22 stroke=\x22n\
+ull\x22/>\x0a  </g>\x0a <\
+/g>\x0a\x0a</svg>\
 \x00\x00\x01\x90\
 <\
 svg width=\x22128\x22 \
@@ -532,37 +553,79 @@ roke=\x22null\x22 x=\x222\
 fill=\x22#bfbfbf\x22 i\
 d=\x22svg_1\x22/>\x0a </g\
 >\x0a\x0a</svg>\
-\x00\x00\x01\xd0\
+\x00\x00\x04l\
 <\
 svg width=\x22128\x22 \
 height=\x22128\x22 xml\
 ns=\x22http://www.w\
 3.org/2000/svg\x22>\
 \x0a <g>\x0a  <title>L\
-ayer windowed</t\
-itle>\x0a  <path st\
-roke=\x22null\x22 id=\x22\
-svg_1\x22 p-id=\x22508\
-8\x22 fill=\x22#bfbfbf\
-\x22 d=\x22m113.69531,\
-14.86746l-83.091\
-85,0l0,16.11419l\
--16.29877,0l0,82\
-.15089l83.09185,\
-0l0,-16.11419l16\
-.29877,0l0,-82.1\
-5089zm-22.69045,\
-91.94577l-70.308\
-47,0l0,-69.51228\
-l70.30847,0l0,69\
-.51228zm16.29877\
-,-16.11419l-9.90\
-711,0l0,-59.7174\
-l-60.40139,0l0,-\
-9.79492l70.30847\
-,0l0,69.51228l0.\
-00003,0.00003z\x22/\
->\x0a </g>\x0a\x0a</svg>\
+ayer 1</title>\x0a \
+ <g id=\x22svg_2\x22>\x0a\
+   <rect stroke=\
+\x22null\x22 id=\x22svg_1\
+\x22 fill=\x22#bfbfbf\x22\
+ height=\x228\x22 widt\
+h=\x2280\x22 y=\x22104.06\
+131\x22 x=\x2216.05807\
+\x22/>\x0a   <rect tra\
+nsform=\x22rotate(9\
+0 91.9155 72.105\
+1)\x22 id=\x22svg_1\x22 f\
+ill=\x22#bfbfbf\x22 he\
+ight=\x228\x22 width=\x22\
+65.15217\x22 y=\x2268.\
+10508\x22 x=\x2259.339\
+43\x22 stroke=\x22null\
+\x22/>\x0a   <path tra\
+nsform=\x22rotate(9\
+0 20.0725 71.842\
+5)\x22 id=\x22svg_1\x22 d\
+=\x22m-12.17735,67.\
+84243l64.5,0l0,8\
+l-64.5,0l0,-8z\x22 \
+opacity=\x22undefin\
+ed\x22 stroke=\x22null\
+\x22 fill=\x22#bfbfbf\x22\
+/>\x0a   <rect stro\
+ke=\x22null\x22 id=\x22sv\
+g_1\x22 fill=\x22#bfbf\
+bf\x22 height=\x228\x22 w\
+idth=\x2280\x22 y=\x2232.\
+02235\x22 x=\x2216.058\
+07\x22/>\x0a   <rect i\
+d=\x22svg_1\x22 fill=\x22\
+#bfbfbf\x22 height=\
+\x228\x22 width=\x2279.34\
+783\x22 y=\x2215.93868\
+\x22 x=\x2232.59411\x22 s\
+troke=\x22null\x22/>\x0a \
+  <rect transfor\
+m=\x22rotate(90 107\
+.817 59.6327)\x22 i\
+d=\x22svg_1\x22 fill=\x22\
+#bfbfbf\x22 height=\
+\x228\x22 width=\x2273.08\
+696\x22 y=\x2255.63277\
+\x22 x=\x2271.27305\x22 s\
+troke=\x22null\x22/>\x0a \
+  <rect id=\x22svg_\
+1\x22 fill=\x22#bfbfbf\
+\x22 height=\x228\x22 wid\
+th=\x2215.43478\x22 y=\
+\x2288.11259\x22 x=\x2293\
+.68107\x22 stroke=\x22\
+null\x22/>\x0a   <rect\
+ transform=\x22rota\
+te(90 36.4222 26\
+.0159)\x22 id=\x22svg_\
+1\x22 fill=\x22#bfbfbf\
+\x22 height=\x228\x22 wid\
+th=\x2215.44828\x22 y=\
+\x2222.01584\x22 x=\x2228\
+.6981\x22 stroke=\x22n\
+ull\x22/>\x0a  </g>\x0a <\
+/g>\x0a\x0a</svg>\
 \x00\x00\x07O\
 <\
 svg width=\x22128\x22 \
@@ -776,17 +839,17 @@ qt_resource_struct = b"\
 \x00\x00\x01\x96\x80Y$G\
 \x00\x00\x00\xd8\x00\x00\x00\x00\x00\x01\x00\x00\x0f\xf6\
 \x00\x00\x01\x96\x80u0\x12\
-\x00\x00\x01\x84\x00\x00\x00\x00\x00\x01\x00\x00\x1fo\
-\x00\x00\x01\x96\x7f\x1cAN\
-\x00\x00\x016\x00\x00\x00\x00\x00\x01\x00\x00\x1aP\
+\x00\x00\x01\x84\x00\x00\x00\x00\x00\x01\x00\x00 \xc7\
+\x00\x00\x01\x96\x82% @\
+\x00\x00\x016\x00\x00\x00\x00\x00\x01\x00\x00\x1b\xa8\
 \x00\x00\x01\x96\x7f`G6\
-\x00\x00\x01\xa2\x00\x00\x00\x00\x00\x01\x00\x00!C\
+\x00\x00\x01\xa2\x00\x00\x00\x00\x00\x01\x00\x00%7\
 \x00\x00\x01\x96\x7fm.3\
-\x00\x00\x01N\x00\x01\x00\x00\x00\x01\x00\x00\x1b\xe4\
+\x00\x00\x01N\x00\x01\x00\x00\x00\x01\x00\x00\x1d<\
 \x00\x00\x01\x96\x7fl\xe6\xe2\
 \x00\x00\x01\x18\x00\x00\x00\x00\x00\x01\x00\x00\x19\x18\
-\x00\x00\x01\x96\x7fK\x984\
-\x00\x00\x01f\x00\x00\x00\x00\x00\x01\x00\x00\x1e\xa1\
+\x00\x00\x01\x96\x82)\xf75\
+\x00\x00\x01f\x00\x00\x00\x00\x00\x01\x00\x00\x1f\xf9\
 \x00\x00\x01\x96\x7fV\x16\x9b\
 "
 

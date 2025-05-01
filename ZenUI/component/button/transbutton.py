@@ -1,4 +1,4 @@
-from ZenUI.component.button.abcbutton import ABCButton
+from ZenUI.component.button.abstract_button import ABCButton
 from ZenUI.core import Zen, ZColorTool,ZColorSheet
 class ZTransButton(ABCButton):
     """透明按钮"""

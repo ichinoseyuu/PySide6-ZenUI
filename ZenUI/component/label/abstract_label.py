@@ -3,7 +3,6 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.core import ZExpAnim,ZColorTool,Zen,AnimGroup,ZenGlobal
-from ZenUI.gui import ZPixmap,ZImage,ZMovie
 class ABCLabel(QLabel):
     '''标签基类'''
     moved = Signal(object)
@@ -14,8 +13,8 @@ class ABCLabel(QLabel):
                  name: str = None,
                  text: str = None,
                  word_wrap: bool = False,
-                 image: ZPixmap|ZImage = None,
-                 movie: ZMovie = None,
+                 image: QPixmap|QImage = None,
+                 movie: QMovie = None,
                  alignment: Zen.Alignment = None
                  ):
         super().__init__(parent)

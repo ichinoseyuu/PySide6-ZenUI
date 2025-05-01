@@ -3,7 +3,7 @@ from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.button.transbutton import ZTransButton
-from ZenUI.component.label.textlabel import ZTextLabel
+from ZenUI.component.label.text_label import ZTextLabel
 from ZenUI.component.layout.spacer import ZSpacer
 from ZenUI.component.layout.row import ZRowLayout
 from ZenUI.core import Zen,ZenGlobal,ZColorSheet,ZColorTool
@@ -19,12 +19,12 @@ class ThemeButton(TitlebarButton):
         self.setCheckable(True)
         icon = QIcon()
         if ZenGlobal.ui.theme_manager.theme() == Zen.Theme.Dark:
-            icon.addFile(u":/icons/fluent_ui_filled/weather_sunny.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-            icon.addFile(u":/icons/fluent_ui_filled/weather_moon.svg", QSize(), QIcon.Mode.Normal, QIcon.State.On)
+            icon.addFile(u":/icons/svg/fluent/filled/ic_fluent_weather_sunny_filled.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+            icon.addFile(u":/icons/svg/fluent/filled/ic_fluent_weather_moon_filled.svg", QSize(), QIcon.Mode.Normal, QIcon.State.On)
             self._tooltip = '切换到浅色模式'
         else:
-            icon.addFile(u":/icons/fluent_ui_filled/weather_sunny.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-            icon.addFile(u":/icons/fluent_ui_filled/weather_moon.svg", QSize(), QIcon.Mode.Normal, QIcon.State.On)
+            icon.addFile(u":/icons/svg/fluent/filled/ic_fluent_weather_sunny_filled.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+            icon.addFile(u":/icons/svg/fluent/filled/ic_fluent_weather_moon_filled.svg", QSize(), QIcon.Mode.Normal, QIcon.State.On)
             self._tooltip = '切换到深色模式'
         self.setIcon(icon)
 
@@ -101,15 +101,15 @@ class ZTitlebar(ZWidget):
 
         self.btnMin = TitlebarButton(parent=self,
                                     name="btnMin",
-                                    icon=QIcon(u":/icons/zen_ui/minimize.svg"),
+                                    icon=QIcon(u":/icons/svg/zen_ui/minimize.svg"),
                                     min_height= self._btn_size,
                                     min_width= self._btn_size,
                                     sizepolicy= self._btn_sizepolicy)
         self._layout.addWidget(self.btnMin)
 
         icon2 = QIcon()
-        icon2.addFile(u":/icons/zen_ui/maximize.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        icon2.addFile(u":/icons/zen_ui/windowed.svg", QSize(), QIcon.Mode.Normal, QIcon.State.On)
+        icon2.addFile(u":/icons/svg/zen_ui/maximize.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon2.addFile(u":/icons/svg/zen_ui/windowed.svg", QSize(), QIcon.Mode.Normal, QIcon.State.On)
         self.btnMax = TitlebarButton(parent=self,
                                     name="btnMin",
                                     icon=icon2,
@@ -121,7 +121,7 @@ class ZTitlebar(ZWidget):
 
         self.btnExit = TitlebarButton(parent=self,
                                     name="btnMin",
-                                    icon=QIcon(u":/icons/zen_ui/close.svg"),
+                                    icon=QIcon(u":/icons/svg/zen_ui/close.svg"),
                                     min_height= self._btn_size,
                                     min_width= self._btn_size,
                                     sizepolicy= self._btn_sizepolicy)

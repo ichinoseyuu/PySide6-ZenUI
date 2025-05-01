@@ -1,4 +1,4 @@
-from ZenUI.component.label.abclabel import ABCLabel
+from ZenUI.component.label.abstract_label import ABCLabel
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.core import Zen,ZColorSheet,ZColorTool
 class ZTextLabel(ABCLabel):
@@ -15,15 +15,15 @@ class ZTextLabel(ABCLabel):
                          text=text,
                          word_wrap=word_wrap,
                          alignment=alignment)
+
+    # region Override
+    def _init_style(self):
         self._color_sheet = ZColorSheet(self, Zen.WidgetType.TextLabel) # 颜色表
         self._text_color = self._color_sheet.getColor(Zen.ColorRole.Text)
         self._anim_text_color.setCurrent(ZColorTool.toArray(self._text_color))
-        self._fixed_stylesheet = 'background-color: transparent;'
-        self._schedule_update()
 
-    # region Override
     def reloadStyleSheet(self):
-        sheet = f'color: {self._text_color};'
+        sheet = f'color: {self._text_color};\nbackground-color: transparent;'
         if self._fixed_stylesheet:
             return sheet +'\n'+self._fixed_stylesheet
         else:

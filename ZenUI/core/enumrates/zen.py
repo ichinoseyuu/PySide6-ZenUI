@@ -6,143 +6,127 @@ from enum import Enum, auto
 class Zen:
     """ ZenUI的各种枚举类型"""
     class Theme(Enum):
-        """ 主题类型
-        Attributes:
-            Light: 浅色主题
-            Dark: 深色主题
-        """
+        "主题类型"
         Light = auto()
+        '浅色主题'
         Dark = auto()
+        '深色主题'
 
 
     class WidgetFlag(Enum):
-        """
-        WidgetFlag
-        Attributes:
-            FlashOnHintUpdated: 在工具提示被重新设置时，使工具提示闪烁
-            InstantMove: 是否立即移动而不运行动画
-            InstantResize: 是否立即重设大小而不运行动画
-            InstantSetOpacity: 是否立即重设透明度而不运行动画
-            HasMoveLimits: 是否有移动限定区域
-            AdjustSizeOnTextChanged: 是否在setText被调用时自动调整空间大小
-            EnableAnimationSignals: 是否启用moved,resized,opacityChanged信号
-            DeleteOnHidden: 下一次被隐藏时，运行 deleteLater()
-            StyleSheetApplyToChildren: 是否将样式表应用到子控件
-            BGHaveGradient: 背景是否使用渐变色
-        """
-        FlashOnHintUpdated = auto()         # 在工具提示被重新设置时，使工具提示闪烁
-        InstantMove = auto()                # 是否立即移动而不运行动画
-        InstantResize = auto()              # 是否立即重设大小而不运行动画
-        InstantSetOpacity = auto()          # 是否立即重设透明度而不运行动画
-        InstantSetColor = auto()            # 是否立即重设颜色而不运行动画
-        HasMoveLimits = auto()              # 是否有移动限定区域
-        AdjustSizeOnTextChanged = auto()    # 是否在setText被调用时自动调整空间大小
-        EnableAnimationSignals = auto()     # 是否启用moved，resized，opacityChanged信号
-        DeleteOnHidden = auto()             # 下一次被隐藏时，运行 deleteLater()
-        StyleSheetApplyToChildren = auto()  # 是否将样式表应用到子控件
-        GradientColor = auto()              # 背景是否使用渐变色
+        '控件标志'
+        FlashOnHintUpdated = auto()
+        '在工具提示被重新设置时，使工具提示闪烁'
+        InstantMove = auto()
+        '立即移动而不运行动画'
+        InstantResize = auto()
+        '立即重设大小而不运行动画'
+        InstantSetOpacity = auto()
+        '立即重设透明度而不运行动画'
+        InstantSetColor = auto() 
+        '立即重设颜色而不运行动画'
+        HasMoveLimits = auto()
+        '有移动限定区域'
+        AdjustSizeOnTextChanged = auto()
+        '在`setText`被调用时自动调整空间大小'
+        EnableAnimationSignals = auto()
+        '启用`moved`,`resized`,`opacityChanged`信号'
+        DeleteOnHidden = auto()
+        '隐藏时删除控件'
+        StyleSheetApplyToChildren = auto()
+        '将样式表应用到子控件'
+        GradientColor = auto()
+        '背景使用渐变色'
 
 
     class ColorRole(Enum):
-        """ 颜色对象
-        Attributes:
-            Background_A: 背景颜色A
-            Background_B: 背景颜色B
-            Hover: 悬停颜色
-            Pressed: 按下颜色
-            Flash: 闪烁颜色
-            Selected: 选中颜色
-            Text: 文字颜色
-            Border: 边框颜色
-            Icon: 图标颜色
-        """
+        '颜色对象'
         Background_A = auto()
+        '背景颜色A'
         Background_B = auto()
-        Hover = auto()
-        Pressed = auto()
-        Flash = auto()
-        Selected = auto()
-        Text = auto()
+        '背景颜色B'
         Border = auto()
+        '边框颜色'
+        Hover = auto()
+        '悬停颜色'
+        Pressed = auto()
+        '按下颜色'
+        Flash = auto()
+        '闪烁颜色'
+        Selected = auto()
+        '选中颜色'
+        Text = auto()
+        '文字颜色'
         Icon = auto()
+        '图标颜色'
 
 
     class WidgetType(Enum):
-        """ 控件类型
-        Attributes:
-            PushButton: 按钮控件
-            TansButton: 透明按钮控件
-            TabButton: 标签按钮控件
-            Container: 容器控件
-            Sidebar: 侧边栏控件
-            TextLabel: 文字标签控件
-            Titlebar: 标题栏控件
-            ToolTip: 工具提示控件
-        """
+        '''控件类型'''
         PushButton = auto()
+        '按钮控件'
         TansButton = auto()
+        '透明按钮控件'
         TabButton = auto()
+        '标签按钮控件'
+        AdavancedButton = auto()
+        '高级按钮控件'
         Container = auto()
+        '容器控件'
         CollapsibleContainer = auto()
+        '可折叠容器控件'
         TextLabel = auto()
+        '文字标签控件'
         Titlebar = auto()
+        '标题栏控件'
         ToolTip = auto()
+        '工具提示控件'
+
 
     class Layout(Enum):
-        """ 布局类型
-        Attributes:
-            Row: 行布局
-            Column: 列布局
-            Grid: 网格布局
-        """
+        '''布局类型'''
         Row = auto()
+        '行布局'
         Column = auto()
+        '列布局'
         Grid = auto()
+        '网格布局'
+
 
     class Alignment(Enum):
-        ''' 对齐方式
-        Attributes:
-            Leading: 靠左对齐
-            Left: 靠左对齐
-            Right: 靠右对齐
-            Trailing: 靠右对齐
-            HCenter: 水平居中对齐
-            Justify: 水平对齐
-            Absolute: 绝对对齐
-            Horizontal_Mask: 水平对齐掩码
-            Top: 靠上对齐
-            Bottom: 靠下对齐
-            VCenter: 垂直居中对齐
-            Center: 居中对齐
-            Baseline: 基线对齐
-            Vertical_Mask: 垂直对齐掩码
-        '''
+        '''对齐方式'''
         Leading = Qt.AlignmentFlag.AlignLeading
+        '靠左对齐'
         Left = Qt.AlignmentFlag.AlignLeft
+        '靠左对齐'
         Right = Qt.AlignmentFlag.AlignRight
+        '靠右对齐'
         Trailing = Qt.AlignmentFlag.AlignTrailing
+        '靠右对齐'
         HCenter = Qt.AlignmentFlag.AlignHCenter
+        '水平居中对齐'
         Justify = Qt.AlignmentFlag.AlignJustify
+        '水平对齐'
         Absolute = Qt.AlignmentFlag.AlignAbsolute
+        '绝对对齐'
         Horizontal_Mask = Qt.AlignmentFlag.AlignHorizontal_Mask
+        '水平对齐掩码'
         Top = Qt.AlignmentFlag.AlignTop
+        '靠上对齐'
         Bottom = Qt.AlignmentFlag.AlignBottom
+        '靠下对齐'
         VCenter = Qt.AlignmentFlag.AlignVCenter
+        '垂直居中对齐'
         Center = Qt.AlignmentFlag.AlignCenter
+        '居中对齐'
         Baseline = Qt.AlignmentFlag.AlignBaseline
+        '基线对齐'
         Vertical_Mask = Qt.AlignmentFlag.AlignVertical_Mask
+        '垂直对齐掩码'
+
 
     class SizePolicy(Enum):
-        ''' 空间策略
-        Attributes:
-            Fixed: 固定大小
-            Minimum: 最小大小
-            MinimumExpanding: 最小扩展大小
-            Maximum: 最大大小
-            Preferred: 预设大小
-            Expanding: 扩展大小
-            Ignored: 忽略大小
-        '''
+        '''控件大小策略'''
         Fixed = QSizePolicy.Policy.Fixed
         Minimum = QSizePolicy.Policy.Minimum
         MinimumExpanding = QSizePolicy.Policy.MinimumExpanding
@@ -151,29 +135,17 @@ class Zen:
         Expanding = QSizePolicy.Policy.Expanding
         Ignored = QSizePolicy.Policy.Ignored
 
+
     class Position(Enum):
-        """ 位置类型
-        Attributes:
-            Left: 左
-            Right: 右
-            Top: 上
-            Bottom: 下
-        """
+        """位置类型"""
         Left = auto()
         Right = auto()
         Top = auto()
         Bottom = auto()
 
+
     class Direction(Enum):
-        """ 方向类型
-        Attributes:
-            LeftToRight: 从左到右
-            RightToLeft: 从右到左
-            TopToBottom: 从上到下
-            BottomToTop: 从下到上
-            Horizontal: 水平方向
-            Vertical: 垂直方向
-            """
+        """方向类型"""
         LeftToRight = auto()
         RightToLeft = auto()
         TopToBottom = auto()
@@ -181,13 +153,9 @@ class Zen:
         Horizontal = auto()
         Vertical = auto()
 
+
     class State(Enum):
-        """ 状态类型
-        Attributes:
-            Normal: 正常
-            Expand: 展开
-            Collapsed: 折叠
-        """
+        """控件状态"""
         Normal = auto()
         Expand = auto()
         Collapsed = auto()

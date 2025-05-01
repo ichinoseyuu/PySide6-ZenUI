@@ -2,16 +2,15 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.button.buttonwidgets import ButtonLayer
+from ZenUI.component.button.button_widgets import ButtonLayer
 from ZenUI.core import ZExpAnim,AnimGroup,ZColorTool,ZenGlobal,Zen,ZSize
-from ZenUI.gui import ZIcon
 class ABCButton(QPushButton):
     """触发按钮基类"""
     def __init__(self,
                  parent: ZWidget = None,
                  name: str = None,
                  text: str = None,
-                 icon: ZIcon = None,
+                 icon: QIcon = None,
                  icon_size: ZSize = None,
                  tooltip: str = None,
                  min_width: int = None,

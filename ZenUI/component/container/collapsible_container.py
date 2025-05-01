@@ -1,18 +1,26 @@
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.container.container import ZContainer
-from ZenUI.core import Zen, ZExpAnim, ZColorSheet, ZColorTool
+from ZenUI.core import Zen, ZExpAnim, ZColorSheet, ZColorTool,ZMargins
 class ZCollapsibleContainer(ZContainer):
     '''可折叠容器'''
     def __init__(self,
                  parent: ZWidget = None,
                  name: str = None,
                  layout: Zen.Layout = None,
+                 margins: ZMargins = ZMargins(0, 0, 0, 0),
+                 spacing: int = 0,
+                 alignment: Zen.Alignment = Zen.Alignment.Center,
                  can_expand: bool = True,
                  state: Zen.State = Zen.State.Expand,
                  dir: Zen.Direction = Zen.Direction.Vertical,
                  collapse_width: int = 0,
                  expand_width: int = 150):
-        super().__init__(parent, name, layout)
+        super().__init__(parent= parent,
+                         name= name,
+                         layout= layout,
+                         margins= margins,
+                         spacing= spacing,
+                         alignment= alignment)
         self._can_expand = can_expand # 是否可以展开
         self._state = state # 当前状态
         if dir not in [Zen.Direction.Vertical, Zen.Direction.Horizontal]:

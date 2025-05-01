@@ -1,5 +1,5 @@
-from ZenUI.core.theme.thememanager import ZThemeManager
-from ZenUI.core.color.colormanager import ZThemeColorConfig
+from ZenUI.core.theme.theme_manager import ZThemeManager
+from ZenUI.core.color.color_manager import ZThemeColorConfig
 from ZenUI.core.metaclass.metaclass import ImmutableMeta,NoInstanceClass,Singleton
 class UIGlobal(Singleton):
     '''全局UI配置'''

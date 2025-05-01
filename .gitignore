@@ -3,6 +3,10 @@ __pycache__/
 test/
 data/
 ZenUi.egg-info/
+design_drawing/
+ZenUI/assets/icons/
+ZenUI/assets/packge/
+
 
 *.pyc
 *.psd

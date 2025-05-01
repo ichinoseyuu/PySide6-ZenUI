@@ -5,17 +5,19 @@ from .button.pushbutton import ZPushButton
 from .button.tabbutton import ZTabButton
 
 from .container.container import ZContainer
-from .container.collapsiblecontainer import ZCollapsibleContainer
+from .container.collapsible_container import ZCollapsibleContainer
 from .container.stackcontainer import ZStackContainer
 
-from .label.textlabel import ZTextLabel
+from .label.text_label import ZTextLabel
+from .label.iamge_label import ZImageLabel
+from .label.movie_label import ZMovieLabel
 
 from .layout.column import ZColumnLayout
 from .layout.row import ZRowLayout
 from .layout.grid import ZGridLayout
-from .layout.spacer import ZSpacer
+from .layout.spacer import ZSpacer,ZRowSpacer,ZColumnsSpacer
 
-from .menubar.leftsidemenu import ZLeftSideMenu
+from .navigationbar.navigationbar import ZNavigationBar
 
 from .tooltip.tooltip import ZToolTip
 

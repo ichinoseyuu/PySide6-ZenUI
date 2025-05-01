@@ -1,1 +1,1 @@
-from .icon import *
+from .icons_rc import *

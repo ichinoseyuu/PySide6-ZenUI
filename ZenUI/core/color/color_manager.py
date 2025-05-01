@@ -136,41 +136,41 @@ class ZThemeColorConfig(ZColorConfig):
                         Zen.ColorRole.Hover: '#10ffffff',
                         Zen.ColorRole.Flash: '#20ffffff',
                         Zen.ColorRole.Text: '#dcdcdc',
-                        Zen.ColorRole.Icon: '#dcdcdc'})
+                        Zen.ColorRole.Icon: '#9a9a9a'})
 
         self.setColors(Zen.WidgetType.PushButton, Zen.Theme.Light,
                        {Zen.ColorRole.Background_A: '#8adee2',
                         Zen.ColorRole.Background_B: '#9bf3ff',
                         Zen.ColorRole.Hover: '#10000000',
                         Zen.ColorRole.Flash: '#20000000',
-                        Zen.ColorRole.Text: '#1c191f',
-                        Zen.ColorRole.Icon: '#1c191f'})
+                        Zen.ColorRole.Text: '#2c2a2e',
+                        Zen.ColorRole.Icon: '#868686'})
 
         self.setColors(Zen.WidgetType.TansButton, Zen.Theme.Dark,
                        {Zen.ColorRole.Hover: '#10ffffff',
                         Zen.ColorRole.Flash: '#20ffffff',
                         Zen.ColorRole.Text: '#dcdcdc',
-                        Zen.ColorRole.Icon: '#dcdcdc'})
+                        Zen.ColorRole.Icon: '#9a9a9a'})
 
         self.setColors(Zen.WidgetType.TansButton, Zen.Theme.Light,
                        {Zen.ColorRole.Hover: '#10000000',
                         Zen.ColorRole.Flash: '#20000000',
                         Zen.ColorRole.Text: '#2c2a2e',
-                        Zen.ColorRole.Icon: '#8a8a8a'})
+                        Zen.ColorRole.Icon: '#868686'})
 
         self.setColors(Zen.WidgetType.TabButton, Zen.Theme.Dark,
                        {Zen.ColorRole.Hover: '#10ffffff',
                         Zen.ColorRole.Flash: '#20ffffff',
-                        Zen.ColorRole.Text: '#ffb4b4b4',
-                        Zen.ColorRole.Icon: '#ffb4b4b4',
+                        Zen.ColorRole.Text: '#ffdcdcdc',
+                        Zen.ColorRole.Icon: '#ff9a9a9a',
                         Zen.ColorRole.Selected: '#ff8a5a9f'})
 
         self.setColors(Zen.WidgetType.TabButton, Zen.Theme.Light,
                        {Zen.ColorRole.Hover: '#15000000',
                         Zen.ColorRole.Flash: '#25000000',
-                        Zen.ColorRole.Text: '#ff545256',
-                        Zen.ColorRole.Icon: '#ffbfbfbf',
-                        Zen.ColorRole.Selected: '#ff22a7f2'})
+                        Zen.ColorRole.Text: '#ff2c2a2e',
+                        Zen.ColorRole.Icon: '#ff868686',
+                        Zen.ColorRole.Selected: '#ff82d1d6'})
 
         self.setColors(Zen.WidgetType.TextLabel, Zen.Theme.Dark,
                        {Zen.ColorRole.Text: '#ffffff'})

@@ -4,7 +4,7 @@ from ZenUI import *
 from page_home import PageHome
 from page_about import PageAbout
 from page_box import PageBox
-from left_menu_bar import LeftMenuBar
+from navigation_bar import LeftNavigationBar
 from functools import partial
 
 class ZenUIGallary(ZMainWindow):
@@ -20,16 +20,16 @@ class ZenUIGallary(ZMainWindow):
         self._layout = ZRowLayout()
         self.addLayout(self._layout)
 
-        self.LeftMenu = LeftMenuBar(self,'leftSideMenu')
-        self._layout.addWidget(self.LeftMenu)
+        self.navigationBar = LeftNavigationBar(self,'navigationBar')
+        self._layout.addWidget(self.navigationBar)
 
-        self.Board = ZContainer(parent=self, name='Board', layout=Zen.Layout.Column)
-        self._layout.addWidget(self.Board)
+        self.board = ZContainer(parent=self, name='board', layout=Zen.Layout.Column)
+        self._layout.addWidget(self.board)
 
-        self.stackContainer= ZStackContainer(parent=self.Board,
+        self.stackContainer= ZStackContainer(parent=self.board,
                                                name='stackContainer',
                                                hide_last_page=True,)
-        self.Board.layout().addWidget(self.stackContainer)
+        self.board.layout().addWidget(self.stackContainer)
 
         self.pageHome = PageHome(self.stackContainer)
         self.stackContainer.addPage(self.pageHome, cover=False, anim=False)
@@ -42,10 +42,12 @@ class ZenUIGallary(ZMainWindow):
 
 
 
+
     def btnConnect(self):
-        self.LeftMenu.btnHome.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageHome'))
-        self.LeftMenu.btnAbout.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageAbout'))
-        self.LeftMenu.btnBox.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageBox'))
+        self.navigationBar.btnHome.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageHome'))
+        self.navigationBar.btnBox.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageBox'))
+        self.navigationBar.btnAbout.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageAbout'))
+        self.pageHome.btn_nextpage.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageBox'))
 
 
 

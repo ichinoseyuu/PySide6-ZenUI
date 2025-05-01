@@ -1,4 +1,4 @@
-from ZenUI.component.button.abctabbutton import ABCTabButton
+from ZenUI.component.button.abstract_tab_button import ABCTabButton
 from ZenUI.core import Zen, ZColorTool,ZColorSheet
 class ZTabButton(ABCTabButton):
     """标签按钮"""
@@ -10,7 +10,7 @@ class ZTabButton(ABCTabButton):
         self._anim_text_color.setCurrent(ZColorTool.toArray(self._text_color))
         self._icon_color = self._color_sheet.getColor(Zen.ColorRole.Icon)
         self._anim_icon_color.setCurrent(ZColorTool.toArray(self._icon_color))
-        self._tab_layer._fixed_stylesheet = 'border-radius: 3px;\nborder: 1px solid transparent;'
+        self._tab_layer._fixed_stylesheet = 'border-radius: 2px;\nborder: 1px solid transparent;'
         if self._tab_pos == Zen.Position.Left:
             self._fixed_stylesheet = f'text-align: left;\npadding-left: {self._tab_width+2*self._tab_offset}px;\nborder-radius: 4px;\nborder: 1px solid transparent;'
             return

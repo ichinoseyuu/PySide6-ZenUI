@@ -9,3 +9,21 @@ class ZSpacer(QSpacerItem):
                  row: Zen.SizePolicy = Zen.SizePolicy.Expanding,
                  columns: Zen.SizePolicy = Zen.SizePolicy.Expanding):
         super().__init__(minW, minH, row.value, columns.value)
+
+class ZRowSpacer(ZSpacer):
+    '''占位布局'''
+    def __init__(self,
+                 minW: int = 5,
+                 minH: int = 5,
+                 row: Zen.SizePolicy = Zen.SizePolicy.Expanding,
+                 columns: Zen.SizePolicy = Zen.SizePolicy.Minimum):
+        super().__init__(minW, minH, row, columns)
+
+class ZColumnsSpacer(ZSpacer):
+    '''占位布局'''
+    def __init__(self,
+                 minW: int = 5,
+                 minH: int = 5,
+                 row: Zen.SizePolicy = Zen.SizePolicy.Minimum,
+                 columns: Zen.SizePolicy = Zen.SizePolicy.Expanding):
+        super().__init__(minW, minH, row, columns)

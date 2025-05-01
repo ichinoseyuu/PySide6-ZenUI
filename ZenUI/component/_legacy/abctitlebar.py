@@ -4,7 +4,7 @@ from PySide6.QtWidgets import *
 from enum import Enum, auto
 from ZenUI.component.widget.widget import ZenWidget
 from ZenUI.component.button.transbutton import ZenTransButton
-from ZenUI.component.label.textlabel import ZenTextLabel
+from ZenUI.component.label.text_label import ZenTextLabel
 from ZenUI.component.layout.spacer import ZenSpacer
 from ZenUI.component.layout.row import ZenRowLayout
 from ZenUI.core import Zen,ZenGlobal,ColorSheet,ColorTool

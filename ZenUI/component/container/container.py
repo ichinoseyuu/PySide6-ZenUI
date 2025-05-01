@@ -1,17 +1,29 @@
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.layout.column import ZColumnLayout
 from ZenUI.component.layout.row import ZRowLayout
-from ZenUI.core import Zen,ZColorTool,ZColorSheet
+from ZenUI.core import Zen,ZColorTool,ZColorSheet,ZMargins
 
 class ZContainer(ZWidget):
     '''基本容器'''
     def __init__(self,
                  parent: ZWidget = None,
                  name: str = None,
-                 layout: Zen.Layout = Zen.Layout.Column):
+                 layout: Zen.Layout = Zen.Layout.Column,
+                 margins: ZMargins = ZMargins(0, 0, 0, 0),
+                 spacing: int = 0,
+                 alignment: Zen.Alignment = None):
         super().__init__(parent, name)
         if layout:
-            self.setLayout(layout)
+            if layout == Zen.Layout.Row:
+                self.setLayout(ZRowLayout(parent=self,
+                                            margins=margins,
+                                            spacing=spacing,
+                                            alignment=alignment))
+            elif layout == Zen.Layout.Column:
+                self.setLayout(ZColumnLayout(parent=self,
+                                            margins=margins,
+                                            spacing=spacing,
+                                            alignment=alignment))
 
 
     # region Override
@@ -48,11 +60,3 @@ class ZContainer(ZWidget):
     def _theme_changed_handler(self, theme):
         self.setColorTo(self._color_sheet.getColor(theme,Zen.ColorRole.Background_A),self._color_sheet.getColor(theme,Zen.ColorRole.Background_B))
         self.setBorderColorTo(self._color_sheet.getColor(theme,Zen.ColorRole.Border))
-
-
-    # region New
-    def setLayout(self, layout:Zen.Layout):
-        if layout is Zen.Layout.Row:
-            super().setLayout(ZRowLayout(self))
-        elif layout is Zen.Layout.Column:
-            super().setLayout(ZColumnLayout(self))

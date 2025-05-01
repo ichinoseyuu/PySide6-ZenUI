@@ -7,7 +7,7 @@ class ZWidget(QWidget):
     moved = Signal(object)
     resized = Signal(object)
     opacityChanged = Signal(float)
-    def __init__(self, parent: QWidget=None, name: str=None):
+    def __init__(self, parent = None, name: str=None):
         super().__init__(parent)
         if name:
             self.setObjectName(name)

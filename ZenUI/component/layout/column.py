@@ -17,4 +17,4 @@ class ZColumnLayout(QVBoxLayout):
         self.setContentsMargins(margins.toQmargins())
         self.setSpacing(spacing)
         if alignment:
-            self.setAlignment(alignment)
+            self.setAlignment(alignment.value)

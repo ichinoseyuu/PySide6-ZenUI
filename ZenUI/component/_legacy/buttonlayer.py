@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Property,Qt
 from PySide6.QtGui import QCursor
 from ..widget.zenwidget import ZenWidget
-from ..label.abclabel import ABCLabel
+from ..label.abstract_label import ABCLabel
 from ....core import ZenExpAnim, Zen, ZenGlobal,ZenColor,ColorGroup
 class HoverLayer(ZenWidget):
     def __init__(self, parent: QWidget | None= None):

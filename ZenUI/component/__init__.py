@@ -1,8 +1,7 @@
 from .widget.widget import ZWidget
 
-from .button.transbutton import ZTransButton
 from .button.pushbutton import ZPushButton
-from .button.tabbutton import ZTabButton
+from .button.togglebutton import ZToggleButton
 
 from .container.container import ZContainer
 from .container.collapsible_container import ZCollapsibleContainer

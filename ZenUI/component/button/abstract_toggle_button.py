@@ -4,8 +4,10 @@ from PySide6.QtGui import *
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.button.button_widgets import ButtonLayer
 from ZenUI.core import ZExpAnim,AnimGroup,ZColorTool,ZenGlobal,Zen,ZSize
-class ABCTabButton(QPushButton):
-    """标签按钮基类"""
+class ABCToggleButton(QPushButton):
+    """切换按钮抽象类"""
+    hovered = Signal() # 悬停信号
+    leaved = Signal() # 离开信号
     def __init__(self,
                  parent: ZWidget = None,
                  name: str = None,
@@ -15,80 +17,122 @@ class ABCTabButton(QPushButton):
                  tooltip: str = None,
                  min_width: int = None,
                  min_height: int = None,
+                 min_size: ZSize = None,
                  max_width: int = None,
                  max_height: int = None,
+                 max_size: ZSize = None,
+                 fixed_size: ZSize = None,
                  sizepolicy: tuple[Zen.SizePolicy, Zen.SizePolicy] = None,
+                 border_radius: int = 2,
                  checked: bool = False,
-                 tab_pos = Zen.Position.Left,
-                 tab_width = 4,
-                 tab_offset = 2,
-                 tab_length_offset = 12):
+                 have_tab: bool = False,
+                 tab_pos: Zen.Position = Zen.Position.Left,
+                 tab_width: int = 4,
+                 tab_border_radius = 2,
+                 tab_offset: int = 2,
+                 tab_len_offset: int = 10,
+                 display_tooltip_immediate: bool = False):
         super().__init__(parent=parent)
-        if name:
-            self.setObjectName(name)
-        if text:
-            self.setText(text)
-        if icon:
-            self.setIcon(icon)
-        if icon_size:
-            self.setIconSize(icon_size.toQsize())
-        if min_width:
-            self.setMinimumWidth(min_width)
-        if min_height:
-            self.setMinimumHeight(min_height)
-        if max_width:
-            self.setMaximumWidth(max_width)
-        if max_height:
-            self.setMaximumHeight(max_height)
-        if sizepolicy:
-            self.setSizePolicy(sizepolicy[0].value, sizepolicy[1].value)
-        self._widget_flags = {} # 组件属性，控制是否具备动画等
-        self._fixed_stylesheet = '' #固定样式表
-        self._x1, self._y1, self._x2, self._y2 = None, None, None, None # 组件可移动区域
-        self._move_anchor = QPoint(0, 0)  # 移动时的基准点位置
-        self._color_sheet = None # 颜色表
-        self._theme_manager = ZenGlobal.ui.theme_manager #主题管理器，用于接受主题切换的信号
-        self._theme_manager.themeChanged.connect(self._theme_changed_handler)
-        self._bg_color_a = '#00000000' # 背景颜色，用于渐变模式的起始点
-        self._bg_color_b = '#00000000'  # 背景颜色，用于渐变模式的终点
-        self._gradient_anchor =[0, 0, 1, 1]  #渐变锚点
-        self._text_color = '#000000'  # 字体颜色
-        self._icon_color = '#000000'  # 图标颜色
-        self._icon_color_is_font_color = False #图标颜色是否跟随字体颜色
-        self._can_update = True #是否可以更新样式表
-        self._tooltip = '' # 提示信息
-        if tooltip:
-            self._tooltip = tooltip
-        self._hover_layer = ButtonLayer(self) # 悬停层
-        self._hover_layer.stackUnder(self)  # 置于按钮表面的底部
-        self._flash_layer = ButtonLayer(self) # 闪烁层
-        self._flash_layer.stackUnder(self)  # 置于按钮表面的底部
-        self._flash_on_clicked = True # 是否在点击时闪烁
+        # 父类参数初始化
+        if name: self.setObjectName(name)
+        if text: self.setText(text)
+        if icon: self.setIcon(icon)
+        if icon_size: self.setIconSize(icon_size.toQsize())
+        if min_width: self.setMinimumWidth(min_width)
+        if min_height: self.setMinimumHeight(min_height)
+        if min_size: self.setMinimumSize(min_size.toQsize())
+        if max_width: self.setMaximumWidth(max_width)
+        if max_height: self.setMaximumHeight(max_height)
+        if max_size: self.setMaximumSize(max_size.toQsize())
+        if fixed_size: self.setFixedSize(fixed_size.toQsize())
+        if sizepolicy: self.setSizePolicy(sizepolicy[0].value, sizepolicy[1].value)
+
+        # Widget 特性
+        self._color_sheet = None
+        '颜色表，用于存储组件颜色，如背景色，边框色等'
+        self._theme_manager = ZenGlobal.ui.theme_manager
+        '主题管理器，用于接受主题切换的信号'
+        self._theme_manager.themeChanged.connect(self._theme_changed_handler) # 主题切换信号连接
+        self._widget_flags = {}
+        '组件属性，控制是否具备动画等'
+        self._fixed_stylesheet = ''  # 每次调用setStyleSheet方法时，都会在样式表前附加这段固定内容
+        '固有样式表'
+        self._can_update = True
+        '是否可以更新样式表'
+        self._x1, self._y1, self._x2, self._y2 = None, None, None, None
+        '组件可移动区域坐标'
+        self._move_anchor = QPoint(0, 0)
+        '移动锚点'
+        self._bg_color_a = '#00000000'
+        '背景颜色，用于渐变模式的起始点'
+        self._bg_color_b = '#00000000'
+        '背景颜色,用于渐变模式的终点'
+        self._gradient_anchor =[0, 0, 1, 1]
+        '渐变锚点，用于控制渐变方向和范围'
+        self._border_color = '#00000000'
+        '边框颜色'
+        self._border_radius = border_radius
+        '圆角半径'
+
+        # ToggleButton 特性
+        self._layer_hover = ButtonLayer(self)
+        '悬停层'
+        self._layer_press = ButtonLayer(self)
+        '闪烁层'
+        self._layer_tab = ButtonLayer(self)
+        '标签层'
+        self._tooltip = ''
+        '提示文本'
+        self._text_color = '#000000'
+        '文本颜色'
+        self._icon_color = '#000000'
+        '图标颜色'
+
+        self._icon_color_is_font_color = False 
+        '图标颜色是否为字体颜色'
+        self._display_tooltip_immediate = display_tooltip_immediate
+        '是否立即显示提示文本'
+        self._have_tab = have_tab
+        '是否具备标签'
+        self._tab_pos = tab_pos
+        '按钮标签位置'
+        self._tab_width = tab_width
+        '按钮标签宽度'
+        self._tab_border_radius = tab_border_radius
+        '按钮标签圆角半径'
+        self._tab_offset = tab_offset
+        '''按钮标签距离与边缘偏移量'''
+        self._tab_len_offset = tab_len_offset
+        '''按钮标签长度与按钮的宽或高的差值'''
+
+        self._tooltip_timer = QTimer(self)  # 创建定时器
+        '提示文本定时器，用于实现提示文本的显示'
+        self._tooltip_timer.setSingleShot(True)  # 设置为单次触发
+        self._tooltip_timer.setInterval(500)  # 设置500ms延迟
+        self._tooltip_timer.timeout.connect(self._show_tooltip)  # 连接显示tooltip的槽函数
+
         self.setCheckable(True)
         self.setChecked(checked)
-        self._tab_pos = tab_pos # 按钮标签位置
-        self._tab_width = tab_width # 按钮标签宽度
-        self._tab_offset = tab_offset # 按钮标签距离与边缘偏移量
-        '''按钮标签距离与边缘偏移量'''
-        self._tab_length_offset = tab_length_offset # 按钮标签长度与按钮的宽或高的差值
-        '''按钮标签长度与按钮的宽或高的差值'''
-        self._tab_layer = ButtonLayer(self) # 标签层
-        self._tab_layer.stackUnder(self)  # 置于按钮表面的底部
-        self._enabled_repetitive_clicking = False # 是否允许重复点击
-        self.toggled.connect(self._toggled_handler) # 链接按钮切换信号,用于实现tab样式切换
-        self.clicked.connect(self._clicked_handler) # 链接按钮按下信号,用于实现点击动画
-        self._repeat_click_timer = QTimer(self) # 重复点击计时器，每隔50ms 触发一次点击信号
-        self._repeat_click_timer.setInterval(50)
-        self._repeat_click_timer.timeout.connect(self.clicked.emit) 
-        self._repeat_click_trigger = QTimer(self) # 重复点击触发器，点击后延时 500ms 触发重复点击计时器
-        self._repeat_click_trigger.setSingleShot(True)
-        self._repeat_click_trigger.timeout.connect(self._repeat_click_timer.start)
-        self._repeat_click_trigger.setInterval(500)
-        self._init_anim()
-        self._init_style()
-        self._toggled_handler(checked) # 初始化时，根据checked状态设置tab样式
-        self._schedule_update()
+        self._checked = checked
+        self.setAttribute(Qt.WidgetAttribute.WA_Hover) # 启用 hover 事件
+        self.setAttribute(Qt.WidgetAttribute.WA_NoMousePropagation) # 防止鼠标事件传播到父组件
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)  # 确保鼠标事件不会穿透到父组件
+        self.installEventFilter(self) # 安装事件过滤器
 
+        self._init_anim()
+
+        # 参数初始化
+        if tooltip: self._tooltip = tooltip
+
+        # 信号绑定
+        self.hovered.connect(self._hovered_handler) # 链接悬停信号,用于实现悬停动画
+        self.pressed.connect(self._pressed_handler) # 链接按钮按下信号,用于实现按下动画
+        self.released.connect(self._released_handler) # 链接按钮释放信号,用于实现释放动画
+        self.clicked.connect(self._clicked_handler) # 链接按钮按下信号,用于实现点击动画
+        self.toggled.connect(self._toggled_handler) # 链接按钮切换信号,用于实现切换动画
+        self.leaved.connect(self._leaved_handler) # 链接按钮离开信号,用于实现离开动画
+
+        #self._toggled_handler(checked)
 
 
     # region Style
@@ -103,7 +147,7 @@ class ABCTabButton(QPushButton):
         """设置样式表"""
         super().setStyleSheet(stylesheet)
         self.setIconColor()
-        #print(new_stylesheet)
+        #print(stylesheet)
         self._can_update = True
 
     def setFixedStyleSheet(self, stylesheet: str):
@@ -112,20 +156,17 @@ class ABCTabButton(QPushButton):
         - 此后每次运行`setStyleSheet`方法时，都会在样式表前附加这段固定内容
         """
         self._fixed_stylesheet = stylesheet
-        self._flash_layer._fixed_stylesheet = stylesheet
-        self._hover_layer._fixed_stylesheet = stylesheet
+        self._layer_press._fixed_stylesheet = stylesheet
+        self._layer_hover._fixed_stylesheet = stylesheet
+        self._layer_tab._fixed_stylesheet = stylesheet
 
-    def setTabStyleSheet(self, stylesheet: str):
-        """
-        设置标签样式表
-        - 此后每次运行`setStyleSheet`方法时，标签层都会在样式表前附加这段固定内容
-        """
-        self._tab_layer._fixed_stylesheet = stylesheet
 
     def reloadStyleSheet(self):
         """
-        重写样式表，创建新组件类使用，定义组件样式表
+        重新加载样式表，创建新组件类使用，定义组件样式表
         - 子类实现，基类初始化自行调用
+        - 每次调用`updateStyleSheet`方法时都会调用
+        - 用于更新获取样式表
         """
         pass
 
@@ -165,12 +206,20 @@ class ABCTabButton(QPushButton):
         x, y = arr
         self.move(int(x), int(y))
 
+    def _resize_anim_handler(self, arr):
+        w, h = arr
+        self.resize(int(w), int(h))
+
     def _bg_color_a_handler(self, color_value):
         self._bg_color_a = ZColorTool.toCode(color_value)
         self._schedule_update()
 
     def _bg_color_b_handler(self, color_value):
         self._bg_color_b = ZColorTool.toCode(color_value)
+        self._schedule_update()
+
+    def _border_color_handler(self, color_value):
+        self._border_color = ZColorTool.toCode(color_value)
         self._schedule_update()
 
     def _text_color_handler(self, color_value):
@@ -181,19 +230,31 @@ class ABCTabButton(QPushButton):
         self._icon_color = ZColorTool.toCode(color_value)
         self._schedule_update()
 
+    def _hovered_handler(self):
+        '''悬停信号槽函数'''
+        pass
+
+    def _pressed_handler(self):
+        '''按下信号槽函数'''
+        pass
+
+    def _released_handler(self):
+        '''释放信号槽函数'''
+        pass
+
     def _clicked_handler(self):
-        if self._flash_on_clicked is True:
-            self._run_clicked_ani()
+        '''点击信号槽函数'''
+        pass
 
-    def _run_clicked_ani(self):
-        self._flash_layer.setColor(self._color_sheet.getColor(Zen.ColorRole.Flash))
-        self._flash_layer.setColorTo(ZColorTool.trans(self._color_sheet.getColor(Zen.ColorRole.Flash)))
+    def _toggled_handler(self, checked: bool):
+        '''切换信号槽函数'''
+        pass
 
-    def _toggled_handler(self, is_checked):
-        """
-        重写按钮切换状态时的样式切换
-        - 接收到按钮切换状态信号时自动调用
-        """
+    def _leaved_handler(self):
+        '''离开信号槽函数'''
+        pass
+
+
 
     # region Move
     def moveTo(self, x: int, y: int):
@@ -255,6 +316,42 @@ class ABCTabButton(QPushButton):
     def moveAnchor(self):
         """获取移动锚点"""
         return self._move_anchor
+
+# region Resize
+    def resizeTo(self, w: int, h: int):
+        """
+        如果开启了动画，将控件动态的调整到指定大小
+        """
+        if self.isWidgetFlagOn(Zen.WidgetFlag.InstantResize) is False and self.isVisible() is True:
+            self._anim_resize.setTarget([w, h])
+            self.activateResizeAnim()
+        else:
+            self.resize(w, h)
+
+    def resizeEvent(self, event):
+        """重写调整大小事件"""
+        # resizeEvent 事件一旦被调用，控件的尺寸会瞬间改变
+        # 并且会立即调用动画的 setCurrent 方法，设置动画开始值为 event 中的 size()
+        super().resizeEvent(event)
+        size = event.size()
+        self._layer_hover.resize(size)
+        self._layer_press.resize(size)
+        w, h = size.width(), size.height()
+        self._anim_resize.setCurrent([w, h])
+        if self.isWidgetFlagOn(Zen.WidgetFlag.EnableAnimationSignals):
+            self.resized.emit([w, h])
+        if not self._have_tab: return
+        offset, len_offset, width= self._tab_offset, self._tab_len_offset, self._tab_width
+        if self._tab_pos == Zen.Position.Left:
+            self._layer_tab.setGeometry(offset, len_offset, width, h - 2*len_offset)
+            return
+        if self._tab_pos == Zen.Position.Right:
+            self._layer_tab.setGeometry(w - offset - width, len_offset, width, h - 2*len_offset)
+            return
+        if self._tab_pos == Zen.Position.Top:
+            self._layer_tab.setGeometry(len_offset, offset, w - 2*len_offset, width)
+            return
+        self._layer_tab.setGeometry(len_offset, h - offset - width, w - 2*len_offset, width)
 
 
     # region BGColor
@@ -376,6 +473,26 @@ class ABCTabButton(QPushButton):
             painter.fillRect(colored_pixmap.rect(), color)
         return colored_pixmap
 
+    # region BorderColor
+    def setBorderColorTo(self, code):
+        """
+        如果开启了动画，将控件动态的调整到指定边框颜色
+        Args:
+            code: 格式为`#AARRGGBB`或者`#RRGGBB`
+        """
+        self._anim_border_color.setTarget(ZColorTool.toArray(code))
+        self._anim_border_color.try_to_start()
+
+    def setBorderColor(self, code):
+        """
+        设置边框颜色
+        Args:
+            code: 格式为`#AARRGGBB`或者`#RRGGBB`
+        """
+        color_value = ZColorTool.toArray(code)
+        self._anim_border_color.setCurrent(color_value)
+        self._border_color_handler(color_value)
+
     # region Animation
     def _init_anim(self):
         """
@@ -389,6 +506,13 @@ class ABCTabButton(QPushButton):
         self._anim_move.setTarget([0, 0])
         self._anim_move.ticked.connect(self._move_anim_handler)
 
+        self._anim_resize = ZExpAnim(self)
+        self._anim_resize.setFactor(0.25)
+        self._anim_resize.setBias(1)
+        self._anim_resize.setCurrent([0, 0])
+        self._anim_resize.setTarget([0, 0])
+        self._anim_resize.ticked.connect(self._resize_anim_handler)
+
         self._anim_bg_color_a = ZExpAnim(self)
         self._anim_bg_color_a.setFactor(0.25)
         self._anim_bg_color_a.setBias(1)
@@ -398,6 +522,11 @@ class ABCTabButton(QPushButton):
         self._anim_bg_color_b.setFactor(0.25)
         self._anim_bg_color_b.setBias(1)
         self._anim_bg_color_b.ticked.connect(self._bg_color_b_handler)
+
+        self._anim_border_color = ZExpAnim(self)
+        self._anim_border_color.setFactor(0.25)
+        self._anim_border_color.setBias(1)
+        self._anim_border_color.ticked.connect(self._border_color_handler)
 
         self._anim_text_color = ZExpAnim(self)
         self._anim_text_color.setFactor(0.25)
@@ -411,8 +540,10 @@ class ABCTabButton(QPushButton):
 
         self._anim_group = AnimGroup()
         self._anim_group.addMember(self._anim_move, token="move")
+        self._anim_group.addMember(self._anim_resize, token="resize")
         self._anim_group.addMember(self._anim_bg_color_a, token="color_a")
         self._anim_group.addMember(self._anim_bg_color_b, token="color_b")
+        self._anim_group.addMember(self._anim_border_color, token="border_color")
         self._anim_group.addMember(self._anim_text_color, token="text_color")
         self._anim_group.addMember(self._anim_icon_color, token="icon_color")
 
@@ -427,6 +558,20 @@ class ABCTabButton(QPushButton):
     def isMoveAnimActive(self):
         "移动动画是否激活"
         return self._anim_move.isActive()
+
+
+    def activateResizeAnim(self):
+        "激活大小调整动画"
+        self._anim_resize.try_to_start()
+
+    def deactivateResizeAnim(self):
+        "关闭大小调整动画"
+        self._anim_resize.stop()
+
+    def isResizeAnimActive(self):
+        "大小调整动画是否激活"
+        return self._anim_resize.isActive()
+
 
     def toggleIconAnim(self):
         "切换图标动画的开关状态"
@@ -447,33 +592,28 @@ class ABCTabButton(QPushButton):
         """获取工具提示"""
         return self._tooltip
 
-    def setRepetitiveClicking(self, state):
-        """设置是否启用重复点击"""
-        self._enabled_repetitive_clicking = state
+    def _show_tooltip(self):
+        """显示工具提示"""
+        pass
 
+    def _hide_tooltip(self):
+        """隐藏工具提示"""
+        pass
 
-    def flashLayer(self):
-        """获取点击高亮层"""
-        return self._flash_layer
-
+    def pressLayer(self):
+        """获取按下层"""
+        return self._layer_press
 
     def hoverLayer(self):
         """获取悬浮层"""
-        return self._hover_layer
+        return self._layer_hover
 
     def tabLayer(self):
         '''获取标签层'''
-        return self._tab_layer
+        return self._layer_tab
 
-    def setFlashOnClicked(self, state: bool):
-        """设置是否启用点击动画"""
-        self._flash_on_clicked = state
-
-
-    def flash(self):
-        """ 播放点击动画 """
-        self._run_clicked_ani()
-
+    def minimumSizeHint(self):
+        return QSize(48, 32)
 
     # region Event
     def hideEvent(self, a0):
@@ -482,60 +622,44 @@ class ABCTabButton(QPushButton):
             self.deleteLater()
 
 
-    def event(self, event):
-        if event.type() == QEvent.ToolTip:
-            return True  # 忽略工具提示事件
-        return  super().event(event)
+    def eventFilter(self, obj, event):
+        """事件过滤器处理鼠标移动"""
+        #print(f"Event type received: {event.type()}")  # 打印所有事件类型
+        if obj is self:
+            if event.type() == QEvent.Type.HoverMove:
+                self._tooltip_timer.stop()
+                self._hide_tooltip()
+                self._tooltip_timer.start()
+                return False
 
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        size = event.size()
-        self._hover_layer.resize(size)
-        self._flash_layer.resize(size)
-        #self._tab_layer.resize(6, 2*size.height()/3)
-        #self._tab_layer.setMoveAnchor((size.width()-4)/2, self._tab_layer.height()/2)
-        #self._tab_layer.move(size.width()/2, size.height()/2)
-        if self._tab_pos == Zen.Position.Left:
-            self._tab_layer.setGeometry(self._tab_offset, self._tab_length_offset, self._tab_width, size.height()-2*self._tab_length_offset)
-            return
-        if self._tab_pos == Zen.Position.Right:
-            self._tab_layer.setGeometry(size.width()-self._tab_offset-self._tab_width, self._tab_length_offset, self._tab_width, size.height()-2*self._tab_length_offset)
-            return
-        if self._tab_pos == Zen.Position.Top:
-            self._tab_layer.setGeometry(self._tab_length_offset, self._tab_offset, size.width()-2*self._tab_length_offset, self._tab_width)
-            return
-        self._tab_layer.setGeometry(self._tab_length_offset, size.height()-self._tab_offset-self._tab_width, size.width()-2*self._tab_length_offset, self._tab_width)
+            elif event.type() == QEvent.Type.MouseMove:
+                return False
+
+            elif event.type() == QEvent.Type.Leave:
+                self._tooltip_timer.stop()
+                self._hide_tooltip()
+                return False  # 允许事件继续传播
+
+            elif event.type() == QEvent.Type.ToolTip:
+                return True  # 忽略工具提示事件
+        return super().eventFilter(obj, event)
 
     def enterEvent(self, event):
         super().enterEvent(event)
-        self._hover_layer.setColorTo(self._color_sheet.getColor(Zen.ColorRole.Hover))
-        if self._tooltip != "" and "ToolTip" in ZenGlobal.ui.windows:
-            ZenGlobal.ui.windows["ToolTip"].setText(self._tooltip)
-            ZenGlobal.ui.windows["ToolTip"].setInsideOf(self)
-            ZenGlobal.ui.windows["ToolTip"].showTip()
+        self.hovered.emit()
 
     def leaveEvent(self, event):
-        #super().leaveEvent(event)
-        self._hover_layer.setColorTo(ZColorTool.trans(self._color_sheet.getColor(Zen.ColorRole.Hover)))
-        if self._tooltip != "" and "ToolTip" in ZenGlobal.ui.windows:
-            ZenGlobal.ui.windows["ToolTip"].setInsideOf(None)
-            ZenGlobal.ui.windows["ToolTip"].hideTip()
+        super().leaveEvent(event)
+        self.leaved.emit()
 
-    def mousePressEvent(self, e):
-        super().mousePressEvent(e)
-        if self._enabled_repetitive_clicking:
-            self._repeat_click_trigger.start()
 
-    def mouseReleaseEvent(self, e):
+    def mousePressEvent(self, event):
+        self.pressed.emit()
+
+
+    def mouseReleaseEvent(self, event):
         self.released.emit()
-        self.clicked.emit()
-        if self.isCheckable():
-            if self.isChecked():
-                self.setChecked(False)
-            else:
-                self.setChecked(True)
-        self._repeat_click_trigger.stop()
-        self._repeat_click_timer.stop()
-
-    def mouseMoveEvent(self, arg__1):
-        pass
+        #判断按下按钮鼠标还在不在按钮内
+        if self.rect().contains(event.pos()):
+            self.clicked.emit()
+            self.setChecked(not self.isChecked())

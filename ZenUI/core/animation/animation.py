@@ -1,8 +1,8 @@
 from typing import Any
 
 import numpy
-from PySide6.QtCore import QAbstractAnimation,QObject,QPoint,QPointF,QRect,QRectF,QSize,QSizeF,QTimer,Signal
-from PySide6.QtGui import QColor
+from PySide6.QtCore import *
+from PySide6.QtGui import *
 
 global_fps = 60
 
@@ -227,6 +227,7 @@ class ZExpAnim(ABCAnim):
     def isCompleted(self):
         """检查是否达到动画应该停止的点"""
         return (self._distance() == 0).all()
+
 
 
 class ExpAccelerateAnim(ZExpAnim):

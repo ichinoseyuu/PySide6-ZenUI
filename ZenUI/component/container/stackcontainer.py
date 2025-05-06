@@ -86,6 +86,7 @@ class ZStackContainer(ZWidget):
         pass
 
     def setCurrentPage(self, arg, anim: bool = True):
+        # 获取发送信号的对象
         if isinstance(arg, (int, str)):
             page = self.page(arg)
             if page is not None:

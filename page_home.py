@@ -36,10 +36,13 @@ class PageHome(ZContainer):
                               columns=Zen.SizePolicy.Minimum)
         self.contain_button.layout().addItem(self.btn_ztrans_spacer)
 
-        self.btn_nextpage = ZTransButton(parent=self.contain_button,
+        self.btn_nextpage = ZPushButton(parent=self.contain_button,
                                  name='btn_nextpage',
                                  icon=QIcon(':/icons/svg/fluent/filled/ic_fluent_arrow_right_filled.svg'),
                                  min_height=40,
                                  min_width=60,
-                                 sizepolicy=(Zen.SizePolicy.Minimum, Zen.SizePolicy.Minimum))
+                                 sizepolicy=(Zen.SizePolicy.Minimum, Zen.SizePolicy.Minimum),
+                                 idle_style=ZPushButton.IdleStyle.Transparent,
+                                 hover_style=ZPushButton.HoverStyle.ColorChange,
+                                 pressed_style=ZPushButton.PressedStyle.Flash)
         self.contain_button.layout().addWidget(self.btn_nextpage)

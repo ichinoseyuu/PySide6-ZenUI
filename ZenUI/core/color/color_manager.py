@@ -131,88 +131,134 @@ class ZThemeColorConfig(ZColorConfig):
     def __init__(self):
         super().__init__()
         self.setColors(Zen.WidgetType.PushButton, Zen.Theme.Dark, 
-                       {Zen.ColorRole.Background_A: '#63469f',
-                        Zen.ColorRole.Background_B: '#955595',
+                       {Zen.ColorRole.Background_A: '#ff63469f',
+                        Zen.ColorRole.Background_B: '#ff955595',
                         Zen.ColorRole.Hover: '#10ffffff',
+                        Zen.ColorRole.Pressed: '#10ffffff',
                         Zen.ColorRole.Flash: '#20ffffff',
-                        Zen.ColorRole.Text: '#dcdcdc',
-                        Zen.ColorRole.Icon: '#9a9a9a'})
+                        Zen.ColorRole.Border: '#ff7f57a1',
+                        Zen.ColorRole.BorderHover: '#ff7f57a1',
+                        Zen.ColorRole.BorderPressed: '#ff7f57a1',
+                        Zen.ColorRole.Icon: '#ff9a9a9a',
+                        Zen.ColorRole.IconHover: '#ff63469f',
+                        Zen.ColorRole.IconPressed: '#ff63469f',
+                        Zen.ColorRole.Text: '#ffdcdcdc',
+                        Zen.ColorRole.TextHover: '#ff63469f',
+                        Zen.ColorRole.TextPressed: '#ffdcdcdc'
+                        })
 
         self.setColors(Zen.WidgetType.PushButton, Zen.Theme.Light,
-                       {Zen.ColorRole.Background_A: '#8adee2',
-                        Zen.ColorRole.Background_B: '#9bf3ff',
+                       {Zen.ColorRole.Background_A: '#ff8adee2',
+                        Zen.ColorRole.Background_B: '#ff9bf3ff',
                         Zen.ColorRole.Hover: '#10000000',
+                        Zen.ColorRole.Pressed: '#10ffffff',
                         Zen.ColorRole.Flash: '#20000000',
-                        Zen.ColorRole.Text: '#2c2a2e',
-                        Zen.ColorRole.Icon: '#868686'})
-
-        self.setColors(Zen.WidgetType.TansButton, Zen.Theme.Dark,
-                       {Zen.ColorRole.Hover: '#10ffffff',
-                        Zen.ColorRole.Flash: '#20ffffff',
-                        Zen.ColorRole.Text: '#dcdcdc',
-                        Zen.ColorRole.Icon: '#9a9a9a'})
-
-        self.setColors(Zen.WidgetType.TansButton, Zen.Theme.Light,
-                       {Zen.ColorRole.Hover: '#10000000',
-                        Zen.ColorRole.Flash: '#20000000',
-                        Zen.ColorRole.Text: '#2c2a2e',
-                        Zen.ColorRole.Icon: '#868686'})
-
-        self.setColors(Zen.WidgetType.TabButton, Zen.Theme.Dark,
-                       {Zen.ColorRole.Hover: '#10ffffff',
-                        Zen.ColorRole.Flash: '#20ffffff',
-                        Zen.ColorRole.Text: '#ffdcdcdc',
-                        Zen.ColorRole.Icon: '#ff9a9a9a',
-                        Zen.ColorRole.Selected: '#ff8a5a9f'})
-
-        self.setColors(Zen.WidgetType.TabButton, Zen.Theme.Light,
-                       {Zen.ColorRole.Hover: '#15000000',
-                        Zen.ColorRole.Flash: '#25000000',
-                        Zen.ColorRole.Text: '#ff2c2a2e',
+                        Zen.ColorRole.Border: '#ff8adee2',
+                        Zen.ColorRole.BorderHover: '#ff8adee2',
+                        Zen.ColorRole.BorderPressed: '#ff8adee2',
                         Zen.ColorRole.Icon: '#ff868686',
-                        Zen.ColorRole.Selected: '#ff82d1d6'})
+                        Zen.ColorRole.IconHover: '#ff82d1d6',
+                        Zen.ColorRole.IconPressed: '#ff82d1d6',
+                        Zen.ColorRole.Text: '#ff2c2a2e',
+                        Zen.ColorRole.TextHover: '#ff82d1d6',
+                        Zen.ColorRole.TextPressed: '#ff2c2a2e',
+                        })
+
+        self.setColors(Zen.WidgetType.ToggleButton, Zen.Theme.Dark,
+                       {Zen.ColorRole.Background_A: '#ff63469f',
+                        Zen.ColorRole.Background_B: '#ff955595',
+                        Zen.ColorRole.Hover: '#10ffffff',
+                        Zen.ColorRole.Pressed: '#10ffffff',
+                        Zen.ColorRole.Flash: '#20ffffff',
+                        Zen.ColorRole.Selected_A: '#9063469f',
+                        Zen.ColorRole.Selected_B: '#90955595',
+                        Zen.ColorRole.Border: '#ff63469f',
+                        Zen.ColorRole.BorderHover: '#ff955595',
+                        Zen.ColorRole.BorderPressed: '#ff955595',
+                        Zen.ColorRole.BorderSelected: '#ff7f57a1',
+                        Zen.ColorRole.Icon: '#ff9a9a9a',
+                        Zen.ColorRole.IconHover: '#ff8adee2',
+                        Zen.ColorRole.IconPressed: '#ff8adee2',
+                        Zen.ColorRole.IconSelected: '#ff7f57a1',
+                        Zen.ColorRole.Text: '#ffdcdcdc',
+                        Zen.ColorRole.TextHover: '#ff8adee2',
+                        Zen.ColorRole.TextPressed: '#ffdcdcdc',
+                        Zen.ColorRole.TextSelected: '#ff7f57a1',
+                        Zen.ColorRole.TabSelected: '#ff7f57a1'
+                        })
+
+        self.setColors(Zen.WidgetType.ToggleButton, Zen.Theme.Light,
+                       {Zen.ColorRole.Background_A: '#ff8adee2',
+                        Zen.ColorRole.Background_B: '#ff9bf3ff',
+                        Zen.ColorRole.Hover: '#10000000',
+                        Zen.ColorRole.Pressed: '#10ffffff',
+                        Zen.ColorRole.Flash: '#20000000',
+                        Zen.ColorRole.Selected_A: '#908adee2',
+                        Zen.ColorRole.Selected_B: '#909bf3ff',
+                        Zen.ColorRole.Border: '#ff8adee2',
+                        Zen.ColorRole.BorderHover: '#ff8adee2',
+                        Zen.ColorRole.BorderPressed: '#ff8adee2',
+                        Zen.ColorRole.BorderSelected: '#ff8adee2',
+                        Zen.ColorRole.Icon: '#ff868686',
+                        Zen.ColorRole.IconHover: '#ff82d1d6',
+                        Zen.ColorRole.IconPressed: '#ff82d1d6',
+                        Zen.ColorRole.IconSelected: '#ff82d1d6',
+                        Zen.ColorRole.Text: '#ff2c2a2e',
+                        Zen.ColorRole.TextHover: '#ff82d1d6',
+                        Zen.ColorRole.TextPressed: '#ff82d1d6',
+                        Zen.ColorRole.TextSelected: '#ff82d1d6',
+                        Zen.ColorRole.TabSelected: '#ff82d1d6'
+                        })
 
         self.setColors(Zen.WidgetType.TextLabel, Zen.Theme.Dark,
-                       {Zen.ColorRole.Text: '#ffffff'})
+                       {Zen.ColorRole.Text: '#ffffffff'})
 
         self.setColors(Zen.WidgetType.TextLabel, Zen.Theme.Light,
-                       {Zen.ColorRole.Text: '#000000'})
+                       {Zen.ColorRole.Text: '#ff000000'})
 
         self.setColors(Zen.WidgetType.Container, Zen.Theme.Dark,
-                       {Zen.ColorRole.Background_A: '#231f26',
-                        Zen.ColorRole.Background_B: '#231f26',
-                        Zen.ColorRole.Border: '#4e4e4e'})
+                       {Zen.ColorRole.Background_A: '#ff231f26',
+                        Zen.ColorRole.Background_B: '#ff231f26',
+                        Zen.ColorRole.Border: '#ff4e4e4e'
+                        })
 
         self.setColors(Zen.WidgetType.Container, Zen.Theme.Light,
-                       {Zen.ColorRole.Background_A: '#fafafa',
-                        Zen.ColorRole.Background_B: '#fafafa',
-                        Zen.ColorRole.Border: '#9f9f9f'})
+                       {Zen.ColorRole.Background_A: '#fffafafa',
+                        Zen.ColorRole.Background_B: '#fffafafa',
+                        Zen.ColorRole.Border: '#ff9f9f9f'
+                        })
 
         self.setColors(Zen.WidgetType.CollapsibleContainer, Zen.Theme.Dark,
-                       {Zen.ColorRole.Background_A: '#201c23',
-                        Zen.ColorRole.Background_B: '#201c23',
-                        Zen.ColorRole.Border: '#4e4e4e'})
+                       {Zen.ColorRole.Background_A: '#ff201c23',
+                        Zen.ColorRole.Background_B: '#ff201c23',
+                        Zen.ColorRole.Border: '#ff4e4e4e'
+                        })
 
         self.setColors(Zen.WidgetType.CollapsibleContainer, Zen.Theme.Light,
-                       {Zen.ColorRole.Background_A: '#ededed',
-                        Zen.ColorRole.Background_B: '#dedede',
-                        Zen.ColorRole.Border: '#9f9f9f'})
+                       {Zen.ColorRole.Background_A: '#ffededed',
+                        Zen.ColorRole.Background_B: '#ffdedede',
+                        Zen.ColorRole.Border: '#ff9f9f9f'
+                        })
 
         self.setColors(Zen.WidgetType.Titlebar, Zen.Theme.Dark,
-                       {Zen.ColorRole.Background_A: '#1c191f',
-                        Zen.ColorRole.Border: '#161616'})
+                       {Zen.ColorRole.Background_A: '#ff1c191f',
+                        Zen.ColorRole.Border: '#ff161616'
+                        })
 
         self.setColors(Zen.WidgetType.Titlebar, Zen.Theme.Light,
-                       {Zen.ColorRole.Background_A: '#ffffff',
-                        Zen.ColorRole.Border: '#e6e6e6'})
+                       {Zen.ColorRole.Background_A: '#ffffffff',
+                        Zen.ColorRole.Border: '#ffe6e6e6'
+                        })
 
         self.setColors(Zen.WidgetType.ToolTip, Zen.Theme.Dark,
-                       {Zen.ColorRole.Background_A: '#1c191f',
-                        Zen.ColorRole.Flash: '#7fffffff'})
+                       {Zen.ColorRole.Background_A: '#ff1c191f',
+                        Zen.ColorRole.Flash: '#7fffffff'
+                        })
 
         self.setColors(Zen.WidgetType.ToolTip, Zen.Theme.Light,
-                       {Zen.ColorRole.Background_A: '#ffffff',
-                        Zen.ColorRole.Flash: '#7f999999'})
+                       {Zen.ColorRole.Background_A: '#ffffffff',
+                        Zen.ColorRole.Flash: '#7f999999'
+                        })
 
 class ZColorSheet:
     """每个控件的自己的颜色表，同类型控件之间独立，需要从`ColorConfig`中获取相应的颜色表"""

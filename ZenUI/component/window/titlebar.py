@@ -2,18 +2,14 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.button.transbutton import ZTransButton
+from ZenUI.component.button.pushbutton import ZPushButton
 from ZenUI.component.label.text_label import ZTextLabel
 from ZenUI.component.layout.spacer import ZSpacer
 from ZenUI.component.layout.row import ZRowLayout
 from ZenUI.core import Zen,ZenGlobal,ZColorSheet,ZColorTool
 
-class TitlebarButton(ZTransButton):
-    def reloadStyleSheet(self):
-        return f'color: {self._text_color};\nbackground-color: transparent;'
 
-
-class ThemeButton(TitlebarButton):
+class ThemeButton(ZPushButton):
     def _init_style(self):
         super()._init_style()
         self.setCheckable(True)
@@ -96,35 +92,51 @@ class ZTitlebar(ZWidget):
                                     name="btnTheme",
                                     min_height=self._btn_size,
                                     min_width=self._btn_size,
-                                    sizepolicy=self._btn_sizepolicy)
+                                    border_radius= 0,
+                                    sizepolicy= self._btn_sizepolicy,
+                                    idle_style=ZPushButton.IdleStyle.Transparent,
+                                    hover_style=ZPushButton.HoverStyle.ColorChange,
+                                    pressed_style=ZPushButton.PressedStyle.ColorChange)
         self._layout.addWidget(self.btnTheme)
 
-        self.btnMin = TitlebarButton(parent=self,
+        self.btnMin = ZPushButton(parent=self,
                                     name="btnMin",
                                     icon=QIcon(u":/icons/svg/zen_ui/minimize.svg"),
                                     min_height= self._btn_size,
                                     min_width= self._btn_size,
-                                    sizepolicy= self._btn_sizepolicy)
+                                    border_radius= 0,
+                                    sizepolicy= self._btn_sizepolicy,
+                                    idle_style=ZPushButton.IdleStyle.Transparent,
+                                    hover_style=ZPushButton.HoverStyle.ColorChange,
+                                    pressed_style=ZPushButton.PressedStyle.ColorChange)
         self._layout.addWidget(self.btnMin)
 
         icon2 = QIcon()
         icon2.addFile(u":/icons/svg/zen_ui/maximize.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         icon2.addFile(u":/icons/svg/zen_ui/windowed.svg", QSize(), QIcon.Mode.Normal, QIcon.State.On)
-        self.btnMax = TitlebarButton(parent=self,
+        self.btnMax = ZPushButton(parent=self,
                                     name="btnMin",
                                     icon=icon2,
                                     min_height= self._btn_size,
                                     min_width= self._btn_size,
-                                    sizepolicy= self._btn_sizepolicy)
+                                    border_radius= 0,
+                                    sizepolicy= self._btn_sizepolicy,
+                                    idle_style=ZPushButton.IdleStyle.Transparent,
+                                    hover_style=ZPushButton.HoverStyle.ColorChange,
+                                    pressed_style=ZPushButton.PressedStyle.ColorChange)
         self.btnMax.setCheckable(True)
         self._layout.addWidget(self.btnMax)
 
-        self.btnExit = TitlebarButton(parent=self,
+        self.btnExit = ZPushButton(parent=self,
                                     name="btnMin",
                                     icon=QIcon(u":/icons/svg/zen_ui/close.svg"),
                                     min_height= self._btn_size,
                                     min_width= self._btn_size,
-                                    sizepolicy= self._btn_sizepolicy)
+                                    border_radius= 0,
+                                    sizepolicy= self._btn_sizepolicy,
+                                    idle_style=ZPushButton.IdleStyle.Transparent,
+                                    hover_style=ZPushButton.HoverStyle.ColorChange,
+                                    pressed_style=ZPushButton.PressedStyle.Flash)
         self._layout.addWidget(self.btnExit)
 
 

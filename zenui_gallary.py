@@ -47,7 +47,7 @@ class ZenUIGallary(ZMainWindow):
         self.navigationBar.btnHome.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageHome'))
         self.navigationBar.btnBox.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageBox'))
         self.navigationBar.btnAbout.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageAbout'))
-        self.pageHome.btn_nextpage.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageBox'))
+        self.pageHome.btn_nextpage.clicked.connect(self.navigationBar.toggleToNextButton)
 
 
 

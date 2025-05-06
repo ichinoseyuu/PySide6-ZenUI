@@ -45,28 +45,50 @@ class Zen:
         '背景颜色A'
         Background_B = auto()
         '背景颜色B'
+        Hover= auto()
+        '悬停时背景颜色'
+        Pressed = auto()
+        '按下时背景颜色'
+        Flash = auto()
+        '闪烁时背景颜色'
+        Selected_A = auto()
+        '选中时背景颜色A'
+        Selected_B = auto()
+        '选中时背景颜色B'
         Border = auto()
         '边框颜色'
-        Hover = auto()
-        '悬停颜色'
-        Pressed = auto()
-        '按下颜色'
-        Flash = auto()
-        '闪烁颜色'
-        Selected = auto()
-        '选中颜色'
+        BorderHover = auto()
+        '悬停时边框颜色'
+        BorderPressed = auto()
+        '按下时边框颜色'
+        BorderSelected = auto()
+        '选中时边框颜色'
         Text = auto()
         '文字颜色'
+        TextHover = auto()
+        '悬停时文字颜色'
+        TextPressed = auto()
+        '按下时文字颜色'
+        TextSelected = auto()
+        '选中时文字颜色'
         Icon = auto()
         '图标颜色'
+        IconHover = auto()
+        '悬停时图标颜色'
+        IconPressed = auto()
+        '按下时图标颜色'
+        IconSelected = auto()
+        '选中时图标颜色'
+        TabSelected = auto()
+        '选中时标签颜色'
 
 
     class WidgetType(Enum):
         '''控件类型'''
         PushButton = auto()
         '按钮控件'
-        TansButton = auto()
-        '透明按钮控件'
+        ToggleButton = auto()
+        '开关按钮控件'
         TabButton = auto()
         '标签按钮控件'
         AdavancedButton = auto()
@@ -159,3 +181,9 @@ class Zen:
         Normal = auto()
         Expand = auto()
         Collapsed = auto()
+
+    class ScrollBarPolicy(Enum):
+        """滚动条策略"""
+        AlwaysOff = Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+        AlwaysOn = Qt.ScrollBarPolicy.ScrollBarAlwaysOn
+        AsNeeded = Qt.ScrollBarPolicy.ScrollBarAsNeeded

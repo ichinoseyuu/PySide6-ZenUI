@@ -2,139 +2,54 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.button.button_widgets import ButtonLayer
-from ZenUI.core import ZExpAnim,AnimGroup,ZColorTool,ZenGlobal,Zen,ZSize
-class ABCButton(QPushButton):
-    '''按钮抽象类'''
-    hovered = Signal() # 悬停信号
-    leaved = Signal() # 离开信号
-    def __init__(self,
-                 parent: ZWidget = None,
-                 name: str = None,
-                 text: str = None,
-                 icon: QIcon = None,
-                 icon_size: ZSize = None,
-                 tooltip: str = None,
-                 min_width: int = None,
-                 min_height: int = None,
-                 min_size: ZSize = None,
-                 max_width: int = None,
-                 max_height: int = None,
-                 max_size: ZSize = None,
-                 fixed_size: ZSize = None,
-                 sizepolicy: tuple[Zen.SizePolicy, Zen.SizePolicy] = None,
-                 border_radius: int = 2,
-                 display_tooltip_immediate: bool = False):
-        super().__init__(parent=parent)
-        # 父类参数初始化
-        if name: self.setObjectName(name)
-        if text: self.setText(text)
-        if icon: self.setIcon(icon)
-        if icon_size: self.setIconSize(icon_size.toQsize())
-        if min_width: self.setMinimumWidth(min_width)
-        if min_height: self.setMinimumHeight(min_height)
-        if min_size: self.setMinimumSize(min_size.toQsize())
-        if max_width: self.setMaximumWidth(max_width)
-        if max_height: self.setMaximumHeight(max_height)
-        if max_size: self.setMaximumSize(max_size.toQsize())
-        if fixed_size: self.setFixedSize(fixed_size.toQsize())
-        if sizepolicy: self.setSizePolicy(sizepolicy[0].value, sizepolicy[1].value)
+from ZenUI.core import ZExpAnim,AnimGroup,ZColorTool,Zen
 
-        # Widget 特性
-        self._color_sheet = None 
-        '颜色表，用于存储组件颜色，如背景色，边框色等'
-        self._theme_manager = ZenGlobal.ui.theme_manager 
-        '主题管理器，用于接受主题切换的信号'
-        self._theme_manager.themeChanged.connect(self._theme_changed_handler) # 主题切换信号连接
+class ZColorLayer(QWidget):
+    '颜色层，用于实现组件颜色渐变等效果'
+    moved = Signal(object)
+    resized = Signal(object)
+    opacityChanged = Signal(float)
+    def __init__(self, parent: ZWidget = None):
+        super().__init__(parent)
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground) #启用样式表
+
         self._widget_flags = {}
         '组件属性，控制是否具备动画等'
-        self._fixed_stylesheet = ''  # 每次调用setStyleSheet方法时，都会在样式表前附加这段固定内容
-        '固有样式表'
+        self._fixed_stylesheet = ''
+        '固有样式表，每次调用`setStyleSheet`方法时，都会在样式表前附加这段固定内容'
         self._can_update = True
         '是否可以更新样式表'
+
         self._x1, self._y1, self._x2, self._y2 = None, None, None, None
         '组件可移动区域坐标'
         self._move_anchor = QPoint(0, 0)
         '移动锚点'
+
         self._bg_color_a = '#00000000'
         '背景颜色，用于渐变模式的起始点'
         self._bg_color_b = '#00000000'
         '背景颜色,用于渐变模式的终点'
         self._gradient_anchor =[0, 0, 1, 1]
         '渐变锚点，用于控制渐变方向和范围'
+
         self._border_color = '#00000000'
         '边框颜色'
-        self._border_radius = border_radius
-        '圆角半径'
-
-        # PushButton 特性
-        self._layer_hover = ButtonLayer(self)
-        '悬停层'
-        self._layer_press = ButtonLayer(self)
-        '按下层'
-        self._tooltip = ''
-        '提示文本'
-        self._text_color = '#000000'
-        '文本颜色'
-        self._icon_color = '#000000'
-        '图标颜色'
-
-        self._icon_color_is_font_color = False
-        '图标颜色是否为字体颜色'
-        self._enabled_repetitive_clicking = False
-        '是否启用重复点击'
-        self._display_tooltip_immediate = display_tooltip_immediate
-        '是否立即显示提示文本'
-        self._repeat_click_timer = QTimer(self)
-        '重复点击计时器，用于实现重复点击'
-        self._repeat_click_timer.setInterval(50)
-        self._repeat_click_timer.timeout.connect(self.clicked.emit) 
-        self._repeat_click_trigger = QTimer(self) 
-        '重复点击触发器，点击后延时 500ms 触发重复点击计时器'
-        self._repeat_click_trigger.setSingleShot(True)
-        self._repeat_click_trigger.timeout.connect(self._repeat_click_timer.start)
-        self._repeat_click_trigger.setInterval(500)
-
-        self._tooltip_timer = QTimer(self)  # 创建定时器
-        '提示文本定时器，用于实现提示文本的显示'
-        self._tooltip_timer.setSingleShot(True)  # 设置为单次触发
-        self._tooltip_timer.setInterval(500)  # 设置500ms延迟
-        self._tooltip_timer.timeout.connect(self._show_tooltip)  # 连接显示tooltip的槽函数
-        self.setAttribute(Qt.WidgetAttribute.WA_Hover) # 启用 hover 事件
-        self.setAttribute(Qt.WidgetAttribute.WA_NoMousePropagation) # 防止鼠标事件传播到父组件
-        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)  # 确保鼠标事件不会穿透到父组件
-        self.installEventFilter(self)
 
         self._init_anim()
-
-        # 参数初始化
-        if tooltip: self._tooltip = tooltip
-
-        # 信号绑定
-        self.hovered.connect(self._hovered_handler) # 链接悬停信号,用于实现悬停动画
-        self.pressed.connect(self._pressed_handler) # 链接按钮按下信号,用于实现按下动画
-        self.released.connect(self._released_handler) # 链接按钮释放信号,用于实现释放动画
-        self.clicked.connect(self._clicked_handler) # 链接按钮按下信号,用于实现点击动画
-        self.leaved.connect(self._leaved_handler) # 链接按钮离开信号,用于实现离开动画
-
-
-
-
 
 
     # region Style
     def _init_style(self):
         """
         重写初始样式，创建新组件类使用，配置新组件的初始颜色，动画等
-        - 子类实现，初始化时需要自行调用
+        - 子类实现，基类初始化自行调用
         """
         pass
 
     def setStyleSheet(self, stylesheet: str):
         """设置样式表"""
         super().setStyleSheet(stylesheet)
-        self.setIconColor()
-        #print(new_stylesheet)
+        #print(stylesheet)
         self._can_update = True
 
     def setFixedStyleSheet(self, stylesheet: str):
@@ -143,9 +58,7 @@ class ABCButton(QPushButton):
         - 此后每次运行`setStyleSheet`方法时，都会在样式表前附加这段固定内容
         """
         self._fixed_stylesheet = stylesheet
-        self._layer_press._fixed_stylesheet = stylesheet
-        self._layer_hover._fixed_stylesheet = stylesheet
-
+        self.updateStyleSheet()
 
     def reloadStyleSheet(self):
         """
@@ -166,10 +79,13 @@ class ABCButton(QPushButton):
         """ 更新样式表 """
         self.setStyleSheet(self.reloadStyleSheet())
 
+
+
     # region WidgetFlag
     def setWidgetFlag(self, flag:Zen.WidgetFlag, on: bool = True):
         """设置`widgetflag`"""
         self._widget_flags[flag.name] = on
+
 
     def isWidgetFlagOn(self, flag):
         """查找`widgetflag`是否开启"""
@@ -177,15 +93,6 @@ class ABCButton(QPushButton):
             return False
         return self._widget_flags[flag.name]
 
-
-
-    # region Slot
-    def _theme_changed_handler(self, arg_1):
-        '''
-        重写组件主题改变时的样式切换
-        - 接收到主题改变信号时自动调用
-        '''
-        pass
 
     def _move_anim_handler(self, arr):
         x, y = arr
@@ -207,38 +114,6 @@ class ABCButton(QPushButton):
         self._border_color = ZColorTool.toCode(color_value)
         self._schedule_update()
 
-    def _text_color_handler(self, color_value):
-        self._text_color = ZColorTool.toCode(color_value)
-        self._schedule_update()
-
-    def _icon_color_handler(self, color_value):
-        self._icon_color = ZColorTool.toCode(color_value)
-        self._schedule_update()
-
-    def _hovered_handler(self):
-        '''悬停信号槽函数'''
-        pass
-
-    def _pressed_handler(self):
-        '''按下信号槽函数'''
-        pass
-
-    def _released_handler(self):
-        '''释放信号槽函数'''
-        pass
-
-    def _clicked_handler(self):
-        '''点击信号槽函数'''
-        pass
-
-    def _toggled_handler(self, checked: bool):
-        '''切换信号槽函数'''
-        pass
-
-    def _leaved_handler(self):
-        '''离开信号槽函数'''
-        pass
-
     # region Move
     def moveTo(self, x: int, y: int):
         """
@@ -255,7 +130,6 @@ class ABCButton(QPushButton):
         """合法化移动目标"""
         if self.isWidgetFlagOn(Zen.WidgetFlag.HasMoveLimits) is False:
             return x, y
-
         x1, y1, x2, y2 = self._x1, self._y1, self._x2, self._y2
         x = max(x1, min(x2 - self.width(), x))
         y = max(y1, min(y2 - self.height(), y))
@@ -274,7 +148,6 @@ class ABCButton(QPushButton):
         super().moveEvent(event)
         pos = event.pos() + self._move_anchor
         self._anim_move.setCurrent([pos.x(), pos.y()])
-
         if self.isWidgetFlagOn(Zen.WidgetFlag.EnableAnimationSignals):
             self.moved.emit([event.pos().x(), event.pos().y()])
 
@@ -318,13 +191,10 @@ class ABCButton(QPushButton):
         # 并且会立即调用动画的 setCurrent 方法，设置动画开始值为 event 中的 size()
         super().resizeEvent(event)
         size = event.size()
-        self._layer_hover.resize(size)
-        self._layer_press.resize(size)
         w, h = size.width(), size.height()
         self._anim_resize.setCurrent([w, h])
         if self.isWidgetFlagOn(Zen.WidgetFlag.EnableAnimationSignals):
             self.resized.emit([w, h])
-
 
     # region BGColor
     def setColorTo(self, code_1, code_2=None):
@@ -386,65 +256,6 @@ class ABCButton(QPushButton):
         return self._gradient_anchor
 
 
-
-    # region TextColor
-    def setTextColorTo(self, code):
-        """
-        如果开启了动画，将控件动态的调整到指定文字颜色
-        Args:
-            code: 格式为`#AARRGGBB`或者`#RRGGBB`
-        """
-        self._anim_text_color.setTarget(ZColorTool.toArray(code))
-        self._anim_text_color.try_to_start()
-
-    def setTextColor(self, code):
-        """
-        设置字体颜色
-        Args:
-            code: 格式为`#AARRGGBB`或者`#RRGGBB`
-        """
-        color_value = ZColorTool.toArray(code)
-        self._anim_text_color.setCurrent(color_value)
-        self._text_color_handler(color_value)
-
-    # region IconColor
-    def setIconColorTo(self, code):
-        """如果开启了动画，将控件动态的调整到指定图标颜色"""
-        self._anim_icon_color.setTarget(ZColorTool.toArray(code))
-        self._anim_icon_color.try_to_start()
-
-    def setIconColor(self):
-        """设置图标颜色"""
-        icon = self.icon()
-        if not icon: return
-        if self._icon_color_is_font_color: # 如果图标颜色与字体颜色相同，则直接使用字体颜色
-            color = self._text_color  # color = self.palette().color(self.palette().ColorRole.Text)  # 获取当前字体颜色
-        else: color = self._icon_color
-        if self.isCheckable():
-            # 获取每种状态下的图标
-            pixmap_off = icon.pixmap(self.iconSize(), QIcon.Mode.Normal, QIcon.State.Off)
-            pixmap_on = icon.pixmap(self.iconSize(), QIcon.Mode.Normal, QIcon.State.On)
-            # 为每个图标填充颜色
-            colored_pixmap_off = self._changePixmapColor(pixmap_off, color)
-            colored_pixmap_on = self._changePixmapColor(pixmap_on, color)
-            # 设置新的图标
-            new_icon = QIcon()
-            new_icon.addPixmap(colored_pixmap_off, QIcon.Mode.Normal, QIcon.State.Off)
-            new_icon.addPixmap(colored_pixmap_on, QIcon.Mode.Normal, QIcon.State.On)
-            self.setIcon(new_icon)
-        else:
-            colored_pixmap = self._changePixmapColor(icon.pixmap(self.iconSize()), color)
-            self.setIcon(QIcon(colored_pixmap))
-
-
-    def _changePixmapColor(self, pixmap: QPixmap, color: str) -> QPixmap:
-        """将图标颜色更改为指定颜色"""
-        colored_pixmap = pixmap.copy()
-        with QPainter(colored_pixmap) as painter:
-            painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
-            painter.fillRect(colored_pixmap.rect(), color)
-        return colored_pixmap
-
     # region BorderColor
     def setBorderColorTo(self, code):
         """
@@ -465,7 +276,10 @@ class ABCButton(QPushButton):
         self._anim_border_color.setCurrent(color_value)
         self._border_color_handler(color_value)
 
+
+
     # region Animation
+
     def _init_anim(self):
         """
         创建动画，并添加到动画组
@@ -500,24 +314,26 @@ class ABCButton(QPushButton):
         self._anim_border_color.setBias(1)
         self._anim_border_color.ticked.connect(self._border_color_handler)
 
-        self._anim_text_color = ZExpAnim(self)
-        self._anim_text_color.setFactor(0.25)
-        self._anim_text_color.setBias(1)
-        self._anim_text_color.ticked.connect(self._text_color_handler)
-
-        self._anim_icon_color = ZExpAnim(self)
-        self._anim_icon_color.setFactor(0.25)
-        self._anim_icon_color.setBias(1)
-        self._anim_icon_color.ticked.connect(self._icon_color_handler)
-
+        # 创建动画组，以tokenize以上动画
         self._anim_group = AnimGroup()
         self._anim_group.addMember(self._anim_move, token="move")
         self._anim_group.addMember(self._anim_resize, token="resize")
         self._anim_group.addMember(self._anim_bg_color_a, token="color_a")
         self._anim_group.addMember(self._anim_bg_color_b, token="color_b")
         self._anim_group.addMember(self._anim_border_color, token="border_color")
-        self._anim_group.addMember(self._anim_text_color, token="text_color")
-        self._anim_group.addMember(self._anim_icon_color, token="icon_color")
+
+    def activateOpacityAnim(self):
+        "激活透明度动画"
+        self._anim_opacity.try_to_start()
+
+    def deactivateOpacityAnim(self):
+        "关闭透明度动画"
+        self._anim_opacity.stop()
+
+    def isOpacityAnimActive(self):
+        "透明度动画是否激活"
+        return self._anim_opacity.isActive()
+
 
     def activateMoveAnim(self):
         "激活移动动画"
@@ -544,98 +360,20 @@ class ABCButton(QPushButton):
         "大小调整动画是否激活"
         return self._anim_resize.isActive()
 
-
-    def toggleIconAnim(self):
-        "切换图标动画的开关状态"
-        self._anim_icon_color.setEnable(not self._anim_icon_color.isEnabled())
-
     def AnimGroup(self):
         """返回动画组"""
         return self._anim_group
 
-
-    # region Other
-    def setToolTip(self, text: str): 
-        """设置工具提示"""
-        # 劫持这个按钮的tooltip，只能设置outfit的tooltip
-        self._tooltip = text
-
-    def toolTip(self): 
-        """获取工具提示"""
-        return self._tooltip
-
-    def _show_tooltip(self):
-        """显示工具提示"""
-        pass
-
-    def _hide_tooltip(self):
-        """隐藏工具提示"""
-        pass
-
-    def setRepetitiveClicking(self, state):
-        """设置是否启用重复点击"""
-        self._enabled_repetitive_clicking = state
-
-
-    def pressLayer(self):
-        """获取按下层"""
-        return self._layer_press
-
-
-    def hoverLayer(self):
-        """获取悬浮层"""
-        return self._layer_hover
-
-
-    def minimumSizeHint(self):
-        return QSize(48, 32)
-
     # region Event
     def hideEvent(self, a0):
+        '''重写隐藏事件'''
         super().hideEvent(a0)
         if self.isWidgetFlagOn(Zen.WidgetFlag.DeleteOnHidden):
             self.deleteLater()
 
-    def eventFilter(self, obj, event):
-        """事件过滤器处理鼠标移动"""
-        #print(f"Event type received: {event.type()}")  # 打印所有事件类型
-        if obj is self:
-            if event.type() == QEvent.Type.HoverMove:
-                self._tooltip_timer.stop()
-                self._hide_tooltip()
-                self._tooltip_timer.start()
-                return False
 
-            elif event.type() == QEvent.Type.MouseMove:
-                return False
-
-            elif event.type() == QEvent.Type.Leave:
-                self._tooltip_timer.stop()
-                self._hide_tooltip()
-                return False  # 允许事件继续传播
-
-            elif event.type() == QEvent.Type.ToolTip:
-                return True  # 忽略工具提示事件
-        return super().eventFilter(obj, event)
-
-    def enterEvent(self, event):
-        super().enterEvent(event)
-        self.hovered.emit()
-
-    def leaveEvent(self, event):
-        super().leaveEvent(event)
-        self.leaved.emit()
-
-    def mousePressEvent(self, event):
-        self.pressed.emit()
-        if self._enabled_repetitive_clicking:
-            self._repeat_click_trigger.start()
-
-    def mouseReleaseEvent(self, event):
-        self.released.emit()
-        #判断按下按钮鼠标还在不在按钮内
-        if self.rect().contains(event.pos()):
-            self.clicked.emit()
-            self.setChecked(not self.isChecked())
-        self._repeat_click_trigger.stop()
-        self._repeat_click_timer.stop()
+    def event(self, event):
+        '''重写事件'''
+        if event.type() == QEvent.ToolTip:
+            return True  # 忽略工具提示事件
+        return super().event(event)

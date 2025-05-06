@@ -1,8 +1,8 @@
 from PySide6.QtGui import QIcon
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.container.collapsible_container import ZCollapsibleContainer
-from ZenUI.component.button.transbutton import ZTransButton
-from ZenUI.component.button.tabbutton import ZTabButton
+from ZenUI.component.button.togglebutton import ZToggleButton
+from ZenUI.component.button.pushbutton import ZPushButton
 from ZenUI.component.layout.spacer import ZSpacer
 from ZenUI.core import Zen,ZSize,ZMargins
 class ZNavigationBar(ZCollapsibleContainer):
@@ -20,7 +20,7 @@ class ZNavigationBar(ZCollapsibleContainer):
                  state = Zen.State.Collapsed,
                  dir = Zen.Direction.Vertical,
                  collapse_width = 56,
-                 expand_width = 150,
+                 expand_width = 128,
                  btn_height: int = 42,
                  btn_icon_size: ZSize = ZSize(26, 26)):
         super().__init__(parent=parent,
@@ -44,13 +44,17 @@ class ZNavigationBar(ZCollapsibleContainer):
 
     def _setup_ui(self):
         '''设置UI'''
-        self.btnCollapse = ZTransButton(parent=self,
+        self.btnCollapse = ZPushButton(parent=self,
                                   name="btnCollapse",
                                   text="\t\t\t\t收起",
                                   icon=QIcon(u":/icons/svg/fluent/filled/ic_fluent_navigation_filled.svg"),
                                   min_height=self._btn_height,
-                                  icon_size=self._btn_icon_size)
-        self.btnCollapse.setFixedStyleSheet(f'text-align: left;\npadding-left: 8px;\nborder-radius: 4px;\nborder: 1px solid transparent;')
+                                  icon_size=self._btn_icon_size,
+                                  border_radius=4,
+                                  idle_style= ZPushButton.IdleStyle.Transparent,
+                                  hover_style=ZPushButton.HoverStyle.ColorChange,
+                                  pressed_style=ZPushButton.PressedStyle.ColorChange)
+        self.btnCollapse.setFixedStyleSheet(f'text-align: left;\npadding-left: 8px;')
         self.btnCollapse.clicked.connect(self.toggleState)
         self.layout().addWidget(self.btnCollapse)
 
@@ -58,25 +62,46 @@ class ZNavigationBar(ZCollapsibleContainer):
         self.layout().addItem(self.spacer)
 
 
-    def addButton(self, btn: ZTabButton|ZTransButton):
+    def addButton(self, btn: ZToggleButton|ZPushButton):
         '''添加按钮'''
-        if isinstance(btn, ZTabButton):
+        if isinstance(btn, ZToggleButton):
             if self._toggled_btn is None:
                 btn.setChecked(True)
                 self._toggled_btn = btn
+            btn._fixed_stylesheet = f'text-align: left;\npadding-left: 8px;'
+            print(btn.styleSheet())
             btn.pressed.connect(lambda: self._btn_pressed_handler(btn))
             self.layout().insertWidget(self._btn_count + 1, btn)
             self._btns[f"{btn.objectName()}"] = btn
             self._btn_count += 1
-        elif isinstance(btn, ZTransButton):
-            btn.setFixedStyleSheet(f'text-align: left;\npadding-left: 8px;\nborder-radius: 2px;\nborder: 1px solid transparent;')
+        elif isinstance(btn, ZPushButton):
+            btn.setFixedStyleSheet(f'text-align: left;\npadding-left: 8px;')
             self.layout().insertWidget(self._btn_count + 1, btn)
 
 
-    def _btn_pressed_handler(self, btn: ZTabButton):
-        if self._toggled_btn == btn:
-            btn.setChecked(False)
-            return
+    def _btn_pressed_handler(self, btn: ZToggleButton):
+        '''按钮点击事件处理'''
+        btn.setChecked(False)
+        if self._toggled_btn == btn: return
         self._last_toggled_btn = self._toggled_btn
         self._last_toggled_btn.setChecked(False)
+        self._last_toggled_btn.leaved.emit()
         self._toggled_btn = btn
+
+    def toggleToNextButton(self):
+        '''切换到下一个按钮'''
+        if self._toggled_btn:
+            self._toggled_btn.click()
+        index = self.layout().indexOf(self._toggled_btn)
+        widget = self.layout().itemAt(index + 1).widget()
+        if isinstance(widget, ZToggleButton):
+            widget.click()
+
+    def toggleToLastButton(self):
+        '''切换到上一个按钮'''
+        if self._toggled_btn:
+            self._toggled_btn.click()
+        index = self.layout().indexOf(self._toggled_btn)
+        widget = self.layout().itemAt(index - 1).widget()
+        if isinstance(widget, ZToggleButton):
+            widget.click()

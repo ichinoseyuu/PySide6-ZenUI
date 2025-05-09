@@ -1,9 +1,9 @@
 from typing import Any
-
+from concurrent.futures import ThreadPoolExecutor
 import numpy
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-
+from ZenUI.core.animation.animation_manager import AnimationManager
 global_fps = 60
 
 
@@ -35,7 +35,7 @@ class ABCAnim(QObject):
         self.action_timer = QTimer()
         self.action_timer.setSingleShot(True)
         # self.action_timer.setTimerType(Qt.PreciseTimer)
-
+        self._manager = AnimationManager()
 
     def setEnable(self, state: bool):
         self.enabled = state
@@ -141,7 +141,17 @@ class ABCAnim(QObject):
             self.timer.start()
         else:
             self.action_timer.singleShot(delay, self.timer.start)
-
+    # def start(self, delay: int | None = None):
+    #     if not self.isEnabled():
+    #         return
+            
+    #     if delay:
+    #         QTimer.singleShot(delay, lambda: self._manager.add_animation(self))
+    #     else:
+    #         self._manager.add_animation(self)
+            
+    # def stop(self):
+    #     self._manager.remove_animation(self)
 
     def setInterval(self, interval: int):
         """
@@ -168,7 +178,8 @@ class ZExpAnim(ABCAnim):
         super().__init__(parent)
         self.factor = 0.25
         self.bias = 1
-
+        # 创建线程池
+        self._thread_pool = ThreadPoolExecutor(max_workers=1)
 
     def init(self, factor: float, bias: float, current: Any, target: Any, fps: int = 60):
         self.setFactor(factor)
@@ -222,7 +233,38 @@ class ZExpAnim(ABCAnim):
         self.setCurrent(self.current_ + step_length)
         self.ticked.emit(self.current_)
 
+    # def _step_length(self):
+    #         """异步计算步长"""
+    #         future = self._thread_pool.submit(self._calculate_step)
+    #         future.add_done_callback(self._on_step_calculated)
 
+    # def _calculate_step(self):
+    #     """在线程池中计算步长"""
+    #     dis = self._distance()
+    #     if (abs(dis) <= self.bias).all():
+    #         return dis
+    #     cut = numpy.array(abs(dis) <= self.bias, dtype="int8")
+    #     arr = abs(dis) * self.factor + self.bias
+    #     arr = arr * (numpy.array(dis > 0, dtype="int8") * 2 - 1)
+    #     arr = arr * (1 - cut) + dis * cut
+    #     return arr
+    # def _on_step_calculated(self, future):
+    #         """步长计算完成的回调"""
+    #         try:
+    #             step = future.result()
+    #             self.setCurrent(self.current_ + step)
+    #             self.ticked.emit(self.current_)
+    #         except Exception as e:
+    #             print(f"计算步长时出错: {e}")
+
+    # def _process(self):
+    #     """处理动画"""
+    #     # 如果已经到达既定位置，终止计时器，并发射停止信号
+    #     if self.isCompleted():
+    #         self.stop()
+    #         self.finished.emit(self.target_)
+    #         return
+    #     self._step_length()
 
     def isCompleted(self):
         """检查是否达到动画应该停止的点"""

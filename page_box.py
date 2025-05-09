@@ -2,10 +2,11 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from ZenUI import *
 
-class PageBox(ZContainer):
+class PageBox(ZBox):
     def __init__(self,parent = None,name ='pageBox'):
         super().__init__(parent = parent,
                          name=name,
+                         style= ZBox.Style.MonochromeWithBorder,
                          layout=Zen.Layout.Column,
                          margins=ZMargins(6, 6, 6, 6),
                          spacing=12)
@@ -29,7 +30,7 @@ class PageBox(ZContainer):
         self.layout().addWidget(self.label_btn)
 
         # region ZPushButton
-        self.contain_zpush = ZContainer(parent=self,
+        self.contain_zpush = ZBox(parent=self,
                                  name='contain_zpush',
                                  layout=Zen.Layout.Row,
                                  margins=ZMargins(6, 6, 6, 6),
@@ -131,7 +132,7 @@ class PageBox(ZContainer):
 
 
         # region ZTabButton
-        self.contain_ztoggle = ZContainer(parent=self,
+        self.contain_ztoggle = ZBox(parent=self,
                                  name='contain_ztoggle',
                                  layout=Zen.Layout.Row,
                                  margins=ZMargins(6, 6, 6, 6),

@@ -1,11 +1,34 @@
 from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.container.container import ZContainer
 from ZenUI.core import Zen, ZExpAnim, ZColorSheet, ZColorTool,ZMargins
-class ZCollapsibleContainer(ZContainer):
-    '''可折叠容器'''
+from enum import Enum, auto
+from textwrap import dedent
+from ZenUI.component.widget.widget import ZWidget
+from ZenUI.component.layout.column import ZColumnLayout
+from ZenUI.component.layout.row import ZRowLayout
+from ZenUI.core import Zen,ZColorTool,ZColorSheet,ZMargins
+
+class ZDrawer(ZWidget):
+    '''抽屉'''
+    class Style(Enum):
+        '''背景样式'''
+        Monochrome = auto()
+        '纯色'
+        Gradient = auto()
+        '渐变'
+        MonochromeWithBorder = auto()
+        '纯色带边框'
+        GradientWithBorder = auto()
+        '渐变带边框'
+        OnlyBorder = auto()
+        '仅边框'
+        Transparent = auto()
+        '透明'
+
     def __init__(self,
                  parent: ZWidget = None,
                  name: str = None,
+                 fixed_stylesheet: str = None,
+                 style: Style = Style.OnlyBorder,
                  layout: Zen.Layout = None,
                  margins: ZMargins = ZMargins(0, 0, 0, 0),
                  spacing: int = 0,
@@ -15,12 +38,20 @@ class ZCollapsibleContainer(ZContainer):
                  dir: Zen.Direction = Zen.Direction.Vertical,
                  collapse_width: int = 0,
                  expand_width: int = 150):
-        super().__init__(parent= parent,
-                         name= name,
-                         layout= layout,
-                         margins= margins,
-                         spacing= spacing,
-                         alignment= alignment)
+        super().__init__(parent= parent,name= name)
+        self._fixed_stylesheet = fixed_stylesheet
+        self._style = style
+        if layout:
+            if layout == Zen.Layout.Row:
+                self.setLayout(ZRowLayout(parent=self,
+                                            margins=margins,
+                                            spacing=spacing,
+                                            alignment=alignment))
+            elif layout == Zen.Layout.Column:
+                self.setLayout(ZColumnLayout(parent=self,
+                                            margins=margins,
+                                            spacing=spacing,
+                                            alignment=alignment))
         self._can_expand = can_expand # 是否可以展开
         self._state = state # 当前状态
         if dir not in [Zen.Direction.Vertical, Zen.Direction.Horizontal]:
@@ -39,25 +70,86 @@ class ZCollapsibleContainer(ZContainer):
             self._anim_collapse.setCurrent(self._expand_width)
         else:
             raise ValueError(f"This state {self._state} is not support")
+        self._init_style()
+        self._schedule_update()
+
 
     def _init_style(self):
-        self._color_sheet = ZColorSheet(self, Zen.WidgetType.CollapsibleContainer)
+        self._color_sheet = ZColorSheet(self, Zen.WidgetType.Drawer)
         self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
         self._bg_color_b = self._color_sheet.getColor(Zen.ColorRole.Background_B)
         self._border_color = self._color_sheet.getColor(Zen.ColorRole.Border)
         self._anim_bg_color_a.setCurrent(ZColorTool.toArray(self._bg_color_a))
         self._anim_bg_color_b.setCurrent(ZColorTool.toArray(self._bg_color_b))
         self._anim_border_color.setCurrent(ZColorTool.toArray(self._border_color))
+        if self._style in (self.Style.Gradient, self.Style.GradientWithBorder):
+            self.setWidgetFlag(Zen.WidgetFlag.GradientColor)
 
 
     def _init_anim(self):
         super()._init_anim()
         self._anim_collapse = ZExpAnim(self)
-        self._anim_collapse.setBias(0.25)
-        self._anim_collapse.setFactor(0.2)
+        self._anim_collapse.setFactor(0.4)
+        self._anim_collapse.setBias(1)
         self._anim_collapse.ticked.connect(self._collapse_handler)
         self._anim_group.addMember(self._anim_collapse,'collapse')
 
+
+    def reloadStyleSheet(self):
+        if self._style == self.Style.Monochrome:
+            sheet = f'background-color: {self._bg_color_a};\nborder-color: transparent;'
+
+        elif self._style == self.Style.Gradient:
+            x1, y1, x2, y2 = self._gradient_anchor
+            sheet = dedent(f'''\
+            background-color: qlineargradient(x1:{x1}, y1:{y1}, x2:{x2}, y2:{y2},
+            stop:0 {self._bg_color_a},stop:1 {self._bg_color_b});
+            border-color: transparent;''')
+
+        elif self._style == self.Style.MonochromeWithBorder:
+            sheet = f'background-color: {self._bg_color_a};\nborder-color: {self._border_color};'
+
+        elif self._style == self.Style.GradientWithBorder:
+            x1, y1, x2, y2 = self._gradient_anchor
+            sheet = dedent(f'''\
+            background-color: qlineargradient(x1:{x1}, y1:{y1}, x2:{x2}, y2:{y2},
+            stop:0 {self._bg_color_a},stop:1 {self._bg_color_b});
+            border-color: {self._border_color};''')
+
+        elif self._style == self.Style.OnlyBorder:
+            sheet = f'background-color: transparent;\nborder-color: {self._border_color};'
+
+        elif self._style == self.Style.Transparent:
+            sheet = 'background-color: transparent;\nborder-color: transparent;'
+
+        if not self.objectName(): raise ValueError("Widget must have a name when StyleSheetApplyToChildren is False")
+        style_parts = [
+            f"#{self.objectName()}{{",
+            sheet,
+            self._fixed_stylesheet,
+            "}"
+        ]
+        return '\n'.join(filter(None, style_parts))
+
+
+    def _theme_changed_handler(self, theme):
+        if self._style == self.Style.Monochrome:
+            self.setColor(self._color_sheet.getColor(theme,Zen.ColorRole.Background_A))
+
+        elif self._style == self.Style.Gradient:
+            self.setColor(self._color_sheet.getColor(theme,Zen.ColorRole.Background_A),
+                            self._color_sheet.getColor(theme,Zen.ColorRole.Background_B))
+        elif self._style == self.Style.MonochromeWithBorder:
+            self.setColor(self._color_sheet.getColor(theme,Zen.ColorRole.Background_A))
+            self.setBorderColor(self._color_sheet.getColor(theme,Zen.ColorRole.Border))
+
+        elif self._style == self.Style.GradientWithBorder:
+            self.setColor(self._color_sheet.getColor(theme,Zen.ColorRole.Background_A),
+                            self._color_sheet.getColor(theme,Zen.ColorRole.Background_B))
+            self.setBorderColor(self._color_sheet.getColor(theme,Zen.ColorRole.Border))
+
+        elif self._style == self.Style.OnlyBorder:
+            self.setBorderColor(self._color_sheet.getColor(theme,Zen.ColorRole.Border))
 
     def _collapse_handler(self, width):
         newWidth = int(width)
@@ -121,7 +213,7 @@ class ZCollapsibleContainer(ZContainer):
                 self.setMinimumSize(0, self._collapse_width)
                 self.setMaximumSize(32768, self._collapse_width)
             for child in self.children():
-                if isinstance(child, ZCollapsibleContainer):
+                if isinstance(child, ZDrawer):
                     child._updateSidebarWidth()
                     print('Update SidebarWidth')
         else:
@@ -132,6 +224,8 @@ class ZCollapsibleContainer(ZContainer):
                 self.setMinimumSize(0, self._expand_width)
                 self.setMaximumSize(32768, self._expand_width)
             for child in self.children():
-                if isinstance(child, ZCollapsibleContainer):
+                if isinstance(child, ZDrawer):
                     child._updateSidebarWidth()
                     print('Update SidebarWidth')
+
+

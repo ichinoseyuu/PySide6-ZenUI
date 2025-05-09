@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
+from typing import overload
 from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.button.button_widgets import ButtonLayer
+from ZenUI.component.widget.colorlayer import ZColorLayer
 from ZenUI.core import ZExpAnim,AnimGroup,ZColorTool,ZenGlobal,Zen,ZSize
 class ABCButton(QPushButton):
     '''按钮抽象类'''
@@ -68,9 +69,9 @@ class ABCButton(QPushButton):
         '圆角半径'
 
         # PushButton 特性
-        self._layer_hover = ButtonLayer(self)
+        self._layer_hover = ZColorLayer(self)
         '悬停层'
-        self._layer_press = ButtonLayer(self)
+        self._layer_press = ZColorLayer(self)
         '按下层'
         self._tooltip = ''
         '提示文本'
@@ -413,8 +414,22 @@ class ABCButton(QPushButton):
         self._anim_icon_color.setTarget(ZColorTool.toArray(code))
         self._anim_icon_color.try_to_start()
 
-    def setIconColor(self):
+    @overload
+    def setIconColor(self, code: str) -> None:
+        '设置图标颜色'
+        pass
+    @overload
+    def setIconColor(self) -> None:
+        '设置图标颜色'
+        pass
+
+    def setIconColor(self, *args):
         """设置图标颜色"""
+        if len(args) == 1:
+            color_value = ZColorTool.toArray(args[0])
+            self._anim_icon_color.setCurrent(color_value)
+            self._icon_color_handler(color_value)
+            return
         icon = self.icon()
         if not icon: return
         if self._icon_color_is_font_color: # 如果图标颜色与字体颜色相同，则直接使用字体颜色

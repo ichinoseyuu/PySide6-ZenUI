@@ -33,10 +33,8 @@ class Zen:
         '启用`moved`,`resized`,`opacityChanged`信号'
         DeleteOnHidden = auto()
         '隐藏时删除控件'
-        StyleSheetApplyToChildren = auto()
-        '将样式表应用到子控件'
         GradientColor = auto()
-        '背景使用渐变色'
+        '启用渐变'
 
 
     class ColorRole(Enum):
@@ -89,20 +87,18 @@ class Zen:
         '按钮控件'
         ToggleButton = auto()
         '开关按钮控件'
-        TabButton = auto()
-        '标签按钮控件'
-        AdavancedButton = auto()
-        '高级按钮控件'
-        Container = auto()
-        '容器控件'
-        CollapsibleContainer = auto()
-        '可折叠容器控件'
+        Box = auto()
+        '盒子控件'
+        Drawer = auto()
+        '抽屉控件'
         TextLabel = auto()
         '文字标签控件'
         Titlebar = auto()
         '标题栏控件'
         ToolTip = auto()
         '工具提示控件'
+        Window = auto()
+        '窗口控件'
 
 
     class Layout(Enum):

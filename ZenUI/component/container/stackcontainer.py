@@ -8,9 +8,9 @@ class ZStackContainer(ZWidget):
     def __init__(self,
                  parent: ZWidget = None,
                  name: str = None,
-                 start_point: ZPoint = ZPoint(0, 40),
-                 page_factor: float = 0.1,
-                 page_bias: float = 0.5,
+                 start_point: ZPoint = ZPoint(0, 20),
+                 page_factor: float = 0.4,
+                 page_bias: float = 1,
                  hide_last_page: bool = True
                  ):
         super().__init__(parent, name)

@@ -175,8 +175,8 @@ class ZToggleButton(ABCToggleButton):
             background-color: {self._bg_color_a};
             border: 1px solid transparent;
             border-radius: {self._border_radius}px;''')
-            return self._fixed_stylesheet +'\n'+ sheet
-        if self._checked_style == ZToggleButton.CheckedStyle.Gradient:
+
+        elif self._checked_style == ZToggleButton.CheckedStyle.Gradient:
             x1, y1, x2, y2 = self._gradient_anchor
             sheet = dedent(f'''\
             color: {self._text_color};
@@ -184,22 +184,23 @@ class ZToggleButton(ABCToggleButton):
             stop:0 {self._bg_color_a},stop:1 {self._bg_color_b});
             border: 1px solid transparent;
             border-radius: {self._border_radius}px;''')
-            return self._fixed_stylesheet +'\n'+ sheet
-        if self._checked_style == ZToggleButton.CheckedStyle.AddBorder:
+
+        elif self._checked_style == ZToggleButton.CheckedStyle.AddBorder:
             sheet = dedent(f'''\
             color: {self._text_color};
             background-color: transparent;
             border: 1px solid {self._border_color};
             border-radius: {self._border_radius}px;''')
-            return self._fixed_stylesheet +'\n'+ sheet
-        if self._checked_style in [ZToggleButton.CheckedStyle.IconTextColorChange,
+
+        elif self._checked_style in [ZToggleButton.CheckedStyle.IconTextColorChange,
                                    ZToggleButton.CheckedStyle.Transparent]:
             sheet = dedent(f'''\
             color: {self._text_color};
             background-color: transparent;
             border: 1px solid transparent;
             border-radius: {self._border_radius}px;''')
-            return self._fixed_stylesheet +'\n'+ sheet
+
+        return self._fixed_stylesheet +'\n'+ sheet
 
 
 
@@ -331,54 +332,54 @@ class ZToggleButton(ABCToggleButton):
         #self.setColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Background_A), self._color_sheet.getColor(theme, Zen.ColorRole.Background_B))
         #self.setBorderColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Border))
         if self.isChecked():
-            self._layer_tab.setColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.TabSelected))
+            self._layer_tab.setColor(self._color_sheet.getColor(theme, Zen.ColorRole.TabSelected))
             if self._checked_style == ZToggleButton.CheckedStyle.Monochrome:
-                self.setColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Selected_A))
-                self.setTextColorTo(self._color_sheet.getColor(Zen.ColorRole.Text))
-                self.setIconColorTo(self._color_sheet.getColor(Zen.ColorRole.Icon))
+                self.setColor(self._color_sheet.getColor(theme, Zen.ColorRole.Selected_A))
+                self.setTextColor(self._color_sheet.getColor(Zen.ColorRole.Text))
+                self.setIconColor(self._color_sheet.getColor(Zen.ColorRole.Icon))
 
             elif self._checked_style == ZToggleButton.CheckedStyle.Gradient:
-                self.setColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Selected_A),
+                self.setColor(self._color_sheet.getColor(theme, Zen.ColorRole.Selected_A),
                                 self._color_sheet.getColor(theme, Zen.ColorRole.Selected_B))
-                self.setTextColorTo(self._color_sheet.getColor(Zen.ColorRole.Text))
-                self.setIconColorTo(self._color_sheet.getColor(Zen.ColorRole.Icon))
+                self.setTextColor(self._color_sheet.getColor(Zen.ColorRole.Text))
+                self.setIconColor(self._color_sheet.getColor(Zen.ColorRole.Icon))
 
             elif self._checked_style == ZToggleButton.CheckedStyle.AddBorder:
-                self.setBorderColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.BorderSelected))
-                self.setTextColorTo(self._color_sheet.getColor(Zen.ColorRole.Text))
-                self.setIconColorTo(self._color_sheet.getColor(Zen.ColorRole.Icon))
+                self.setBorderColor(self._color_sheet.getColor(theme, Zen.ColorRole.BorderSelected))
+                self.setTextColor(self._color_sheet.getColor(Zen.ColorRole.Text))
+                self.setIconColor(self._color_sheet.getColor(Zen.ColorRole.Icon))
 
             elif self._checked_style == ZToggleButton.CheckedStyle.IconTextColorChange:
                 if (self.rect().contains(self.mapFromGlobal(QCursor.pos())) and
                     self._hover_style == ZToggleButton.HoverStyle.IconTextColorChange):
-                    self.setTextColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.TextHover))
-                    self.setIconColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.IconHover))
+                    self.setTextColor(self._color_sheet.getColor(theme, Zen.ColorRole.TextHover))
+                    self.setIconColor(self._color_sheet.getColor(theme, Zen.ColorRole.IconHover))
                 else:
-                    self.setTextColorTo(self._color_sheet.getColor(Zen.ColorRole.TextSelected))
-                    self.setIconColorTo(self._color_sheet.getColor(Zen.ColorRole.IconSelected))
+                    self.setTextColor(self._color_sheet.getColor(Zen.ColorRole.TextSelected))
+                    self.setIconColor(self._color_sheet.getColor(Zen.ColorRole.IconSelected))
         else:
-            self._layer_tab.setColorTo(ZColorTool.trans(self._color_sheet.getColor(theme, Zen.ColorRole.TabSelected)))
+            self._layer_tab.setColor(ZColorTool.trans(self._color_sheet.getColor(theme, Zen.ColorRole.TabSelected)))
             if self._checked_style == ZToggleButton.CheckedStyle.Monochrome:
-                self.setColorTo(ZColorTool.trans(self._color_sheet.getColor(theme, Zen.ColorRole.Selected_A)))
-                self.setTextColorTo(self._color_sheet.getColor(Zen.ColorRole.Text))
-                self.setIconColorTo(self._color_sheet.getColor(Zen.ColorRole.Icon))
+                self.setColor(ZColorTool.trans(self._color_sheet.getColor(theme, Zen.ColorRole.Selected_A)))
+                self.setTextColor(self._color_sheet.getColor(Zen.ColorRole.Text))
+                self.setIconColor(self._color_sheet.getColor(Zen.ColorRole.Icon))
 
             elif self._checked_style == ZToggleButton.CheckedStyle.Gradient:
-                self.setColorTo(ZColorTool.trans(self._color_sheet.getColor(theme, Zen.ColorRole.Selected_A)),
+                self.setColor(ZColorTool.trans(self._color_sheet.getColor(theme, Zen.ColorRole.Selected_A)),
                                 ZColorTool.trans(self._color_sheet.getColor(theme, Zen.ColorRole.Selected_B)))
-                self.setTextColorTo(self._color_sheet.getColor(Zen.ColorRole.Text))
-                self.setIconColorTo(self._color_sheet.getColor(Zen.ColorRole.Icon))
+                self.setTextColor(self._color_sheet.getColor(Zen.ColorRole.Text))
+                self.setIconColor(self._color_sheet.getColor(Zen.ColorRole.Icon))
 
             elif self._checked_style == ZToggleButton.CheckedStyle.AddBorder:
-                self.setBorderColorTo(ZColorTool.trans(self._color_sheet.getColor(theme, Zen.ColorRole.BorderSelected)))
-                self.setTextColorTo(self._color_sheet.getColor(Zen.ColorRole.Text))
-                self.setIconColorTo(self._color_sheet.getColor(Zen.ColorRole.Icon))
+                self.setBorderColor(ZColorTool.trans(self._color_sheet.getColor(theme, Zen.ColorRole.BorderSelected)))
+                self.setTextColor(self._color_sheet.getColor(Zen.ColorRole.Text))
+                self.setIconColor(self._color_sheet.getColor(Zen.ColorRole.Icon))
 
             elif self._checked_style == ZToggleButton.CheckedStyle.IconTextColorChange:
                 if (self.rect().contains(self.mapFromGlobal(QCursor.pos())) and
                     self._hover_style == ZToggleButton.HoverStyle.IconTextColorChange):
-                    self.setTextColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.TextHover))
-                    self.setIconColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.IconHover))
+                    self.setTextColor(self._color_sheet.getColor(theme, Zen.ColorRole.TextHover))
+                    self.setIconColor(self._color_sheet.getColor(theme, Zen.ColorRole.IconHover))
                 else:
-                    self.setTextColorTo(self._color_sheet.getColor(Zen.ColorRole.Text))
-                    self.setIconColorTo(self._color_sheet.getColor(Zen.ColorRole.Icon))
+                    self.setTextColor(self._color_sheet.getColor(Zen.ColorRole.Text))
+                    self.setIconColor(self._color_sheet.getColor(Zen.ColorRole.Icon))

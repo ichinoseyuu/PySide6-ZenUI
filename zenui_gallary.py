@@ -1,5 +1,7 @@
 import sys
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import *
+from PySide6.QtCore import *
+from PySide6.QtGui import *
 from ZenUI import *
 from page_home import PageHome
 from page_about import PageAbout
@@ -16,15 +18,17 @@ class ZenUIGallary(ZMainWindow):
     def setupUi(self):
         self.resize(800, 600)
         self.setWindowTitle('ZenUIGallary')
-
-        self._layout = ZRowLayout()
-        self.addLayout(self._layout)
+        self.contentLayout =ZRowLayout(name='contentLayout')
+        self.addLayout(self.contentLayout)
 
         self.navigationBar = LeftNavigationBar(self,'navigationBar')
-        self._layout.addWidget(self.navigationBar)
+        self.contentLayout.addWidget(self.navigationBar)
 
-        self.board = ZContainer(parent=self, name='board', layout=Zen.Layout.Column)
-        self._layout.addWidget(self.board)
+        self.board = ZBox(parent=self,
+                               name='board',
+                               style= ZBox.Style.Transparent,
+                               layout=Zen.Layout.Column)
+        self.contentLayout.addWidget(self.board)
 
         self.stackContainer= ZStackContainer(parent=self.board,
                                                name='stackContainer',

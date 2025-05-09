@@ -5,7 +5,7 @@ from enum import Enum, auto
 from textwrap import dedent
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.button.abstract_button import ABCButton
-from ZenUI.core import ZColorTool,ZenGlobal,Zen,ZSize,ZColorSheet,ZQuickEffect
+from ZenUI.core import ZColorTool,ZenGlobal,Zen,ZSize,ZColorSheet
 class ZPushButton(ABCButton):
     '''按钮'''
     class IdleStyle(Enum):
@@ -245,7 +245,7 @@ class ZPushButton(ABCButton):
 
 
     def _theme_changed_handler(self, theme):
-        self.setColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Background_A), self._color_sheet.getColor(theme, Zen.ColorRole.Background_B))
-        self.setBorderColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Border))
-        self.setTextColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Text))
-        self.setIconColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Icon))
+        self.setColor(self._color_sheet.getColor(theme, Zen.ColorRole.Background_A), self._color_sheet.getColor(theme, Zen.ColorRole.Background_B))
+        self.setBorderColor(self._color_sheet.getColor(theme, Zen.ColorRole.Border))
+        self.setTextColor(self._color_sheet.getColor(theme, Zen.ColorRole.Text))
+        self.setIconColor(self._color_sheet.getColor(theme, Zen.ColorRole.Icon))

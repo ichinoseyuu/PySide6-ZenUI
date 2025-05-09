@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QScrollArea, QWidget
 from PySide6.QtCore import Qt
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.layout.column import ZColumnLayout
-from ZenUI.component.container.container import ZContainer
+from ZenUI.component.container.box import ZContainer
 from ZenUI.core import Zen, ZColorSheet, ZColorTool
 
 class ZScrollWidget(ZWidget):

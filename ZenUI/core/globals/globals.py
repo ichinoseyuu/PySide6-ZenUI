@@ -10,6 +10,7 @@ class UIGlobal(Singleton):
 class Config(NoInstanceClass):
     '''全局变量配置'''
     TITLEBAR_HEIGHT = 37
+    '标题栏高度'
 
 
 class ZenGlobal(NoInstanceClass, metaclass=ImmutableMeta):

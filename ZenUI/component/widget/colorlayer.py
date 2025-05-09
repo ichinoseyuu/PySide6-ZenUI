@@ -1,7 +1,7 @@
 from textwrap import dedent
-from ZenUI.component.widget.layer import ZColorLayer
-class ButtonLayer(ZColorLayer):
-    """按钮层级，用于按钮的背景和高亮层"""
+from ZenUI.component.widget.abclayer import ABCLayer
+class ZColorLayer(ABCLayer):
+    '窗口背景'
     def __init__(self, parent = None):
         super().__init__(parent)
         self._style_vars = {

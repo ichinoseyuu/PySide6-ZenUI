@@ -1,9 +1,10 @@
 from ZenUI import *
 
-class PageAbout(ZContainer):
+class PageAbout(ZBox):
     def __init__(self,parent = None,name ='pageAbout'):
         super().__init__(parent = parent,
                          name=name,
+                         style= ZBox.Style.MonochromeWithBorder,
                          layout=Zen.Layout.Column,
                          margins=ZMargins(6, 6, 6, 6),
                          spacing=12)

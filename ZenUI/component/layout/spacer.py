@@ -19,7 +19,7 @@ class ZRowSpacer(ZSpacer):
                  columns: Zen.SizePolicy = Zen.SizePolicy.Minimum):
         super().__init__(minW, minH, row, columns)
 
-class ZColumnsSpacer(ZSpacer):
+class ZColumnSpacer(ZSpacer):
     '''占位布局'''
     def __init__(self,
                  minW: int = 5,

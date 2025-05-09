@@ -1,10 +1,11 @@
 from PySide6.QtGui import QIcon
 from ZenUI import *
 
-class PageHome(ZContainer):
+class PageHome(ZBox):
     def __init__(self,parent = None,name ='pageHome'):
         super().__init__(parent = parent,
                          name=name,
+                         style= ZBox.Style.MonochromeWithBorder,
                          layout=Zen.Layout.Column,
                          margins=ZMargins(6, 6, 6, 6),
                          spacing=12)
@@ -23,7 +24,7 @@ class PageHome(ZContainer):
                               columns=Zen.SizePolicy.Expanding)
         self.layout().addItem(self.spacer)
 
-        self.contain_button = ZContainer(parent=self,
+        self.contain_button = ZBox(parent=self,
                                  name='contain_zpush',
                                  layout=Zen.Layout.Row,
                                  margins=ZMargins(6, 6, 6, 6),

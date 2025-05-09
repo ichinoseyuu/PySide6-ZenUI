@@ -159,7 +159,7 @@ class ZThemeColorConfig(ZColorConfig):
                         Zen.ColorRole.Icon: '#ff868686',
                         Zen.ColorRole.IconHover: '#ff82d1d6',
                         Zen.ColorRole.IconPressed: '#ff82d1d6',
-                        Zen.ColorRole.Text: '#ff2c2a2e',
+                        Zen.ColorRole.Text: '#ff313131',
                         Zen.ColorRole.TextHover: '#ff82d1d6',
                         Zen.ColorRole.TextPressed: '#ff2c2a2e',
                         })
@@ -203,7 +203,7 @@ class ZThemeColorConfig(ZColorConfig):
                         Zen.ColorRole.IconHover: '#ff82d1d6',
                         Zen.ColorRole.IconPressed: '#ff82d1d6',
                         Zen.ColorRole.IconSelected: '#ff82d1d6',
-                        Zen.ColorRole.Text: '#ff2c2a2e',
+                        Zen.ColorRole.Text: '#ff313131',
                         Zen.ColorRole.TextHover: '#ff82d1d6',
                         Zen.ColorRole.TextPressed: '#ff82d1d6',
                         Zen.ColorRole.TextSelected: '#ff82d1d6',
@@ -214,50 +214,64 @@ class ZThemeColorConfig(ZColorConfig):
                        {Zen.ColorRole.Text: '#ffffffff'})
 
         self.setColors(Zen.WidgetType.TextLabel, Zen.Theme.Light,
-                       {Zen.ColorRole.Text: '#ff000000'})
+                       {Zen.ColorRole.Text: '#ff313131'})
 
-        self.setColors(Zen.WidgetType.Container, Zen.Theme.Dark,
-                       {Zen.ColorRole.Background_A: '#ff231f26',
-                        Zen.ColorRole.Background_B: '#ff231f26',
+        self.setColors(Zen.WidgetType.Box, Zen.Theme.Dark,
+                       {Zen.ColorRole.Background_A: '#ff202020',
+                        Zen.ColorRole.Background_B: '#ff202020',
                         Zen.ColorRole.Border: '#ff4e4e4e'
                         })
 
-        self.setColors(Zen.WidgetType.Container, Zen.Theme.Light,
-                       {Zen.ColorRole.Background_A: '#fffafafa',
-                        Zen.ColorRole.Background_B: '#fffafafa',
+        self.setColors(Zen.WidgetType.Box, Zen.Theme.Light,
+                       {Zen.ColorRole.Background_A: '#fff3f3f3',
+                        Zen.ColorRole.Background_B: '#fff3f3f3',
                         Zen.ColorRole.Border: '#ff9f9f9f'
                         })
 
-        self.setColors(Zen.WidgetType.CollapsibleContainer, Zen.Theme.Dark,
-                       {Zen.ColorRole.Background_A: '#ff201c23',
-                        Zen.ColorRole.Background_B: '#ff201c23',
+        self.setColors(Zen.WidgetType.Drawer, Zen.Theme.Dark,
+                       {Zen.ColorRole.Background_A: '#ff202020',
+                        Zen.ColorRole.Background_B: '#ff202020',
                         Zen.ColorRole.Border: '#ff4e4e4e'
                         })
 
-        self.setColors(Zen.WidgetType.CollapsibleContainer, Zen.Theme.Light,
-                       {Zen.ColorRole.Background_A: '#ffededed',
-                        Zen.ColorRole.Background_B: '#ffdedede',
+        self.setColors(Zen.WidgetType.Drawer, Zen.Theme.Light,
+                       {Zen.ColorRole.Background_A: '#fff3f3f3',
+                        Zen.ColorRole.Background_B: '#fff3f3f3',
                         Zen.ColorRole.Border: '#ff9f9f9f'
                         })
 
         self.setColors(Zen.WidgetType.Titlebar, Zen.Theme.Dark,
-                       {Zen.ColorRole.Background_A: '#ff1c191f',
-                        Zen.ColorRole.Border: '#ff161616'
+                       {Zen.ColorRole.Background_A: '#ff202020',
+                        Zen.ColorRole.Border: '#00161616'
                         })
 
         self.setColors(Zen.WidgetType.Titlebar, Zen.Theme.Light,
-                       {Zen.ColorRole.Background_A: '#ffffffff',
-                        Zen.ColorRole.Border: '#ffe6e6e6'
+                       {Zen.ColorRole.Background_A: '#fff3f3f3',
+                        Zen.ColorRole.Border: '#00e6e6e6'
                         })
 
         self.setColors(Zen.WidgetType.ToolTip, Zen.Theme.Dark,
-                       {Zen.ColorRole.Background_A: '#ff1c191f',
+                       {Zen.ColorRole.Background_A: '#ff202020',
+                        Zen.ColorRole.Border: '#00161616',
                         Zen.ColorRole.Flash: '#7fffffff'
                         })
 
         self.setColors(Zen.WidgetType.ToolTip, Zen.Theme.Light,
-                       {Zen.ColorRole.Background_A: '#ffffffff',
+                       {Zen.ColorRole.Background_A: '#fff3f3f3',
+                        Zen.ColorRole.Border: '#00e6e6e6',
                         Zen.ColorRole.Flash: '#7f999999'
+                        })
+
+        self.setColors(Zen.WidgetType.Window, Zen.Theme.Dark,
+                       {Zen.ColorRole.Background_A: '#ff202020',
+                        Zen.ColorRole.Background_B: '#ff202020',
+                        Zen.ColorRole.Border: '#ff4e4e4e'
+                        })
+
+        self.setColors(Zen.WidgetType.Window, Zen.Theme.Light,
+                       {Zen.ColorRole.Background_A: '#fff3f3f3',
+                        Zen.ColorRole.Background_B: '#fff3f3f3',
+                        Zen.ColorRole.Border: '#ff9f9f9f'
                         })
 
 class ZColorSheet:

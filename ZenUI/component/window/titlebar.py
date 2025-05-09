@@ -37,36 +37,40 @@ class ThemeButton(ZPushButton):
 
 class ZTitlebar(ZWidget):
     '''标题栏'''
-    def __init__(self, parent):
+    def __init__(self, parent, window_shadow:int):
         super().__init__(parent=parent,name="titleBar")
         self._btn_size = 36
         self._btn_sizepolicy = (Zen.SizePolicy.Minimum, Zen.SizePolicy.Minimum)
+        self._window_shadow = window_shadow
         self._setup_ui()
+        self._init_style()
         self._btnConnect()
+        self._schedule_update()
 
     # region Override
     def _init_style(self):
         super()._init_style()
         self._color_sheet = ZColorSheet(self, Zen.WidgetType.Titlebar)
-        self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
         self._border_color = self._color_sheet.getColor(Zen.ColorRole.Border)
-        self._anim_bg_color_a.setCurrent(ZColorTool.toArray(self._bg_color_a))
         self._anim_border_color.setCurrent(ZColorTool.toArray(self._border_color))
         self._fixed_stylesheet = "border-bottom-width: 1px;\nborder-style: solid;"
 
 
     def reloadStyleSheet(self):
-        sheet = f'background-color: {self._bg_color_a};\nborder-color: {self._border_color};'
+        sheet = f'background-color: transparent;\nborder-color: {self._border_color};'
         if not self.objectName(): raise ValueError("Widget must have a name when StyleSheetApplyToChildren is False")
-        if self._fixed_stylesheet:
-            return f"#{self.objectName()}"+"{\n"+  sheet +'\n'+self._fixed_stylesheet +"\n}"
-        else:
-            return f"#{self.objectName()}"+"{\n"+ sheet +"\n}"
+        style_parts = [
+            f"#{self.objectName()}{{",
+            sheet,
+            self._fixed_stylesheet,
+            "}"
+        ]
+        return '\n'.join(filter(None, style_parts))
 
 
     def _theme_changed_handler(self, theme):
-        self.setColorTo(self._color_sheet.getColor(theme,Zen.ColorRole.Background_A))
-        self.setBorderColorTo(self._color_sheet.getColor(theme,Zen.ColorRole.Border))
+        self.setColor(self._color_sheet.getColor(theme,Zen.ColorRole.Background_A))
+        self.setBorderColor(self._color_sheet.getColor(theme,Zen.ColorRole.Border))
 
 
     # region New
@@ -95,8 +99,8 @@ class ZTitlebar(ZWidget):
                                     border_radius= 0,
                                     sizepolicy= self._btn_sizepolicy,
                                     idle_style=ZPushButton.IdleStyle.Transparent,
-                                    hover_style=ZPushButton.HoverStyle.ColorChange,
-                                    pressed_style=ZPushButton.PressedStyle.ColorChange)
+                                    hover_style=ZPushButton.HoverStyle.IconTextColorChange,
+                                    pressed_style=ZPushButton.PressedStyle.Transparent)
         self._layout.addWidget(self.btnTheme)
 
         self.btnMin = ZPushButton(parent=self,
@@ -107,8 +111,8 @@ class ZTitlebar(ZWidget):
                                     border_radius= 0,
                                     sizepolicy= self._btn_sizepolicy,
                                     idle_style=ZPushButton.IdleStyle.Transparent,
-                                    hover_style=ZPushButton.HoverStyle.ColorChange,
-                                    pressed_style=ZPushButton.PressedStyle.ColorChange)
+                                    hover_style=ZPushButton.HoverStyle.IconTextColorChange,
+                                    pressed_style=ZPushButton.PressedStyle.Transparent)
         self._layout.addWidget(self.btnMin)
 
         icon2 = QIcon()
@@ -122,8 +126,8 @@ class ZTitlebar(ZWidget):
                                     border_radius= 0,
                                     sizepolicy= self._btn_sizepolicy,
                                     idle_style=ZPushButton.IdleStyle.Transparent,
-                                    hover_style=ZPushButton.HoverStyle.ColorChange,
-                                    pressed_style=ZPushButton.PressedStyle.ColorChange)
+                                    hover_style=ZPushButton.HoverStyle.IconTextColorChange,
+                                    pressed_style=ZPushButton.PressedStyle.Transparent)
         self.btnMax.setCheckable(True)
         self._layout.addWidget(self.btnMax)
 
@@ -135,8 +139,8 @@ class ZTitlebar(ZWidget):
                                     border_radius= 0,
                                     sizepolicy= self._btn_sizepolicy,
                                     idle_style=ZPushButton.IdleStyle.Transparent,
-                                    hover_style=ZPushButton.HoverStyle.ColorChange,
-                                    pressed_style=ZPushButton.PressedStyle.Flash)
+                                    hover_style=ZPushButton.HoverStyle.IconTextColorChange,
+                                    pressed_style=ZPushButton.PressedStyle.Transparent)
         self._layout.addWidget(self.btnExit)
 
 
@@ -183,13 +187,15 @@ class ZTitlebar(ZWidget):
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton and not self.window().isMaximized():
-            # 记录鼠标按下时的位置
-            self.dragPosition = event.globalPosition().toPoint() - self.parent().frameGeometry().topLeft()
+            # 直接使用窗口位置计算偏移
+            window = self.window()
+            offset = QPoint(self._window_shadow, self._window_shadow)
+            self.dragPosition = event.globalPosition().toPoint() - window.pos() - offset
             event.accept()
-
 
     def mouseMoveEvent(self, event: QMouseEvent):
         if event.buttons() == Qt.LeftButton and not self.window().isMaximized():
-            # 窗口跟随鼠标移动
-            self.parent().move(event.globalPosition().toPoint() - self.dragPosition)
+            window = self.window()
+            # 使用相同的参考点计算新位置
+            window.move(event.globalPosition().toPoint() - self.dragPosition)
             event.accept()

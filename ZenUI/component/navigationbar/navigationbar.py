@@ -1,11 +1,7 @@
 from PySide6.QtGui import QIcon
-from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.container.collapsible_container import ZCollapsibleContainer
-from ZenUI.component.button.togglebutton import ZToggleButton
-from ZenUI.component.button.pushbutton import ZPushButton
-from ZenUI.component.layout.spacer import ZSpacer
+from ZenUI.component import ZWidget,ZDrawer,ZToggleButton,ZPushButton,ZSpacer
 from ZenUI.core import Zen,ZSize,ZMargins
-class ZNavigationBar(ZCollapsibleContainer):
+class ZNavigationBar(ZDrawer):
     '''可折叠左侧菜单栏
     - 继承这个类重写`_setup_ui`方法，通过`addButton`方法添加按钮
     '''
@@ -26,6 +22,7 @@ class ZNavigationBar(ZCollapsibleContainer):
         super().__init__(parent=parent,
                          name= name,
                          layout=layout,
+                         style= ZDrawer.Style.Monochrome,
                          margins=margins,
                          spacing=spacing,
                          alignment=alignment,
@@ -41,6 +38,8 @@ class ZNavigationBar(ZCollapsibleContainer):
         self._btns = {}
         self._btn_count = 0
         self._setup_ui()
+        self._init_style()
+        self._schedule_update()
 
     def _setup_ui(self):
         '''设置UI'''
@@ -69,7 +68,6 @@ class ZNavigationBar(ZCollapsibleContainer):
                 btn.setChecked(True)
                 self._toggled_btn = btn
             btn._fixed_stylesheet = f'text-align: left;\npadding-left: 8px;'
-            print(btn.styleSheet())
             btn.pressed.connect(lambda: self._btn_pressed_handler(btn))
             self.layout().insertWidget(self._btn_count + 1, btn)
             self._btns[f"{btn.objectName()}"] = btn

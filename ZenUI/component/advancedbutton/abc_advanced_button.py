@@ -2,7 +2,7 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.widget.layer import ZColorLayer,ZTextLayer
+from ZenUI.component.widget.abclayer import ZColorLayer,ZTextLayer
 from ZenUI.core import ZExpAnim,AnimGroup,ZColorTool,ZenGlobal,Zen,ZSize
 
 class ABCAdvancedPushButton(QWidget):

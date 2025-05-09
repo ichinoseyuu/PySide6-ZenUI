@@ -1,49 +1,70 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.core import ZExpAnim, AnimGroup, ZColorTool, ZenGlobal, Zen
-class ZWidget(QWidget):
-    'ZenUI组件基类'
+from ZenUI.component.widget.widget import ZWidget
+from ZenUI.component.window.titlebar import ZTitlebar
+from ZenUI.component.window.grip import ResizeGrip
+from ZenUI.component.container.box import ZBox
+from ZenUI.core import Zen,ZMargins,ZQuickEffect,ZExpAnim,AnimGroup
+class ABCWindow(QWidget):
+    '窗口抽象类'
     moved = Signal(object)
     resized = Signal(object)
     opacityChanged = Signal(float)
-    def __init__(self, parent = None, name: str=None):
+    def __init__(self,
+                 parent: ZWidget = None,
+                 name: str = None,
+                 shadow_width: int = 12,
+                 border_radius: int = 4,
+                 grip_width: int = 5,
+                 can_resize: bool = True):
         super().__init__(parent)
         if name: self.setObjectName(name)
-
-        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground) #启用样式表
-
-        self._color_sheet = None 
-        '颜色表，用于存储组件颜色，如背景色，边框色等'
-        self._theme_manager = ZenGlobal.ui.theme_manager 
-        '主题管理器，用于接受主题切换的信号'
-        self._theme_manager.themeChanged.connect(self._theme_changed_handler) # 主题切换信号连接
-
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint) # 无边框窗口
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground) #透明背景
         self._widget_flags = {}
         '组件属性，控制是否具备动画等'
-        self._fixed_stylesheet = '' # 每次调用setStyleSheet方法时，都会在样式表前附加这段固定内容
-        '固有样式表'
-        self._can_update = True
-        '是否可以更新样式表'
-
+        self._grips = []
+        self._grip_width = grip_width
+        '拖动调整窗口大小时，鼠标距离窗口边缘的宽度'
+        self._shadow_width = shadow_width
+        '窗口阴影宽度'
+        self._border_radius = border_radius
+        '窗口圆角半径'
         self._x1, self._y1, self._x2, self._y2 = None, None, None, None
         '组件可移动区域坐标'
-        self._move_anchor = QPoint(0, 0)
+        self._move_anchor = QPoint(self._shadow_width, self._shadow_width)
         '移动锚点'
-
-        self._bg_color_a = '#00000000'
-        '背景颜色，用于渐变模式的起始点'
-        self._bg_color_b = '#00000000'
-        '背景颜色,用于渐变模式的终点'
-        self._gradient_anchor =[0, 0, 1, 1]
-        '渐变锚点，用于控制渐变方向和范围'
-
-        self._border_color = '#00000000'
-        '边框颜色'
-
-
+        self._can_resize = can_resize
+        '是否允许调整窗口大小'
+        self._ismaximized = False
+        '是否最大化'
+        self._normal_geometry = QRect()
+        '窗口正常状态下的几何信息'
         self._init_anim()
+        self._setup_ui()
 
+
+    def _setup_ui(self):
+        radius = self._border_radius
+        margin = int(radius/2)
+        self._centerWidget = ZBox(parent=self,
+                         name="ZWindow",
+                         fixed_stylesheet=f'border-radius:{radius}px;',
+                         style=ZBox.Style.Monochrome,
+                         layout=Zen.Layout.Column,
+                         margins=ZMargins(margin, margin, margin, margin))
+        self._topGrip = ResizeGrip(self, ResizeGrip.Edge.Top,self._grip_width)
+        self._bottomGrip = ResizeGrip(self, ResizeGrip.Edge.Bottom,self._grip_width)
+        self._leftGrip = ResizeGrip(self, ResizeGrip.Edge.Left,self._grip_width)
+        self._rightGrip = ResizeGrip(self, ResizeGrip.Edge.Right,self._grip_width)
+        self._topLeftGrip = ResizeGrip(self, ResizeGrip.Edge.TopLeft,self._grip_width)
+        self._topRightGrip = ResizeGrip(self, ResizeGrip.Edge.TopRight,self._grip_width)
+        self._bottomLeftGrip = ResizeGrip(self, ResizeGrip.Edge.BottomLeft,self._grip_width)
+        self._bottomRightGrip = ResizeGrip(self, ResizeGrip.Edge.BottomRight,self._grip_width)
+        ZQuickEffect.WidgetShadow.applyDropShadowOn(self._centerWidget, (0, 0, 0, 128), blur_radius=int(self._shadow_width))
+        self._titlebar = ZTitlebar(self,self._shadow_width)
+        self._centerWidget.layout().addWidget(self._titlebar)
 
     # region Style
     def _init_style(self):
@@ -52,37 +73,6 @@ class ZWidget(QWidget):
         - 子类实现，自行调用
         """
         pass
-
-    def setStyleSheet(self, stylesheet: str):
-        """设置样式表"""
-        super().setStyleSheet(stylesheet)
-        #print(stylesheet)
-        self._can_update = True
-
-    def setFixedStyleSheet(self, stylesheet: str):
-        """
-        设置样式表固定内容
-        - 此后每次运行`setStyleSheet`方法时，都会在样式表前附加这段固定内容
-        """
-        self._fixed_stylesheet = stylesheet
-        self._schedule_update()
-
-    def reloadStyleSheet(self):
-        """
-        重写样式表，创建新组件类使用，定义组件样式表
-        - 子类实现，自行调用
-        """
-        pass
-
-    def _schedule_update(self):
-        """ 调度一次更新样式的方法，避免重复调用 """
-        if self._can_update:
-            self._can_update = False
-            QTimer.singleShot(0, self.updateStyleSheet)
-
-    def updateStyleSheet(self):
-        """ 更新样式表 """
-        self.setStyleSheet(self.reloadStyleSheet())
 
 
     # region WidgetFlag
@@ -97,16 +87,83 @@ class ZWidget(QWidget):
             return False
         return self._widget_flags[flag.name]
 
+# region Other
+    def showMaximized(self):
+        """最大化窗口"""
+        screen = QApplication.primaryScreen()
+        # 保存当前几何信息
+        panel_geo = self.panelGeometry()
+        window_geo = self.geometry()
+        # 创建新的 QRect，正确合并窗口位置和面板大小
+        self._normal_geometry = QRect(
+            window_geo.x() + self._shadow_width,  # 窗口x + 阴影宽度
+            window_geo.y() + self._shadow_width,  # 窗口y + 阴影宽度
+            panel_geo.width(),                   # 面板宽度
+            panel_geo.height()                   # 面板高度
+        )
+        self._centerWidget.setContentsMargins(0,0,0,0)
+        self._centerWidget.setFixedStyleSheet('border-radius: 0px;')
+        self.resize(screen.size().width(), screen.size().height())
+        self.moveTo(screen.geometry().x(), screen.geometry().y())
+        self._ismaximized = True
+
+    def showNormal(self):
+        """恢复窗口大小"""
+        radius = self._border_radius
+        margin = int(radius/2)
+        self._centerWidget.setContentsMargins(margin, margin, margin, margin)
+        self._centerWidget.setFixedStyleSheet(f'border-radius: {radius}px;')
+        self.resizeTo(self.normalGeometry().size().width(),self.normalGeometry().size().height())
+        self.moveTo(self.normalGeometry().topLeft().x(), self.normalGeometry().topLeft().y())
+        self._ismaximized = False
+
+    def isMaximized(self):
+        '是否最大化'
+        return self._ismaximized
+
+    def normalGeometry(self):
+        '获取窗口原始大小'
+        return self._normal_geometry
+
+    def panelGeometry(self):
+        '获取面板大小'
+        return self._centerWidget.geometry()
+
+    def setResizeEnabled(self, enable: bool):
+        """设置是否允许调整窗口大小"""
+        self._can_resize = enable
+
+    def isResizeEnabled(self):
+        """是否允许调整窗口大小"""
+        return self._can_resize
+
+    def setCenter(self):
+        ''' 将窗口放在屏幕中心 '''
+        # 获取当前屏幕的尺寸
+        screen = QApplication.primaryScreen()
+        # 计算窗口应该放置的位置，使其位于屏幕中央
+        x = (screen.geometry().width() - self.geometry().width()) // 2
+        y = (screen.geometry().height() - self.geometry().height()) // 2
+        # 设置窗口位置为屏幕中心
+        self.move(x, y)
+
+    def addWidget(self, widget):
+        self._centerWidget.layout().addWidget(widget)
+
+    def insertWidget(self, index, widget):
+        self._centerWidget.layout().insertWidget(index, widget)
+
+    def removeWidget(self, widget):
+        self._centerWidget.layout().removeWidget(widget)
+
+    def addLayout(self, layout):
+        self._centerWidget.layout().addLayout(layout)
+
+    def setWindowTitle(self, arg__1):
+        self._titlebar.setTitle(arg__1)
 
 
     # region SlotFunc
-    def _theme_changed_handler(self, arg_1):
-        '''
-        重写组件主题改变时的样式切换
-        - 接收到主题改变信号时自动调用
-        '''
-        pass
-
     def _move_anim_handler(self, arr):
         x, y = arr
         self.move(int(x), int(y))
@@ -118,17 +175,6 @@ class ZWidget(QWidget):
     def _opacity_anim_handler(self, opacity: float):
         self.setOpacity(opacity)
 
-    def _bg_color_a_handler(self, color_value):
-        self._bg_color_a = ZColorTool.toCode(color_value)
-        self._schedule_update()
-
-    def _bg_color_b_handler(self, color_value):
-        self._bg_color_b = ZColorTool.toCode(color_value)
-        self._schedule_update()
-
-    def _border_color_handler(self, color_value):
-        self._border_color = ZColorTool.toCode(color_value)
-        self._schedule_update()
 
     # region Move
     def moveTo(self, x: int, y: int):
@@ -201,6 +247,23 @@ class ZWidget(QWidget):
         else:
             self.resize(w, h)
 
+
+    def resize(self, *args):
+        """重写 resize 方法，自动添加阴影宽度"""
+        if len(args) == 1 and isinstance(args[0], QSize):
+            # resize(QSize)
+            size = args[0]
+            w = size.width() + self._shadow_width * 2
+            h = size.height() + self._shadow_width * 2
+            super().resize(w, h)
+        elif len(args) == 2 and isinstance(args[0], int) and isinstance(args[1], int):
+            # resize(width, height)
+            w, h = args
+            super().resize(w + self._shadow_width * 2, h + self._shadow_width * 2)
+        else:
+            raise TypeError("resize() takes 1 or 2 arguments, but {} were given".format(len(args)))
+
+
     def resizeEvent(self, event):
         """重写调整大小事件"""
         # resizeEvent 事件一旦被调用，控件的尺寸会瞬间改变
@@ -208,9 +271,22 @@ class ZWidget(QWidget):
         super().resizeEvent(event)
         size = event.size()
         w, h = size.width(), size.height()
-        self._anim_resize.setCurrent([w, h])
+        shadow = self._shadow_width
+        grip = self._grip_width
+        center_w = w - 2 * shadow
+        center_h = h - 2 * shadow
+        self._anim_resize.setCurrent([center_w, center_h])
         if self.isWidgetFlagOn(Zen.WidgetFlag.EnableAnimationSignals):
-            self.resized.emit([w, h])
+            self.resized.emit([center_w, center_h])
+        self._centerWidget.setGeometry(shadow, shadow, center_w, center_h)
+        self._topGrip.setGeometry(shadow, shadow, center_w, grip)
+        self._bottomGrip.setGeometry(shadow, shadow + center_h - grip, center_w, grip)
+        self._leftGrip.setGeometry(shadow, shadow, grip, center_h)
+        self._rightGrip.setGeometry(w - grip - shadow, shadow, grip, center_h)
+        self._topLeftGrip.setGeometry(shadow, shadow, grip, grip)
+        self._topRightGrip.setGeometry(w - grip - shadow, shadow, grip, grip)
+        self._bottomLeftGrip.setGeometry(shadow, shadow + center_h - grip, grip, grip)
+        self._bottomRightGrip.setGeometry(w - grip - shadow, shadow + center_h - grip, grip, grip)
 
 
     # region Opacity
@@ -241,104 +317,21 @@ class ZWidget(QWidget):
             self.deleteLater()
 
 
-    # region BGColor
-    def setColorTo(self, code_1, code_2=None):
-        """
-        如果开启了动画，将控件动态的调整到指定颜色
-        Args:
-            code_1: 颜色代码，格式为 `#AARRGGBB` 或 `#RRGGBB`
-            code_2: 第二个颜色代码，仅当渐变模式启用时使用
-        """
-        is_gradient = self.isWidgetFlagOn(Zen.WidgetFlag.GradientColor)
-        is_instant = self.isWidgetFlagOn(Zen.WidgetFlag.InstantSetColor)
-        # 当 InstantSetColor 标志启用时，直接设置颜色
-
-        if is_instant:
-            self.setColor(code_1, code_2) if is_gradient else self.setColor(code_1)
-            return
-        # 启动动画：根据是否是渐变色来处理
-        color_value_1 = ZColorTool.toArray(code_1)
-        self._anim_bg_color_a.setTarget(color_value_1)
-        self._anim_bg_color_a.try_to_start()
-
-        if is_gradient and code_2 is not None:
-            color_value_2 = ZColorTool.toArray(code_2)
-            self._anim_bg_color_b.setTarget(color_value_2)
-            self._anim_bg_color_b.try_to_start()
-
-
-    def setColor(self, code_1, code_2=None):
-        """
-        设置背景颜色
-        Args:
-            code_1: 颜色代码，格式为 `#AARRGGBB` 或 `#RRGGBB`
-            code_2: 第二个颜色代码，仅当渐变模式启用时使用
-        """
-        color_value_1 = ZColorTool.toArray(code_1)
-        self._anim_bg_color_a.setCurrent(color_value_1)
-        self._bg_color_a_handler(color_value_1)
-
-        if code_2 is not None:
-            color_value_2 = ZColorTool.toArray(code_2)
-            self._anim_bg_color_b.setCurrent(color_value_2)
-            self._bg_color_b_handler(color_value_2)
-        #print("setColor", color_value_1, color_value_2)
-
-    def setGradientAnchor(self, x1, y1, x2, y2):
-        """
-        设置渐变锚点
-        Args:
-            x1: 渐变起始点 横坐标
-            y1: 渐变起始点 纵坐标
-            x2: 渐变结束点 横坐标
-            y2: 渐变结束点 纵坐标
-        """
-        self._gradient_anchor = [x1, y1, x2, y2]
-        self._schedule_update()
-
-    def gradientAnchor(self):
-        """获取渐变锚点"""
-        return self._gradient_anchor
-
-
-    # region BorderColor
-    def setBorderColorTo(self, code):
-        """
-        如果开启了动画，将控件动态的调整到指定边框颜色
-        Args:
-            code: 格式为`#AARRGGBB`或者`#RRGGBB`
-        """
-        self._anim_border_color.setTarget(ZColorTool.toArray(code))
-        self._anim_border_color.try_to_start()
-
-    def setBorderColor(self, code):
-        """
-        设置边框颜色
-        Args:
-            code: 格式为`#AARRGGBB`或者`#RRGGBB`
-        """
-        color_value = ZColorTool.toArray(code)
-        self._anim_border_color.setCurrent(color_value)
-        self._border_color_handler(color_value)
-
-
-
     # region Animation
-
     def _init_anim(self):
         """
         创建动画，并添加到动画组
         - 需要创建新动画时，调用此方法，以初始化动画
         """
         self._anim_move = ZExpAnim(self)
-        self._anim_move.setFactor(0.25)
+        self._anim_move.setFactor(0.8)
         self._anim_move.setBias(1)
         self._anim_move.setCurrent([0, 0])
         self._anim_move.setTarget([0, 0])
         self._anim_move.ticked.connect(self._move_anim_handler)
 
         self._anim_resize = ZExpAnim(self)
-        self._anim_resize.setFactor(0.25)
+        self._anim_resize.setFactor(0.8)
         self._anim_resize.setBias(1)
         self._anim_resize.setCurrent([0, 0])
         self._anim_resize.setTarget([0, 0])
@@ -349,29 +342,11 @@ class ZWidget(QWidget):
         self._anim_opacity.setBias(0.01)
         self._anim_opacity.ticked.connect(self._opacity_anim_handler)
 
-        self._anim_bg_color_a = ZExpAnim(self)
-        self._anim_bg_color_a.setFactor(0.25)
-        self._anim_bg_color_a.setBias(1)
-        self._anim_bg_color_a.ticked.connect(self._bg_color_a_handler)
-
-        self._anim_bg_color_b = ZExpAnim(self)
-        self._anim_bg_color_b.setFactor(0.25)
-        self._anim_bg_color_b.setBias(1)
-        self._anim_bg_color_b.ticked.connect(self._bg_color_b_handler)
-
-        self._anim_border_color = ZExpAnim(self)
-        self._anim_border_color.setFactor(0.25)
-        self._anim_border_color.setBias(1)
-        self._anim_border_color.ticked.connect(self._border_color_handler)
-
         # 创建动画组，以tokenize以上动画
         self._anim_group = AnimGroup()
         self._anim_group.addMember(self._anim_move, token="move")
         self._anim_group.addMember(self._anim_resize, token="resize")
         self._anim_group.addMember(self._anim_opacity, token="opacity")
-        self._anim_group.addMember(self._anim_bg_color_a, token="color_a")
-        self._anim_group.addMember(self._anim_bg_color_b, token="color_b")
-        self._anim_group.addMember(self._anim_border_color, token="border_color")
 
     def activateOpacityAnim(self):
         "激活透明度动画"

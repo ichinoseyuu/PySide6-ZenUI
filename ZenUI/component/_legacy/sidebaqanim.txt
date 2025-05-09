@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.container.container import ZenContainer
+from ZenUI.component.container.box import ZenContainer
 from ZenUI.core import Zen, ZenExpAnim
 class ZenSidebar(ZenContainer):
     '''可折叠侧边栏类'''

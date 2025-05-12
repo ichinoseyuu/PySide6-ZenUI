@@ -21,4 +21,6 @@ pip uninstall ZenUI
 
 ### preview
 
-![深色主题预览](https://cdn.jsdelivr.net/gh/ichinoseyuu/Image/202505091759938.png)
+![浅色主题预览](https://cdn.jsdelivr.net/gh/ichinoseyuu/Image/202505121700512.png)
+
+![深色主题预览](https://cdn.jsdelivr.net/gh/ichinoseyuu/Image/202505121700783.png)

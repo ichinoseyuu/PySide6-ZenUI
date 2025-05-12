@@ -16,41 +16,45 @@ class ZenUIGallary(ZMainWindow):
         self.btnConnect()
 
     def setupUi(self):
-        self.resize(800, 600)
+        screen_size = QGuiApplication.primaryScreen().size()
+        self.resize(screen_size.width()*3/5-200,screen_size.height()*3/5)
         self.setWindowTitle('ZenUIGallary')
-        self.contentLayout =ZRowLayout(name='contentLayout')
-        self.addLayout(self.contentLayout)
+        self.setMinimumSize(800, 600)
+        self.content = ZBox(parent=self,
+                               name='content',
+                               style= ZBox.Style.None_,
+                               layout=Zen.Layout.Row)
 
         self.navigationBar = LeftNavigationBar(self,'navigationBar')
-        self.contentLayout.addWidget(self.navigationBar)
+        self.content.layout().addWidget(self.navigationBar)
 
-        self.board = ZBox(parent=self,
-                               name='board',
-                               style= ZBox.Style.Transparent,
-                               layout=Zen.Layout.Column)
-        self.contentLayout.addWidget(self.board)
-
-        self.stackContainer= ZStackContainer(parent=self.board,
-                                               name='stackContainer',
+        self.stackPanel= ZStackPanel(parent=self.content,
+                                               name='stackPanel',
                                                hide_last_page=True,)
-        self.board.layout().addWidget(self.stackContainer)
 
-        self.pageHome = PageHome(self.stackContainer)
-        self.stackContainer.addPage(self.pageHome, cover=False, anim=False)
+        self.pageHome = PageHome(self.stackPanel)
+        self.stackPanel.addPage(self.pageHome, cover=False, anim=False)
 
-        self.pageBox = PageBox(self.stackContainer)
-        self.stackContainer.addPage(self.pageBox, cover=False, anim=False)
+        self.pageBox = PageBox(self.stackPanel)
+        self.stackPanel.addPage(self.pageBox, cover=False, anim=False)
 
-        self.pageAbout = PageAbout(self.stackContainer)
-        self.stackContainer.addPage(self.pageAbout, cover=False, anim=False)
+        self.pageAbout = PageAbout(self.stackPanel)
+        self.stackPanel.addPage(self.pageAbout, cover=False, anim=False)
 
+        self.content.layout().addWidget(self.stackPanel)
+
+        # self.scrollPage = ZScrollPage(self)
+        # self.scrollPage.setScrollBarPolicy(Zen.ScrollBarPolicy.AlwaysOn, Zen.ScrollBarPolicy.AlwaysOn)
+        # self.content.layout().addWidget(self.scrollPage)
+
+        self.addWidget(self.content)
 
 
 
     def btnConnect(self):
-        self.navigationBar.btnHome.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageHome'))
-        self.navigationBar.btnBox.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageBox'))
-        self.navigationBar.btnAbout.clicked.connect(lambda: self.stackContainer.setCurrentPage('pageAbout'))
+        self.navigationBar.btnHome.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageHome'))
+        self.navigationBar.btnBox.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageBox'))
+        self.navigationBar.btnAbout.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageAbout'))
         self.pageHome.btn_nextpage.clicked.connect(self.navigationBar.toggleToNextButton)
 
 

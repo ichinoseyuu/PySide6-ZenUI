@@ -15,8 +15,12 @@ class ABCLayer(QWidget):
 
         self._widget_flags = {}
         '组件属性，控制是否具备动画等'
-        self._fixed_stylesheet = ''
+        self._stylesheet_fixed = ''
         '固有样式表，每次调用`setStyleSheet`方法时，都会在样式表前附加这段固定内容'
+        self._stylesheet = ''
+        '控件样式表'
+        self._stylesheet_cache = ''
+        '样式表缓存，更新样式时使用'
         self._can_update = True
         '是否可以更新样式表'
 
@@ -46,19 +50,27 @@ class ABCLayer(QWidget):
         """
         pass
 
-    def setStyleSheet(self, stylesheet: str):
+    def setStyleSheet(self):
         """设置样式表"""
-        super().setStyleSheet(stylesheet)
-        #print(stylesheet)
+        super().setStyleSheet(self._stylesheet_cache)
+        self._stylesheet = self._stylesheet_cache
         self._can_update = True
+
+    def styleSheet(self):
+        '获取样式表'
+        return self._stylesheet
 
     def setFixedStyleSheet(self, stylesheet: str):
         """
         设置样式表固定内容
         - 此后每次运行`setStyleSheet`方法时，都会在样式表前附加这段固定内容
         """
-        self._fixed_stylesheet = stylesheet
-        self.updateStyleSheet()
+        self._stylesheet_fixed = stylesheet
+        self._refresh_stylesheet()
+
+    def fixedStyleSheet(self):
+        '获取样式表固定内容'
+        return self._stylesheet_fixed
 
     def reloadStyleSheet(self):
         """
@@ -69,15 +81,15 @@ class ABCLayer(QWidget):
         """
         pass
 
+    def _refresh_stylesheet(self):
+        """刷新样式表缓存，当下一次更新样式表时使用"""
+        self._stylesheet_cache = self.reloadStyleSheet()
+
     def _schedule_update(self):
         """ 调度一次更新样式的方法，避免重复调用 """
         if self._can_update:
             self._can_update = False
-            QTimer.singleShot(0, self.updateStyleSheet)
-
-    def updateStyleSheet(self):
-        """ 更新样式表 """
-        self.setStyleSheet(self.reloadStyleSheet())
+            QTimer.singleShot(0, lambda:(self._refresh_stylesheet(),self.setStyleSheet()))
 
 
 

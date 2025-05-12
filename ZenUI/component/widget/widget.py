@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.core import ZExpAnim, AnimGroup, ZColorTool, ZenGlobal, Zen
+from ZenUI.core import ZExpAnim, AnimGroup, ZColorTool, ZenGlobal, Zen,ZColorSheet,ZColors
 class ZWidget(QWidget):
     'ZenUI组件基类'
     moved = Signal(object)
@@ -13,16 +13,25 @@ class ZWidget(QWidget):
 
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground) #启用样式表
 
-        self._color_sheet = None 
+        self._color_sheet = ZColorSheet(self)
         '颜色表，用于存储组件颜色，如背景色，边框色等'
+        self._color_sheet.colorChanged.connect(self._colors_refresh_handler) #颜色改变时刷新样式
+        self._colors = ZColors()
+        '用于快速访问颜色'
         self._theme_manager = ZenGlobal.ui.theme_manager 
         '主题管理器，用于接受主题切换的信号'
         self._theme_manager.themeChanged.connect(self._theme_changed_handler) # 主题切换信号连接
 
         self._widget_flags = {}
         '组件属性，控制是否具备动画等'
-        self._fixed_stylesheet = '' # 每次调用setStyleSheet方法时，都会在样式表前附加这段固定内容
+        self._stylesheet_fixed = '' # 每次调用setStyleSheet方法时，都会在样式表前附加这段固定内容
         '固有样式表'
+        self._stylesheet = ''
+        '控件样式表'
+        self._stylesheet_cache = ''
+        '样式表缓存，更新样式时使用'
+        self._stylesheet_dirty = True
+        '样式表是否被更改'
         self._can_update = True
         '是否可以更新样式表'
 
@@ -41,8 +50,8 @@ class ZWidget(QWidget):
         self._border_color = '#00000000'
         '边框颜色'
 
-
         self._init_anim()
+
 
 
     # region Style
@@ -53,36 +62,41 @@ class ZWidget(QWidget):
         """
         pass
 
-    def setStyleSheet(self, stylesheet: str):
+    def setStyleSheet(self):
         """设置样式表"""
-        super().setStyleSheet(stylesheet)
-        #print(stylesheet)
+        self._stylesheet = self.reloadStyleSheet()
+        super().setStyleSheet(self._stylesheet)
         self._can_update = True
+
+    def styleSheet(self):
+        '获取样式表'
+        return self._stylesheet
 
     def setFixedStyleSheet(self, stylesheet: str):
         """
         设置样式表固定内容
         - 此后每次运行`setStyleSheet`方法时，都会在样式表前附加这段固定内容
         """
-        self._fixed_stylesheet = stylesheet
-        self._schedule_update()
+        self._stylesheet_fixed = stylesheet
+        self._stylesheet_dirty = True
+
+    def fixedStyleSheet(self):
+        '获取样式表固定内容'
+        return self._stylesheet_fixed
 
     def reloadStyleSheet(self):
-        """
-        重写样式表，创建新组件类使用，定义组件样式表
-        - 子类实现，自行调用
-        """
-        pass
+        """重新加载样式表，创建新组件类使用，定义组件样式表"""
+        if not self._stylesheet_dirty and self._stylesheet_cache: return self._stylesheet_cache
 
-    def _schedule_update(self):
-        """ 调度一次更新样式的方法，避免重复调用 """
+    def updateStyle(self):
+        '''
+        更新控件样式
+        - 调用`setStyleSheet`方法
+        - 同一帧只会刷新一次样式表
+        '''
         if self._can_update:
             self._can_update = False
-            QTimer.singleShot(0, self.updateStyleSheet)
-
-    def updateStyleSheet(self):
-        """ 更新样式表 """
-        self.setStyleSheet(self.reloadStyleSheet())
+            QTimer.singleShot(0, self.setStyleSheet)
 
 
     # region WidgetFlag
@@ -99,10 +113,10 @@ class ZWidget(QWidget):
 
 
 
-    # region SlotFunc
+    # region Slot
     def _theme_changed_handler(self, arg_1):
         '''
-        重写组件主题改变时的样式切换
+        主题改变时的样式切换
         - 接收到主题改变信号时自动调用
         '''
         pass
@@ -120,15 +134,22 @@ class ZWidget(QWidget):
 
     def _bg_color_a_handler(self, color_value):
         self._bg_color_a = ZColorTool.toCode(color_value)
-        self._schedule_update()
+        self.updateStyle()
 
     def _bg_color_b_handler(self, color_value):
         self._bg_color_b = ZColorTool.toCode(color_value)
-        self._schedule_update()
+        self.updateStyle()
 
     def _border_color_handler(self, color_value):
         self._border_color = ZColorTool.toCode(color_value)
-        self._schedule_update()
+        self.updateStyle()
+
+    def _colors_refresh_handler(self, arg):
+        '颜色刷新信号槽函数,用于`self._colors`的颜色'
+        if arg and self._color_sheet.isSheetNull() is False:
+            self._colors.overwrite(self._color_sheet.getSheet())
+
+
 
     # region Move
     def moveTo(self, x: int, y: int):

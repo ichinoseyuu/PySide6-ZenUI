@@ -1,11 +1,12 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
+from typing import overload
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.window.titlebar import ZTitlebar
 from ZenUI.component.window.grip import ResizeGrip
-from ZenUI.component.container.box import ZBox
-from ZenUI.core import Zen,ZMargins,ZQuickEffect,ZExpAnim,AnimGroup
+from ZenUI.component.window.panel import WindowPanel
+from ZenUI.core import Zen,ZMargins,ZQuickEffect,ZExpAnim,AnimGroup,ZenGlobal
 class ABCWindow(QWidget):
     '窗口抽象类'
     moved = Signal(object)
@@ -14,7 +15,7 @@ class ABCWindow(QWidget):
     def __init__(self,
                  parent: ZWidget = None,
                  name: str = None,
-                 shadow_width: int = 12,
+                 shadow_width: int = 8,
                  border_radius: int = 4,
                  grip_width: int = 5,
                  can_resize: bool = True):
@@ -43,17 +44,20 @@ class ABCWindow(QWidget):
         '窗口正常状态下的几何信息'
         self._init_anim()
         self._setup_ui()
+        self.setOpacity(0)
+        self.setOpacityTo(1.0)
 
 
     def _setup_ui(self):
         radius = self._border_radius
         margin = int(radius/2)
-        self._centerWidget = ZBox(parent=self,
-                         name="ZWindow",
+        self._centerWidget = WindowPanel(parent=self,
+                         name="_centerWidget",
                          fixed_stylesheet=f'border-radius:{radius}px;',
-                         style=ZBox.Style.Monochrome,
+                         style=WindowPanel.Style.Monochrome,
                          layout=Zen.Layout.Column,
                          margins=ZMargins(margin, margin, margin, margin))
+        self._centerWidget.updateStyle()
         self._topGrip = ResizeGrip(self, ResizeGrip.Edge.Top,self._grip_width)
         self._bottomGrip = ResizeGrip(self, ResizeGrip.Edge.Bottom,self._grip_width)
         self._leftGrip = ResizeGrip(self, ResizeGrip.Edge.Left,self._grip_width)
@@ -62,7 +66,7 @@ class ABCWindow(QWidget):
         self._topRightGrip = ResizeGrip(self, ResizeGrip.Edge.TopRight,self._grip_width)
         self._bottomLeftGrip = ResizeGrip(self, ResizeGrip.Edge.BottomLeft,self._grip_width)
         self._bottomRightGrip = ResizeGrip(self, ResizeGrip.Edge.BottomRight,self._grip_width)
-        ZQuickEffect.WidgetShadow.applyDropShadowOn(self._centerWidget, (0, 0, 0, 128), blur_radius=int(self._shadow_width))
+        ZQuickEffect.applyDropShadowOn(self._centerWidget, (0, 0, 0, 128), blur_radius=int(self._shadow_width*1.5))
         self._titlebar = ZTitlebar(self,self._shadow_width)
         self._centerWidget.layout().addWidget(self._titlebar)
 
@@ -101,7 +105,6 @@ class ABCWindow(QWidget):
             panel_geo.width(),                   # 面板宽度
             panel_geo.height()                   # 面板高度
         )
-        self._centerWidget.setContentsMargins(0,0,0,0)
         self._centerWidget.setFixedStyleSheet('border-radius: 0px;')
         self.resize(screen.size().width(), screen.size().height())
         self.moveTo(screen.geometry().x(), screen.geometry().y())
@@ -109,13 +112,11 @@ class ABCWindow(QWidget):
 
     def showNormal(self):
         """恢复窗口大小"""
-        radius = self._border_radius
-        margin = int(radius/2)
-        self._centerWidget.setContentsMargins(margin, margin, margin, margin)
-        self._centerWidget.setFixedStyleSheet(f'border-radius: {radius}px;')
+        self._centerWidget.setFixedStyleSheet(f'border-radius: {self._border_radius}px;')
         self.resizeTo(self.normalGeometry().size().width(),self.normalGeometry().size().height())
         self.moveTo(self.normalGeometry().topLeft().x(), self.normalGeometry().topLeft().y())
         self._ismaximized = False
+
 
     def isMaximized(self):
         '是否最大化'
@@ -162,6 +163,8 @@ class ABCWindow(QWidget):
     def setWindowTitle(self, arg__1):
         self._titlebar.setTitle(arg__1)
 
+    def sizeHint(self):
+        return self._centerWidget.sizeHint()
 
     # region SlotFunc
     def _move_anim_handler(self, arr):
@@ -246,23 +249,48 @@ class ABCWindow(QWidget):
             self.activateResizeAnim()
         else:
             self.resize(w, h)
-
-
+    @overload
+    def resize(self, size: QSize):
+        """重写 resize 方法，自动添加阴影宽度"""
+        pass
+    @overload
+    def resize(self, w: int, h: int):
+        """重写 resize 方法，自动添加阴影宽度"""
+        pass
     def resize(self, *args):
         """重写 resize 方法，自动添加阴影宽度"""
-        if len(args) == 1 and isinstance(args[0], QSize):
-            # resize(QSize)
-            size = args[0]
-            w = size.width() + self._shadow_width * 2
-            h = size.height() + self._shadow_width * 2
-            super().resize(w, h)
-        elif len(args) == 2 and isinstance(args[0], int) and isinstance(args[1], int):
-            # resize(width, height)
+        if len(args) == 1:
+            size = args[0] + QSize(self._shadow_width * 2, self._shadow_width * 2)
+            super().resize(size)
+        elif len(args) == 2 :
             w, h = args
             super().resize(w + self._shadow_width * 2, h + self._shadow_width * 2)
         else:
             raise TypeError("resize() takes 1 or 2 arguments, but {} were given".format(len(args)))
 
+    def setMinimumHeight(self, minh):
+        return super().setMinimumHeight(minh) + self._shadow_width * 2
+
+    def setMinimumWidth(self, minw):
+        return super().setMinimumWidth(minw) + self._shadow_width * 2
+
+    def setMaximumHeight(self, maxh):
+        return super().setMaximumHeight(maxh) + self._shadow_width * 2
+
+    def setMaximumWidth(self, maxw):
+        return super().setMaximumWidth(maxw) + self._shadow_width * 2
+
+    def setMinimumSize(self, *args):
+        if len(args) == 1 and isinstance(args[0], QSize):
+            super().setMinimumSize(args[0] + QSize(self._shadow_width * 2, self._shadow_width * 2))
+        elif len(args) == 2 and isinstance(args[0], int) and isinstance(args[1], int):
+            super().setMinimumSize(args[0] + self._shadow_width * 2, args[1] + self._shadow_width * 2)
+
+    def setMaximumSize(self, *args):
+        if len(args) == 1 and isinstance(args[0], QSize):
+            super().setMaximumSize(args[0] + QSize(self._shadow_width * 2, self._shadow_width * 2))
+        elif len(args) == 2 and isinstance(args[0], int) and isinstance(args[1], int):
+            super().setMaximumSize(args[0] + self._shadow_width * 2, args[1] + self._shadow_width * 2)
 
     def resizeEvent(self, event):
         """重写调整大小事件"""
@@ -338,7 +366,7 @@ class ABCWindow(QWidget):
         self._anim_resize.ticked.connect(self._resize_anim_handler)
 
         self._anim_opacity = ZExpAnim(self)
-        self._anim_opacity.setFactor(0.25)
+        self._anim_opacity.setFactor(0.2)
         self._anim_opacity.setBias(0.01)
         self._anim_opacity.ticked.connect(self._opacity_anim_handler)
 

@@ -1,11 +1,12 @@
 from PySide6.QtGui import QIcon
 from ZenUI import *
 
-class PageHome(ZBox):
+class PageHome(ZStackPage):
     def __init__(self,parent = None,name ='pageHome'):
         super().__init__(parent = parent,
                          name=name,
-                         style= ZBox.Style.MonochromeWithBorder,
+                         fixed_stylesheet="border-width: 1px;\nborder-style: solid;\nborder-radius:4px;",
+                         style= ZStackPage.Style.Monochrome|ZStackPage.Style.Border,
                          layout=Zen.Layout.Column,
                          margins=ZMargins(6, 6, 6, 6),
                          spacing=12)
@@ -43,7 +44,7 @@ class PageHome(ZBox):
                                  min_height=40,
                                  min_width=60,
                                  sizepolicy=(Zen.SizePolicy.Minimum, Zen.SizePolicy.Minimum),
-                                 idle_style=ZPushButton.IdleStyle.Transparent,
-                                 hover_style=ZPushButton.HoverStyle.ColorChange,
+                                 idle_style=ZPushButton.IdleStyle.None_,
+                                 hover_style=ZPushButton.HoverStyle.Color,
                                  pressed_style=ZPushButton.PressedStyle.Flash)
         self.contain_button.layout().addWidget(self.btn_nextpage)

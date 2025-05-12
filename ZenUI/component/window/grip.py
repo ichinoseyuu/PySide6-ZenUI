@@ -1,12 +1,12 @@
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
-from enum import Enum, auto
+from enum import IntEnum, auto
 from ZenUI.component.widget.widget import ZWidget
 
 class ResizeGrip(QWidget):
     '''调整大小手柄'''
-    class Edge(Enum):
+    class Edge(IntEnum):
         '''位置'''
         TopLeft = auto()
         '左上'
@@ -41,36 +41,36 @@ class ResizeGrip(QWidget):
 
     def _init_style(self):
         '初始化样式'
-        if self._position in (ResizeGrip.Edge.TopLeft, ResizeGrip.Edge.BottomRight):
+        if self._position in (self.Edge.TopLeft, self.Edge.BottomRight):
             self.setCursor(Qt.CursorShape.SizeFDiagCursor)
             self.setFixedSize(QSize(self._width, self._width))
 
-        elif self._position in (ResizeGrip.Edge.BottomLeft, ResizeGrip.Edge.TopRight):
+        elif self._position in (self.Edge.BottomLeft, self.Edge.TopRight):
             self.setCursor(Qt.CursorShape.SizeBDiagCursor)
             self.setFixedSize(QSize(self._width, self._width))
 
-        elif self._position in (ResizeGrip.Edge.Top, ResizeGrip.Edge.Bottom):
+        elif self._position in (self.Edge.Top, self.Edge.Bottom):
             self.setCursor(Qt.CursorShape.SizeVerCursor)
             self.setMaximumHeight(self._width)
             self.setMinimumHeight(self._width)
 
-        elif self._position in (ResizeGrip.Edge.Left, ResizeGrip.Edge.Right):
+        elif self._position in (self.Edge.Left, self.Edge.Right):
             self.setCursor(Qt.CursorShape.SizeHorCursor)
             self.setMaximumWidth(self._width)
             self.setMinimumWidth(self._width)
 
     def refreshCursor(self):
         '刷新光标'
-        if self._position in (ResizeGrip.Edge.TopLeft, ResizeGrip.Edge.BottomRight):
+        if self._position in (self.Edge.TopLeft, self.Edge.BottomRight):
             self.setCursor(Qt.CursorShape.SizeFDiagCursor)
 
-        elif self._position in (ResizeGrip.Edge.BottomLeft, ResizeGrip.Edge.TopRight):
+        elif self._position in (self.Edge.BottomLeft, self.Edge.TopRight):
             self.setCursor(Qt.CursorShape.SizeBDiagCursor)
 
-        elif self._position in (ResizeGrip.Edge.Top, ResizeGrip.Edge.Bottom):
+        elif self._position in (self.Edge.Top, self.Edge.Bottom):
             self.setCursor(Qt.CursorShape.SizeVerCursor)
 
-        elif self._position in (ResizeGrip.Edge.Left, ResizeGrip.Edge.Right):
+        elif self._position in (self.Edge.Left, self.Edge.Right):
             self.setCursor(Qt.CursorShape.SizeHorCursor)
 
     def mousePressEvent(self, event: QMouseEvent):
@@ -87,6 +87,7 @@ class ResizeGrip(QWidget):
             return
         delta = event.globalPos() - self._start_pos
         geo = self._start_geometry
+        # 根据位置计算新的窗口位置
         if self._position == self.Edge.TopLeft:
             new_geo = QRect(
                 geo.left() + delta.x(),
@@ -143,13 +144,36 @@ class ResizeGrip(QWidget):
                 geo.width() - delta.x(),
                 geo.height()
             )
+        # 分别获取最小尺寸
+        min_width = max(self.window().sizeHint().width(), self.window().minimumWidth())
+        min_height = max(self.window().sizeHint().height(), self.window().minimumHeight())
 
-        # 设置最小尺寸限制
-        min_width = self.window().minimumWidth()
-        min_height = self.window().minimumHeight()
-        if new_geo.width() >= min_width and new_geo.height() >= min_height:
-            self.window().setGeometry(new_geo)
+        # 分别限制宽度和高度
+        final_geo = QRect(new_geo)
+
+        # 处理宽度限制
+        if new_geo.width() < min_width:
+            if self._position in (self.Edge.Left, self.Edge.TopLeft, self.Edge.BottomLeft):
+                # 左侧拖拽时，固定右边界
+                final_geo.setLeft(final_geo.right() - min_width)
+            else:
+                # 右侧拖拽时，固定左边界
+                final_geo.setRight(final_geo.left() + min_width)
+
+        # 处理高度限制
+        if new_geo.height() < min_height:
+            if self._position in (self.Edge.Top, self.Edge.TopLeft, self.Edge.TopRight):
+                # 顶部拖拽时，固定底边
+                final_geo.setTop(final_geo.bottom() - min_height)
+            else:
+                # 底部拖拽时，固定顶边
+                final_geo.setBottom(final_geo.top() + min_height)
+
+        # 应用新的几何尺寸
+        if final_geo != geo:
+            self.window().setGeometry(final_geo)
         event.accept()
+
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         """处理鼠标释放事件"""
@@ -157,6 +181,7 @@ class ResizeGrip(QWidget):
         self._start_pos = None
         self._start_geometry = None
         event.accept()
+
 
     def enterEvent(self, event: QEnterEvent):
         """鼠标进入时显示对应的光标"""

@@ -3,13 +3,12 @@ from textwrap import dedent
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.layout.column import ZColumnLayout
 from ZenUI.component.layout.row import ZRowLayout
-from ZenUI.core import Zen,ZColorTool,ZColorSheet,ZMargins,ZColors
+from ZenUI.core import Zen,ZColorTool,ZMargins
 
-class ZBox(ZWidget):
+class WindowPanel(ZWidget):
     '''窗口面板'''
     class Style(IntFlag):
         '''背景样式'''
-        None_ = 0
         Monochrome = 1 << 0
         '纯色'
         Gradient = 1 << 1
@@ -21,19 +20,18 @@ class ZBox(ZWidget):
                  parent: ZWidget = None,
                  name: str = None,
                  fixed_stylesheet: str = None,
-                 style: Style = Style.None_,
+                 style: Style = Style.Monochrome,
                  layout: Zen.Layout = Zen.Layout.Column,
                  margins: ZMargins = ZMargins(0, 0, 0, 0),
                  spacing: int = 0,
                  alignment: Zen.Alignment = None):
         super().__init__(parent, name)
-        self._style = style
-        '背景样式'
         if fixed_stylesheet: self.setFixedStyleSheet(fixed_stylesheet)
+        self._style = style
         if layout == Zen.Layout.Row:
-            self.setLayout(ZRowLayout(parent=self,margins=margins,spacing=spacing,alignment=alignment))
+            self.setLayout(ZRowLayout(parent=self, margins=margins, spacing=spacing, alignment=alignment))
         if layout == Zen.Layout.Column:
-            self.setLayout(ZColumnLayout(parent=self,margins=margins,spacing=spacing,alignment=alignment))
+            self.setLayout(ZColumnLayout(parent=self, margins=margins, spacing=spacing, alignment=alignment))
         self._init_style()
         self.updateStyle()
 
@@ -46,7 +44,7 @@ class ZBox(ZWidget):
         if self._style & self.Style.Gradient:
             self.setWidgetFlag(Zen.WidgetFlag.GradientColor)
 
-        self._color_sheet.loadColorConfig(Zen.WidgetType.Box)
+        self._color_sheet.loadColorConfig(Zen.WidgetType.Window)
         self._colors.overwrite(self._color_sheet.getSheet())
         self._bg_color_a = self._colors.background_a
         self._bg_color_b = self._colors.background_b
@@ -60,17 +58,9 @@ class ZBox(ZWidget):
         super().reloadStyleSheet()
         if not self.objectName(): raise ValueError("Widget must have a name")
 
-        sheet = [f"#{self.objectName()}{{"]
+        sheet = [f'#{self.objectName()}{{']
 
         if self._stylesheet_fixed: sheet.append(self._stylesheet_fixed)
-
-        if self._style & self.Style.None_:
-            sheet = dedent(f'''\
-                background-color: transparent;
-                border: none;}}''')
-            self._stylesheet_cache = '\n'.join(sheet)
-            self._stylesheet_dirty = False
-            return self._stylesheet_cache
 
         if self._style & self.Style.Monochrome:
             sheet.append(f"background-color: {self._bg_color_a};")
@@ -93,8 +83,6 @@ class ZBox(ZWidget):
 
 
     def _theme_changed_handler(self, theme):
-        if self._style & self.Style.None_: return
-
         self._colors.overwrite(self._color_sheet.getSheet(theme))
 
         if self._style & self.Style.Monochrome:

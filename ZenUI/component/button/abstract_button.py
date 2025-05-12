@@ -4,9 +4,11 @@ from PySide6.QtGui import *
 from typing import overload
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.widget.colorlayer import ZColorLayer
-from ZenUI.core import ZExpAnim,AnimGroup,ZColorTool,ZenGlobal,Zen,ZSize
+from ZenUI.core import ZExpAnim,AnimGroup,ZColorTool,ZenGlobal,Zen,ZSize,ZColorSheet,ZColors
 class ABCButton(QPushButton):
     '''按钮抽象类'''
+    moved = Signal(object)
+    resized = Signal(object)
     hovered = Signal() # 悬停信号
     leaved = Signal() # 离开信号
     def __init__(self,
@@ -16,6 +18,7 @@ class ABCButton(QPushButton):
                  icon: QIcon = None,
                  icon_size: ZSize = None,
                  tooltip: str = None,
+                 display_tooltip_immediate: bool = False,
                  min_width: int = None,
                  min_height: int = None,
                  min_size: ZSize = None,
@@ -23,9 +26,7 @@ class ABCButton(QPushButton):
                  max_height: int = None,
                  max_size: ZSize = None,
                  fixed_size: ZSize = None,
-                 sizepolicy: tuple[Zen.SizePolicy, Zen.SizePolicy] = None,
-                 border_radius: int = 2,
-                 display_tooltip_immediate: bool = False):
+                 sizepolicy: tuple[Zen.SizePolicy, Zen.SizePolicy] = None):
         super().__init__(parent=parent)
         # 父类参数初始化
         if name: self.setObjectName(name)
@@ -41,16 +42,37 @@ class ABCButton(QPushButton):
         if fixed_size: self.setFixedSize(fixed_size.toQsize())
         if sizepolicy: self.setSizePolicy(sizepolicy[0].value, sizepolicy[1].value)
 
+        # 信号绑定
+        self.hovered.connect(self._hovered_handler) # 链接悬停信号,用于实现悬停动画
+        self.pressed.connect(self._pressed_handler) # 链接按钮按下信号,用于实现按下动画
+        self.released.connect(self._released_handler) # 链接按钮释放信号,用于实现释放动画
+        self.clicked.connect(self._clicked_handler) # 链接按钮按下信号,用于实现点击动画
+        self.leaved.connect(self._leaved_handler) # 链接按钮离开信号,用于实现离开动画
+
+        self.setAttribute(Qt.WidgetAttribute.WA_Hover) # 启用 hover 事件
+        self.setAttribute(Qt.WidgetAttribute.WA_NoMousePropagation) # 防止鼠标事件传播到父组件
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)  # 确保鼠标事件不会穿透到父组件
+        self.installEventFilter(self)
+
         # Widget 特性
-        self._color_sheet = None 
+        self._color_sheet = ZColorSheet(self)
         '颜色表，用于存储组件颜色，如背景色，边框色等'
+        self._color_sheet.colorChanged.connect(self._colors_refresh_handler) #颜色改变时刷新样式
+        self._colors = ZColors()
+        '用于快速访问颜色'
         self._theme_manager = ZenGlobal.ui.theme_manager 
         '主题管理器，用于接受主题切换的信号'
         self._theme_manager.themeChanged.connect(self._theme_changed_handler) # 主题切换信号连接
         self._widget_flags = {}
         '组件属性，控制是否具备动画等'
-        self._fixed_stylesheet = ''  # 每次调用setStyleSheet方法时，都会在样式表前附加这段固定内容
+        self._stylesheet_fixed = ''  # 每次调用setStyleSheet方法时，都会在样式表前附加这段固定内容
         '固有样式表'
+        self._stylesheet = ''
+        '控件样式表'
+        self._stylesheet_cache = ''
+        '样式表缓存，更新样式时使用'
+        self._stylesheet_dirty = True
+        '样式表是否被更改'
         self._can_update = True
         '是否可以更新样式表'
         self._x1, self._y1, self._x2, self._y2 = None, None, None, None
@@ -65,13 +87,13 @@ class ABCButton(QPushButton):
         '渐变锚点，用于控制渐变方向和范围'
         self._border_color = '#00000000'
         '边框颜色'
-        self._border_radius = border_radius
-        '圆角半径'
+
+        self._init_anim() # 初始化动画
 
         # PushButton 特性
         self._layer_hover = ZColorLayer(self)
         '悬停层'
-        self._layer_press = ZColorLayer(self)
+        self._layer_pressed = ZColorLayer(self)
         '按下层'
         self._tooltip = ''
         '提示文本'
@@ -80,16 +102,16 @@ class ABCButton(QPushButton):
         self._icon_color = '#000000'
         '图标颜色'
 
-        self._icon_color_is_font_color = False
-        '图标颜色是否为字体颜色'
         self._enabled_repetitive_clicking = False
         '是否启用重复点击'
-        self._display_tooltip_immediate = display_tooltip_immediate
+        self._immediate_display_tooltip = display_tooltip_immediate
         '是否立即显示提示文本'
+
         self._repeat_click_timer = QTimer(self)
         '重复点击计时器，用于实现重复点击'
         self._repeat_click_timer.setInterval(50)
-        self._repeat_click_timer.timeout.connect(self.clicked.emit) 
+        self._repeat_click_timer.timeout.connect(self.clicked.emit)
+
         self._repeat_click_trigger = QTimer(self) 
         '重复点击触发器，点击后延时 500ms 触发重复点击计时器'
         self._repeat_click_trigger.setSingleShot(True)
@@ -101,25 +123,9 @@ class ABCButton(QPushButton):
         self._tooltip_timer.setSingleShot(True)  # 设置为单次触发
         self._tooltip_timer.setInterval(500)  # 设置500ms延迟
         self._tooltip_timer.timeout.connect(self._show_tooltip)  # 连接显示tooltip的槽函数
-        self.setAttribute(Qt.WidgetAttribute.WA_Hover) # 启用 hover 事件
-        self.setAttribute(Qt.WidgetAttribute.WA_NoMousePropagation) # 防止鼠标事件传播到父组件
-        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)  # 确保鼠标事件不会穿透到父组件
-        self.installEventFilter(self)
-
-        self._init_anim()
 
         # 参数初始化
         if tooltip: self._tooltip = tooltip
-
-        # 信号绑定
-        self.hovered.connect(self._hovered_handler) # 链接悬停信号,用于实现悬停动画
-        self.pressed.connect(self._pressed_handler) # 链接按钮按下信号,用于实现按下动画
-        self.released.connect(self._released_handler) # 链接按钮释放信号,用于实现释放动画
-        self.clicked.connect(self._clicked_handler) # 链接按钮按下信号,用于实现点击动画
-        self.leaved.connect(self._leaved_handler) # 链接按钮离开信号,用于实现离开动画
-
-
-
 
 
 
@@ -131,41 +137,77 @@ class ABCButton(QPushButton):
         """
         pass
 
-    def setStyleSheet(self, stylesheet: str):
+    def setStyleSheet(self):
         """设置样式表"""
-        super().setStyleSheet(stylesheet)
+        self._stylesheet = self.reloadStyleSheet()
         self.setIconColor()
-        #print(new_stylesheet)
+        super().setStyleSheet(self._stylesheet)
         self._can_update = True
+
+    def styleSheet(self):
+        '获取样式表'
+        return self._stylesheet
 
     def setFixedStyleSheet(self, stylesheet: str):
         """
         设置样式表固定内容
         - 此后每次运行`setStyleSheet`方法时，都会在样式表前附加这段固定内容
         """
-        self._fixed_stylesheet = stylesheet
-        self._layer_press._fixed_stylesheet = stylesheet
-        self._layer_hover._fixed_stylesheet = stylesheet
+        self._stylesheet_fixed = stylesheet
+        self._stylesheet_dirty = True
 
+    def fixedStyleSheet(self):
+        '获取样式表固定内容'
+        return self._stylesheet_fixed
 
     def reloadStyleSheet(self):
-        """
-        重新加载样式表，创建新组件类使用，定义组件样式表
-        - 子类实现，基类初始化自行调用
-        - 每次调用`updateStyleSheet`方法时都会调用
-        - 用于更新获取样式表
-        """
-        pass
+        """重新加载样式表，创建新组件类使用，定义组件样式表"""
+        if not self._stylesheet_dirty and self._stylesheet_cache: return self._stylesheet_cache
 
-    def _schedule_update(self):
-        """ 调度一次更新样式的方法，避免重复调用 """
+    def updateStyle(self):
+        '''
+        更新控件样式
+        - 调用`setStyleSheet`方法
+        - 同一帧只会刷新一次样式表
+        '''
         if self._can_update:
             self._can_update = False
-            QTimer.singleShot(0, self.updateStyleSheet)
+            QTimer.singleShot(0, self.setStyleSheet)
 
-    def updateStyleSheet(self):
-        """ 更新样式表 """
-        self.setStyleSheet(self.reloadStyleSheet())
+    # region Other
+    def setToolTip(self, text: str): 
+        """设置工具提示"""
+        # 劫持这个按钮的tooltip，只能设置outfit的tooltip
+        self._tooltip = text
+
+    def toolTip(self): 
+        """获取工具提示"""
+        return self._tooltip
+
+    def _show_tooltip(self):
+        """显示工具提示"""
+        pass
+
+    def _hide_tooltip(self):
+        """隐藏工具提示"""
+        pass
+
+    def setRepetitiveClicking(self, state):
+        """设置是否启用重复点击"""
+        self._enabled_repetitive_clicking = state
+
+    def hoverLayer(self):
+        """获取悬浮层"""
+        return self._layer_hover
+
+    def pressLayer(self):
+        """获取按下层"""
+        return self._layer_pressed
+
+    def minimumSizeHint(self):
+        return QSize(48, 32)
+
+
 
     # region WidgetFlag
     def setWidgetFlag(self, flag:Zen.WidgetFlag, on: bool = True):
@@ -183,7 +225,7 @@ class ABCButton(QPushButton):
     # region Slot
     def _theme_changed_handler(self, arg_1):
         '''
-        重写组件主题改变时的样式切换
+        主题改变时的样式切换
         - 接收到主题改变信号时自动调用
         '''
         pass
@@ -198,23 +240,28 @@ class ABCButton(QPushButton):
 
     def _bg_color_a_handler(self, color_value):
         self._bg_color_a = ZColorTool.toCode(color_value)
-        self._schedule_update()
+        self.updateStyle()
 
     def _bg_color_b_handler(self, color_value):
         self._bg_color_b = ZColorTool.toCode(color_value)
-        self._schedule_update()
+        self.updateStyle()
 
     def _border_color_handler(self, color_value):
         self._border_color = ZColorTool.toCode(color_value)
-        self._schedule_update()
+        self.updateStyle()
 
     def _text_color_handler(self, color_value):
         self._text_color = ZColorTool.toCode(color_value)
-        self._schedule_update()
+        self.updateStyle()
 
     def _icon_color_handler(self, color_value):
         self._icon_color = ZColorTool.toCode(color_value)
-        self._schedule_update()
+        self.updateStyle()
+
+    def _colors_refresh_handler(self, arg):
+        '颜色刷新信号槽函数,用于`self._colors`的颜色'
+        if arg and self._color_sheet.isSheetNull() is False:
+            self._colors.overwrite(self._color_sheet.getSheet())
 
     def _hovered_handler(self):
         '''悬停信号槽函数'''
@@ -318,10 +365,9 @@ class ABCButton(QPushButton):
         # resizeEvent 事件一旦被调用，控件的尺寸会瞬间改变
         # 并且会立即调用动画的 setCurrent 方法，设置动画开始值为 event 中的 size()
         super().resizeEvent(event)
-        size = event.size()
-        self._layer_hover.resize(size)
-        self._layer_press.resize(size)
-        w, h = size.width(), size.height()
+        w, h = event.size().width(), event.size().height()
+        self._layer_hover.resize(w, h)
+        self._layer_pressed.resize(w, h)
         self._anim_resize.setCurrent([w, h])
         if self.isWidgetFlagOn(Zen.WidgetFlag.EnableAnimationSignals):
             self.resized.emit([w, h])
@@ -380,7 +426,7 @@ class ABCButton(QPushButton):
             y2: 渐变结束点 纵坐标
         """
         self._gradient_anchor = [x1, y1, x2, y2]
-        self._schedule_update()
+        self.updateStyle()
 
     def gradientAnchor(self):
         """获取渐变锚点"""
@@ -432,9 +478,10 @@ class ABCButton(QPushButton):
             return
         icon = self.icon()
         if not icon: return
-        if self._icon_color_is_font_color: # 如果图标颜色与字体颜色相同，则直接使用字体颜色
-            color = self._text_color  # color = self.palette().color(self.palette().ColorRole.Text)  # 获取当前字体颜色
-        else: color = self._icon_color
+        # if self._icon_color_is_font_color: # 如果图标颜色与字体颜色相同，则直接使用字体颜色
+        #     color = self._text_color  # color = self.palette().color(self.palette().ColorRole.Text)  # 获取当前字体颜色
+        # else: color = self._icon_color
+        color = self._icon_color
         if self.isCheckable():
             # 获取每种状态下的图标
             pixmap_off = icon.pixmap(self.iconSize(), QIcon.Mode.Normal, QIcon.State.Off)
@@ -567,43 +614,6 @@ class ABCButton(QPushButton):
     def AnimGroup(self):
         """返回动画组"""
         return self._anim_group
-
-
-    # region Other
-    def setToolTip(self, text: str): 
-        """设置工具提示"""
-        # 劫持这个按钮的tooltip，只能设置outfit的tooltip
-        self._tooltip = text
-
-    def toolTip(self): 
-        """获取工具提示"""
-        return self._tooltip
-
-    def _show_tooltip(self):
-        """显示工具提示"""
-        pass
-
-    def _hide_tooltip(self):
-        """隐藏工具提示"""
-        pass
-
-    def setRepetitiveClicking(self, state):
-        """设置是否启用重复点击"""
-        self._enabled_repetitive_clicking = state
-
-
-    def pressLayer(self):
-        """获取按下层"""
-        return self._layer_press
-
-
-    def hoverLayer(self):
-        """获取悬浮层"""
-        return self._layer_hover
-
-
-    def minimumSizeHint(self):
-        return QSize(48, 32)
 
     # region Event
     def hideEvent(self, a0):

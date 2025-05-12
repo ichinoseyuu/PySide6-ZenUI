@@ -1,15 +1,16 @@
 from PySide6.QtGui import QResizeEvent
-
 from typing import overload
 from ZenUI.component.widget.widget import ZWidget
+from ZenUI.component.stackpanel.stackpage import ZStackPage
 from ZenUI.core import ZPoint
-class ZStackContainer(ZWidget):
-    '''堆叠容器'''
+
+class ZStackPanel(ZWidget):
+    '''堆叠面板'''
     def __init__(self,
                  parent: ZWidget = None,
                  name: str = None,
-                 start_point: ZPoint = ZPoint(0, 20),
-                 page_factor: float = 0.4,
+                 start_point: ZPoint = ZPoint(0, 40),
+                 page_factor: float = 0.25,
                  page_bias: float = 1,
                  hide_last_page: bool = True
                  ):
@@ -24,7 +25,7 @@ class ZStackContainer(ZWidget):
         self._hide_last_page = hide_last_page # 是否隐藏上一个页面
 
 
-    def addPage(self, page: ZWidget, cover: bool = False, anim: bool = False):
+    def addPage(self, page: ZStackPage, cover: bool = False, anim: bool = False):
         '''添加页面
         Args:
             page (ZWidget): 页面
@@ -41,7 +42,7 @@ class ZStackContainer(ZWidget):
         self._page_count += 1
 
 
-    def _handle_non_cover_page(self, page: ZWidget):
+    def _handle_non_cover_page(self, page: ZStackPage):
         """处理不覆盖页面的显示逻辑"""
         if self._current_page is None:
             self._current_page = page
@@ -81,7 +82,7 @@ class ZStackContainer(ZWidget):
         '''将索引为`index`的页面设置为当前页面'''
         pass
     @overload
-    def setCurrentPage(self, page: ZWidget, anim: bool = True) -> None:
+    def setCurrentPage(self, page: ZStackPage, anim: bool = True) -> None:
         '''将`page`设置为当前页面'''
         pass
 
@@ -91,7 +92,7 @@ class ZStackContainer(ZWidget):
             page = self.page(arg)
             if page is not None:
                 self.setCurrentPage(page, anim)
-        elif isinstance(arg, ZWidget):
+        elif isinstance(arg, ZStackPage):
             self._last_page = self._current_page
             self._current_page = arg
             self._current_page.resize(self.width(), self.height())
@@ -131,11 +132,11 @@ class ZStackContainer(ZWidget):
 
 
     @overload
-    def page(self, index: int) -> ZWidget|None:
+    def page(self, index: int) -> ZStackPage|None:
         '''获取页面'''
         pass
     @overload
-    def page(self, name: str) -> ZWidget|None:
+    def page(self, name: str) -> ZStackPage|None:
         '''获取页面'''
         pass
 
@@ -165,6 +166,8 @@ class ZStackContainer(ZWidget):
             i._anim_move.setFactor(factor)
             i._anim_move.setBias(bias)
 
+    def sizeHint(self):
+        return self._current_page.sizeHint()
 
     def resizeEvent(self, event:QResizeEvent):
         super().resizeEvent(event)

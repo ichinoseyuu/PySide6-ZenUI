@@ -2,10 +2,10 @@ from PySide6.QtWidgets import QScrollArea, QWidget
 from PySide6.QtCore import Qt
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.layout.column import ZColumnLayout
-from ZenUI.component.container.box import ZContainer
+from ZenUI.component.container.box import ZBox
 from ZenUI.core import Zen, ZColorSheet, ZColorTool
 
-class ZScrollWidget(ZWidget):
+class ZScrollPage(ZWidget):
     """可滚动容器组件"""
     def __init__(self,
                  parent: ZWidget = None,
@@ -18,15 +18,15 @@ class ZScrollWidget(ZWidget):
         self._scroll_area.setFrameShape(QScrollArea.NoFrame)
 
         # 创建内容容器
-        self._content = ZContainer(self._scroll_area)
+        self._content = ZBox(self._scroll_area)
         self._scroll_area.setWidget(self._content)
-        
+
         # 设置滚动条策略
         if scroll_policy:
-            h_policy, v_policy = scroll_policy
+            h_policy, v_policy = scroll_policy[0].value, scroll_policy[1].value
             self._scroll_area.setHorizontalScrollBarPolicy(h_policy)
             self._scroll_area.setVerticalScrollBarPolicy(v_policy)
-        
+
         # 初始化布局
         super().setLayout(ZColumnLayout(self))
         self.layout().addWidget(self._scroll_area)
@@ -72,22 +72,22 @@ class ZScrollWidget(ZWidget):
     def scrollArea(self) -> QScrollArea:
         """获取滚动区域"""
         return self._scroll_area
-    
+
     def setScrollBarPolicy(self, 
                           horizontal: Zen.ScrollBarPolicy, 
                           vertical: Zen.ScrollBarPolicy):
         """设置滚动条显示策略"""
-        self._scroll_area.setHorizontalScrollBarPolicy(horizontal)
-        self._scroll_area.setVerticalScrollBarPolicy(vertical)
-    
+        self._scroll_area.setHorizontalScrollBarPolicy(horizontal.value)
+        self._scroll_area.setVerticalScrollBarPolicy(vertical.value)
+
     def ensureWidgetVisible(self, widget: QWidget):
         """确保指定控件在可视区域内"""
         self._scroll_area.ensureWidgetVisible(widget)
-        
+
     def scrollToTop(self):
         """滚动到顶部"""
         self._scroll_area.verticalScrollBar().setValue(0)
-        
+
     def scrollToBottom(self):
         """滚动到底部"""
         self._scroll_area.verticalScrollBar().setValue(

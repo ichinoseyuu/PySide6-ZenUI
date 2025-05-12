@@ -1,8 +1,10 @@
-from typing import Union, Optional, Dict, overload
+from typing import Union, Optional, Dict,ClassVar, overload
+from dataclasses import dataclass
 import numpy
 import re
 import copy
 from ZenUI.core.enumrates.zen import Zen
+
 class ZColorTool:
     """颜色工具类，提供颜色转换、颜色验证等功能"""
     @staticmethod
@@ -144,7 +146,7 @@ class ZThemeColorConfig(ZColorConfig):
                         Zen.ColorRole.IconPressed: '#ff63469f',
                         Zen.ColorRole.Text: '#ffdcdcdc',
                         Zen.ColorRole.TextHover: '#ff63469f',
-                        Zen.ColorRole.TextPressed: '#ffdcdcdc'
+                        Zen.ColorRole.TextPressed: '#ff63469f'
                         })
 
         self.setColors(Zen.WidgetType.PushButton, Zen.Theme.Light,
@@ -211,7 +213,7 @@ class ZThemeColorConfig(ZColorConfig):
                         })
 
         self.setColors(Zen.WidgetType.TextLabel, Zen.Theme.Dark,
-                       {Zen.ColorRole.Text: '#ffffffff'})
+                       {Zen.ColorRole.Text: '#ffdcdcdc'})
 
         self.setColors(Zen.WidgetType.TextLabel, Zen.Theme.Light,
                        {Zen.ColorRole.Text: '#ff313131'})
@@ -219,13 +221,13 @@ class ZThemeColorConfig(ZColorConfig):
         self.setColors(Zen.WidgetType.Box, Zen.Theme.Dark,
                        {Zen.ColorRole.Background_A: '#ff202020',
                         Zen.ColorRole.Background_B: '#ff202020',
-                        Zen.ColorRole.Border: '#ff4e4e4e'
+                        Zen.ColorRole.Border: '#ff1d1d1d'
                         })
 
         self.setColors(Zen.WidgetType.Box, Zen.Theme.Light,
                        {Zen.ColorRole.Background_A: '#fff3f3f3',
                         Zen.ColorRole.Background_B: '#fff3f3f3',
-                        Zen.ColorRole.Border: '#ff9f9f9f'
+                        Zen.ColorRole.Border: '#ffe5e5e5'
                         })
 
         self.setColors(Zen.WidgetType.Drawer, Zen.Theme.Dark,
@@ -240,6 +242,18 @@ class ZThemeColorConfig(ZColorConfig):
                         Zen.ColorRole.Border: '#ff9f9f9f'
                         })
 
+        self.setColors(Zen.WidgetType.StackPage, Zen.Theme.Dark,
+                       {Zen.ColorRole.Background_A: '#ff272727',
+                        Zen.ColorRole.Background_B: '#ff272727',
+                        Zen.ColorRole.Border: '#ff1d1d1d'
+                        })
+
+        self.setColors(Zen.WidgetType.StackPage, Zen.Theme.Light,
+                       {Zen.ColorRole.Background_A: '#fff9f9f9',
+                        Zen.ColorRole.Background_B: '#fff9f9f9',
+                        Zen.ColorRole.Border: '#ffe5e5e5'
+                        })
+
         self.setColors(Zen.WidgetType.Titlebar, Zen.Theme.Dark,
                        {Zen.ColorRole.Background_A: '#ff202020',
                         Zen.ColorRole.Border: '#00161616'
@@ -252,28 +266,27 @@ class ZThemeColorConfig(ZColorConfig):
 
         self.setColors(Zen.WidgetType.ToolTip, Zen.Theme.Dark,
                        {Zen.ColorRole.Background_A: '#ff202020',
-                        Zen.ColorRole.Border: '#00161616',
+                        Zen.ColorRole.Border: '#ff1d1d1d',
                         Zen.ColorRole.Flash: '#7fffffff'
                         })
 
         self.setColors(Zen.WidgetType.ToolTip, Zen.Theme.Light,
                        {Zen.ColorRole.Background_A: '#fff3f3f3',
-                        Zen.ColorRole.Border: '#00e6e6e6',
+                        Zen.ColorRole.Border: '#ffe5e5e5',
                         Zen.ColorRole.Flash: '#7f999999'
                         })
 
         self.setColors(Zen.WidgetType.Window, Zen.Theme.Dark,
                        {Zen.ColorRole.Background_A: '#ff202020',
                         Zen.ColorRole.Background_B: '#ff202020',
-                        Zen.ColorRole.Border: '#ff4e4e4e'
+                        Zen.ColorRole.Border: '#ff1d1d1d'
                         })
 
         self.setColors(Zen.WidgetType.Window, Zen.Theme.Light,
                        {Zen.ColorRole.Background_A: '#fff3f3f3',
                         Zen.ColorRole.Background_B: '#fff3f3f3',
-                        Zen.ColorRole.Border: '#ff9f9f9f'
+                        Zen.ColorRole.Border: '#ffe5e5e5'
                         })
-
 class ZColorSheet:
     """每个控件的自己的颜色表，同类型控件之间独立，需要从`ColorConfig`中获取相应的颜色表"""
     def __init__(self, parent, widget_type: Zen.WidgetType):
@@ -336,3 +349,24 @@ class ZColorSheet:
                 self.parent._theme_changed_handler(theme)
         else:
             raise ValueError("Invalid number of arguments. Must be 2 or 3.")
+
+
+
+@dataclass
+class ZColors:
+    """颜色数据类，表示某个控件的某个主题的所有颜色"""
+    @classmethod
+    def generate_color_map(cls) -> Dict[str, str]:
+        """根据ColorRole枚举自动生成颜色映射"""
+        return {
+            role.name.lower(): role.name
+            for role in Zen.ColorRole
+        }
+    # 使用类方法生成color_map
+    _color_map: ClassVar[Dict[str, str]] = generate_color_map()
+
+    def __init__(self, color_dict: Dict[Zen.ColorRole, str]):
+        """从字典创建实例"""
+        for attr_name, role_name in self._color_map.items():
+            role = getattr(Zen.ColorRole, role_name)
+            setattr(self, attr_name, color_dict.get(role))

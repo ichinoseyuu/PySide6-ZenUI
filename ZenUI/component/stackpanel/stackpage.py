@@ -3,9 +3,9 @@ from textwrap import dedent
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.layout.column import ZColumnLayout
 from ZenUI.component.layout.row import ZRowLayout
-from ZenUI.core import Zen,ZColorTool,ZColorSheet,ZMargins,ZColors
+from ZenUI.core import Zen,ZColorTool,ZMargins
 
-class ZBox(ZWidget):
+class ZStackPage(ZWidget):
     '''窗口面板'''
     class Style(IntFlag):
         '''背景样式'''
@@ -21,7 +21,7 @@ class ZBox(ZWidget):
                  parent: ZWidget = None,
                  name: str = None,
                  fixed_stylesheet: str = None,
-                 style: Style = Style.None_,
+                 style: Style = Style.Monochrome|Style.Border,
                  layout: Zen.Layout = Zen.Layout.Column,
                  margins: ZMargins = ZMargins(0, 0, 0, 0),
                  spacing: int = 0,
@@ -46,7 +46,7 @@ class ZBox(ZWidget):
         if self._style & self.Style.Gradient:
             self.setWidgetFlag(Zen.WidgetFlag.GradientColor)
 
-        self._color_sheet.loadColorConfig(Zen.WidgetType.Box)
+        self._color_sheet.loadColorConfig(Zen.WidgetType.StackPage)
         self._colors.overwrite(self._color_sheet.getSheet())
         self._bg_color_a = self._colors.background_a
         self._bg_color_b = self._colors.background_b
@@ -93,6 +93,8 @@ class ZBox(ZWidget):
 
 
     def _theme_changed_handler(self, theme):
+        super()._theme_changed_handler(theme)
+
         if self._style & self.Style.None_: return
 
         self._colors.overwrite(self._color_sheet.getSheet(theme))

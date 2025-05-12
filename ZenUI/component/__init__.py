@@ -7,7 +7,7 @@ from .button.togglebutton import ZToggleButton
 
 from .container.box import ZBox
 from .container.drawer import ZDrawer
-from .container.stackcontainer import ZStackContainer
+from .container.scrollpage import ZScrollPage
 
 from .label.text_label import ZTextLabel
 from .label.iamge_label import ZImageLabel
@@ -20,10 +20,15 @@ from .layout.spacer import ZSpacer,ZRowSpacer,ZColumnSpacer
 
 from .navigationbar.navigationbar import ZNavigationBar
 
+from .stackpanel.stackpanel import ZStackPanel
+from .stackpanel.stackpage import ZStackPage
+
 from .tooltip.tooltip import ZToolTip
 
 from .window.titlebar import ZTitlebar
 from .window.window import ZWindow
 from .window.mainwindow import ZMainWindow
+
+from .presets.presets import ZQuickPresets
 
 

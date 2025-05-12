@@ -1,11 +1,11 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from enum import Enum, auto
+from enum import IntEnum,Enum,IntFlag,auto
 
 class Zen:
     """ ZenUI的各种枚举类型"""
-    class Theme(Enum):
+    class Theme(IntEnum):
         "主题类型"
         Light = auto()
         '浅色主题'
@@ -13,7 +13,7 @@ class Zen:
         '深色主题'
 
 
-    class WidgetFlag(Enum):
+    class WidgetFlag(IntEnum):
         '控件标志'
         FlashOnHintUpdated = auto()
         '在工具提示被重新设置时，使工具提示闪烁'
@@ -37,11 +37,11 @@ class Zen:
         '启用渐变'
 
 
-    class ColorRole(Enum):
+    class ColorRole(IntEnum):
         '颜色对象'
-        Background_A = auto()
+        BackgroundA = auto()
         '背景颜色A'
-        Background_B = auto()
+        BackgroundB = auto()
         '背景颜色B'
         Hover= auto()
         '悬停时背景颜色'
@@ -49,9 +49,9 @@ class Zen:
         '按下时背景颜色'
         Flash = auto()
         '闪烁时背景颜色'
-        Selected_A = auto()
+        SelectedA = auto()
         '选中时背景颜色A'
-        Selected_B = auto()
+        SelectedB = auto()
         '选中时背景颜色B'
         Border = auto()
         '边框颜色'
@@ -77,11 +77,11 @@ class Zen:
         '按下时图标颜色'
         IconSelected = auto()
         '选中时图标颜色'
-        TabSelected = auto()
-        '选中时标签颜色'
+        IndicatorSelected = auto()
+        '指示条选中时颜色'
 
 
-    class WidgetType(Enum):
+    class WidgetType(IntEnum):
         '''控件类型'''
         PushButton = auto()
         '按钮控件'
@@ -91,6 +91,8 @@ class Zen:
         '盒子控件'
         Drawer = auto()
         '抽屉控件'
+        StackPage = auto()
+        '堆叠页面控件'
         TextLabel = auto()
         '文字标签控件'
         Titlebar = auto()
@@ -101,7 +103,7 @@ class Zen:
         '窗口控件'
 
 
-    class Layout(Enum):
+    class Layout(IntEnum):
         '''布局类型'''
         Row = auto()
         '行布局'
@@ -154,7 +156,7 @@ class Zen:
         Ignored = QSizePolicy.Policy.Ignored
 
 
-    class Position(Enum):
+    class Position(IntEnum):
         """位置类型"""
         Left = auto()
         Right = auto()
@@ -162,7 +164,7 @@ class Zen:
         Bottom = auto()
 
 
-    class Direction(Enum):
+    class Direction(IntEnum):
         """方向类型"""
         LeftToRight = auto()
         RightToLeft = auto()
@@ -172,7 +174,7 @@ class Zen:
         Vertical = auto()
 
 
-    class State(Enum):
+    class State(IntEnum):
         """控件状态"""
         Normal = auto()
         Expand = auto()

@@ -1,52 +1,47 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from enum import Enum, auto
+from PySide6.QtGui import QIcon
+from enum import IntFlag
 from textwrap import dedent
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.component.button.abstract_button import ABCButton
-from ZenUI.core import ZColorTool,ZenGlobal,Zen,ZSize,ZColorSheet
+from ZenUI.core import ZColorTool,ZenGlobal,Zen,ZSize,ZColorSheet,ZColors
+
 class ZPushButton(ABCButton):
     '''按钮'''
-    class IdleStyle(Enum):
+    class IdleStyle(IntFlag):
         '''闲置样式'''
-        Monochrome = auto()
+        None_ = 0 #0b0
+        Monochrome = 1 << 0  #0b1
         '单色背景'
-        Gradient = auto()
+        Gradient = 1 << 1 #0b10
         '渐变背景'
-        MonochromeWithBorder = auto()
-        '单色背景+边框'
-        Border = auto()
-        '仅边框'
-        Transparent = auto()
-        '透明'
+        Border = 1 << 2 #0b100
+        '边框'
 
-    class HoverStyle(Enum):
+    class HoverStyle(IntFlag):
         '''悬停样式'''
-        ColorChange = auto()
+        None_ = 0
+        Color = 1 << 0
         '背景颜色变化'
-        IconTextColorChange = auto()
-        '文字和图片颜色变化'
-        AddBorder = auto()
+        Icon = 1 << 1
+        '图片颜色变化'
+        Text = 1 << 2
+        '文字颜色变化'
+        Border = 1 << 3
         '添加边框'
-        SizeIncrease = auto()
-        '变大'
-        Transparent = auto()
-        '透明'
 
-    class PressedStyle(Enum):
+    class PressedStyle(IntFlag):
         '''按下样式'''
-        ColorChange = auto()
+        None_ = 0
+        Color = 1 << 0
         '背景颜色变化'
-        Flash = auto()
+        Flash = 1 << 1
         '闪烁'
-        IconTextColorChange = auto()
-        '文字和图片颜色变化'
-        SizeDecrease = auto()
-        '变小'
-        Transparent = auto()
-        '透明'
-
+        Icon = 1 << 2
+        '图片颜色变化'
+        Text = 1 << 3
+        '文字颜色变化'
+        Border = 1 << 4
+        '添加边框'
     def __init__(self,
                  parent: ZWidget = None,
                  name: str = None,
@@ -62,17 +57,20 @@ class ZPushButton(ABCButton):
                  max_size: ZSize = None,
                  fixed_size: ZSize = None,
                  sizepolicy: tuple[Zen.SizePolicy, Zen.SizePolicy] = None,
-                 border_radius: int = 2,
                  display_tooltip_immediate: bool = False,
+                 fixed_stylesheet: str = None,
+                 hover_stylesheet: str = None,
+                 pressed_stylesheet: str = None,
                  idle_style: IdleStyle = IdleStyle.Gradient,
-                 hover_style: HoverStyle = HoverStyle.ColorChange,
-                 pressed_style: PressedStyle = PressedStyle.ColorChange):
+                 hover_style: HoverStyle = HoverStyle.Color,
+                 pressed_style: PressedStyle = PressedStyle.Color):
         super().__init__(parent=parent,
                          name=name,
                          text=text,
                          icon=icon,
                          icon_size=icon_size,
                          tooltip=tooltip,
+                         display_tooltip_immediate=display_tooltip_immediate,
                          min_width=min_width,
                          min_height=min_height,
                          min_size=min_size,
@@ -80,37 +78,39 @@ class ZPushButton(ABCButton):
                          max_height=max_height,
                          max_size=max_size,
                          fixed_size=fixed_size,
-                         sizepolicy=sizepolicy,
-                         border_radius=border_radius,
-                         display_tooltip_immediate=display_tooltip_immediate)
+                         sizepolicy=sizepolicy)
+        if (idle_style & (self.IdleStyle.Gradient|self.IdleStyle.Monochrome) and
+            (hover_style & self.HoverStyle.Border or pressed_style & self.PressedStyle.Border)):
+            raise ValueError('Cannot set border style when background is monochrome or gradient')
         self._idle_style = idle_style
         self._hover_style = hover_style
         self._pressed_style = pressed_style
+        # 参数初始化
+        if fixed_stylesheet: self.setFixedStyleSheet(fixed_stylesheet)
+        if hover_stylesheet: self._layer_hover.setFixedStyleSheet(hover_stylesheet)
+        if pressed_stylesheet: self._layer_pressed.setFixedStyleSheet(pressed_stylesheet)
         self._init_style()
-        self._schedule_update()
-
+        self.updateStyle()
 
 
     def _init_style(self):
-        # 判断背景是否有边框，hover层是否添加边框，若是则抛出异常
-        if ((self._idle_style in [ZPushButton.IdleStyle.MonochromeWithBorder, ZPushButton.IdleStyle.Border]) 
-                and self._hover_style == ZPushButton.HoverStyle.AddBorder):
-            raise ValueError("can't add border when bg_style is MonochromeWithBorder or Border")
-
-        self._color_sheet = ZColorSheet(self, Zen.WidgetType.PushButton) #获取颜色配置
-        self._fixed_stylesheet = f'border-radius: {self._border_radius}px;' #固定样式
-        self._layer_hover._fixed_stylesheet = f'border-radius: {self._border_radius}px;' #hover层固定样式
-        self._layer_press._fixed_stylesheet = f'border-radius: {self._border_radius}px;' #press层固定样式
+        # 添加背景样式互斥检查
+        bg_style = self._idle_style & (self.IdleStyle.Monochrome | self.IdleStyle.Gradient)
+        if bin(bg_style).count('1') > 1:
+            raise ValueError("Monochrome and Gradient are mutually exclusive")
 
         # 判断背景是否渐变，若是则给窗口添加渐变属性
-        if self._idle_style == ZPushButton.IdleStyle.Gradient:
+        if self._idle_style & self.IdleStyle.Gradient:
             self.setWidgetFlag(Zen.WidgetFlag.GradientColor)
 
-        self._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
-        self._bg_color_b = self._color_sheet.getColor(Zen.ColorRole.Background_B)
-        self._border_color = self._color_sheet.getColor(Zen.ColorRole.Border)
-        self._text_color = self._color_sheet.getColor(Zen.ColorRole.Text)
-        self._icon_color = self._color_sheet.getColor(Zen.ColorRole.Icon)
+        self._color_sheet.loadColorConfig(Zen.WidgetType.PushButton) #获取颜色配置
+        self._colors.overwrite(self._color_sheet.getSheet()) #获取颜色表
+
+        self._bg_color_a = self._colors.background_a
+        self._bg_color_b = self._colors.background_b
+        self._border_color = self._colors.border
+        self._text_color = self._colors.text
+        self._icon_color = self._colors.icon
 
         self._anim_bg_color_a.setCurrent(ZColorTool.toArray(self._bg_color_a))
         self._anim_bg_color_b.setCurrent(ZColorTool.toArray(self._bg_color_b))
@@ -119,63 +119,62 @@ class ZPushButton(ABCButton):
         self._anim_icon_color.setCurrent(ZColorTool.toArray(self._icon_color))
 
         # 判断hover层的样式
-        if self._hover_style == ZPushButton.HoverStyle.ColorChange:
+        if self._hover_style & self.HoverStyle.Color:
             self._layer_hover.set_style_getter('background_color', lambda: self._layer_hover._bg_color_a)
-            self._layer_hover.set_style_getter('border_radius', lambda: self._border_radius)
 
-        elif self._hover_style == ZPushButton.HoverStyle.AddBorder:
+        if self._hover_style & self.HoverStyle.Border:
             self._layer_hover.set_style_getter('border_color', lambda: self._layer_hover._border_color)
-            self._layer_hover.set_style_getter('border_radius', lambda: self._border_radius)
-
-        elif self._hover_style == ZPushButton.HoverStyle.IconTextColorChange:
-            self._layer_hover.hide()
-
-        elif self._hover_style == ZPushButton.HoverStyle.SizeIncrease:
-            self._layer_hover.hide()
 
         # 判断press层的样式
-        if self._pressed_style in [ZPushButton.PressedStyle.ColorChange,ZPushButton.PressedStyle.Flash]:
-            self._layer_press.set_style_getter('background_color', lambda: self._layer_press._bg_color_a)
-            self._layer_press.set_style_getter('border_radius', lambda: self._border_radius)
+        if self._pressed_style & (self.PressedStyle.Color|self.PressedStyle.Flash):
+            self._layer_pressed.set_style_getter('background_color', lambda: self._layer_pressed._bg_color_a)
 
-        elif self._pressed_style == ZPushButton.PressedStyle.SizeDecrease:
-            self._layer_press.hide()
+        if self._pressed_style & self.PressedStyle.Border:
+            self._layer_pressed.set_style_getter('border_color', lambda: self._layer_pressed._border_color)
+
+
+    def _theme_changed_handler(self, theme):
+        self._colors.overwrite(self._color_sheet.getSheet(theme))
+        self.setColor(self._colors.background_a, self._colors.background_b)
+        self.setBorderColor(self._colors.border)
+        self.setTextColor(self._colors.text)
+        self.setIconColor(self._colors.icon)
+        self._layer_hover.setBorderColor(ZColorTool.trans(self._colors.border_hover))
+        self._layer_pressed.setBorderColor(ZColorTool.trans(self._colors.border_pressed))
 
 
     def reloadStyleSheet(self):
+        super().reloadStyleSheet()
         #判断背景层样式
-        if self._idle_style == ZPushButton.IdleStyle.Gradient:
+        if self._idle_style == self.IdleStyle.None_:
+            # 无样式时重置所有
+            sheet = dedent(f'''\
+                color: {self._text_color};
+                background-color: transparent;
+                border: none;''')
+            return self._stylesheet_fixed +'\n'+ sheet
+
+        sheet = [f'color: {self._text_color};']
+
+        # 处理背景样式
+        if self._idle_style & self.IdleStyle.Monochrome:
+            sheet.append(f"background-color: {self._bg_color_a};")
+
+        elif self._idle_style & self.IdleStyle.Gradient:
             x1, y1, x2, y2 = self._gradient_anchor
-            sheet = dedent(f'''\
-            color: {self._text_color};
-            background-color: qlineargradient(x1:{x1}, y1:{y1}, x2:{x2}, y2:{y2},
-            stop:0 {self._bg_color_a},stop:1 {self._bg_color_b});
-            border: 1px solid transparent;''')
-            return self._fixed_stylesheet +'\n'+ sheet
-        if self._idle_style == ZPushButton.IdleStyle.Monochrome:
-            sheet = dedent(f'''\
-            color: {self._text_color};
-            background-color: {self._bg_color_a};
-            border: 1px solid transparent;''')
-            return self._fixed_stylesheet +'\n'+ sheet
-        if self._idle_style == ZPushButton.IdleStyle.MonochromeWithBorder:
-            sheet = dedent(f'''\
-            color: {self._text_color};
-            background-color: {self._bg_color_a};
-            border: 1px solid {self._border_color};''')
-            return self._fixed_stylesheet +'\n'+ sheet
-        if self._idle_style == ZPushButton.IdleStyle.Border:
-            sheet = dedent(f'''\
-            color: {self._text_color};
-            background-color: transparent;
-            border: 1px solid {self._border_color};''')
-            return self._fixed_stylesheet +'\n'+ sheet
-        if self._idle_style == ZPushButton.IdleStyle.Transparent:
-            sheet = dedent(f'''\
-            color: {self._text_color};
-            background-color: transparent;
-            border: 1px solid transparent;''')
-            return self._fixed_stylesheet +'\n'+ sheet
+            sheet.append(dedent(f"""\
+                background-color: qlineargradient(
+                x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2},
+                stop:0 {self._bg_color_a}, stop:1 {self._bg_color_b});"""))
+
+        # 处理边框样式
+        if self._idle_style & self.IdleStyle.Border:
+            sheet.append(f"border-color: {self._border_color};")
+        else:
+            sheet.append("border: none;")
+
+        return self._stylesheet_fixed +'\n'+ '\n'.join(sheet) 
+
 
     def _show_tooltip(self):
         if self._tooltip != "" and "ToolTip" in ZenGlobal.ui.windows:
@@ -189,63 +188,79 @@ class ZPushButton(ABCButton):
             ZenGlobal.ui.windows["ToolTip"].hideTip()
 
     def _hovered_handler(self):
-        if self._hover_style == ZPushButton.HoverStyle.ColorChange:
-            self._layer_hover.setColorTo(self._color_sheet.getColor(Zen.ColorRole.Hover))
+        if self._hover_style & self.HoverStyle.Color:
+            self._layer_hover.setColorTo(self._colors.hover)
 
-        elif self._hover_style == ZPushButton.HoverStyle.AddBorder:
-            self._layer_hover.setBorderColorTo(self._color_sheet.getColor(Zen.ColorRole.BorderHover))
+        if self._hover_style & self.HoverStyle.Border:
+            self._layer_hover.setBorderColorTo(self._colors.border_hover)
+            if self._idle_style & self.IdleStyle.Border:
+                self.setBorderColorTo(ZColorTool.trans(self._colors.border))
 
-        elif self._hover_style == ZPushButton.HoverStyle.IconTextColorChange:
-            self.setTextColorTo(self._color_sheet.getColor(Zen.ColorRole.TextHover))
-            self.setIconColorTo(self._color_sheet.getColor(Zen.ColorRole.IconHover))
+        if self._hover_style & self.HoverStyle.Icon:
+            self.setIconColorTo(self._colors.icon_hover)
 
-        elif self._hover_style == ZPushButton.HoverStyle.SizeIncrease:
-            pass
+        if self._hover_style & self.HoverStyle.Text:
+            self.setTextColorTo(self._colors.text_hover)
 
 
 
     def _leaved_handler(self):
-        if self._hover_style == ZPushButton.HoverStyle.ColorChange:
-            self._layer_hover.setColorTo(ZColorTool.trans(self._color_sheet.getColor(Zen.ColorRole.Hover)))
+        if self._hover_style & self.HoverStyle.Color:
+            self._layer_hover.setColorTo(ZColorTool.trans(self._colors.hover))
 
-        elif self._hover_style == ZPushButton.HoverStyle.AddBorder:
-            self._layer_hover.setBorderColorTo(ZColorTool.trans(self._color_sheet.getColor(Zen.ColorRole.BorderHover)))
+        if self._hover_style & self.HoverStyle.Border:
+            self._layer_hover.setBorderColorTo(ZColorTool.trans(self._colors.border_hover))
+            if self._idle_style & self.IdleStyle.Border:
+                self.setBorderColorTo(self._colors.border)
 
-        elif self._hover_style == ZPushButton.HoverStyle.IconTextColorChange:
-            self.setTextColorTo(self._color_sheet.getColor(Zen.ColorRole.Text))
-            self.setIconColorTo(self._color_sheet.getColor(Zen.ColorRole.Icon))
 
-        elif self._hover_style == ZPushButton.HoverStyle.SizeIncrease:
-            pass
+        if self._hover_style & self.HoverStyle.Icon:
+            self.setIconColorTo(self._colors.icon)
+
+        if self._hover_style & self.HoverStyle.Text:
+            self.setTextColorTo(self._colors.text)
 
 
 
     def _pressed_handler(self):
-        if self._pressed_style == ZPushButton.PressedStyle.ColorChange:
-            self._layer_press.setColorTo(self._color_sheet.getColor(Zen.ColorRole.Pressed))
+        if self._pressed_style & self.PressedStyle.Color:
+            self._layer_pressed.setColorTo(self._colors.pressed)
 
-        elif self._pressed_style == ZPushButton.PressedStyle.Flash:
-            self._layer_press.setColor(self._color_sheet.getColor(Zen.ColorRole.Flash))
-            self._layer_press.setColorTo(ZColorTool.trans(self._color_sheet.getColor(Zen.ColorRole.Flash)))
+        if self._pressed_style & self.PressedStyle.Border:
+            self._layer_pressed.setBorderColorTo(self._colors.border_pressed)
+            if self._hover_style & self.HoverStyle.Border:
+                self._layer_hover.setBorderColorTo(ZColorTool.trans(self._colors.border_hover))
 
-        elif self._pressed_style == ZPushButton.PressedStyle.SizeDecrease:
-            pass
+        if self._pressed_style & self.PressedStyle.Icon:
+            self.setIconColorTo(self._colors.icon_pressed)
+
+        if self._pressed_style & self.PressedStyle.Text:
+            self.setTextColorTo(self._colors.text_pressed)
 
 
     def _released_handler(self):
-        if self._pressed_style == ZPushButton.PressedStyle.ColorChange:
-            self._layer_press.setColorTo(ZColorTool.trans(self._color_sheet.getColor(Zen.ColorRole.Pressed)))
+        if self._pressed_style & self.PressedStyle.Color:
+            self._layer_pressed.setColorTo(ZColorTool.trans(self._colors.pressed))
 
-        elif self._pressed_style == ZPushButton.PressedStyle.SizeDecrease:
-            pass
+        if self._pressed_style & self.PressedStyle.Border:
+            self._layer_pressed.setBorderColorTo(ZColorTool.trans(self._colors.border_pressed))
+            if self._hover_style & self.HoverStyle.Border:
+                self._layer_hover.setBorderColorTo(self._colors.border_hover)
+
+        if self._pressed_style & self.PressedStyle.Icon:
+            if self._hover_style & self.HoverStyle.Icon:
+                self.setIconColorTo(self._colors.icon_hover)
+            else:
+                self.setIconColorTo(self._colors.icon)
+
+        if self._pressed_style & self.PressedStyle.Text:
+            if self._hover_style & self.HoverStyle.Text:
+                self.setTextColorTo(self._colors.text_hover)
+            else:
+                self.setTextColorTo(self._colors.text)
 
 
     def _clicked_handler(self):
-        pass
-
-
-    def _theme_changed_handler(self, theme):
-        self.setColor(self._color_sheet.getColor(theme, Zen.ColorRole.Background_A), self._color_sheet.getColor(theme, Zen.ColorRole.Background_B))
-        self.setBorderColor(self._color_sheet.getColor(theme, Zen.ColorRole.Border))
-        self.setTextColor(self._color_sheet.getColor(theme, Zen.ColorRole.Text))
-        self.setIconColor(self._color_sheet.getColor(theme, Zen.ColorRole.Icon))
+        if self._pressed_style & self.PressedStyle.Flash:
+            self._layer_pressed.setColor(self._colors.flash)
+            self._layer_pressed.setColorTo(ZColorTool.trans(self._colors.flash))

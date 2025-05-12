@@ -1,8 +1,8 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
+from PySide6.QtWidgets import QWidget
+from PySide6.QtCore import Qt,QTimer
+from PySide6.QtGui import QCursor
 from ZenUI.component import ZWidget,ZTextLabel
-from ZenUI.core import Zen,ZColorTool,ZQuickEffect,ZColorSheet
+from ZenUI.core import Zen,ZColorTool,ZQuickEffect
 from ZenUI.component.widget.colorlayer import ZColorLayer
 
 
@@ -10,19 +10,24 @@ class ZToolTip(ZWidget):
     '''提示框'''
     def __init__(self):
         super().__init__(name='tooltip')
-        self._is_shown = False
-        self._completely_hide = False # 是否已经完全隐藏 透明度是不是0
-        self._inside_of = None 
-        self._margin = 8 # 周围给阴影预留的间隔空间
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool | Qt.WindowTransparentForInput)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        ZQuickEffect.WidgetShadow.applyDropShadowOn(self, (0, 0, 0, 128), blur_radius=int(self._margin*1.5))
+        self._is_shown = False
+        '是否已经显示'
+        self._completely_hide = False
+        '是否已经完全隐藏 透明度是不是0'
+        self._inside_of = None
+        '鼠标悬停的控件'
+        self._margin = 8
+        '给阴影预留的间隔空间'
+        self.raise_()
         self._setup_ui()
-        self.setText("", flash=False)  # 通过输入空文本初始化大小
         self._init_style()
-        self._schedule_update()
+        self.setText("", flash=False) # 通过输入空文本初始化大小
+        ZQuickEffect.applyDropShadowOn(self, (0, 0, 0, 100), blur_radius=int(self._margin*1.5))
+        self.updateStyle()
 
-    # region Override
+    # region Zwidget
     def _init_anim(self):
         super()._init_anim()
         self._tracker_timer = QTimer()  # 跟踪鼠标的计时器
@@ -32,8 +37,16 @@ class ZToolTip(ZWidget):
         # 当透明度动画结束时处理隐藏与否
         self.AnimGroup().fromToken("opacity").finished.connect(self._completely_hid_signal_handler)
 
+    def _theme_changed_handler(self, theme):
+        super()._theme_changed_handler(theme)
+        self._colors.overwrite(self._color_sheet.getSheet(theme))
 
-    # region Private
+        self._layer_background.setColor(self._colors.background_a)
+        self._layer_background.setBorderColor(self._colors.border)
+        self._layer_highlight.setColor(ZColorTool.trans(self._colors.flash))
+
+
+    # region Tooltip
     def _setup_ui(self):
         """创建ui"""
         self._layer_background = ZColorLayer(self)
@@ -45,25 +58,26 @@ class ZToolTip(ZWidget):
         self._label_text.setFixedStyleSheet("padding: 8px")
         self._label_text.setWidgetFlag(Zen.WidgetFlag.InstantResize)
         self._label_text.setWidgetFlag(Zen.WidgetFlag.AdjustSizeOnTextChanged)
-        #self._label_text.setFont(SiFont.tokenized(GlobalFont.S_NORMAL))
         self._board.move(self._margin, self._margin)
 
         self._layer_highlight = ZColorLayer(self)
         self._layer_highlight.move(self._margin, self._margin)
 
     def _init_style(self):
-        self._color_sheet = ZColorSheet(self, Zen.WidgetType.ToolTip)
-        self._layer_background._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Background_A)
-        self._layer_background._border_color = self._color_sheet.getColor(Zen.ColorRole.Border)
+        self._color_sheet.loadColorConfig(Zen.WidgetType.ToolTip)
+        self._colors.overwrite(self._color_sheet.getSheet())
+
+        self._layer_background._bg_color_a = self._colors.background_a
+        self._layer_background._border_color = self._colors.border
+
         self._layer_background.set_style_getter('background_color', lambda: self._layer_background._bg_color_a)
         self._layer_background.set_style_getter('border_color', lambda: self._layer_background._border_color)
-        self._layer_highlight._bg_color_a = self._color_sheet.getColor(Zen.ColorRole.Flash)
-        self._layer_highlight.set_style_getter('background_color', lambda: self._layer_highlight._bg_color_a)
+        self._layer_background.setFixedStyleSheet("border-width: 1px;\nborder-style: solid;\nborder-radius: 2px;")
 
-    def _theme_changed_handler(self, theme):
-        self._layer_background.setColor(self._color_sheet.getColor(theme, Zen.ColorRole.Background_A))
-        self._layer_background.setBorderColor(self._color_sheet.getColor(theme, Zen.ColorRole.Border))
-        self._layer_highlight.setColor(ZColorTool.trans(self._color_sheet.getColor(theme, Zen.ColorRole.Flash)))
+        self._layer_highlight._bg_color_a = self._colors.flash
+        self._layer_highlight.set_style_getter('background_color', lambda: self._layer_highlight._bg_color_a)
+        self._layer_highlight.setFixedStyleSheet("border-radius: 2px;")
+
 
     def _refresh_size(self):
         """用于设置大小动画结束值并启动动画"""
@@ -76,7 +90,7 @@ class ZToolTip(ZWidget):
     def _refresh_position(self):
         pos = QCursor.pos()
         x, y = pos.x() - self.width() / 2, pos.y()
-        self.moveTo(x , y - self.height())    # 动画跟踪，效果更佳，有了锚点直接输入鼠标坐标即可
+        self.moveTo(x , y - self.height()) # 动画跟踪，效果更佳，直接输入鼠标坐标即可
 
 
     def _completely_hid_signal_handler(self, target):
@@ -87,7 +101,7 @@ class ZToolTip(ZWidget):
         else:
             self._completely_hide = False
 
-    # region Public
+
     def setInsideOf(self, widget):
         """设置当前位于哪个控件内部"""
         self._inside_of = widget
@@ -109,23 +123,25 @@ class ZToolTip(ZWidget):
             QTimer.singleShot(0, self._refresh_size)
 
 
-
     def flash(self):
-        """ 激活高光层动画，使高光层闪烁 """
+        '闪烁效果'
         self._layer_highlight.setColor(self._color_sheet.getColor(Zen.ColorRole.Flash))
         self._layer_highlight.setColorTo(ZColorTool.trans(self._color_sheet.getColor(Zen.ColorRole.Flash)))
 
 
     def showTip(self):
+        '显示工具提示'
         self._is_shown = True
         self.setOpacityTo(1.0)
 
 
+
     def hideTip(self):
+        '隐藏工具提示'
         self._is_shown = False
         self.setOpacityTo(0)
 
-    # region Event
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
         size = event.size()

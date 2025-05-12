@@ -1,5 +1,5 @@
 from ZenUI.core.theme.theme_manager import ZThemeManager
-from ZenUI.core.color.color_manager import ZThemeColorConfig
+from ZenUI.core.color.colorconfig import ZThemeColorConfig
 from ZenUI.core.metaclass.metaclass import ImmutableMeta,NoInstanceClass,Singleton
 class UIGlobal(Singleton):
     '''全局UI配置'''
@@ -20,48 +20,10 @@ class ZenGlobal(NoInstanceClass, metaclass=ImmutableMeta):
 
 
 
-def toolTipWindow():
-    return ZenGlobal.ui.windows.get("tooltip")
+def tooltip():
+    '获取提示窗口'
+    return ZenGlobal.ui.windows.get("ToolTip")
 
-
-def raiseToolTipWindow():
-    window = toolTipWindow()
-    if window is not None:
-        window.raise_()
-
-
-def showToolTip(widget, flash: bool = True) -> None:
-    """ Show tool tip of specified widget """
-    if widget.toolTip() == "":
-        return
-    window = toolTipWindow()
-    if window is None:
-        return
-    window.setText(widget.toolTip(), flash=flash)
-    window.setNowInsideOf(widget)
-    window.show()
-
-
-def hideToolTip(widget) -> None:
-    window = toolTipWindow()
-    if window is None:
-        return
-    window.setNowInsideOf(None)
-    window.hide()
-
-
-def updateToolTip(widget, flash: bool = True) -> None:
-    window = toolTipWindow()
-    if window is None:
-        return
-    if widget.toolTip() == "":
-        return
-    window.setText(widget.toolTip(), flash=flash)
-
-
-def isTooltipShown() -> bool:
-    return toolTipWindow().is_shown
-
-
-def isToolTipInsideOf(widget) -> bool:
-    return widget == toolTipWindow().nowInsideOf()
+def mainWindow():
+    '获取主窗口'
+    return ZenGlobal.ui.windows.get("main")

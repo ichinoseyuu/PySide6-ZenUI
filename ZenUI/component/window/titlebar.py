@@ -6,7 +6,7 @@ from ZenUI.component.button.pushbutton import ZPushButton
 from ZenUI.component.label.text_label import ZTextLabel
 from ZenUI.component.layout.spacer import ZSpacer
 from ZenUI.component.layout.row import ZRowLayout
-from ZenUI.core import Zen,ZenGlobal,ZColorSheet,ZColorTool
+from ZenUI.core import Zen,ZenGlobal,ZSize
 
 
 class ThemeButton(ZPushButton):
@@ -26,7 +26,7 @@ class ThemeButton(ZPushButton):
 
     def _theme_changed_handler(self, theme):
         super()._theme_changed_handler(theme)
-        self.hoverLayer().setColorTo(self._color_sheet.getColor(theme, Zen.ColorRole.Hover))
+        self.hovered.emit()
         if theme == Zen.Theme.Dark:
             self._tooltip = '切换到浅色模式'
             ZenGlobal.ui.windows['ToolTip'].setText(self._tooltip)
@@ -35,45 +35,16 @@ class ThemeButton(ZPushButton):
             ZenGlobal.ui.windows['ToolTip'].setText(self._tooltip)
 
 
-class ZTitlebar(ZWidget):
+class ZTitlebar(QWidget):
     '''标题栏'''
     def __init__(self, parent, window_shadow:int):
-        super().__init__(parent=parent,name="titleBar")
-        self._btn_size = 36
-        self._btn_sizepolicy = (Zen.SizePolicy.Minimum, Zen.SizePolicy.Minimum)
+        super().__init__(parent)
+        self.setObjectName("Titlebar")
+        self._btn_size = ZSize(48, 36)
         self._window_shadow = window_shadow
         self._setup_ui()
-        self._init_style()
         self._btnConnect()
-        self._schedule_update()
 
-    # region Override
-    def _init_style(self):
-        super()._init_style()
-        self._color_sheet = ZColorSheet(self, Zen.WidgetType.Titlebar)
-        self._border_color = self._color_sheet.getColor(Zen.ColorRole.Border)
-        self._anim_border_color.setCurrent(ZColorTool.toArray(self._border_color))
-        self._fixed_stylesheet = "border-bottom-width: 1px;\nborder-style: solid;"
-
-
-    def reloadStyleSheet(self):
-        sheet = f'background-color: transparent;\nborder-color: {self._border_color};'
-        if not self.objectName(): raise ValueError("Widget must have a name when StyleSheetApplyToChildren is False")
-        style_parts = [
-            f"#{self.objectName()}{{",
-            sheet,
-            self._fixed_stylesheet,
-            "}"
-        ]
-        return '\n'.join(filter(None, style_parts))
-
-
-    def _theme_changed_handler(self, theme):
-        self.setColor(self._color_sheet.getColor(theme,Zen.ColorRole.Background_A))
-        self.setBorderColor(self._color_sheet.getColor(theme,Zen.ColorRole.Border))
-
-
-    # region New
     def _setup_ui(self):
         """创建ui"""
         self.setMinimumHeight(ZenGlobal.config.TITLEBAR_HEIGHT)
@@ -94,25 +65,19 @@ class ZTitlebar(ZWidget):
 
         self.btnTheme = ThemeButton(parent=self,
                                     name="btnTheme",
-                                    min_height=self._btn_size,
-                                    min_width=self._btn_size,
-                                    border_radius= 0,
-                                    sizepolicy= self._btn_sizepolicy,
-                                    idle_style=ZPushButton.IdleStyle.Transparent,
-                                    hover_style=ZPushButton.HoverStyle.IconTextColorChange,
-                                    pressed_style=ZPushButton.PressedStyle.Transparent)
+                                    fixed_size=self._btn_size,
+                                    idle_style=ZPushButton.IdleStyle.None_,
+                                    hover_style=ZPushButton.HoverStyle.Icon,
+                                    pressed_style=ZPushButton.PressedStyle.None_)
         self._layout.addWidget(self.btnTheme)
 
         self.btnMin = ZPushButton(parent=self,
                                     name="btnMin",
                                     icon=QIcon(u":/icons/svg/zen_ui/minimize.svg"),
-                                    min_height= self._btn_size,
-                                    min_width= self._btn_size,
-                                    border_radius= 0,
-                                    sizepolicy= self._btn_sizepolicy,
-                                    idle_style=ZPushButton.IdleStyle.Transparent,
-                                    hover_style=ZPushButton.HoverStyle.IconTextColorChange,
-                                    pressed_style=ZPushButton.PressedStyle.Transparent)
+                                    fixed_size=self._btn_size,
+                                    idle_style=ZPushButton.IdleStyle.None_,
+                                    hover_style=ZPushButton.HoverStyle.Icon,
+                                    pressed_style=ZPushButton.PressedStyle.None_)
         self._layout.addWidget(self.btnMin)
 
         icon2 = QIcon()
@@ -121,26 +86,20 @@ class ZTitlebar(ZWidget):
         self.btnMax = ZPushButton(parent=self,
                                     name="btnMin",
                                     icon=icon2,
-                                    min_height= self._btn_size,
-                                    min_width= self._btn_size,
-                                    border_radius= 0,
-                                    sizepolicy= self._btn_sizepolicy,
-                                    idle_style=ZPushButton.IdleStyle.Transparent,
-                                    hover_style=ZPushButton.HoverStyle.IconTextColorChange,
-                                    pressed_style=ZPushButton.PressedStyle.Transparent)
+                                    fixed_size=self._btn_size,
+                                    idle_style=ZPushButton.IdleStyle.None_,
+                                    hover_style=ZPushButton.HoverStyle.Icon,
+                                    pressed_style=ZPushButton.PressedStyle.None_)
         self.btnMax.setCheckable(True)
         self._layout.addWidget(self.btnMax)
 
         self.btnExit = ZPushButton(parent=self,
                                     name="btnMin",
                                     icon=QIcon(u":/icons/svg/zen_ui/close.svg"),
-                                    min_height= self._btn_size,
-                                    min_width= self._btn_size,
-                                    border_radius= 0,
-                                    sizepolicy= self._btn_sizepolicy,
-                                    idle_style=ZPushButton.IdleStyle.Transparent,
-                                    hover_style=ZPushButton.HoverStyle.IconTextColorChange,
-                                    pressed_style=ZPushButton.PressedStyle.Transparent)
+                                    fixed_size=self._btn_size,
+                                    idle_style=ZPushButton.IdleStyle.None_,
+                                    hover_style=ZPushButton.HoverStyle.Icon,
+                                    pressed_style=ZPushButton.PressedStyle.None_)
         self._layout.addWidget(self.btnExit)
 
 
@@ -164,6 +123,7 @@ class ZTitlebar(ZWidget):
             self.window().showNormal()
         else:
             self.window().showMaximized()
+        self.btnMax.leaved.emit()
 
 
     def setTitle(self, title: str):

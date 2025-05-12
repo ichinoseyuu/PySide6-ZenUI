@@ -6,11 +6,13 @@ class ZColorLayer(ABCLayer):
         super().__init__(parent)
         self._style_vars = {
             'background_color': 'transparent',
-            'border_color': 'transparent',
-            'border_radius': 2}
+            'border_color': 'transparent'}
         '默认样式'
         self._style_getters = {}
         '动态样式'
+        self._style_format = dedent('''\
+            background-color: {background_color};
+            border-color: {border_color};''')
         self._init_style()
         self._schedule_update()
 
@@ -32,12 +34,6 @@ class ZColorLayer(ABCLayer):
             current_vars = self._style_vars.copy()
             for key, getter in self._style_getters.items():
                 current_vars[key] = getter()
-            return dedent('''\
-            background-color: {background_color};
-            border: 1px solid {border_color};
-            border-radius: {border_radius}px;;
-            ''').format(**current_vars)+self._fixed_stylesheet
+            return self._style_format.format(**current_vars) +'\n'+ self._stylesheet_fixed
         except KeyError as e:
             print(f"缺少样式变量: {e}")
-            return ""
-

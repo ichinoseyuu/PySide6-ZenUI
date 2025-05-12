@@ -1,5 +1,7 @@
 from PySide6.QtGui import QIcon
+from PySide6.QtCore import QSize
 from ZenUI.component import ZWidget,ZDrawer,ZToggleButton,ZPushButton,ZSpacer
+from ZenUI.component.presets.presets import ZQuickPresets
 from ZenUI.core import Zen,ZSize,ZMargins
 class ZNavigationBar(ZDrawer):
     '''可折叠左侧菜单栏
@@ -13,16 +15,16 @@ class ZNavigationBar(ZDrawer):
                  spacing: int = 6,
                  alignment: Zen.Alignment = Zen.Alignment.Left,
                  can_expand: bool = True,
-                 state = Zen.State.Collapsed,
-                 dir = Zen.Direction.Vertical,
+                 state = ZDrawer.State.Collapsed,
+                 dir = ZDrawer.Direction.Vertical,
                  collapse_width = 56,
-                 expand_width = 128,
+                 expand_width = 168,
                  btn_height: int = 42,
-                 btn_icon_size: ZSize = ZSize(26, 26)):
+                 btn_icon_size: ZSize = ZSize(20, 20)):
         super().__init__(parent=parent,
                          name= name,
                          layout=layout,
-                         style= ZDrawer.Style.Monochrome,
+                         style= ZDrawer.Style.None_,
                          margins=margins,
                          spacing=spacing,
                          alignment=alignment,
@@ -39,26 +41,22 @@ class ZNavigationBar(ZDrawer):
         self._btn_count = 0
         self._setup_ui()
         self._init_style()
-        self._schedule_update()
+        self.updateStyle()
 
     def _setup_ui(self):
         '''设置UI'''
-        self.btnCollapse = ZPushButton(parent=self,
+        self.btnCollapse = ZQuickPresets.navbarButton(parent=self,
                                   name="btnCollapse",
-                                  text="\t\t\t\t收起",
+                                  text="        收起",
                                   icon=QIcon(u":/icons/svg/fluent/filled/ic_fluent_navigation_filled.svg"),
                                   min_height=self._btn_height,
-                                  icon_size=self._btn_icon_size,
-                                  border_radius=4,
-                                  idle_style= ZPushButton.IdleStyle.Transparent,
-                                  hover_style=ZPushButton.HoverStyle.ColorChange,
-                                  pressed_style=ZPushButton.PressedStyle.ColorChange)
-        self.btnCollapse.setFixedStyleSheet(f'text-align: left;\npadding-left: 8px;')
+                                  icon_size=self._btn_icon_size)
         self.btnCollapse.clicked.connect(self.toggleState)
         self.layout().addWidget(self.btnCollapse)
 
         self.spacer = ZSpacer()
         self.layout().addItem(self.spacer)
+
 
 
     def addButton(self, btn: ZToggleButton|ZPushButton):
@@ -67,13 +65,11 @@ class ZNavigationBar(ZDrawer):
             if self._toggled_btn is None:
                 btn.setChecked(True)
                 self._toggled_btn = btn
-            btn._fixed_stylesheet = f'text-align: left;\npadding-left: 8px;'
             btn.pressed.connect(lambda: self._btn_pressed_handler(btn))
             self.layout().insertWidget(self._btn_count + 1, btn)
             self._btns[f"{btn.objectName()}"] = btn
             self._btn_count += 1
         elif isinstance(btn, ZPushButton):
-            btn.setFixedStyleSheet(f'text-align: left;\npadding-left: 8px;')
             self.layout().insertWidget(self._btn_count + 1, btn)
 
 

@@ -85,8 +85,20 @@ class Zen:
         '''控件类型'''
         PushButton = auto()
         '按钮控件'
+        FillButton = auto()
+        '填充按钮控件'
+        GradientButton = auto()
+        '渐变按钮控件'
+        GhostButton = auto()
+        '幽灵按钮控件'
+        TransparentButton = auto()
+        '透明按钮控件'
+        NoBackgroundButton = auto()
+        '无背景按钮控件'
         ToggleButton = auto()
         '开关按钮控件'
+        new_PushButton = auto()
+        '新按钮控件'
         Box = auto()
         '盒子控件'
         Drawer = auto()

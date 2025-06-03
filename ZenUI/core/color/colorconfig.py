@@ -68,6 +68,89 @@ class ZThemeColorConfig(ZColorConfig):
                         Zen.ColorRole.TextPressed: '#ff8adee2',
                         })
 
+        self.setConfig(Zen.WidgetType.FillButton, Zen.Theme.Dark,
+                       {Zen.ColorRole.BackgroundA: "#ff955595",
+                        Zen.ColorRole.Hover: '#10ffffff',
+                        Zen.ColorRole.Pressed: '#10ffffff',
+                        Zen.ColorRole.Border: '#ff1d1d1d',
+                        Zen.ColorRole.Icon: '#ffdcdcdc',
+                        Zen.ColorRole.Text: '#ffdcdcdc',
+                        })
+
+        self.setConfig(Zen.WidgetType.FillButton, Zen.Theme.Light,
+                       {Zen.ColorRole.BackgroundA: '#ff8adee2',
+                        Zen.ColorRole.Hover: '#10000000',
+                        Zen.ColorRole.Pressed: '#10ffffff',
+                        Zen.ColorRole.Border: '#ffe5e5e5',
+                        Zen.ColorRole.Icon: '#ff565656',
+                        Zen.ColorRole.Text: '#ff313131',
+                        })
+
+        self.setConfig(Zen.WidgetType.GradientButton, Zen.Theme.Dark, 
+                       {Zen.ColorRole.BackgroundA: '#ff63469f',
+                        Zen.ColorRole.BackgroundB: '#ff955595',
+                        Zen.ColorRole.Hover: '#10ffffff',
+                        Zen.ColorRole.Pressed: '#10ffffff',
+                        Zen.ColorRole.Icon: '#ffdcdcdc',
+                        Zen.ColorRole.Text: '#ffdcdcdc',
+                        })
+
+        self.setConfig(Zen.WidgetType.GradientButton, Zen.Theme.Light,
+                       {Zen.ColorRole.BackgroundA: '#ff8adee2',
+                        Zen.ColorRole.BackgroundB: '#ff9bf3ff',
+                        Zen.ColorRole.Hover: '#10000000',
+                        Zen.ColorRole.Pressed: '#10000000',
+                        Zen.ColorRole.Icon: '#ff565656',
+                        Zen.ColorRole.Text: '#ff313131',
+                        })
+
+        self.setConfig(Zen.WidgetType.GhostButton, Zen.Theme.Dark, 
+                       {Zen.ColorRole.Flash: '#20ffffff',
+                        Zen.ColorRole.BorderHover: '#ff955595',
+                        Zen.ColorRole.Icon: '#ffdcdcdc',
+                        Zen.ColorRole.Text: '#ffdcdcdc',
+                        })
+
+        self.setConfig(Zen.WidgetType.GhostButton, Zen.Theme.Light,
+                       {Zen.ColorRole.Flash: '#20000000',
+                        Zen.ColorRole.BorderHover: '#ff9bf3ff',
+                        Zen.ColorRole.Icon: '#ff565656',
+                        Zen.ColorRole.Text: '#ff313131',
+                        })
+
+
+        self.setConfig(Zen.WidgetType.TransparentButton, Zen.Theme.Dark, 
+                       {Zen.ColorRole.Hover: '#10ffffff',
+                        Zen.ColorRole.Pressed: '#10ffffff',
+                        Zen.ColorRole.Icon: '#ffdcdcdc',
+                        Zen.ColorRole.Text: '#ffdcdcdc',
+                        })
+
+        self.setConfig(Zen.WidgetType.TransparentButton, Zen.Theme.Light,
+                       {Zen.ColorRole.Hover: '#10000000',
+                        Zen.ColorRole.Pressed: '#10000000',
+                        Zen.ColorRole.Icon: '#ff565656',
+                        Zen.ColorRole.Text: '#ff313131',
+                        })
+
+        self.setConfig(Zen.WidgetType.NoBackgroundButton, Zen.Theme.Dark, 
+                       {Zen.ColorRole.Icon: '#ffdcdcdc',
+                        Zen.ColorRole.IconHover: '#ff955595',
+                        Zen.ColorRole.IconPressed: '#ff804f99',
+                        Zen.ColorRole.Text: '#ffdcdcdc',
+                        Zen.ColorRole.TextHover: '#ff955595',
+                        Zen.ColorRole.TextPressed: '#ff804f99'
+                        })
+
+        self.setConfig(Zen.WidgetType.NoBackgroundButton, Zen.Theme.Light,
+                       {Zen.ColorRole.Icon: '#ff565656',
+                        Zen.ColorRole.IconHover: '#ff82d1d6',
+                        Zen.ColorRole.IconPressed: '#ff82d1d6',
+                        Zen.ColorRole.Text: '#ff313131',
+                        Zen.ColorRole.TextHover: '#ff9bf3ff',
+                        Zen.ColorRole.TextPressed: '#ff8adee2',
+                        })
+
         self.setConfig(Zen.WidgetType.ToggleButton, Zen.Theme.Dark,
                        {Zen.ColorRole.Hover: '#10ffffff',
                         Zen.ColorRole.Pressed: '#10ffffff',

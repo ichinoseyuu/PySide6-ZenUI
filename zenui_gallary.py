@@ -7,7 +7,6 @@ from page_home import PageHome
 from page_about import PageAbout
 from page_box import PageBox
 from navigation_bar import LeftNavigationBar
-from functools import partial
 
 class ZenUIGallary(ZMainWindow):
     def __init__(self):

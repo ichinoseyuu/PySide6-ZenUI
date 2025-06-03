@@ -76,6 +76,14 @@ class PageBox(ZStackPage):
                                  fixed_size=ZSize(32, 32))
         self.contain_zpush.layout().addWidget(self.btn_push5)
 
+        self.btn_push6 = ZGradientButton(parent=self,
+                                 name='btn_push6',
+                                 text='渐变按钮',
+                                 fixed_size=ZSize(78, 32),
+                                 fixed_stylesheet='border-radius: 4px;',
+                                 hover_stylesheet='border-radius: 4px;')
+        self.contain_zpush.layout().addWidget(self.btn_push6)
+
         self.btn_zpush_spacer = ZSpacer(minH=20,
                               minW=32,
                               row=Zen.SizePolicy.Expanding,
@@ -116,6 +124,47 @@ class PageBox(ZStackPage):
                               columns=Zen.SizePolicy.Minimum)
         self.contain_ztoggle.layout().addItem(self.contain_ztoggle_spacer)
 
+        self.btn_push7 = ZGhostButton(parent=self,
+                                 name='btn_push7',
+                                 text='幽灵按钮',
+                                 fixed_size=ZSize(100, 40),
+                                 fixed_stylesheet='border-radius: 4px;\nborder-style: solid;\nborder-width: 1px;',
+                                 hover_stylesheet='border-radius: 4px;',
+                                 pressed_stylesheet='border-radius: 4px;')
+        self.layout().addWidget(self.btn_push7)
+
+        self.btn_push8 = ZFillButton(parent=self,
+                                 name='btn_push8',
+                                 text='填充按钮',
+                                 fixed_size=ZSize(100, 40),
+                                 fixed_stylesheet='border-radius: 4px;\nborder-style: solid;\nborder-width: 1px;',
+                                 hover_stylesheet='border-radius: 4px;',
+                                 pressed_stylesheet='border-radius: 4px;')
+        self.layout().addWidget(self.btn_push8)
+
+        self.btn_push9 = ZGradientButton(parent=self,
+                                 name='btn_push9',
+                                 text='渐变按钮',
+                                 fixed_size=ZSize(100, 40),
+                                 fixed_stylesheet='border-radius: 4px;',
+                                 hover_stylesheet='border-radius: 4px;',
+                                 pressed_stylesheet='border-radius: 4px;')
+        self.layout().addWidget(self.btn_push9)
+
+
+        self.btn_push10 = ZTransparentButton(parent=self,
+                                 name='btn_push10',
+                                 text='透明按钮',
+                                 fixed_size=ZSize(100, 40),
+                                 fixed_stylesheet='border-radius: 4px;',
+                                 hover_stylesheet='border-radius: 4px;')
+        self.layout().addWidget(self.btn_push10)
+
+        self.btn_push11 = ZNoBackgroundButton(parent=self,
+                                 name='btn_push11',
+                                 text='无背景按钮',
+                                 fixed_size=ZSize(100, 40))
+        self.layout().addWidget(self.btn_push11)
 
         self.spacer = ZSpacer(minH=40,
                               minW=20,
@@ -123,13 +172,4 @@ class PageBox(ZStackPage):
                               columns=Zen.SizePolicy.Expanding)
         self.layout().addItem(self.spacer)
 
-    def printStyleSheet(self,obj):
-        print('stylesheet: ',obj._stylesheet,'\n')
-        print('fixed_stylesheet: ',obj._stylesheet_fixed,'\n')
-        #print('cached_style: ',obj._stylesheet_cache,'\n')
-        print('hover_stylesheet: ',obj._layer_hover._stylesheet,'\n')
-        print('hover_fixed_stylesheet: ',obj._layer_hover._stylesheet_fixed,'\n')
-        #print('hover_cached_style: ',obj._layer_hover._stylesheet_cache,'\n')
-        print('press_stylesheet: ',obj._layer_press._stylesheet,'\n')
-        print('press_fixed_stylesheet: ',obj._layer_press._stylesheet_fixed,'\n')
-        #print('press_cached_style: ',obj._layer_press._stylesheet_cache,'\n')
+

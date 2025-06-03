@@ -2,7 +2,7 @@ from PySide6.QtGui import QIcon
 from enum import IntFlag
 from textwrap import dedent
 from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.button.abstract_button import ABCButton
+from ZenUI.component.advancedbutton.abcbutton import ABCButton
 from ZenUI.core import ZColorTool,ZenGlobal,Zen,ZSize,ZColorSheet,ZColors
 
 class ZPushButton(ABCButton):

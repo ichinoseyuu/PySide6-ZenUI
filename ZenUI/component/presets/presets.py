@@ -2,8 +2,8 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from typing import overload
-from ZenUI.component.button.pushbutton import ZPushButton
-from ZenUI.component.button.togglebutton import ZToggleButton
+from ZenUI.component.advancedbutton.pushbutton import ZPushButton
+from ZenUI.component.advancedtogglebutton.togglebutton import ZToggleButton
 from ZenUI.core.argclass.size import ZSize
 
 class ZQuickPresets:
@@ -55,7 +55,7 @@ class ZQuickPresets:
         幽灵按钮
         - 背景透明无边框
         - 悬停时增加边框
-        - 按下时边框变色
+        - 按下时背景变色
         '''
         sheet = f'border-radius: {radius}px;\nborder-width: 1px;\nborder-style: solid;'
         return ZPushButton(parent=parent,
@@ -67,12 +67,12 @@ class ZQuickPresets:
                              max_size=max_size,
                              fixed_size=fixed_size,
                              tooltip=tooltip,
-                             fixed_stylesheet=sheet,
+                             fixed_stylesheet=f'border-radius: {radius}px;\nborder: 1px solid transparent;',
                              hover_stylesheet=sheet,
                              pressed_stylesheet=sheet,
                              idle_style=ZPushButton.IdleStyle.None_,
                              hover_style=ZPushButton.HoverStyle.Border,
-                             pressed_style=ZPushButton.PressedStyle.Border)
+                             pressed_style=ZPushButton.PressedStyle.Color)
 
 
     # region 渐变按钮
@@ -245,7 +245,7 @@ class ZQuickPresets:
                              indicator_width=4,
                              indicator_margin=2,
                              indicator_padding=12,
-                             checked_style=ZToggleButton.CheckedStyle.Icon|ZToggleButton.CheckedStyle.Text|ZToggleButton.CheckedStyle.Monochrome,
+                             checked_style=ZToggleButton.CheckedStyle.Icon|ZToggleButton.CheckedStyle.Text,
                              hover_style=ZToggleButton.HoverStyle.Color,
                              pressed_style=ZToggleButton.PressedStyle.None_,
                              indicator=ZToggleButton.Indicator.Enabled)

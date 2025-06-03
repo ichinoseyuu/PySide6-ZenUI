@@ -92,6 +92,38 @@ class ZColorTool:
         code_proceed = cls.toCode(value_proceed)
         return code_proceed
 
+    @classmethod
+    def overlay(cls, base_color: str, overlay_color: str) -> str:
+        """
+        将一个颜色叠加到另一个颜色上
+        Args:
+            base_color: 底色，格式为 #RRGGBB 或 #AARRGGBB
+            overlay_color: 叠加色，格式为 #RRGGBB 或 #AARRGGBB
+        Returns:
+            str: 叠加后的颜色，格式为 #AARRGGBB
+        """
+        # 转换为数组
+        base = cls.toArray(base_color)
+        over = cls.toArray(overlay_color)
+        # 确保两个颜色都是 ARGB 格式
+        if len(base) == 3:
+            base = numpy.append([255], base)
+        if len(over) == 3:
+            over = numpy.append([255], over)
+        # 将 Alpha 值归一化到 0-1
+        base_alpha = base[0] / 255
+        over_alpha = over[0] / 255
+        # 计算混合后的 Alpha 值
+        final_alpha = over_alpha + base_alpha * (1 - over_alpha)
+        # 计算混合后的 RGB 值
+        if final_alpha == 0:
+            final_rgb = numpy.array([0, 0, 0])
+        else:
+            final_rgb = (over[1:] * over_alpha + base[1:] * base_alpha * (1 - over_alpha)) / final_alpha
+        # 组合最终颜色
+        final_color = numpy.append([final_alpha * 255], final_rgb)
+        return cls.toCode(final_color.astype(numpy.int16))
+
     @staticmethod
     def isValidColor(color: str) -> bool:
         """验证颜色格式，支持 RGB 和 ARGB 格式"""

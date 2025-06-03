@@ -106,6 +106,7 @@ class ABCWindow(QWidget):
             panel_geo.height()                   # 面板高度
         )
         self._centerWidget.setFixedStyleSheet('border-radius: 0px;')
+        self._centerWidget.updateStyle()
         self.resize(screen.size().width(), screen.size().height())
         self.moveTo(screen.geometry().x(), screen.geometry().y())
         self._ismaximized = True
@@ -113,6 +114,7 @@ class ABCWindow(QWidget):
     def showNormal(self):
         """恢复窗口大小"""
         self._centerWidget.setFixedStyleSheet(f'border-radius: {self._border_radius}px;')
+        self._centerWidget.updateStyle()
         self.resizeTo(self.normalGeometry().size().width(),self.normalGeometry().size().height())
         self.moveTo(self.normalGeometry().topLeft().x(), self.normalGeometry().topLeft().y())
         self._ismaximized = False

@@ -2,7 +2,7 @@ from PySide6.QtGui import QIcon,QCursor
 from enum import IntFlag, IntEnum, auto
 from textwrap import dedent
 from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.button.abstract_toggle_button import ABCToggleButton
+from ZenUI.component.advancedtogglebutton.abctogglebutton import ABCToggleButton
 from ZenUI.core import ZColorTool,ZenGlobal,Zen,ZSize,ZColorSheet,ZColors
 class ZToggleButton(ABCToggleButton):
     '''切换按钮'''

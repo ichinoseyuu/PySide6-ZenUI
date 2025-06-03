@@ -1,4 +1,4 @@
-from ZenUI.component.label.abstract_label import ABCLabel
+from ZenUI.component.label.abclabel import ABCLabel
 from ZenUI.component.widget.widget import ZWidget
 from ZenUI.core import Zen,ZColorSheet,ZColorTool
 class ZTextLabel(ABCLabel):

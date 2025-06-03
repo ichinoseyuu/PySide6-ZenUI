@@ -2,8 +2,8 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.button.pushbutton import ZPushButton
-from ZenUI.component.label.text_label import ZTextLabel
+from ZenUI.component.advancedbutton.pushbutton import ZPushButton
+from ZenUI.component.label.text import ZTextLabel
 from ZenUI.component.layout.spacer import ZSpacer
 from ZenUI.component.layout.row import ZRowLayout
 from ZenUI.core import Zen,ZenGlobal,ZSize
@@ -17,23 +17,20 @@ class ThemeButton(ZPushButton):
         if ZenGlobal.ui.theme_manager.theme() == Zen.Theme.Dark:
             icon.addFile(u":/icons/svg/fluent/filled/ic_fluent_weather_sunny_filled.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
             icon.addFile(u":/icons/svg/fluent/filled/ic_fluent_weather_moon_filled.svg", QSize(), QIcon.Mode.Normal, QIcon.State.On)
-            self._tooltip = '切换到浅色模式'
         else:
             icon.addFile(u":/icons/svg/fluent/filled/ic_fluent_weather_sunny_filled.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
             icon.addFile(u":/icons/svg/fluent/filled/ic_fluent_weather_moon_filled.svg", QSize(), QIcon.Mode.Normal, QIcon.State.On)
-            self._tooltip = '切换到深色模式'
         self.setIcon(icon)
 
     def _theme_changed_handler(self, theme):
         super()._theme_changed_handler(theme)
         self.hovered.emit()
-        if theme == Zen.Theme.Dark:
-            self._tooltip = '切换到浅色模式'
-            ZenGlobal.ui.windows['ToolTip'].setText(self._tooltip)
-        else:
-            self._tooltip = '切换到深色模式'
-            ZenGlobal.ui.windows['ToolTip'].setText(self._tooltip)
-
+        # if theme == Zen.Theme.Dark:
+        #     self._tooltip = '切换到浅色模式'
+        #     ZenGlobal.ui.windows['ToolTip'].setText(self._tooltip)
+        # else:
+        #     self._tooltip = '切换到深色模式'
+        #     ZenGlobal.ui.windows['ToolTip'].setText(self._tooltip)
 
 class ZTitlebar(QWidget):
     '''标题栏'''
@@ -137,7 +134,6 @@ class ZTitlebar(QWidget):
             self.icon.setPixmap(QPixmap(icon))
         else:
             self.icon.setPixmap(QPixmap(u":/images/icon/icon.png"))
-
 
     def mouseDoubleClickEvent(self, event: QMouseEvent):
         if event.button() != Qt.LeftButton:

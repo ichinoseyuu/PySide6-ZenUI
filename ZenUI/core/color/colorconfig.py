@@ -1,5 +1,33 @@
 from typing import Optional, Dict
+from ZenUI.core.metaclass.metaclass import NoInstanceClass
 from ZenUI.core.enumrates.zen import Zen
+from ZenUI.core.color.colortool import ZColorTool
+class ZAccentColor(NoInstanceClass):
+    # Dark theme colors
+    DARK_ACCENT_A = '#ff63469f'
+    DARK_ACCENT_B = '#ff955595'
+    DARK_BORDER = '#ff1d1d1d'
+    DARK_TEXT = '#ffdcdcdc'
+    DARK_ICON = '#ffdcdcdc'
+    DARK_LAYER = '#10ffffff'
+    DARK_SELECTED = ZColorTool.mix(DARK_ACCENT_B, DARK_ACCENT_A,0.6)
+
+    # Light theme colors
+    LIGHT_ACCENT_A = '#ffa5d2f1'
+    LIGHT_ACCENT_B = '#ffd0e8f2'
+    LIGHT_BORDER = '#ffe5e5e5'
+    LIGHT_BORDER_HOVER = ZColorTool.adjust(LIGHT_ACCENT_A,0,-0.1)
+    LIGHT_BORDER_PRESSED = ZColorTool.adjust(LIGHT_ACCENT_B,0,-0.1)
+    LIGHT_TEXT = '#ff313131'
+    LIGHT_TEXT_HOVER = ZColorTool.adjust(LIGHT_ACCENT_A,-0.1,-0.1)
+    LIGHT_TEXT_PRESSED = ZColorTool.adjust(LIGHT_ACCENT_B,-0.1,-0.1)
+    LIGHT_ICON = '#ff565656'
+    LIGHT_ICON_HOVER = ZColorTool.adjust(LIGHT_ACCENT_A,-0.1,-0.1)
+    LIGHT_ICON_PRESSED = ZColorTool.adjust(LIGHT_ACCENT_B,-0.1,-0.1)
+    LIGHT_LAYER = '#10000000'
+    LIGHT_SELECTED = ZColorTool.mix(LIGHT_ACCENT_B, LIGHT_ACCENT_A,0.1)
+
+
 
 class ZColorConfig:
     """
@@ -34,168 +62,168 @@ class ZThemeColorConfig(ZColorConfig):
     '''主题色彩配置管理'''
     def __init__(self):
         super().__init__()
-        self.setConfig(Zen.WidgetType.PushButton, Zen.Theme.Dark, 
-                       {Zen.ColorRole.BackgroundA: '#ff63469f',
-                        Zen.ColorRole.BackgroundB: '#ff955595',
-                        Zen.ColorRole.Hover: '#10ffffff',
-                        Zen.ColorRole.Pressed: '#10ffffff',
-                        Zen.ColorRole.Flash: '#20ffffff',
-                        Zen.ColorRole.Border: '#ff63469f',
-                        Zen.ColorRole.BorderHover: '#ff955595',
-                        Zen.ColorRole.BorderPressed: '#ff804f99',
-                        Zen.ColorRole.Icon: '#ffdcdcdc',
-                        Zen.ColorRole.IconHover: '#ff955595',
-                        Zen.ColorRole.IconPressed: '#ff804f99',
-                        Zen.ColorRole.Text: '#ffdcdcdc',
-                        Zen.ColorRole.TextHover: '#ff955595',
-                        Zen.ColorRole.TextPressed: '#ff804f99'
+        self.setConfig(Zen.WidgetType.PushButton, Zen.Theme.Dark,
+                       {Zen.ColorRole.BackgroundA: ZAccentColor.DARK_ACCENT_A,
+                        Zen.ColorRole.BackgroundB: ZAccentColor.DARK_ACCENT_B,
+                        Zen.ColorRole.Hover: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.Pressed: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.Flash: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.Border: ZAccentColor.DARK_BORDER,
+                        Zen.ColorRole.BorderHover: ZAccentColor.DARK_ACCENT_B,
+                        Zen.ColorRole.BorderPressed: ZAccentColor.DARK_ACCENT_A,
+                        Zen.ColorRole.Icon: ZAccentColor.DARK_ICON,
+                        Zen.ColorRole.IconHover: ZAccentColor.DARK_ACCENT_B,
+                        Zen.ColorRole.IconPressed: ZAccentColor.DARK_ACCENT_A,
+                        Zen.ColorRole.Text: ZAccentColor.DARK_TEXT,
+                        Zen.ColorRole.TextHover: ZAccentColor.DARK_ACCENT_B,
+                        Zen.ColorRole.TextPressed: ZAccentColor.DARK_ACCENT_A
                         })
 
         self.setConfig(Zen.WidgetType.PushButton, Zen.Theme.Light,
-                       {Zen.ColorRole.BackgroundA: '#ff8adee2',
-                        Zen.ColorRole.BackgroundB: '#ff9bf3ff',
-                        Zen.ColorRole.Hover: '#10000000',
-                        Zen.ColorRole.Pressed: '#10ffffff',
-                        Zen.ColorRole.Flash: '#20000000',
-                        Zen.ColorRole.Border: '#ff8adee2',
-                        Zen.ColorRole.BorderHover: '#ff9bf3ff',
-                        Zen.ColorRole.BorderPressed: '#ff8adee2',
-                        Zen.ColorRole.Icon: '#ff565656',
-                        Zen.ColorRole.IconHover: '#ff82d1d6',
-                        Zen.ColorRole.IconPressed: '#ff82d1d6',
-                        Zen.ColorRole.Text: '#ff313131',
-                        Zen.ColorRole.TextHover: '#ff9bf3ff',
-                        Zen.ColorRole.TextPressed: '#ff8adee2',
+                       {Zen.ColorRole.BackgroundA: ZAccentColor.LIGHT_ACCENT_A,
+                        Zen.ColorRole.BackgroundB: ZAccentColor.LIGHT_ACCENT_B,
+                        Zen.ColorRole.Hover: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.Pressed: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.Flash: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.Border: ZAccentColor.LIGHT_BORDER,
+                        Zen.ColorRole.BorderHover: ZAccentColor.LIGHT_BORDER_HOVER,
+                        Zen.ColorRole.BorderPressed: ZAccentColor.LIGHT_BORDER_PRESSED,
+                        Zen.ColorRole.Icon: ZAccentColor.LIGHT_ICON,
+                        Zen.ColorRole.IconHover: ZAccentColor.LIGHT_ICON_HOVER,
+                        Zen.ColorRole.IconPressed: ZAccentColor.LIGHT_ICON_PRESSED,
+                        Zen.ColorRole.Text: ZAccentColor.LIGHT_TEXT,
+                        Zen.ColorRole.TextHover: ZAccentColor.LIGHT_TEXT_HOVER,
+                        Zen.ColorRole.TextPressed: ZAccentColor.LIGHT_TEXT_PRESSED,
                         })
 
         self.setConfig(Zen.WidgetType.FillButton, Zen.Theme.Dark,
-                       {Zen.ColorRole.BackgroundA: "#ff955595",
-                        Zen.ColorRole.Hover: '#10ffffff',
-                        Zen.ColorRole.Pressed: '#10ffffff',
-                        Zen.ColorRole.Border: '#ff1d1d1d',
-                        Zen.ColorRole.Icon: '#ffdcdcdc',
-                        Zen.ColorRole.Text: '#ffdcdcdc',
+                       {Zen.ColorRole.BackgroundA: ZColorTool.mix(ZAccentColor.DARK_ACCENT_A, ZAccentColor.DARK_ACCENT_B),
+                        Zen.ColorRole.Hover: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.Pressed: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.Border: ZAccentColor.DARK_BORDER,
+                        Zen.ColorRole.Icon: ZAccentColor.DARK_ICON,
+                        Zen.ColorRole.Text: ZAccentColor.DARK_TEXT,
                         })
 
         self.setConfig(Zen.WidgetType.FillButton, Zen.Theme.Light,
-                       {Zen.ColorRole.BackgroundA: '#ff8adee2',
-                        Zen.ColorRole.Hover: '#10000000',
-                        Zen.ColorRole.Pressed: '#10ffffff',
-                        Zen.ColorRole.Border: '#ffe5e5e5',
-                        Zen.ColorRole.Icon: '#ff565656',
-                        Zen.ColorRole.Text: '#ff313131',
+                       {Zen.ColorRole.BackgroundA: ZColorTool.mix(ZAccentColor.LIGHT_ACCENT_A, ZAccentColor.LIGHT_ACCENT_B),
+                        Zen.ColorRole.Hover: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.Pressed: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.Border: ZAccentColor.LIGHT_BORDER,
+                        Zen.ColorRole.Icon: ZAccentColor.LIGHT_ICON,
+                        Zen.ColorRole.Text: ZAccentColor.LIGHT_TEXT,
                         })
-
+        print(ZColorTool.mix(ZAccentColor.LIGHT_ACCENT_A, ZAccentColor.LIGHT_ACCENT_B))
         self.setConfig(Zen.WidgetType.GradientButton, Zen.Theme.Dark, 
-                       {Zen.ColorRole.BackgroundA: '#ff63469f',
-                        Zen.ColorRole.BackgroundB: '#ff955595',
-                        Zen.ColorRole.Hover: '#10ffffff',
-                        Zen.ColorRole.Pressed: '#10ffffff',
-                        Zen.ColorRole.Icon: '#ffdcdcdc',
-                        Zen.ColorRole.Text: '#ffdcdcdc',
+                       {Zen.ColorRole.BackgroundA: ZAccentColor.DARK_ACCENT_A,
+                        Zen.ColorRole.BackgroundB: ZAccentColor.DARK_ACCENT_B,
+                        Zen.ColorRole.Hover: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.Pressed: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.Icon: ZAccentColor.DARK_ICON,
+                        Zen.ColorRole.Text: ZAccentColor.DARK_TEXT,
                         })
 
         self.setConfig(Zen.WidgetType.GradientButton, Zen.Theme.Light,
-                       {Zen.ColorRole.BackgroundA: '#ff8adee2',
-                        Zen.ColorRole.BackgroundB: '#ff9bf3ff',
-                        Zen.ColorRole.Hover: '#10000000',
-                        Zen.ColorRole.Pressed: '#10000000',
-                        Zen.ColorRole.Icon: '#ff565656',
-                        Zen.ColorRole.Text: '#ff313131',
+                       {Zen.ColorRole.BackgroundA: ZAccentColor.LIGHT_ACCENT_A,
+                        Zen.ColorRole.BackgroundB: ZAccentColor.LIGHT_ACCENT_B,
+                        Zen.ColorRole.Hover: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.Pressed: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.Icon: ZAccentColor.LIGHT_ICON,
+                        Zen.ColorRole.Text: ZAccentColor.LIGHT_TEXT,
                         })
 
         self.setConfig(Zen.WidgetType.GhostButton, Zen.Theme.Dark, 
-                       {Zen.ColorRole.Flash: '#20ffffff',
-                        Zen.ColorRole.BorderHover: '#ff955595',
-                        Zen.ColorRole.Icon: '#ffdcdcdc',
-                        Zen.ColorRole.Text: '#ffdcdcdc',
+                       {Zen.ColorRole.Flash: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.BorderHover: ZAccentColor.DARK_ACCENT_B,
+                        Zen.ColorRole.Icon: ZAccentColor.DARK_ICON,
+                        Zen.ColorRole.Text: ZAccentColor.DARK_TEXT,
                         })
 
         self.setConfig(Zen.WidgetType.GhostButton, Zen.Theme.Light,
-                       {Zen.ColorRole.Flash: '#20000000',
-                        Zen.ColorRole.BorderHover: '#ff9bf3ff',
-                        Zen.ColorRole.Icon: '#ff565656',
-                        Zen.ColorRole.Text: '#ff313131',
+                       {Zen.ColorRole.Flash: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.BorderHover: ZAccentColor.LIGHT_BORDER_HOVER,
+                        Zen.ColorRole.Icon: ZAccentColor.LIGHT_ICON,
+                        Zen.ColorRole.Text: ZAccentColor.LIGHT_TEXT,
                         })
 
 
         self.setConfig(Zen.WidgetType.TransparentButton, Zen.Theme.Dark, 
-                       {Zen.ColorRole.Hover: '#10ffffff',
-                        Zen.ColorRole.Pressed: '#10ffffff',
-                        Zen.ColorRole.Icon: '#ffdcdcdc',
-                        Zen.ColorRole.Text: '#ffdcdcdc',
+                       {Zen.ColorRole.Hover: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.Pressed: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.Icon: ZAccentColor.DARK_ICON,
+                        Zen.ColorRole.Text: ZAccentColor.DARK_TEXT,
                         })
 
         self.setConfig(Zen.WidgetType.TransparentButton, Zen.Theme.Light,
-                       {Zen.ColorRole.Hover: '#10000000',
-                        Zen.ColorRole.Pressed: '#10000000',
-                        Zen.ColorRole.Icon: '#ff565656',
-                        Zen.ColorRole.Text: '#ff313131',
+                       {Zen.ColorRole.Hover: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.Pressed: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.Icon: ZAccentColor.LIGHT_ICON,
+                        Zen.ColorRole.Text: ZAccentColor.LIGHT_TEXT,
                         })
 
         self.setConfig(Zen.WidgetType.NoBackgroundButton, Zen.Theme.Dark, 
-                       {Zen.ColorRole.Icon: '#ffdcdcdc',
-                        Zen.ColorRole.IconHover: '#ff955595',
-                        Zen.ColorRole.IconPressed: '#ff804f99',
-                        Zen.ColorRole.Text: '#ffdcdcdc',
-                        Zen.ColorRole.TextHover: '#ff955595',
-                        Zen.ColorRole.TextPressed: '#ff804f99'
+                       {Zen.ColorRole.Icon: ZAccentColor.DARK_ICON,
+                        Zen.ColorRole.IconHover: ZAccentColor.DARK_ACCENT_B,
+                        Zen.ColorRole.IconPressed: ZAccentColor.DARK_ACCENT_A,
+                        Zen.ColorRole.Text: ZAccentColor.DARK_TEXT,
+                        Zen.ColorRole.TextHover: ZAccentColor.DARK_ACCENT_B,
+                        Zen.ColorRole.TextPressed: ZAccentColor.DARK_ACCENT_A,
                         })
 
         self.setConfig(Zen.WidgetType.NoBackgroundButton, Zen.Theme.Light,
-                       {Zen.ColorRole.Icon: '#ff565656',
-                        Zen.ColorRole.IconHover: '#ff82d1d6',
-                        Zen.ColorRole.IconPressed: '#ff82d1d6',
-                        Zen.ColorRole.Text: '#ff313131',
-                        Zen.ColorRole.TextHover: '#ff9bf3ff',
-                        Zen.ColorRole.TextPressed: '#ff8adee2',
+                       {Zen.ColorRole.Icon: ZAccentColor.LIGHT_ICON,
+                        Zen.ColorRole.IconHover: ZAccentColor.LIGHT_ICON_HOVER,
+                        Zen.ColorRole.IconPressed: ZAccentColor.LIGHT_ICON_PRESSED,
+                        Zen.ColorRole.Text: ZAccentColor.LIGHT_TEXT,
+                        Zen.ColorRole.TextHover: ZAccentColor.LIGHT_TEXT_HOVER,
+                        Zen.ColorRole.TextPressed: ZAccentColor.LIGHT_TEXT_PRESSED,
                         })
 
         self.setConfig(Zen.WidgetType.ToggleButton, Zen.Theme.Dark,
-                       {Zen.ColorRole.Hover: '#10ffffff',
-                        Zen.ColorRole.Pressed: '#10ffffff',
-                        Zen.ColorRole.Flash: '#20ffffff',
-                        Zen.ColorRole.SelectedA: '#10ffffff',
-                        Zen.ColorRole.Border: '#ff63469f',
-                        Zen.ColorRole.BorderHover: '#ff005595',
-                        Zen.ColorRole.BorderPressed: '#ff800099',
-                        Zen.ColorRole.BorderSelected: '#ff7f5700',
-                        Zen.ColorRole.Icon: '#ffdcdcdc',
-                        Zen.ColorRole.IconHover: '#ff955595',
-                        Zen.ColorRole.IconPressed: '#ff804f99',
-                        Zen.ColorRole.IconSelected: '#ff7f57a1',
-                        Zen.ColorRole.Text: '#ffdcdcdc',
-                        Zen.ColorRole.TextHover: '#ff955595',
-                        Zen.ColorRole.TextPressed: '#ff804f99',
-                        Zen.ColorRole.TextSelected: '#ff7f57a1',
-                        Zen.ColorRole.IndicatorSelected: '#ff7f57a1'
+                       {Zen.ColorRole.Hover: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.Pressed: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.Flash: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.SelectedA: ZAccentColor.DARK_LAYER,
+                        Zen.ColorRole.Border: ZAccentColor.DARK_BORDER,
+                        Zen.ColorRole.BorderHover: ZAccentColor.DARK_ACCENT_B,
+                        Zen.ColorRole.BorderPressed: ZAccentColor.DARK_ACCENT_A,
+                        Zen.ColorRole.BorderSelected: ZAccentColor.DARK_SELECTED,
+                        Zen.ColorRole.Icon: ZAccentColor.DARK_ICON,
+                        Zen.ColorRole.IconHover: ZAccentColor.DARK_ACCENT_B,
+                        Zen.ColorRole.IconPressed: ZAccentColor.DARK_ACCENT_A,
+                        Zen.ColorRole.IconSelected: ZAccentColor.DARK_SELECTED,
+                        Zen.ColorRole.Text: ZAccentColor.DARK_TEXT,
+                        Zen.ColorRole.TextHover: ZAccentColor.DARK_ACCENT_B,
+                        Zen.ColorRole.TextPressed: ZAccentColor.DARK_ACCENT_A,
+                        Zen.ColorRole.TextSelected: ZAccentColor.DARK_SELECTED,
+                        Zen.ColorRole.IndicatorSelected: ZAccentColor.DARK_SELECTED
                         })
 
         self.setConfig(Zen.WidgetType.ToggleButton, Zen.Theme.Light,
-                       {Zen.ColorRole.Hover: '#10000000',
-                        Zen.ColorRole.Pressed: '#10ffffff',
-                        Zen.ColorRole.Flash: '#20000000',
-                        Zen.ColorRole.SelectedA: '#10000000',
-                        Zen.ColorRole.Border: '#ff8adee2',
-                        Zen.ColorRole.BorderHover: '#ff8adee2',
-                        Zen.ColorRole.BorderPressed: '#ff8adee2',
-                        Zen.ColorRole.BorderSelected: '#ff8adee2',
-                        Zen.ColorRole.Icon: '#ff565656',
-                        Zen.ColorRole.IconHover: '#ff82d1d6',
-                        Zen.ColorRole.IconPressed: '#ff82d1d6',
-                        Zen.ColorRole.IconSelected: '#ff82d1d6',
-                        Zen.ColorRole.Text: '#ff313131',
-                        Zen.ColorRole.TextHover: '#ff82d1d6',
-                        Zen.ColorRole.TextPressed: '#ff82d1d6',
-                        Zen.ColorRole.TextSelected: '#ff82d1d6',
-                        Zen.ColorRole.IndicatorSelected: '#ff82d1d6'
+                       {Zen.ColorRole.Hover: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.Pressed: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.Flash: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.SelectedA: ZAccentColor.LIGHT_LAYER,
+                        Zen.ColorRole.Border: ZAccentColor.LIGHT_BORDER,
+                        Zen.ColorRole.BorderHover: ZAccentColor.LIGHT_BORDER_HOVER,
+                        Zen.ColorRole.BorderPressed: ZAccentColor.LIGHT_BORDER_PRESSED,
+                        Zen.ColorRole.BorderSelected: ZAccentColor.LIGHT_SELECTED,
+                        Zen.ColorRole.Icon: ZAccentColor.LIGHT_ICON,
+                        Zen.ColorRole.IconHover: ZAccentColor.LIGHT_ICON_HOVER,
+                        Zen.ColorRole.IconPressed: ZAccentColor.LIGHT_ICON_PRESSED,
+                        Zen.ColorRole.IconSelected: ZAccentColor.LIGHT_SELECTED,
+                        Zen.ColorRole.Text: ZAccentColor.LIGHT_TEXT,
+                        Zen.ColorRole.TextHover: ZAccentColor.LIGHT_TEXT_HOVER,
+                        Zen.ColorRole.TextPressed: ZAccentColor.LIGHT_TEXT_PRESSED,
+                        Zen.ColorRole.TextSelected: ZAccentColor.LIGHT_SELECTED,
+                        Zen.ColorRole.IndicatorSelected: ZAccentColor.LIGHT_SELECTED
                         })
 
         self.setConfig(Zen.WidgetType.TextLabel, Zen.Theme.Dark,
-                       {Zen.ColorRole.Text: '#ffdcdcdc'})
+                       {Zen.ColorRole.Text: ZAccentColor.DARK_TEXT})
 
         self.setConfig(Zen.WidgetType.TextLabel, Zen.Theme.Light,
-                       {Zen.ColorRole.Text: '#ff313131'})
+                       {Zen.ColorRole.Text: ZAccentColor.LIGHT_TEXT})
 
         self.setConfig(Zen.WidgetType.Box, Zen.Theme.Dark,
                        {Zen.ColorRole.BackgroundA: '#ff202020',

@@ -113,3 +113,10 @@ class ZTransparentButton(ABCButton):
 
     def _released_handler(self):
         self._layer_pressed.setColorTo(ZColorTool.trans(self._colors.pressed))
+
+
+    def _toggled_handler(self, checked):
+        if self._theme_manager.theme() == Zen.Theme.Dark:
+            self.setIconColor('#ff202020')
+        else:
+            self.setIconColor('#fff3f3f3')

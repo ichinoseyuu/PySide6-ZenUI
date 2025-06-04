@@ -76,14 +76,6 @@ class PageBox(ZStackPage):
                                  fixed_size=ZSize(32, 32))
         self.contain_zpush.layout().addWidget(self.btn_push5)
 
-        self.btn_push6 = ZGradientButton(parent=self,
-                                 name='btn_push6',
-                                 text='渐变按钮',
-                                 fixed_size=ZSize(78, 32),
-                                 fixed_stylesheet='border-radius: 4px;',
-                                 hover_stylesheet='border-radius: 4px;')
-        self.contain_zpush.layout().addWidget(self.btn_push6)
-
         self.btn_zpush_spacer = ZSpacer(minH=20,
                               minW=32,
                               row=Zen.SizePolicy.Expanding,

@@ -109,3 +109,10 @@ class ZGhostButton(ABCButton):
     def _clicked_handler(self):
         self._layer_pressed.setColor(self._colors.flash)
         self._layer_pressed.setColorTo(ZColorTool.trans(self._colors.flash))
+
+
+    def _toggled_handler(self, checked):
+        if self._theme_manager.theme() == Zen.Theme.Dark:
+            self.setIconColor('#ff202020')
+        else:
+            self.setIconColor('#fff3f3f3')

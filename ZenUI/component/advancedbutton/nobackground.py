@@ -110,3 +110,10 @@ class ZNoBackgroundButton(ABCButton):
     def _released_handler(self):
         self.setIconColorTo(self._colors.icon_hover)
         self.setTextColorTo(self._colors.text_hover)
+
+
+    def _toggled_handler(self, checked):
+        if self._theme_manager.theme() == Zen.Theme.Dark:
+            self.setIconColor('#ff202020')
+        else:
+            self.setIconColor('#fff3f3f3')

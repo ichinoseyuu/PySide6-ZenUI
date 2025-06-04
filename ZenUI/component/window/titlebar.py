@@ -65,7 +65,7 @@ class ZTitlebar(QWidget):
                                     fixed_size=self._btn_size,
                                     idle_style=ZPushButton.IdleStyle.None_,
                                     hover_style=ZPushButton.HoverStyle.Icon,
-                                    pressed_style=ZPushButton.PressedStyle.None_)
+                                    pressed_style=ZPushButton.PressedStyle.Icon)
         self._layout.addWidget(self.btnTheme)
 
         self.btnMin = ZPushButton(parent=self,
@@ -74,7 +74,7 @@ class ZTitlebar(QWidget):
                                     fixed_size=self._btn_size,
                                     idle_style=ZPushButton.IdleStyle.None_,
                                     hover_style=ZPushButton.HoverStyle.Icon,
-                                    pressed_style=ZPushButton.PressedStyle.None_)
+                                    pressed_style=ZPushButton.PressedStyle.Icon)
         self._layout.addWidget(self.btnMin)
 
         icon2 = QIcon()
@@ -86,7 +86,7 @@ class ZTitlebar(QWidget):
                                     fixed_size=self._btn_size,
                                     idle_style=ZPushButton.IdleStyle.None_,
                                     hover_style=ZPushButton.HoverStyle.Icon,
-                                    pressed_style=ZPushButton.PressedStyle.None_)
+                                    pressed_style=ZPushButton.PressedStyle.Icon)
         self.btnMax.setCheckable(True)
         self._layout.addWidget(self.btnMax)
 
@@ -96,7 +96,7 @@ class ZTitlebar(QWidget):
                                     fixed_size=self._btn_size,
                                     idle_style=ZPushButton.IdleStyle.None_,
                                     hover_style=ZPushButton.HoverStyle.Icon,
-                                    pressed_style=ZPushButton.PressedStyle.None_)
+                                    pressed_style=ZPushButton.PressedStyle.Icon)
         self._layout.addWidget(self.btnExit)
 
 

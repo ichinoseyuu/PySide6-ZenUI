@@ -666,3 +666,7 @@ class ABCToggleButton(QPushButton):
         if self.rect().contains(event.pos()):
             self.clicked.emit()
             self.setChecked(not self.isChecked())
+        if self._theme_manager.theme() == Zen.Theme.Dark:
+            self.setIconColor('#ff202020')
+        else:
+            self.setIconColor('#fff3f3f3')

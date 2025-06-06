@@ -3,7 +3,6 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.core.animation.animation_manager import AnimationManager
 global_fps = 60
 
 
@@ -35,7 +34,6 @@ class ABCAnim(QObject):
         self.action_timer = QTimer()
         self.action_timer.setSingleShot(True)
         # self.action_timer.setTimerType(Qt.PreciseTimer)
-        self._manager = AnimationManager()
 
     def setEnable(self, state: bool):
         self.enabled = state

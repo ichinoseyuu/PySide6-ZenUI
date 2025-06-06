@@ -2,7 +2,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from enum import IntEnum, auto
-from ZenUI.component.widget.widget import ZWidget
+from ZenUI.component.basewidget.widget import ZWidget
 
 class ResizeGrip(QWidget):
     '''调整大小手柄'''

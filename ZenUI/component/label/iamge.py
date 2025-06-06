@@ -1,7 +1,8 @@
-from ZenUI.component.label.abclabel import ABCLabel
-from ZenUI.component.widget.widget import ZWidget
-from ZenUI.core import Zen
 from PySide6.QtGui import QPixmap,QImage
+from ZenUI.component.basewidget import ZWidget
+from ZenUI.component.label.abclabel import ABCLabel
+from ZenUI.core import Zen
+
 class ZImageLabel(ABCLabel):
     """文本标签"""
     def __init__(self,

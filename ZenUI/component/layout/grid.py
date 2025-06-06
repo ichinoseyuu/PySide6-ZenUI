@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QGridLayout
-from ZenUI.component.widget.widget import ZWidget
+from ZenUI.component.basewidget import ZWidget
 from ZenUI.core import ZMargins,Zen
 
 class ZGridLayout(QGridLayout):

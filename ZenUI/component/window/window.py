@@ -1,4 +1,4 @@
-from ZenUI.component.window.abcwindow import ABCWindow
+from ZenUI.component.window.abstract import ABCWindow
 from ZenUI.core import ZenGlobal
 
 class ZWindow(ABCWindow):

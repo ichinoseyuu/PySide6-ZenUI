@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import QScrollArea, QWidget
 from PySide6.QtCore import Qt
-from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.layout.column import ZColumnLayout
-from ZenUI.component.container.box import ZBox
+from ZenUI.component.basewidget import ZWidget
+from ZenUI.component.layout import ZColumnLayout
+from ZenUI.component.container import ZBox
 from ZenUI.core import Zen, ZColorSheet, ZColorTool
 
 class ZScrollPage(ZWidget):

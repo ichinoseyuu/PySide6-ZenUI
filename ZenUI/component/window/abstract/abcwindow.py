@@ -2,11 +2,9 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from typing import overload
-from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.window.titlebar import ZTitlebar
-from ZenUI.component.window.grip import ResizeGrip
-from ZenUI.component.window.panel import WindowPanel
-from ZenUI.core import Zen,ZMargins,ZQuickEffect,ZExpAnim,AnimGroup,ZenGlobal
+from ZenUI.component.basewidget import ZWidget
+from ZenUI.component.window.widget import ZTitleBar,ResizeGrip,WindowPanel
+from ZenUI.core import Zen,ZMargins,ZQuickEffect,ZExpAnim,AnimGroup
 class ABCWindow(QWidget):
     '窗口抽象类'
     moved = Signal(object)
@@ -67,7 +65,7 @@ class ABCWindow(QWidget):
         self._bottomLeftGrip = ResizeGrip(self, ResizeGrip.Edge.BottomLeft,self._grip_width)
         self._bottomRightGrip = ResizeGrip(self, ResizeGrip.Edge.BottomRight,self._grip_width)
         ZQuickEffect.applyDropShadowOn(self._centerWidget, (0, 0, 0, 128), blur_radius=int(self._shadow_width*1.5))
-        self._titlebar = ZTitlebar(self,self._shadow_width)
+        self._titlebar = ZTitleBar(self,self._shadow_width)
         self._centerWidget.layout().addWidget(self._titlebar)
 
     # region Style

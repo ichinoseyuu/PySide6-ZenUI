@@ -1,10 +1,8 @@
-from PySide6.QtCore import QSize
 from enum import IntFlag, IntEnum, auto
 from textwrap import dedent
-from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.layout.column import ZColumnLayout
-from ZenUI.component.layout.row import ZRowLayout
-from ZenUI.core import Zen, ZExpAnim, ZColorSheet, ZColorTool,ZMargins,ZColors
+from ZenUI.component.basewidget import ZWidget
+from ZenUI.component.layout import ZColumnLayout,ZRowLayout
+from ZenUI.core import Zen,ZExpAnim,ZColorTool,ZMargins
 
 class ZDrawer(ZWidget):
     '''抽屉'''

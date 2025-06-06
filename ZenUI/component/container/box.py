@@ -1,9 +1,8 @@
 from enum import IntFlag
 from textwrap import dedent
-from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.layout.column import ZColumnLayout
-from ZenUI.component.layout.row import ZRowLayout
-from ZenUI.core import Zen,ZColorTool,ZColorSheet,ZMargins,ZColors
+from ZenUI.component.basewidget import ZWidget
+from ZenUI.component.layout import ZColumnLayout,ZRowLayout
+from ZenUI.core import Zen,ZColorTool,ZMargins
 
 class ZBox(ZWidget):
     '''窗口面板'''

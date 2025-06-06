@@ -1,15 +1,15 @@
 from PySide6.QtGui import QIcon
 from textwrap import dedent
-from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.advancedbutton.abcbutton import ABCButton
+from ZenUI.component.basewidget.widget import ZWidget
+from ZenUI.component.advancedbutton.abstract.abcbutton import ABCButton
 from ZenUI.core import ZColorTool,ZenGlobal,Zen,ZSize
 
-class ZGhostButton(ABCButton):
+class ZTransparentButton(ABCButton):
     '''
-    幽灵按钮
+    透明按钮
     - 背景透明
-    - 悬停时显示边框
-    - 按下背景闪烁
+    - 悬停时背景变色
+    - 按下背景变色
     '''
     def __init__(self,
                  parent: ZWidget = None,
@@ -54,7 +54,7 @@ class ZGhostButton(ABCButton):
 
 
     def _init_style(self):
-        self._color_sheet.loadColorConfig(Zen.WidgetType.GhostButton) #获取颜色配置
+        self._color_sheet.loadColorConfig(Zen.WidgetType.TransparentButton) #获取颜色配置
         self._colors.overwrite(self._color_sheet.getSheet()) #获取颜色表
 
         self._text_color = self._colors.text
@@ -64,7 +64,7 @@ class ZGhostButton(ABCButton):
         self._anim_icon_color.setCurrent(ZColorTool.toArray(self._icon_color))
 
         # 判断hover层的样式
-        self._layer_hover.set_style_getter('border_color', lambda: self._layer_hover._border_color)
+        self._layer_hover.set_style_getter('background_color', lambda: self._layer_hover._bg_color_a)
 
         # 判断press层的样式
         self._layer_pressed.set_style_getter('background_color', lambda: self._layer_pressed._bg_color_a)
@@ -74,7 +74,8 @@ class ZGhostButton(ABCButton):
         self._colors.overwrite(self._color_sheet.getSheet(theme))
         self.setTextColor(self._colors.text)
         self.setIconColor(self._colors.icon)
-        self._layer_hover.setBorderColor(ZColorTool.trans(self._colors.border_hover))
+        self._layer_hover.setColor(ZColorTool.trans(self._colors.hover))
+        self._layer_pressed.setColor(ZColorTool.trans(self._colors.pressed))
 
 
     def reloadStyleSheet(self):
@@ -83,7 +84,7 @@ class ZGhostButton(ABCButton):
         sheet = dedent(f'''\
             color: {self._text_color};
             background-color: transparent;
-            border: 1px solid transparent;''')
+            border: none;''')
         return self._stylesheet_fixed +'\n'+ sheet
 
 
@@ -99,16 +100,19 @@ class ZGhostButton(ABCButton):
             ZenGlobal.ui.windows["ToolTip"].hideTip()
 
     def _hovered_handler(self):
-        self._layer_hover.setBorderColorTo(self._colors.border_hover)
+        self._layer_hover.setColorTo(self._colors.hover)
 
 
     def _leaved_handler(self):
-        self._layer_hover.setBorderColorTo(ZColorTool.trans(self._colors.border_hover))
+        self._layer_hover.setColorTo(ZColorTool.trans(self._colors.hover))
 
 
-    def _clicked_handler(self):
-        self._layer_pressed.setColor(self._colors.flash)
-        self._layer_pressed.setColorTo(ZColorTool.trans(self._colors.flash))
+    def _pressed_handler(self):
+        self._layer_pressed.setColorTo(self._colors.pressed)
+
+
+    def _released_handler(self):
+        self._layer_pressed.setColorTo(ZColorTool.trans(self._colors.pressed))
 
 
     def _toggled_handler(self, checked):

@@ -1,5 +1,5 @@
 from PySide6.QtCore import QObject,Signal
-from ZenUI.core.enumrates.zen import Zen
+from ZenUI.core.enumrates import Zen
 
 class ZThemeManager(QObject):
     '''主题管理器'''

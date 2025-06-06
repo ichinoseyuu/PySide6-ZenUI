@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.widget.widget import ZWidget
+from ZenUI.component.basewidget import ZWidget
 from ZenUI.core import ZExpAnim,ZColorTool,Zen,AnimGroup,ZenGlobal
 class ABCLabel(QLabel):
     '''标签基类'''

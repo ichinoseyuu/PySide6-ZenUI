@@ -1,5 +1,5 @@
-from ZenUI.component.window.abcwindow import ABCWindow
-from ZenUI.component.tooltip.tooltip import ZToolTip
+from ZenUI.component.window.abstract import ABCWindow
+from ZenUI.component.tooltip import ZToolTip
 from ZenUI.core import ZenGlobal
 
 class ZMainWindow(ABCWindow):

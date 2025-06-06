@@ -1,10 +1,47 @@
+from textwrap import dedent
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QTimer
 from PySide6.QtGui import QCursor
-from ZenUI.component import ZWidget,ZTextLabel
-from ZenUI.core import Zen,ZColorTool,ZQuickEffect
-from ZenUI.component.widget.colorlayer import ZColorLayer
+from ZenUI.component.basewidget import ZWidget,ZLayer
+from ZenUI.component.label import ZTextLabel
+from ZenUI.core import ZQuickEffect, Zen, ZColorTool
 
+class ToolTipLayer(ZLayer):
+    def __init__(self, parent = None):
+        super().__init__(parent)
+        self._style_vars = {
+            'background_color': 'transparent',
+            'border_color': 'transparent'}
+        '默认样式'
+        self._style_getters = {}
+        '动态样式'
+        self._style_format = dedent('''\
+            background-color: {background_color};
+            border-color: {border_color};''')
+        self._init_style()
+        self._schedule_update()
+
+    def set_style_var(self, key: str, value):
+        """设置静态样式变量"""
+        self._style_vars[key] = value
+
+    def set_style_getter(self, key: str, getter):
+        """设置动态样式获取器"""
+        self._style_getters[key] = getter
+
+    def _init_style(self):
+        self._anim_bg_color_a.setBias(0.1)
+
+
+    def reloadStyleSheet(self):
+        try:
+            # 合并静态变量和动态获取的变量
+            current_vars = self._style_vars.copy()
+            for key, getter in self._style_getters.items():
+                current_vars[key] = getter()
+            return self._style_format.format(**current_vars) +'\n'+ self._stylesheet_fixed
+        except KeyError as e:
+            print(f"缺少样式变量: {e}")
 
 class ZToolTip(ZWidget):
     '''提示框'''
@@ -49,7 +86,7 @@ class ZToolTip(ZWidget):
     # region Tooltip
     def _setup_ui(self):
         """创建ui"""
-        self._layer_background = ZColorLayer(self)
+        self._layer_background = ToolTipLayer(self)
         self._layer_background.move(self._margin, self._margin)
 
         self._board = QWidget(self)
@@ -60,7 +97,7 @@ class ZToolTip(ZWidget):
         self._label_text.setWidgetFlag(Zen.WidgetFlag.AdjustSizeOnTextChanged)
         self._board.move(self._margin, self._margin)
 
-        self._layer_highlight = ZColorLayer(self)
+        self._layer_highlight = ToolTipLayer(self)
         self._layer_highlight.move(self._margin, self._margin)
 
     def _init_style(self):

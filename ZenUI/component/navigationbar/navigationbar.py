@@ -1,7 +1,6 @@
 from PySide6.QtGui import QIcon
-from PySide6.QtCore import QSize
 from ZenUI.component import ZWidget,ZDrawer,ZToggleButton,ZPushButton,ZSpacer
-from ZenUI.component.presets.presets import ZQuickPresets
+from ZenUI.component.presets import ZQuickButton
 from ZenUI.core import Zen,ZSize,ZMargins
 class ZNavigationBar(ZDrawer):
     '''可折叠左侧菜单栏
@@ -45,7 +44,7 @@ class ZNavigationBar(ZDrawer):
 
     def _setup_ui(self):
         '''设置UI'''
-        self.btnCollapse = ZQuickPresets.navbarButton(parent=self,
+        self.btnCollapse = ZQuickButton.navbarButton(parent=self,
                                   name="btnCollapse",
                                   text="        收起",
                                   icon=QIcon(u":/icons/svg/fluent/filled/ic_fluent_navigation_filled.svg"),

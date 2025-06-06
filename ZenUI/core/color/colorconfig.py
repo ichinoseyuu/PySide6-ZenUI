@@ -1,6 +1,6 @@
 from typing import Optional, Dict
-from ZenUI.core.metaclass.metaclass import NoInstanceClass
-from ZenUI.core.enumrates.zen import Zen
+from ZenUI.core.metaclass import NoInstanceClass
+from ZenUI.core.enumrates import Zen
 from ZenUI.core.color.colortool import ZColorTool
 
 class ZColorConfig:

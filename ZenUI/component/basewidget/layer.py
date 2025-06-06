@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.widget.widget import ZWidget
+from ZenUI.component.basewidget.widget import ZWidget
 from ZenUI.core import ZExpAnim,AnimGroup,ZColorTool,Zen
 
-class ABCLayer(QWidget):
+class ZLayer(QWidget):
     '颜色层，用于实现组件颜色渐变等效果'
     moved = Signal(object)
     resized = Signal(object)

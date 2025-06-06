@@ -1,14 +1,15 @@
 from PySide6.QtGui import QIcon
 from textwrap import dedent
-from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.advancedbutton.abcbutton import ABCButton
+from ZenUI.component.basewidget.widget import ZWidget
+from ZenUI.component.advancedbutton.abstract.abcbutton import ABCButton
 from ZenUI.core import ZColorTool,ZenGlobal,Zen,ZSize
 
-class ZNoBackgroundButton(ABCButton):
+class ZFillButton(ABCButton):
     '''
-    无背景按钮
-    - 悬停时图标和文字变色
-    - 按下时图标和文字变色
+    填充按钮
+    - 背景填充
+    - 悬停时变色
+    - 按下时变色
     '''
     def __init__(self,
                  parent: ZWidget = None,
@@ -26,7 +27,9 @@ class ZNoBackgroundButton(ABCButton):
                  fixed_size: ZSize = None,
                  sizepolicy: tuple[Zen.SizePolicy, Zen.SizePolicy] = None,
                  display_tooltip_immediate: bool = False,
-                 fixed_stylesheet: str = None):
+                 fixed_stylesheet: str = None,
+                 hover_stylesheet: str = None,
+                 pressed_stylesheet: str = None):
         super().__init__(parent=parent,
                          name=name,
                          text=text,
@@ -44,31 +47,36 @@ class ZNoBackgroundButton(ABCButton):
                          sizepolicy=sizepolicy)
         # 参数初始化
         if fixed_stylesheet: self.setFixedStyleSheet(fixed_stylesheet)
+        if hover_stylesheet: self._layer_hover.setFixedStyleSheet(hover_stylesheet)
+        if pressed_stylesheet: self._layer_pressed.setFixedStyleSheet(pressed_stylesheet)
         self._init_style()
         self.updateStyle()
 
 
     def _init_style(self):
-        self._color_sheet.loadColorConfig(Zen.WidgetType.NoBackgroundButton) #获取颜色配置
+        self._color_sheet.loadColorConfig(Zen.WidgetType.FillButton) #获取颜色配置
         self._colors.overwrite(self._color_sheet.getSheet()) #获取颜色表
 
+        self._bg_color_a = self._colors.background_a
         self._text_color = self._colors.text
         self._icon_color = self._colors.icon
 
+        self._anim_bg_color_a.setCurrent(ZColorTool.toArray(self._bg_color_a))
         self._anim_text_color.setCurrent(ZColorTool.toArray(self._text_color))
         self._anim_icon_color.setCurrent(ZColorTool.toArray(self._icon_color))
 
         # 判断hover层的样式
-        self._layer_hover.hide()
+        self._layer_hover.set_style_getter('background_color', lambda: self._layer_hover._bg_color_a)
 
         # 判断press层的样式
-        self._layer_pressed.hide()
-
+        self._layer_pressed.set_style_getter('background_color', lambda: self._layer_pressed._bg_color_a)
 
     def _theme_changed_handler(self, theme):
         self._colors.overwrite(self._color_sheet.getSheet(theme))
+        self.setColor(self._colors.background_a)
         self.setTextColor(self._colors.text)
         self.setIconColor(self._colors.icon)
+
 
 
     def reloadStyleSheet(self):
@@ -76,8 +84,8 @@ class ZNoBackgroundButton(ABCButton):
         #判断背景层样式
         sheet = dedent(f'''\
             color: {self._text_color};
-            background-color: transparent;
-            border: none;''')
+            background-color: {self._bg_color_a};
+            border: none;''')#border-color: {self._border_color};
         return self._stylesheet_fixed +'\n'+ sheet
 
 
@@ -93,23 +101,19 @@ class ZNoBackgroundButton(ABCButton):
             ZenGlobal.ui.windows["ToolTip"].hideTip()
 
     def _hovered_handler(self):
-        self.setIconColorTo(self._colors.icon_hover)
-        self.setTextColorTo(self._colors.text_hover)
+        self._layer_hover.setColorTo(self._colors.hover)
 
 
     def _leaved_handler(self):
-        self.setIconColorTo(self._colors.icon)
-        self.setTextColorTo(self._colors.text)
+        self._layer_hover.setColorTo(ZColorTool.trans(self._colors.hover))
 
 
     def _pressed_handler(self):
-        self.setIconColorTo(self._colors.icon_pressed)
-        self.setTextColorTo(self._colors.text_pressed)
+        self._layer_pressed.setColorTo(self._colors.pressed)
 
 
     def _released_handler(self):
-        self.setIconColorTo(self._colors.icon_hover)
-        self.setTextColorTo(self._colors.text_hover)
+        self._layer_pressed.setColorTo(ZColorTool.trans(self._colors.pressed))
 
 
     def _toggled_handler(self, checked):

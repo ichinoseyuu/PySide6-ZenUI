@@ -1,7 +1,7 @@
 from PySide6.QtCore import QObject,Signal
 from typing import Optional,Dict, overload
 import copy
-from ZenUI.core.enumrates.zen import Zen
+from ZenUI.core.enumrates import Zen
 
 class ZColorSheet(QObject):
     '''

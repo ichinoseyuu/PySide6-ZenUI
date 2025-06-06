@@ -46,31 +46,31 @@ class PageBox(ZStackPage):
         self.contain_zpush.layout().addWidget(self.label_zpush)
 
 
-        self.btn_push1 = ZQuickPresets.ghostButton(parent=self.contain_zpush,
+        self.btn_push1 = ZQuickButton.ghostButton(parent=self.contain_zpush,
                                  name='btn_push1',
                                  text='幽灵按钮',
                                  fixed_size=ZSize(78, 32))
         self.contain_zpush.layout().addWidget(self.btn_push1)
 
-        self.btn_push2 = ZQuickPresets.transButton(parent=self.contain_zpush,
+        self.btn_push2 = ZQuickButton.transButton(parent=self.contain_zpush,
                                  name='btn_push2',
                                  text='透明按钮',
                                  fixed_size=ZSize(78, 32))
         self.contain_zpush.layout().addWidget(self.btn_push2)
 
-        self.btn_push3 = ZQuickPresets.gradientButton(parent=self.contain_zpush,
+        self.btn_push3 = ZQuickButton.gradientButton(parent=self.contain_zpush,
                                  name='btn_push3',
                                  text='渐变按钮',
                                  fixed_size=ZSize(78, 32))
         self.contain_zpush.layout().addWidget(self.btn_push3)
 
-        self.btn_push4 = ZQuickPresets.textButton(parent=self.contain_zpush,
+        self.btn_push4 = ZQuickButton.textButton(parent=self.contain_zpush,
                                  name='btn_push4',
                                  text='文本按钮',
                                  fixed_size=ZSize(78, 32))
         self.contain_zpush.layout().addWidget(self.btn_push4)
 
-        self.btn_push5 = ZQuickPresets.iconButton(parent=self.contain_zpush,
+        self.btn_push5 = ZQuickButton.iconButton(parent=self.contain_zpush,
                                  name='btn_push5',
                                  icon=QIcon(':/icons/svg/fluent/regular/ic_fluent_sparkle_regular.svg'),
                                  fixed_size=ZSize(32, 32))
@@ -102,7 +102,7 @@ class PageBox(ZStackPage):
         icon_toggle = QIcon()
         icon_toggle.addFile(':/icons/svg/fluent/regular/ic_fluent_sparkle_regular.svg', QSize(32, 32), QIcon.Mode.Normal, QIcon.State.Off)
         icon_toggle.addFile(':/icons/svg/fluent/filled/ic_fluent_sparkle_filled.svg', QSize(32, 32), QIcon.Mode.Normal, QIcon.State.On)
-        self.btn_toggle1 = ZQuickPresets.toggleButton(parent=self.contain_ztoggle,
+        self.btn_toggle1 = ZQuickButton.toggleButton(parent=self.contain_ztoggle,
                                  name='btn_toggle1',
                                  text='收藏',
                                  icon=icon_toggle,

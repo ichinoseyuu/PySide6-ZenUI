@@ -2,11 +2,11 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from typing import overload
-from ZenUI.component.advancedbutton.pushbutton import ZPushButton
-from ZenUI.component.advancedtogglebutton.togglebutton import ZToggleButton
-from ZenUI.core.argclass.size import ZSize
+from ZenUI.component.advancedbutton import ZPushButton
+from ZenUI.component.advancedbutton import ZToggleButton
+from ZenUI.core import ZSize
 
-class ZQuickPresets:
+class ZQuickButton:
     '快捷预设'
     # region 导航栏按钮
     @staticmethod

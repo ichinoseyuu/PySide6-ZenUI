@@ -8,7 +8,7 @@ class LeftNavigationBar(ZNavigationBar):
         icon1 = QIcon()
         icon1.addFile(u":/icons/svg/fluent/regular/ic_fluent_home_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
         icon1.addFile(u":/icons/svg/fluent/filled/ic_fluent_home_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
-        self.btnHome = ZQuickPresets.navbarToggleButton(parent=self,
+        self.btnHome = ZQuickButton.navbarToggleButton(parent=self,
                                   name="btnHome",
                                   text="        主页",
                                   icon=icon1,
@@ -18,7 +18,7 @@ class LeftNavigationBar(ZNavigationBar):
         icon2 = QIcon()
         icon2.addFile(u":/icons/svg/fluent/regular/ic_fluent_cube_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
         icon2.addFile(u":/icons/svg/fluent/filled/ic_fluent_cube_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
-        self.btnBox = ZQuickPresets.navbarToggleButton(parent=self,
+        self.btnBox = ZQuickButton.navbarToggleButton(parent=self,
                                   name="btnBox",
                                   text="        控件",
                                   icon=icon2,
@@ -29,7 +29,7 @@ class LeftNavigationBar(ZNavigationBar):
         icon3 = QIcon()
         icon3.addFile(u":/icons/svg/fluent/regular/ic_fluent_info_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
         icon3.addFile(u":/icons/svg/fluent/filled/ic_fluent_info_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
-        self.btnAbout = ZQuickPresets.navbarToggleButton(parent=self,
+        self.btnAbout = ZQuickButton.navbarToggleButton(parent=self,
                                   name="btnAbout",
                                   text="        关于",
                                   icon=icon3,

@@ -1,6 +1,6 @@
+from ZenUI.component.basewidget import ZWidget
 from ZenUI.component.label.abclabel import ABCLabel
-from ZenUI.component.widget.widget import ZWidget
-from ZenUI.core import Zen,ZColorSheet,ZColorTool
+from ZenUI.core import Zen,ZColorSheet, ZColorTool
 class ZTextLabel(ABCLabel):
     """文本标签"""
     def __init__(self,

@@ -1,7 +1,7 @@
 import inspect
 import os
 import time
-def advanced_print(*args, **kwargs):
+def advancedPrint(*args, **kwargs):
     """打印调试信息，包括文件名和行号"""
     # 获取调用栈信息
     caller = inspect.currentframe().f_back

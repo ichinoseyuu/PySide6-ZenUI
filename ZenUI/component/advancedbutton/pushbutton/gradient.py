@@ -1,15 +1,15 @@
 from PySide6.QtGui import QIcon
 from textwrap import dedent
-from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.advancedbutton.abcbutton import ABCButton
+from ZenUI.component.basewidget.widget import ZWidget
+from ZenUI.component.advancedbutton.abstract.abcbutton import ABCButton
 from ZenUI.core import ZColorTool,ZenGlobal,Zen,ZSize
 
-class ZTransparentButton(ABCButton):
+class ZGradientButton(ABCButton):
     '''
-    透明按钮
-    - 背景透明
-    - 悬停时背景变色
-    - 按下背景变色
+    渐变按钮
+    - 渐变背景
+    - 悬停时变色
+    - 按下时变色
     '''
     def __init__(self,
                  parent: ZWidget = None,
@@ -54,12 +54,16 @@ class ZTransparentButton(ABCButton):
 
 
     def _init_style(self):
-        self._color_sheet.loadColorConfig(Zen.WidgetType.TransparentButton) #获取颜色配置
+        self._color_sheet.loadColorConfig(Zen.WidgetType.GradientButton) #获取颜色配置
         self._colors.overwrite(self._color_sheet.getSheet()) #获取颜色表
 
+        self._bg_color_a = self._colors.background_a
+        self._bg_color_b = self._colors.background_b
         self._text_color = self._colors.text
         self._icon_color = self._colors.icon
 
+        self._anim_bg_color_a.setCurrent(ZColorTool.toArray(self._bg_color_a))
+        self._anim_bg_color_b.setCurrent(ZColorTool.toArray(self._bg_color_b))
         self._anim_text_color.setCurrent(ZColorTool.toArray(self._text_color))
         self._anim_icon_color.setCurrent(ZColorTool.toArray(self._icon_color))
 
@@ -69,21 +73,23 @@ class ZTransparentButton(ABCButton):
         # 判断press层的样式
         self._layer_pressed.set_style_getter('background_color', lambda: self._layer_pressed._bg_color_a)
 
-
     def _theme_changed_handler(self, theme):
         self._colors.overwrite(self._color_sheet.getSheet(theme))
+        self.setColor(self._colors.background_a,self._colors.background_b)
         self.setTextColor(self._colors.text)
         self.setIconColor(self._colors.icon)
-        self._layer_hover.setColor(ZColorTool.trans(self._colors.hover))
-        self._layer_pressed.setColor(ZColorTool.trans(self._colors.pressed))
+
 
 
     def reloadStyleSheet(self):
         super().reloadStyleSheet()
         #判断背景层样式
+        x1, y1, x2, y2 = self._gradient_anchor
         sheet = dedent(f'''\
             color: {self._text_color};
-            background-color: transparent;
+            background-color: qlineargradient(
+            x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2},
+            stop:0 {self._bg_color_a}, stop:1 {self._bg_color_b});
             border: none;''')
         return self._stylesheet_fixed +'\n'+ sheet
 
@@ -113,7 +119,6 @@ class ZTransparentButton(ABCButton):
 
     def _released_handler(self):
         self._layer_pressed.setColorTo(ZColorTool.trans(self._colors.pressed))
-
 
     def _toggled_handler(self, checked):
         if self._theme_manager.theme() == Zen.Theme.Dark:

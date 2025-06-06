@@ -2,8 +2,8 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from typing import overload
-from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.widget.colorlayer import ZColorLayer
+from ZenUI.component.basewidget import ZWidget
+from ZenUI.component.advancedbutton.widget import ButtonLayer
 from ZenUI.core import ZExpAnim,AnimGroup,ZColorTool,ZenGlobal,Zen,ZSize,ZColorSheet,ZColors
 class ABCButton(QPushButton):
     '''按钮抽象类'''
@@ -91,9 +91,9 @@ class ABCButton(QPushButton):
         self._init_anim() # 初始化动画
 
         # PushButton 特性
-        self._layer_hover = ZColorLayer(self)
+        self._layer_hover = ButtonLayer(self)
         '悬停层'
-        self._layer_pressed = ZColorLayer(self)
+        self._layer_pressed = ButtonLayer(self)
         '按下层'
         self._tooltip = ''
         '提示文本'

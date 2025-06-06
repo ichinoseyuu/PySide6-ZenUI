@@ -1,8 +1,8 @@
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
-from ZenUI.component.widget.widget import ZWidget
-from ZenUI.component.advancedbutton.pushbutton import ZPushButton
+from ZenUI.component.basewidget.widget import ZWidget
+from ZenUI.component.advancedbutton import ZPushButton
 from ZenUI.component.label.text import ZTextLabel
 from ZenUI.component.layout.spacer import ZSpacer
 from ZenUI.component.layout.row import ZRowLayout
@@ -32,7 +32,7 @@ class ThemeButton(ZPushButton):
         #     self._tooltip = '切换到深色模式'
         #     ZenGlobal.ui.windows['ToolTip'].setText(self._tooltip)
 
-class ZTitlebar(QWidget):
+class ZTitleBar(QWidget):
     '''标题栏'''
     def __init__(self, parent, window_shadow:int):
         super().__init__(parent)

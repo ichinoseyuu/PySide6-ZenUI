@@ -1,6 +1,6 @@
 from typing import Dict, ClassVar
 from dataclasses import dataclass
-from ZenUI.core.enumrates.zen import Zen
+from ZenUI.core.enumrates import Zen
 
 @dataclass
 class ZColors:

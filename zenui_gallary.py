@@ -50,6 +50,7 @@ class ZenUIGallary(ZMainWindow):
 
 
 
+
     def btnConnect(self):
         self.navigationBar.btnHome.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageHome'))
         self.navigationBar.btnBox.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageBox'))

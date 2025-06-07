@@ -46,13 +46,16 @@ class ZColorConfig:
 class ColorPresets(NoInstanceClass):
     # VAR NAME FORMET: [Theme]_[WidgetType]_[Color]
     # Dark theme colors
-    DARK_BTN_ACCENT_A = '#ff63469f'
-    DARK_BTN_ACCENT_B = '#ff955595'
-    DARK_BTN_BORDER = '#ff1d1d1d'
-    DARK_BTN_TEXT = '#ffdcdcdc'
-    DARK_BTN_ICON = '#ffdcdcdc'
-    DARK_BTN_LAYER = '#10ffffff'
-    DARK_BTN_SELECTED = ZColorTool.mix(DARK_BTN_ACCENT_B, DARK_BTN_ACCENT_A,0.6)
+    DARK_TITLEBAR_BG = '#ff202020'
+    DARK_TITLEBAR_BORDER = '#00161616'
+
+    DARK_WINDOW_BG_A = '#ff202020'
+    DARK_WINDOW_BG_B = '#ff202020'
+    DARK_WINDOW_BORDER = '#ff1d1d1d'
+
+    DARK_TOOLTIP_BG = '#ff313131'
+    DARK_TOOLTIP_BORDER = '#ff1d1d1d'
+    DARK_TOOLTIP_FLASH = '#7fffffff'
 
     DARK_BOX_BG_A = '#ff202020'
     DARK_BOX_BG_B = '#ff202020'
@@ -66,18 +69,47 @@ class ColorPresets(NoInstanceClass):
     DARK_STACKPAGE_BG_B = '#ff272727'
     DARK_STACKPAGE_BORDER = '#ff1d1d1d'
 
-    DARK_TITLEBAR_BG = '#ff202020'
-    DARK_TITLEBAR_BORDER = '#00161616'
+    DARK_BTN_ACCENT_A = '#ff63469f'
+    DARK_BTN_ACCENT_B = '#ff955595'
+    DARK_BTN_BORDER = '#ff1d1d1d'
+    DARK_BTN_TEXT = '#ffdcdcdc'
+    DARK_BTN_ICON = '#ffdcdcdc'
+    DARK_BTN_LAYER = '#10ffffff'
+    DARK_BTN_SELECTED = ZColorTool.mix(DARK_BTN_ACCENT_B, DARK_BTN_ACCENT_A,0.6)
 
-    DARK_TOOLTIP_BG = '#ff313131'
-    DARK_TOOLTIP_BORDER = '#ff1d1d1d'
-    DARK_TOOLTIP_FLASH = '#7fffffff'
+    DARK_LABEL_TEXT = '#ffdcdcdc'
 
-    DARK_WINDOW_BG_A = '#ff202020'
-    DARK_WINDOW_BG_B = '#ff202020'
-    DARK_WINDOW_BORDER = '#ff1d1d1d'
+    DARK_SLIDER_TRACK = '#ff868686'
+    DARK_SLIDER_FILL = '#ff955595'
+    DARK_SLIDER_HANDLE_INNER = '#ff955595'
+    DARK_SLIDER_HANDLE_OUTER = '#ff9a9a9a'
+    DARK_SLIDER_HANDLE_BORDER = '#ff272727'
+
 
     # Light theme colors
+    LIGHT_TITLEBAR_BG = '#fff3f3f3'
+    LIGHT_TITLEBAR_BORDER = '#00e6e6e6'
+
+    LIGHT_WINDOW_BG_A = '#fff3f3f3'
+    LIGHT_WINDOW_BG_B = '#fff3f3f3'
+    LIGHT_WINDOW_BORDER = '#ffe5e5e5'
+
+    LIGHT_TOOLTIP_BG = '#fff3f3f3'
+    LIGHT_TOOLTIP_BORDER = '#ffe5e5e5'
+    LIGHT_TOOLTIP_FLASH = '#7f999999'
+
+    LIGHT_BOX_BG_A = '#fff3f3f3'
+    LIGHT_BOX_BG_B = '#fff3f3f3'
+    LIGHT_BOX_BORDER = '#ffe5e5e5'
+
+    LIGHT_DRAWER_BG_A = '#fff3f3f3'
+    LIGHT_DRAWER_BG_B = '#fff3f3f3'
+    LIGHT_DRAWER_BORDER = '#ffe5e5e5'
+
+    LIGHT_STACKPAGE_BG_A = '#fff9f9f9'
+    LIGHT_STACKPAGE_BG_B = '#fff9f9f9'
+    LIGHT_STACKPAGE_BORDER = '#ffe5e5e5'
+
     LIGHT_BTN_ACCENT_A = '#ffa5d2f1'
     LIGHT_BTN_ACCENT_B = '#ffd0e8f2'
     LIGHT_BTN_BORDER = '#ffe5e5e5'
@@ -92,33 +124,96 @@ class ColorPresets(NoInstanceClass):
     LIGHT_BTN_LAYER = '#10000000'
     LIGHT_BTN_SELECTED = ZColorTool.mix(LIGHT_BTN_ACCENT_B, LIGHT_BTN_ACCENT_A,0.1)
 
-    LIGHT_BOX_BG_A = '#fff3f3f3'
-    LIGHT_BOX_BG_B = '#fff3f3f3'
-    LIGHT_BOX_BORDER = '#ffe5e5e5'
+    LIGHT_LABEL_TEXT = '#ff313131'
 
-    LIGHT_DRAWER_BG_A = '#fff3f3f3'
-    LIGHT_DRAWER_BG_B = '#fff3f3f3'
-    LIGHT_DRAWER_BORDER = '#ffe5e5e5'
+    LIGHT_SLIDER_TRACK = '#ffb0b0b0'
+    LIGHT_SLIDER_FILL = '#ffa5d2f1'
+    LIGHT_SLIDER_HANDLE_INNER = '#ffa5d2f1'
+    LIGHT_SLIDER_HANDLE_OUTER = '#ffffffff'
+    LIGHT_SLIDER_HANDLE_BORDER = '#ffbfbfbf'
 
-    LIGHT_STACKPAGE_BG_A = '#fff9f9f9'
-    LIGHT_STACKPAGE_BG_B = '#fff9f9f9'
-    LIGHT_STACKPAGE_BORDER = '#ffe5e5e5'
 
-    LIGHT_TITLEBAR_BG = '#fff3f3f3'
-    LIGHT_TITLEBAR_BORDER = '#00e6e6e6'
-
-    LIGHT_TOOLTIP_BG = '#fff3f3f3'
-    LIGHT_TOOLTIP_BORDER = '#ffe5e5e5'
-    LIGHT_TOOLTIP_FLASH = '#7f999999'
-
-    LIGHT_WINDOW_BG_A = '#fff3f3f3'
-    LIGHT_WINDOW_BG_B = '#fff3f3f3'
-    LIGHT_WINDOW_BORDER = '#ffe5e5e5'
 
 class ZThemeColorConfig(ZColorConfig):
     '''主题色彩配置管理'''
     def __init__(self):
         super().__init__()
+        self.setConfig(Zen.WidgetType.Titlebar, Zen.Theme.Dark,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_TITLEBAR_BG,
+                        Zen.ColorRole.Border: ColorPresets.DARK_TITLEBAR_BORDER
+                        })
+
+        self.setConfig(Zen.WidgetType.Titlebar, Zen.Theme.Light,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_TITLEBAR_BG,
+                        Zen.ColorRole.Border: ColorPresets.LIGHT_TITLEBAR_BORDER
+                        })
+
+
+        self.setConfig(Zen.WidgetType.Window, Zen.Theme.Dark,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_WINDOW_BG_A,
+                        Zen.ColorRole.BackgroundB: ColorPresets.DARK_WINDOW_BG_B,
+                        Zen.ColorRole.Border: ColorPresets.DARK_WINDOW_BORDER
+                        })
+
+        self.setConfig(Zen.WidgetType.Window, Zen.Theme.Light,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_WINDOW_BG_A,
+                        Zen.ColorRole.BackgroundB: ColorPresets.LIGHT_WINDOW_BG_B,
+                        Zen.ColorRole.Border: ColorPresets.LIGHT_WINDOW_BORDER
+                        })
+
+
+        self.setConfig(Zen.WidgetType.ToolTip, Zen.Theme.Dark,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_TOOLTIP_BG,
+                        Zen.ColorRole.Border: ColorPresets.DARK_TOOLTIP_BORDER,
+                        Zen.ColorRole.Flash: ColorPresets.DARK_TOOLTIP_FLASH
+                        })
+
+        self.setConfig(Zen.WidgetType.ToolTip, Zen.Theme.Light,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_TOOLTIP_BG,
+                        Zen.ColorRole.Border: ColorPresets.LIGHT_TOOLTIP_BORDER,
+                        Zen.ColorRole.Flash: ColorPresets.LIGHT_TOOLTIP_FLASH
+                        })
+
+
+        self.setConfig(Zen.WidgetType.Box, Zen.Theme.Dark,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_BOX_BG_A,
+                        Zen.ColorRole.BackgroundB: ColorPresets.DARK_BOX_BG_B,
+                        Zen.ColorRole.Border: ColorPresets.DARK_BOX_BORDER
+                        })
+
+        self.setConfig(Zen.WidgetType.Box, Zen.Theme.Light,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_BOX_BG_A,
+                        Zen.ColorRole.BackgroundB: ColorPresets.LIGHT_BOX_BG_B,
+                        Zen.ColorRole.Border: ColorPresets.LIGHT_BOX_BORDER
+                        })
+
+
+        self.setConfig(Zen.WidgetType.Drawer, Zen.Theme.Dark,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_DRAWER_BG_A,
+                        Zen.ColorRole.BackgroundB: ColorPresets.DARK_DRAWER_BG_B,
+                        Zen.ColorRole.Border: ColorPresets.DARK_DRAWER_BORDER
+                        })
+
+        self.setConfig(Zen.WidgetType.Drawer, Zen.Theme.Light,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_DRAWER_BG_A,
+                        Zen.ColorRole.BackgroundB: ColorPresets.LIGHT_DRAWER_BG_B,
+                        Zen.ColorRole.Border: ColorPresets.LIGHT_DRAWER_BORDER
+                        })
+
+
+        self.setConfig(Zen.WidgetType.StackPage, Zen.Theme.Dark,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_STACKPAGE_BG_A,
+                        Zen.ColorRole.BackgroundB: ColorPresets.DARK_STACKPAGE_BG_B,
+                        Zen.ColorRole.Border: ColorPresets.DARK_STACKPAGE_BORDER
+                        })
+
+        self.setConfig(Zen.WidgetType.StackPage, Zen.Theme.Light,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_STACKPAGE_BG_A,
+                        Zen.ColorRole.BackgroundB: ColorPresets.LIGHT_STACKPAGE_BG_B,
+                        Zen.ColorRole.Border: ColorPresets.LIGHT_STACKPAGE_BORDER
+                        })
+
+
         self.setConfig(Zen.WidgetType.PushButton, Zen.Theme.Dark,
                        {Zen.ColorRole.BackgroundA: ColorPresets.DARK_BTN_ACCENT_A,
                         Zen.ColorRole.BackgroundB: ColorPresets.DARK_BTN_ACCENT_B,
@@ -153,6 +248,7 @@ class ZThemeColorConfig(ZColorConfig):
                         Zen.ColorRole.TextPressed: ColorPresets.LIGHT_BTN_TEXT_PRESSED,
                         })
 
+
         self.setConfig(Zen.WidgetType.FillButton, Zen.Theme.Dark,
                        {Zen.ColorRole.BackgroundA: ZColorTool.mix(ColorPresets.DARK_BTN_ACCENT_A, ColorPresets.DARK_BTN_ACCENT_B),
                         Zen.ColorRole.Hover: ColorPresets.DARK_BTN_LAYER,
@@ -171,6 +267,7 @@ class ZThemeColorConfig(ZColorConfig):
                         Zen.ColorRole.Text: ColorPresets.LIGHT_BTN_TEXT,
                         })
 
+
         self.setConfig(Zen.WidgetType.GradientButton, Zen.Theme.Dark, 
                        {Zen.ColorRole.BackgroundA: ColorPresets.DARK_BTN_ACCENT_A,
                         Zen.ColorRole.BackgroundB: ColorPresets.DARK_BTN_ACCENT_B,
@@ -188,6 +285,7 @@ class ZThemeColorConfig(ZColorConfig):
                         Zen.ColorRole.Icon: ColorPresets.LIGHT_BTN_ICON,
                         Zen.ColorRole.Text: ColorPresets.LIGHT_BTN_TEXT,
                         })
+
 
         self.setConfig(Zen.WidgetType.GhostButton, Zen.Theme.Dark, 
                        {Zen.ColorRole.Flash: ColorPresets.DARK_BTN_LAYER,
@@ -218,6 +316,7 @@ class ZThemeColorConfig(ZColorConfig):
                         Zen.ColorRole.Text: ColorPresets.LIGHT_BTN_TEXT,
                         })
 
+
         self.setConfig(Zen.WidgetType.NoBackgroundButton, Zen.Theme.Dark, 
                        {Zen.ColorRole.Icon: ColorPresets.DARK_BTN_ICON,
                         Zen.ColorRole.IconHover: ColorPresets.DARK_BTN_ACCENT_B,
@@ -235,6 +334,7 @@ class ZThemeColorConfig(ZColorConfig):
                         Zen.ColorRole.TextHover: ColorPresets.LIGHT_BTN_TEXT_HOVER,
                         Zen.ColorRole.TextPressed: ColorPresets.LIGHT_BTN_TEXT_PRESSED,
                         })
+
 
         self.setConfig(Zen.WidgetType.ToggleButton, Zen.Theme.Dark,
                        {Zen.ColorRole.Hover: ColorPresets.DARK_BTN_LAYER,
@@ -277,77 +377,24 @@ class ZThemeColorConfig(ZColorConfig):
                         })
 
         self.setConfig(Zen.WidgetType.TextLabel, Zen.Theme.Dark,
-                       {Zen.ColorRole.Text: ColorPresets.DARK_BTN_TEXT})
+                       {Zen.ColorRole.Text: ColorPresets.DARK_LABEL_TEXT})
 
         self.setConfig(Zen.WidgetType.TextLabel, Zen.Theme.Light,
-                       {Zen.ColorRole.Text: ColorPresets.LIGHT_BTN_TEXT})
+                       {Zen.ColorRole.Text: ColorPresets.LIGHT_LABEL_TEXT})
 
-        self.setConfig(Zen.WidgetType.Box, Zen.Theme.Dark,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_BOX_BG_A,
-                        Zen.ColorRole.BackgroundB: ColorPresets.DARK_BOX_BG_B,
-                        Zen.ColorRole.Border: ColorPresets.DARK_BOX_BORDER
+
+        self.setConfig(Zen.WidgetType.Slider, Zen.Theme.Dark,
+                       {Zen.ColorRole.Track: ColorPresets.DARK_SLIDER_TRACK,
+                        Zen.ColorRole.Fill: ColorPresets.DARK_SLIDER_FILL,
+                        Zen.ColorRole.HandleInner: ColorPresets.DARK_SLIDER_HANDLE_INNER,
+                        Zen.ColorRole.HandleOuter: ColorPresets.DARK_SLIDER_HANDLE_OUTER,
+                        Zen.ColorRole.HandleBorder: ColorPresets.DARK_SLIDER_HANDLE_BORDER,
                         })
 
-        self.setConfig(Zen.WidgetType.Box, Zen.Theme.Light,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_BOX_BG_A,
-                        Zen.ColorRole.BackgroundB: ColorPresets.LIGHT_BOX_BG_B,
-                        Zen.ColorRole.Border: ColorPresets.LIGHT_BOX_BORDER
-                        })
-
-        self.setConfig(Zen.WidgetType.Drawer, Zen.Theme.Dark,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_DRAWER_BG_A,
-                        Zen.ColorRole.BackgroundB: ColorPresets.DARK_DRAWER_BG_B,
-                        Zen.ColorRole.Border: ColorPresets.DARK_DRAWER_BORDER
-                        })
-
-        self.setConfig(Zen.WidgetType.Drawer, Zen.Theme.Light,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_DRAWER_BG_A,
-                        Zen.ColorRole.BackgroundB: ColorPresets.LIGHT_DRAWER_BG_B,
-                        Zen.ColorRole.Border: ColorPresets.LIGHT_DRAWER_BORDER
-                        })
-
-        self.setConfig(Zen.WidgetType.StackPage, Zen.Theme.Dark,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_STACKPAGE_BG_A,
-                        Zen.ColorRole.BackgroundB: ColorPresets.DARK_STACKPAGE_BG_B,
-                        Zen.ColorRole.Border: ColorPresets.DARK_STACKPAGE_BORDER
-                        })
-
-        self.setConfig(Zen.WidgetType.StackPage, Zen.Theme.Light,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_STACKPAGE_BG_A,
-                        Zen.ColorRole.BackgroundB: ColorPresets.LIGHT_STACKPAGE_BG_B,
-                        Zen.ColorRole.Border: ColorPresets.LIGHT_STACKPAGE_BORDER
-                        })
-
-        self.setConfig(Zen.WidgetType.Titlebar, Zen.Theme.Dark,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_TITLEBAR_BG,
-                        Zen.ColorRole.Border: ColorPresets.DARK_TITLEBAR_BORDER
-                        })
-
-        self.setConfig(Zen.WidgetType.Titlebar, Zen.Theme.Light,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_TITLEBAR_BG,
-                        Zen.ColorRole.Border: ColorPresets.LIGHT_TITLEBAR_BORDER
-                        })
-
-        self.setConfig(Zen.WidgetType.ToolTip, Zen.Theme.Dark,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_TOOLTIP_BG,
-                        Zen.ColorRole.Border: ColorPresets.DARK_TOOLTIP_BORDER,
-                        Zen.ColorRole.Flash: ColorPresets.DARK_TOOLTIP_FLASH
-                        })
-
-        self.setConfig(Zen.WidgetType.ToolTip, Zen.Theme.Light,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_TOOLTIP_BG,
-                        Zen.ColorRole.Border: ColorPresets.LIGHT_TOOLTIP_BORDER,
-                        Zen.ColorRole.Flash: ColorPresets.LIGHT_TOOLTIP_FLASH
-                        })
-
-        self.setConfig(Zen.WidgetType.Window, Zen.Theme.Dark,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_WINDOW_BG_A,
-                        Zen.ColorRole.BackgroundB: ColorPresets.DARK_WINDOW_BG_B,
-                        Zen.ColorRole.Border: ColorPresets.DARK_WINDOW_BORDER
-                        })
-
-        self.setConfig(Zen.WidgetType.Window, Zen.Theme.Light,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_WINDOW_BG_A,
-                        Zen.ColorRole.BackgroundB: ColorPresets.LIGHT_WINDOW_BG_B,
-                        Zen.ColorRole.Border: ColorPresets.LIGHT_WINDOW_BORDER
+        self.setConfig(Zen.WidgetType.Slider, Zen.Theme.Light,
+                       {Zen.ColorRole.Track: ColorPresets.LIGHT_SLIDER_TRACK,
+                        Zen.ColorRole.Fill: ColorPresets.LIGHT_SLIDER_FILL,
+                        Zen.ColorRole.HandleInner: ColorPresets.LIGHT_SLIDER_HANDLE_INNER,
+                        Zen.ColorRole.HandleOuter: ColorPresets.LIGHT_SLIDER_HANDLE_OUTER,
+                        Zen.ColorRole.HandleBorder: ColorPresets.LIGHT_SLIDER_HANDLE_BORDER,
                         })

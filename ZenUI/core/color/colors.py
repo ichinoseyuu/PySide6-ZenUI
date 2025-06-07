@@ -49,6 +49,17 @@ class ZColors:
     '选中图标颜色'
     indicator_selected: str = None
     '指示条选中颜色'
+    track: str = None
+    '轨道颜色'
+    fill: str = None
+    '填充颜色'
+    handle_inner: str = None
+    '滑块内部颜色'
+    handle_outer: str = None
+    '滑块外部颜色'
+    handle_border: str = None
+    '滑块边框颜色'
+
 
     @staticmethod
     def _generate_color_map() -> Dict[str, str]:

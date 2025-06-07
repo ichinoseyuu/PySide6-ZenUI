@@ -12,10 +12,9 @@ class PageAbout(ZStackPage):
         self._setup_ui()
 
     def _setup_ui(self):
-        text = """关于"""
         self.label_title = ZTextLabel(parent=self,
                                  name='text',
-                                 text=text,
+                                 text='关于',
                                  alignment=Zen.Alignment.Left)
         self.label_title.setFixedStyleSheet('padding:5px;\nfont-size: 24px;\nfont-family: "微软雅黑";\nfont-weight: bold;')
         self.layout().addWidget(self.label_title)

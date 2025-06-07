@@ -79,10 +79,33 @@ class Zen:
         '选中时图标颜色'
         IndicatorSelected = auto()
         '指示条选中时颜色'
+        Track = auto()
+        '轨道颜色'
+        Fill = auto()
+        '填充颜色'
+        HandleInner = auto()
+        '滑块内部颜色'
+        HandleOuter = auto()
+        '滑块外部颜色'
+        HandleBorder = auto()
+        '滑块边框颜色'
+
 
 
     class WidgetType(IntEnum):
         '''控件类型'''
+        Titlebar = auto()
+        '标题栏控件'
+        Window = auto()
+        '窗口控件'
+        ToolTip = auto()
+        '工具提示控件'
+        Box = auto()
+        '盒子控件'
+        Drawer = auto()
+        '抽屉控件'
+        StackPage = auto()
+        '堆叠页面控件'
         PushButton = auto()
         '按钮控件'
         FillButton = auto()
@@ -97,22 +120,11 @@ class Zen:
         '无背景按钮控件'
         ToggleButton = auto()
         '开关按钮控件'
-        new_PushButton = auto()
-        '新按钮控件'
-        Box = auto()
-        '盒子控件'
-        Drawer = auto()
-        '抽屉控件'
-        StackPage = auto()
-        '堆叠页面控件'
         TextLabel = auto()
         '文字标签控件'
-        Titlebar = auto()
-        '标题栏控件'
-        ToolTip = auto()
-        '工具提示控件'
-        Window = auto()
-        '窗口控件'
+        Slider = auto()
+        '滑块控件'
+
 
 
     class Layout(IntEnum):

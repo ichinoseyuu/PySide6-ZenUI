@@ -1,7 +1,7 @@
 from typing import Union
 import numpy
 import re
-
+from PySide6.QtGui import QColor
 class ZColorTool:
     """颜色工具类，提供颜色转换、颜色验证等功能"""
     @staticmethod
@@ -191,6 +191,17 @@ class ZColorTool:
         else:
             raise ValueError(f"Unexpected shape of input: {value}, shape: {value.shape}")
 
+    @staticmethod
+    def toQColor(value: Union[numpy.ndarray, list, tuple, str]):
+        """将RGB或ARGB数组转换为QColor对象"""
+        if isinstance(value, str):
+            value = ZColorTool.toArray(value)
+        if len(value) == 3:
+            r, g, b = value
+            return QColor(r, g, b)
+        elif len(value) == 4:
+            a, r, g, b = value
+            return QColor(r, g, b, a)
 
     @classmethod
     def mix(cls, code_fore: str, code_post: str, weight: float = 0.5):
@@ -201,14 +212,23 @@ class ZColorTool:
         return cls.toCode(mixed_rgb)
 
 
+    # @classmethod
+    # def trans(cls, code: str, trans: float = 0):
+    #     """给指定的`#RRGGBB`颜色代码设置一个透明度，返回新的颜色代码"""
+    #     value = cls.toArray(code)
+    #     value_proceed = value * numpy.array([trans, 1, 1, 1])
+    #     code_proceed = cls.toCode(value_proceed)
+    #     return code_proceed
     @classmethod
-    def trans(cls, code: str, trans: float = 0):
+    def trans(cls, code: str, trans: float | int = 0):
         """给指定的`#RRGGBB`颜色代码设置一个透明度，返回新的颜色代码"""
         value = cls.toArray(code)
+        # 如果trans是int类型，将其转换为0-1的float类型
+        if isinstance(trans, int):
+            trans = trans / 255.0
         value_proceed = value * numpy.array([trans, 1, 1, 1])
         code_proceed = cls.toCode(value_proceed)
         return code_proceed
-
     @classmethod
     def overlay(cls, base_color: str, overlay_color: str) -> str:
         """

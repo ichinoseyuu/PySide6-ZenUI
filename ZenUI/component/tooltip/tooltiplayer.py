@@ -1,7 +1,8 @@
 from textwrap import dedent
 from ZenUI.component.basewidget import ZLayer
-class ButtonLayer(ZLayer):
-    '颜色层'
+
+
+class ToolTipLayer(ZLayer):
     def __init__(self, parent = None):
         super().__init__(parent)
         self._style_vars = {

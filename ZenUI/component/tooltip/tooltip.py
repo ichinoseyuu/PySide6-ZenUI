@@ -1,47 +1,11 @@
-from textwrap import dedent
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QTimer
 from PySide6.QtGui import QCursor
-from ZenUI.component.basewidget import ZWidget,ZLayer
+from ZenUI.component.basewidget import ZWidget
 from ZenUI.component.label import ZTextLabel
+from ZenUI.component.slider import ZSlider
+from ZenUI.component.tooltip.tooltiplayer import ToolTipLayer
 from ZenUI.core import ZQuickEffect, Zen, ZColorTool
-
-class ToolTipLayer(ZLayer):
-    def __init__(self, parent = None):
-        super().__init__(parent)
-        self._style_vars = {
-            'background_color': 'transparent',
-            'border_color': 'transparent'}
-        '默认样式'
-        self._style_getters = {}
-        '动态样式'
-        self._style_format = dedent('''\
-            background-color: {background_color};
-            border-color: {border_color};''')
-        self._init_style()
-        self._schedule_update()
-
-    def set_style_var(self, key: str, value):
-        """设置静态样式变量"""
-        self._style_vars[key] = value
-
-    def set_style_getter(self, key: str, getter):
-        """设置动态样式获取器"""
-        self._style_getters[key] = getter
-
-    def _init_style(self):
-        self._anim_bg_color_a.setBias(0.1)
-
-
-    def reloadStyleSheet(self):
-        try:
-            # 合并静态变量和动态获取的变量
-            current_vars = self._style_vars.copy()
-            for key, getter in self._style_getters.items():
-                current_vars[key] = getter()
-            return self._style_format.format(**current_vars) +'\n'+ self._stylesheet_fixed
-        except KeyError as e:
-            print(f"缺少样式变量: {e}")
 
 class ZToolTip(ZWidget):
     '''提示框'''
@@ -125,6 +89,22 @@ class ZToolTip(ZWidget):
 
 
     def _refresh_position(self):
+        if isinstance(self._inside_of, ZSlider):
+            # 获取handle相对于屏幕的全局位置
+            handle = self._inside_of.handle()
+            handle_pos = handle.mapToGlobal(handle.rect().center())
+            if self._inside_of._direction == Zen.Direction.Horizontal:
+                # 水平滑块：提示框在滑块上方居中
+                x = handle_pos.x() - self.width() / 2  # 水平居中对齐
+                y = handle_pos.y() - self.height() - 6  # 显示在滑块上方，留出6px间距
+                self.moveTo(x, y)
+            elif self._inside_of._direction == Zen.Direction.Vertical:
+                # 垂直滑块：提示框在滑块右侧居中
+                x = handle_pos.x() - self.width() - 6 # 显示在滑块右侧，留出6px间距
+                y = handle_pos.y() - self.height() / 2  # 垂直居中对齐
+                self.moveTo(x, y)
+            return
+        # 默认情况，提示框在鼠标位置上方居中
         pos = QCursor.pos()
         x, y = pos.x() - self.width() / 2, pos.y()
         self.moveTo(x , y - self.height()) # 动画跟踪，效果更佳，直接输入鼠标坐标即可

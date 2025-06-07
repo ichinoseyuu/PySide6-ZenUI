@@ -21,6 +21,8 @@ class ZLayer(QWidget):
         '控件样式表'
         self._stylesheet_cache = ''
         '样式表缓存，更新样式时使用'
+        self._stylesheet_dirty = True
+        '样式表是否被更改'
         self._can_update = True
         '是否可以更新样式表'
 
@@ -52,8 +54,8 @@ class ZLayer(QWidget):
 
     def setStyleSheet(self):
         """设置样式表"""
-        super().setStyleSheet(self._stylesheet_cache)
-        self._stylesheet = self._stylesheet_cache
+        self._stylesheet = self.reloadStyleSheet()
+        super().setStyleSheet(self._stylesheet)
         self._can_update = True
 
     def styleSheet(self):
@@ -66,30 +68,26 @@ class ZLayer(QWidget):
         - 此后每次运行`setStyleSheet`方法时，都会在样式表前附加这段固定内容
         """
         self._stylesheet_fixed = stylesheet
-        self._refresh_stylesheet()
+        self._stylesheet_dirty = True
 
     def fixedStyleSheet(self):
         '获取样式表固定内容'
         return self._stylesheet_fixed
 
     def reloadStyleSheet(self):
-        """
-        重新加载样式表，创建新组件类使用，定义组件样式表
-        - 子类实现，基类初始化自行调用
-        - 每次调用`updateStyleSheet`方法时都会调用
-        - 用于更新获取样式表
-        """
-        pass
+        """重新加载样式表，创建新组件类使用，定义组件样式表"""
+        if not self._stylesheet_dirty and self._stylesheet_cache: return self._stylesheet_cache
 
-    def _refresh_stylesheet(self):
-        """刷新样式表缓存，当下一次更新样式表时使用"""
-        self._stylesheet_cache = self.reloadStyleSheet()
 
-    def _schedule_update(self):
-        """ 调度一次更新样式的方法，避免重复调用 """
+    def updateStyle(self):
+        '''
+        更新控件样式
+        - 调用`setStyleSheet`方法
+        - 同一帧只会刷新一次样式表
+        '''
         if self._can_update:
             self._can_update = False
-            QTimer.singleShot(0, lambda:(self._refresh_stylesheet(),self.setStyleSheet()))
+            QTimer.singleShot(0, self.setStyleSheet)
 
 
 
@@ -116,15 +114,15 @@ class ZLayer(QWidget):
 
     def _bg_color_a_handler(self, color_value):
         self._bg_color_a = ZColorTool.toCode(color_value)
-        self._schedule_update()
+        self.updateStyle()
 
     def _bg_color_b_handler(self, color_value):
         self._bg_color_b = ZColorTool.toCode(color_value)
-        self._schedule_update()
+        self.updateStyle()
 
     def _border_color_handler(self, color_value):
         self._border_color = ZColorTool.toCode(color_value)
-        self._schedule_update()
+        self.updateStyle()
 
     # region Move
     def moveTo(self, x: int, y: int):

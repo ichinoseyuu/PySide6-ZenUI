@@ -4,7 +4,8 @@ from PySide6.QtGui import *
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.basewidget import ZWidget
 from ZenUI.core import Zen,ZColorTool,ZenGlobal
-class Handle(QWidget):
+class SliderHandle(QWidget):
+    '滑块手柄'
     def __init__(self,
                  parent: ZWidget = None, 
                  radius: int = 6):
@@ -89,35 +90,35 @@ class Handle(QWidget):
         self._outer_scale = value
         self.update()
 
-    def playInnerScaleAnim(self, inner_value):
+    def setInnerScaleTo(self, inner_value):
         '内圈缩放动画'
         self._inner_anim.stop()
         self._inner_anim.setStartValue(self._inner_scale)
         self._inner_anim.setEndValue(inner_value)
         self._inner_anim.start()
 
-    def playOuterScaleAnim(self, outer_value):
+    def setOuterScaleTo(self, outer_value):
         '外圈缩放动画'
         self._outer_anim.stop()
         self._outer_anim.setStartValue(self._outer_scale)
         self._outer_anim.setEndValue(outer_value)
         self._outer_anim.start()
 
-    def playInnerColorAnim(self, inner_value):
+    def setInnerColorTo(self, inner_value):
         '内圈颜色动画'
         self._inner_color_anim.stop()
         self._inner_color_anim.setStartValue(self._inner_color)
         self._inner_color_anim.setEndValue(inner_value)
         self._inner_color_anim.start()
 
-    def playOuterColorAnim(self, outer_value):
+    def setOuterColorTo(self, outer_value):
         '外圈颜色动画'
         self._outer_color_anim.stop()
         self._outer_color_anim.setStartValue(self._outer_color)
         self._outer_color_anim.setEndValue(outer_value)
         self._outer_color_anim.start()
 
-    def playBorderColorAnim(self, border_value):
+    def setBorderColorTo(self, border_value):
         '边框颜色动画'
         self._border_color_anim.stop()
         self._border_color_anim.setStartValue(self._border_color)
@@ -161,8 +162,8 @@ class Handle(QWidget):
             ZenGlobal.ui.windows["ToolTip"].setInsideOf(self.parent())
             ZenGlobal.ui.windows["ToolTip"].showTip()
         # 悬停时内外圈都放大
-        self.playInnerScaleAnim(self._inner_scale_hover) 
-        self.playOuterScaleAnim(self._outer_scale_hover)
+        self.setInnerScaleTo(self._inner_scale_hover) 
+        self.setOuterScaleTo(self._outer_scale_hover)
 
 
     def leaveEvent(self, event):
@@ -171,27 +172,27 @@ class Handle(QWidget):
             ZenGlobal.ui.windows["ToolTip"].setInsideOf(None)
             ZenGlobal.ui.windows["ToolTip"].hideTip()
         # 离开时内外圈都恢复原始大小
-        self.playInnerScaleAnim(self._inner_scale_normal)
-        self.playOuterScaleAnim(self._outer_scale_normal)
+        self.setInnerScaleTo(self._inner_scale_normal)
+        self.setOuterScaleTo(self._outer_scale_normal)
 
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
         # 按下时内圈放大,外圈保持放大状态
-        self.playInnerScaleAnim(self._inner_scale_pressed)
+        self.setInnerScaleTo(self._inner_scale_pressed)
         color = ZColorTool.toQColor(ZColorTool.trans(self._outer_color_config,150))
-        self.playOuterColorAnim(color)
+        self.setOuterColorTo(color)
         border_color = ZColorTool.toQColor(ZColorTool.trans(self._border_color_config,150))
-        self.playBorderColorAnim(border_color)
+        self.setBorderColorTo(border_color)
 
 
     def mouseReleaseEvent(self, event):
         super().mouseReleaseEvent(event)
         # 释放时内圈恢复放大状态,外圈保持放大
-        self.playInnerScaleAnim(self._inner_scale_released)
+        self.setInnerScaleTo(self._inner_scale_released)
         color = ZColorTool.toQColor(self._outer_color_config)
-        self.playOuterColorAnim(color)
+        self.setOuterColorTo(color)
         border_color = ZColorTool.toQColor(self._border_color_config)
-        self.playBorderColorAnim(border_color)
+        self.setBorderColorTo(border_color)
 
 
     def mouseMoveEvent(self, event):
@@ -201,21 +202,11 @@ class Handle(QWidget):
         # 获取鼠标相对于slider的位置
         # 这里需要使用handle的半径来调整起始位置
         pos = event.globalPos() - slider.mapToGlobal(QPoint(self._radius, self._radius))
-        # 根据方向计算新位置
         if slider._direction == Zen.Direction.Horizontal:
-            # 水平方向移动，限制x坐标在有效范围内
-            new_x = max(0, min(pos.x(), slider.width() - 2 * self._radius))
-            self.move(new_x, (slider.height() - 2 * self._radius) / 2)
-            slider._fill_track(round(slider._max/slider._track_length*new_x, 2))
-        else:
-            # 垂直方向移动，限制y坐标在有效范围内
-            new_y = max(0, min(pos.y(), slider.height() - 2 * self._radius))
-            self.move((slider.width() - 2 * self._radius) / 2, new_y)
-            slider._fill_track(slider._max-round(slider._max/slider._track_length*new_y, 2))
+            delta = max(0, min(pos.x(), slider._track_length))
+            slider.setValue(delta / slider._track_length * slider._max)
+        elif slider._direction == Zen.Direction.Vertical:
+            delta = max(0, min(pos.y(), slider._track_length))
+            slider.setValue(slider._max - delta / slider._track_length * slider._max)
         # 更新位置和样式
         ZenGlobal.ui.windows["ToolTip"].setText(str(slider.value()))
-        self.update()
-
-    def moveEvent(self, event):
-        super().moveEvent(event)
-        # 更新数值窗口的位置

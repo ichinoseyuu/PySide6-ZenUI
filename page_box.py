@@ -189,6 +189,14 @@ class PageBox(ZStackPage):
                                  value=50)
         self.contain_zslider.layout().addWidget(self.slider_h2)
 
+        self.slider_v = ZSlider(parent=self.contain_zslider,
+                                 direction=Zen.Direction.Vertical,
+                                 track_length=200,
+                                 value_range=(0,100),
+                                 step=1,
+                                 value=50)
+        self.contain_zslider.layout().addWidget(self.slider_v)
+
         self.contain_zslider_spacer = ZSpacer(minH=20,
                               minW=32,
                               row=Zen.SizePolicy.Expanding,

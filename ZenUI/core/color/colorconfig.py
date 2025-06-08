@@ -46,9 +46,6 @@ class ZColorConfig:
 class ColorPresets(NoInstanceClass):
     # VAR NAME FORMET: [Theme]_[WidgetType]_[Color]
     # Dark theme colors
-    DARK_TITLEBAR_BG = '#ff202020'
-    DARK_TITLEBAR_BORDER = '#00161616'
-
     DARK_WINDOW_BG_A = '#ff202020'
     DARK_WINDOW_BG_B = '#ff202020'
     DARK_WINDOW_BORDER = '#ff1d1d1d'
@@ -87,9 +84,6 @@ class ColorPresets(NoInstanceClass):
 
 
     # Light theme colors
-    LIGHT_TITLEBAR_BG = '#fff3f3f3'
-    LIGHT_TITLEBAR_BORDER = '#00e6e6e6'
-
     LIGHT_WINDOW_BG_A = '#fff3f3f3'
     LIGHT_WINDOW_BG_B = '#fff3f3f3'
     LIGHT_WINDOW_BORDER = '#ffe5e5e5'
@@ -138,17 +132,6 @@ class ZThemeColorConfig(ZColorConfig):
     '''主题色彩配置管理'''
     def __init__(self):
         super().__init__()
-        self.setConfig(Zen.WidgetType.Titlebar, Zen.Theme.Dark,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_TITLEBAR_BG,
-                        Zen.ColorRole.Border: ColorPresets.DARK_TITLEBAR_BORDER
-                        })
-
-        self.setConfig(Zen.WidgetType.Titlebar, Zen.Theme.Light,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_TITLEBAR_BG,
-                        Zen.ColorRole.Border: ColorPresets.LIGHT_TITLEBAR_BORDER
-                        })
-
-
         self.setConfig(Zen.WidgetType.Window, Zen.Theme.Dark,
                        {Zen.ColorRole.BackgroundA: ColorPresets.DARK_WINDOW_BG_A,
                         Zen.ColorRole.BackgroundB: ColorPresets.DARK_WINDOW_BG_B,

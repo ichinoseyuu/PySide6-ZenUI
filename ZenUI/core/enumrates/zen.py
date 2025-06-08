@@ -94,8 +94,6 @@ class Zen:
 
     class WidgetType(IntEnum):
         '''控件类型'''
-        Titlebar = auto()
-        '标题栏控件'
         Window = auto()
         '窗口控件'
         ToolTip = auto()

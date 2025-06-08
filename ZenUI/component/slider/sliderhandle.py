@@ -3,7 +3,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.basewidget import ZWidget
-from ZenUI.core import Zen,ZColorTool,ZenGlobal
+from ZenUI.core import Zen,ZColorTool,ZenGlobal,tooltip
 class SliderHandle(QWidget):
     '滑块手柄'
     def __init__(self,
@@ -144,7 +144,6 @@ class SliderHandle(QWidget):
         border_radius = base_radius * self._outer_scale
         painter.setBrush(Qt.NoBrush)  # 不填充
         painter.drawEllipse(center, border_radius, border_radius)
-    
         # 绘制外圈(大小可变)
         painter.setPen(Qt.NoPen)
         painter.setBrush(self.outerColor)
@@ -158,6 +157,7 @@ class SliderHandle(QWidget):
     def enterEvent(self, event):
         super().enterEvent(event)
         if "ToolTip" in ZenGlobal.ui.windows:
+            # 获取handle相对于屏幕的全局位置
             ZenGlobal.ui.windows["ToolTip"].setText(str(self.parent().value()))
             ZenGlobal.ui.windows["ToolTip"].setInsideOf(self.parent())
             ZenGlobal.ui.windows["ToolTip"].showTip()

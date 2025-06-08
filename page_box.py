@@ -67,14 +67,25 @@ class PageBox(ZStackPage):
         self.btn_push4 = ZQuickButton.textButton(parent=self.contain_zpush,
                                  name='btn_push4',
                                  text='文本按钮',
+                                 tooltip='文本按钮',
                                  fixed_size=ZSize(78, 32))
         self.contain_zpush.layout().addWidget(self.btn_push4)
 
         self.btn_push5 = ZQuickButton.iconButton(parent=self.contain_zpush,
                                  name='btn_push5',
                                  icon=QIcon(':/icons/svg/fluent/regular/ic_fluent_sparkle_regular.svg'),
+                                 tooltip='图标按钮',
                                  fixed_size=ZSize(32, 32))
         self.contain_zpush.layout().addWidget(self.btn_push5)
+
+        self.btn_push6 = ZPushButton(parent=self.contain_zpush,
+                                 name='btn_push6',
+                                 text='tooltip测试',
+                                 tooltip='tooltip测试',
+                                 immediate_tooltip=False,
+                                 interrupt_tooltip=True,
+                                 fixed_size=ZSize(78, 32))
+        self.contain_zpush.layout().addWidget(self.btn_push6)
 
         self.btn_zpush_spacer = ZSpacer(minH=20,
                               minW=32,

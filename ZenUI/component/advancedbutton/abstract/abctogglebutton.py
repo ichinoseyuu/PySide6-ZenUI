@@ -19,7 +19,8 @@ class ABCToggleButton(QPushButton):
                  icon: QIcon = None,
                  icon_size: ZSize = None,
                  tooltip: str = None,
-                 display_tooltip_immediate: bool = False,
+                 immediate_tooltip: bool = False,
+                 interrupt_tooltip: bool = False,
                  min_width: int = None,
                  min_height: int = None,
                  min_size: ZSize = None,
@@ -111,8 +112,10 @@ class ABCToggleButton(QPushButton):
         self._icon_color = '#000000'
         '图标颜色'
 
-        self._immediate_display_tooltip = display_tooltip_immediate
+        self._immediate_tooltip = immediate_tooltip
         '是否立即显示提示文本'
+        self._interrupt_tooltip = interrupt_tooltip
+        '悬停移动是否中断提示文本显示'
 
         self._tooltip_timer = QTimer(self)  # 创建定时器
         '提示文本定时器，用于实现提示文本的显示'
@@ -625,26 +628,32 @@ class ABCToggleButton(QPushButton):
             self.deleteLater()
 
 
+
     def eventFilter(self, obj, event):
         """事件过滤器处理鼠标移动"""
         #print(f"Event type received: {event.type()}")  # 打印所有事件类型
         if obj is self:
-            if event.type() == QEvent.Type.HoverMove:
-                self._tooltip_timer.stop()
-                self._hide_tooltip()
-                self._tooltip_timer.start()
+            if event.type() == QEvent.Type.HoverEnter:
+                # 根据是否立即显示决定处理方式
+                if self._immediate_tooltip: self._show_tooltip()
+                # 非立即显示模式下启动计时器
+                else: self._tooltip_timer.start()
                 return False
-
-            elif event.type() == QEvent.Type.MouseMove:
+            elif event.type() == QEvent.Type.HoverMove:
+                # 只在中断模式下处理移动事件
+                if self._interrupt_tooltip and not self._immediate_tooltip:
+                    self._tooltip_timer.stop()
+                    self._hide_tooltip()
+                    self._tooltip_timer.start()
                 return False
-
             elif event.type() == QEvent.Type.Leave:
+                # 离开时停止计时器并隐藏提示
                 self._tooltip_timer.stop()
                 self._hide_tooltip()
-                return False  # 允许事件继续传播
-
+                return False
             elif event.type() == QEvent.Type.ToolTip:
-                return True  # 忽略工具提示事件
+                # 阻止原生tooltip显示
+                return True
         return super().eventFilter(obj, event)
 
     def enterEvent(self, event):

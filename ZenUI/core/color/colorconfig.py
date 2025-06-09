@@ -86,6 +86,12 @@ class ColorPresets(NoInstanceClass):
     DARK_SCROLLBAR_HANDLE = '#ff464646'
     DARK_SCROLLBAR_HANDLE_BORDER = '#ff505050'
 
+    DARK_SCROLLPAGE_BG_A = '#ff272727'
+    DARK_SCROLLPAGE_BG_B = '#ff272727'
+    DARK_SCROLLPAGE_BORDER = '#ff1d1d1d'
+    DARK_SCROLLPAGE_HANDLE = '#ff464646'
+    DARK_SCROLLPAGE_HANDLE_BORDER = '#ff505050'
+
     # Light theme colors
     LIGHT_WINDOW_BG_A = '#fff3f3f3'
     LIGHT_WINDOW_BG_B = '#fff3f3f3'
@@ -132,6 +138,12 @@ class ColorPresets(NoInstanceClass):
     LIGHT_SCROLLBAR_TRACK = "#ffcfcfcf"
     LIGHT_SCROLLBAR_HANDLE = '#ffffffff'
     LIGHT_SCROLLBAR_HANDLE_BORDER = '#ffbfbfbf'
+
+    LIGHT_SCROLLPAGE_BG_A = '#fff9f9f9'
+    LIGHT_SCROLLPAGE_BG_B = '#fff9f9f9'
+    LIGHT_SCROLLPAGE_BORDER = '#ffe5e5e5'
+    LIGHT_SCROLLPAGE_HANDLE = '#fff5f5f5'
+    LIGHT_SCROLLPAGE_HANDLE_BORDER = '#ffe5e5e5'
 
 class ZThemeColorConfig(ZColorConfig):
     '''主题色彩配置管理'''
@@ -189,18 +201,33 @@ class ZThemeColorConfig(ZColorConfig):
                         })
 
 
-        self.setConfig(Zen.WidgetType.StackPage, Zen.Theme.Dark,
+        self.setConfig(Zen.WidgetType.Page, Zen.Theme.Dark,
                        {Zen.ColorRole.BackgroundA: ColorPresets.DARK_STACKPAGE_BG_A,
                         Zen.ColorRole.BackgroundB: ColorPresets.DARK_STACKPAGE_BG_B,
                         Zen.ColorRole.Border: ColorPresets.DARK_STACKPAGE_BORDER
                         })
 
-        self.setConfig(Zen.WidgetType.StackPage, Zen.Theme.Light,
+        self.setConfig(Zen.WidgetType.Page, Zen.Theme.Light,
                        {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_STACKPAGE_BG_A,
                         Zen.ColorRole.BackgroundB: ColorPresets.LIGHT_STACKPAGE_BG_B,
                         Zen.ColorRole.Border: ColorPresets.LIGHT_STACKPAGE_BORDER
                         })
 
+        self.setConfig(Zen.WidgetType.ScrollPage, Zen.Theme.Dark,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_STACKPAGE_BG_A,
+                        Zen.ColorRole.BackgroundB: ColorPresets.DARK_STACKPAGE_BG_B,
+                        Zen.ColorRole.Border: ColorPresets.DARK_STACKPAGE_BORDER,
+                        Zen.ColorRole.Handle: ColorPresets.DARK_SCROLLBAR_HANDLE,
+                        Zen.ColorRole.HandleBorder: ColorPresets.DARK_SCROLLBAR_HANDLE_BORDER,
+                        })
+
+        self.setConfig(Zen.WidgetType.ScrollPage, Zen.Theme.Light,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_STACKPAGE_BG_A,
+                        Zen.ColorRole.BackgroundB: ColorPresets.LIGHT_STACKPAGE_BG_B,
+                        Zen.ColorRole.Border: ColorPresets.LIGHT_STACKPAGE_BORDER,
+                        Zen.ColorRole.Handle: ColorPresets.LIGHT_SCROLLBAR_HANDLE,
+                        Zen.ColorRole.HandleBorder: ColorPresets.LIGHT_SCROLLBAR_HANDLE_BORDER,
+                        })
 
         self.setConfig(Zen.WidgetType.PushButton, Zen.Theme.Dark,
                        {Zen.ColorRole.BackgroundA: ColorPresets.DARK_BTN_ACCENT_A,

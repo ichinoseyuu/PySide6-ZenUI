@@ -1,7 +1,8 @@
 from PySide6.QtGui import QResizeEvent
 from typing import overload
 from ZenUI.component.basewidget import ZWidget
-from ZenUI.component.stackpanel.page import ZStackPage
+from ZenUI.component.page import ZPage
+from ZenUI.component.scrollpage import ZScrollPage
 from ZenUI.core import ZPoint
 
 class ZStackPanel(ZWidget):
@@ -25,7 +26,7 @@ class ZStackPanel(ZWidget):
         self._hide_last_page = hide_last_page # 是否隐藏上一个页面
 
 
-    def addPage(self, page: ZStackPage, cover: bool = False, anim: bool = False):
+    def addPage(self, page: ZPage|ZScrollPage, cover: bool = False, anim: bool = False):
         '''添加页面
         Args:
             page (ZWidget): 页面
@@ -42,7 +43,7 @@ class ZStackPanel(ZWidget):
         self._page_count += 1
 
 
-    def _handle_non_cover_page(self, page: ZStackPage):
+    def _handle_non_cover_page(self, page: ZPage|ZScrollPage):
         """处理不覆盖页面的显示逻辑"""
         if self._current_page is None:
             self._current_page = page
@@ -82,7 +83,7 @@ class ZStackPanel(ZWidget):
         '''将索引为`index`的页面设置为当前页面'''
         pass
     @overload
-    def setCurrentPage(self, page: ZStackPage, anim: bool = True) -> None:
+    def setCurrentPage(self, page: ZPage|ZScrollPage, anim: bool = True) -> None:
         '''将`page`设置为当前页面'''
         pass
 
@@ -92,7 +93,7 @@ class ZStackPanel(ZWidget):
             page = self.page(arg)
             if page is not None:
                 self.setCurrentPage(page, anim)
-        elif isinstance(arg, ZStackPage):
+        elif isinstance(arg, ZPage|ZScrollPage):
             self._last_page = self._current_page
             self._current_page = arg
             self._current_page.resize(self.width(), self.height())
@@ -132,11 +133,11 @@ class ZStackPanel(ZWidget):
 
 
     @overload
-    def page(self, index: int) -> ZStackPage|None:
+    def page(self, index: int) -> ZPage|ZScrollPage|None:
         '''获取页面'''
         pass
     @overload
-    def page(self, name: str) -> ZStackPage|None:
+    def page(self, name: str) -> ZPage|ZScrollPage|None:
         '''获取页面'''
         pass
 

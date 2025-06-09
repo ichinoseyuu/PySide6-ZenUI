@@ -9,7 +9,7 @@ from ZenUI.component.slider.handle import SliderHandle
 from ZenUI.core import Zen,ZColorSheet,ZenGlobal
 
 class ZSlider(ZWidget):
-    """滑块控件"""
+    """水平滑块控件"""
     valueChanged = Signal(object) #数值改变信号
     def __init__(self,
                  parent: ZWidget = None,
@@ -59,12 +59,10 @@ class ZSlider(ZWidget):
         self._fill._bg_color_a = self._colors.fill
         self._fill._stylesheet_fixed =f'border-radius: {int(self._track_width/2)}px;'
         self._handle.configColor(self._colors.handle_inner, self._colors.handle_outer, self._colors.handle_border)
-
         #设置大小
         if self._direction == Zen.Direction.Horizontal:
             self.setFixedHeight(self._handle_radius*2)
             self.setFixedWidth(self._track_length + self._handle_radius*2)
-
         elif self._direction == Zen.Direction.Vertical:
             self.setFixedWidth(self._handle_radius*2)
             self.setFixedHeight(self._track_length + self._handle_radius*2)

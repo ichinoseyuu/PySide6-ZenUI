@@ -4,7 +4,7 @@ from ZenUI.component.basewidget import ZWidget
 from ZenUI.component.layout import ZColumnLayout,ZRowLayout
 from ZenUI.core import Zen,ZColorTool,ZMargins
 
-class ZStackPage(ZWidget):
+class ZPage(ZWidget):
     '''窗口面板'''
     class Style(IntFlag):
         '''背景样式'''
@@ -30,9 +30,15 @@ class ZStackPage(ZWidget):
         '背景样式'
         if fixed_stylesheet: self.setFixedStyleSheet(fixed_stylesheet)
         if layout == Zen.Layout.Row:
-            self.setLayout(ZRowLayout(parent=self,margins=margins,spacing=spacing,alignment=alignment))
+            self.setLayout(ZRowLayout(parent=self,
+                                      margins=margins,
+                                      spacing=spacing,
+                                      alignment=alignment))
         if layout == Zen.Layout.Column:
-            self.setLayout(ZColumnLayout(parent=self,margins=margins,spacing=spacing,alignment=alignment))
+            self.setLayout(ZColumnLayout(parent=self,
+                                         margins=margins,
+                                         spacing=spacing,
+                                         alignment=alignment))
         self._init_style()
         self.updateStyle()
 
@@ -45,7 +51,7 @@ class ZStackPage(ZWidget):
         if self._style & self.Style.Gradient:
             self.setWidgetFlag(Zen.WidgetFlag.GradientColor)
 
-        self._color_sheet.loadColorConfig(Zen.WidgetType.StackPage)
+        self._color_sheet.loadColorConfig(Zen.WidgetType.Page)
         self._colors.overwrite(self._color_sheet.getSheet())
         self._bg_color_a = self._colors.background_a
         self._bg_color_b = self._colors.background_b
@@ -106,3 +112,18 @@ class ZStackPage(ZWidget):
 
         if self._style & self.Style.Border:
             self.setBorderColor(self._colors.border)
+
+    def adjustSize(self):
+        super().adjustSize()
+        w, h = 0, 0
+        if isinstance(self.layout(), ZRowLayout):
+            for i in range(self.layout().count()):
+                self.layout().itemAt(i).widget().adjustSize()
+                w += self.layout().itemAt(i).widget().width()
+                h = max(h, self.layout().itemAt(i).widget().height())
+        else:
+            for i in range(self.layout().count()):
+                self.layout().itemAt(i).widget().adjustSize()
+                w = max(w, self.layout().itemAt(i).widget().width())
+                h += self.layout().itemAt(i).widget().height()
+        return w, h

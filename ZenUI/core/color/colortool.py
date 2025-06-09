@@ -219,6 +219,7 @@ class ZColorTool:
     #     value_proceed = value * numpy.array([trans, 1, 1, 1])
     #     code_proceed = cls.toCode(value_proceed)
     #     return code_proceed
+
     @classmethod
     def trans(cls, code: str, trans: float | int = 0):
         """给指定的`#RRGGBB`颜色代码设置一个透明度，返回新的颜色代码"""
@@ -229,6 +230,7 @@ class ZColorTool:
         value_proceed = value * numpy.array([trans, 1, 1, 1])
         code_proceed = cls.toCode(value_proceed)
         return code_proceed
+
     @classmethod
     def overlay(cls, base_color: str, overlay_color: str) -> str:
         """
@@ -287,14 +289,70 @@ class ZColorTool:
             return ZColorTool.toCode(rgb)
 
     @staticmethod
-    def darker(color: str, amount: float = 0.1) -> str:
-        """获取较深的颜色"""
+    def lighter(color: Union[str, numpy.ndarray, tuple, list], amount: float = 0.1) -> str:
+        """获取更亮的颜色
+        Args:
+            color: 输入颜色，支持 #RRGGBB、#AARRGGBB 或 RGB/ARGB 数组
+            amount: 增亮程度，范围 [0, 1]，默认 0.1
+        Returns:
+            str: 调整后的颜色代码 (#RRGGBB 或 #AARRGGBB)
+        """
+        if not isinstance(color, str):
+            color = ZColorTool.toCode(color)
+
         color_array = ZColorTool.toArray(color)
-        if len(color_array) == 3:
-            color_array = numpy.append([255], color_array)
-        # 降低RGB值
-        color_array[1:] = color_array[1:] * (1 - amount)
-        return ZColorTool.toCode(color_array.astype(numpy.int16))
+        alpha = None
+
+        if len(color_array) == 4:
+            alpha = color_array[0]
+            rgb = color_array[1:]
+        else:
+            rgb = color_array
+
+        h, s, l = ZColorTool.toHSL(rgb)
+        # 增加亮度，但不超过 1
+        new_l = min(1.0, l + (1.0 - l) * amount)
+        new_rgb = ZColorTool.HSLToRGB((h, s, new_l))
+
+        # 重新组合 alpha 通道（如果有）
+        if alpha is not None:
+            new_color = numpy.array([alpha, *new_rgb], dtype=numpy.int16)
+        else:
+            new_color = new_rgb
+        return ZColorTool.toCode(new_color)
+
+    @staticmethod
+    def darker(color: Union[str, numpy.ndarray, tuple, list], amount: float = 0.1) -> str:
+        """获取更暗的颜色
+        Args:
+            color: 输入颜色，支持 #RRGGBB、#AARRGGBB 或 RGB/ARGB 数组
+            amount: 变暗程度，范围 [0, 1]，默认 0.1
+        Returns:
+            str: 调整后的颜色代码 (#RRGGBB 或 #AARRGGBB)
+        """
+        if not isinstance(color, str):
+            color = ZColorTool.toCode(color)
+
+        color_array = ZColorTool.toArray(color)
+        alpha = None
+
+        if len(color_array) == 4:
+            alpha = color_array[0]
+            rgb = color_array[1:]
+        else:
+            rgb = color_array
+
+        h, s, l = ZColorTool.toHSL(rgb)
+        # 减少亮度，但不小于 0
+        new_l = max(0.0, l * (1.0 - amount))
+        new_rgb = ZColorTool.HSLToRGB((h, s, new_l))
+
+        if alpha is not None:
+            new_color = numpy.array([alpha, *new_rgb], dtype=numpy.int16)
+        else:
+            new_color = new_rgb
+
+        return ZColorTool.toCode(new_color)
 
     @staticmethod
     def isValidColor(color: str) -> bool:

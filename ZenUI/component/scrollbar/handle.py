@@ -89,21 +89,6 @@ class ScrollBarHandle(QWidget):
         self._scale_anim.start()
 
     def paintEvent(self, event):
-        # painter = QPainter(self)
-        # painter.setRenderHint(QPainter.Antialiasing)
-        # # 计算中心点和基础半径
-        # center = QPointF(self.width()/2, self.height()/2)
-        # base_radius = min(self.width(), self.height())/2 - 1
-        # # 绘制外边框
-        # painter.setPen(QPen(self.borderColor, 1))
-        # border_radius = base_radius * self._outer_scale
-        # painter.setBrush(Qt.NoBrush)  # 不填充
-        # painter.drawEllipse(center, border_radius, border_radius)
-        # # 绘制外圈(大小可变)
-        # painter.setPen(Qt.NoPen)
-        # painter.setBrush(self.outerColor)
-        # outer_radius = base_radius * self._scale
-        # painter.drawEllipse(center, outer_radius, outer_radius)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         # 计算缩放后的尺寸
@@ -125,6 +110,7 @@ class ScrollBarHandle(QWidget):
         painter.setPen(Qt.NoPen)
         painter.setBrush(self.color)
         painter.drawRoundedRect(inner_rect, self._radius, self._radius)
+        painter.end()
 
 
     def enterEvent(self, event):

@@ -4,9 +4,10 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI import *
 from page_home import PageHome
+from page_widget import PageWidget
 from page_about import PageAbout
-from page_box import PageBox
 from navigation_bar import LeftNavigationBar
+
 
 class ZenUIGallary(ZMainWindow):
     def __init__(self):
@@ -34,17 +35,13 @@ class ZenUIGallary(ZMainWindow):
         self.pageHome = PageHome(self.stackPanel)
         self.stackPanel.addPage(self.pageHome, cover=False, anim=False)
 
-        self.pageBox = PageBox(self.stackPanel)
-        self.stackPanel.addPage(self.pageBox, cover=False, anim=False)
+        self.pageWidget = PageWidget(self.stackPanel)
+        self.stackPanel.addPage(self.pageWidget, cover=False, anim=False)
 
         self.pageAbout = PageAbout(self.stackPanel)
         self.stackPanel.addPage(self.pageAbout, cover=False, anim=False)
 
         self.content.layout().addWidget(self.stackPanel)
-
-        # self.scrollPage = ZScrollPage(self)
-        # self.scrollPage.setScrollBarPolicy(Zen.ScrollBarPolicy.AlwaysOn, Zen.ScrollBarPolicy.AlwaysOn)
-        # self.content.layout().addWidget(self.scrollPage)
 
         self.addWidget(self.content)
 
@@ -52,10 +49,11 @@ class ZenUIGallary(ZMainWindow):
 
 
     def btnConnect(self):
-        self.navigationBar.btnHome.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageHome'))
-        self.navigationBar.btnBox.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageBox'))
-        self.navigationBar.btnAbout.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageAbout'))
         self.pageHome.btn_nextpage.clicked.connect(self.navigationBar.toggleToNextButton)
+        self.navigationBar.btnHome.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageHome'))
+        self.navigationBar.btnWidget.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageWidget'))
+        self.navigationBar.btnAbout.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageAbout'))
+
 
 
 

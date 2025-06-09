@@ -2,12 +2,12 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from ZenUI import *
 
-class PageBox(ZStackPage):
-    def __init__(self,parent = None,name ='pageBox'):
-        super().__init__(parent = parent,
+class PageWidget(ZScrollPage):
+    def __init__(self,parent = None,name ='pageWidget'):
+        super().__init__(parent=parent,
                          name=name,
                          fixed_stylesheet="border-width: 1px;\nborder-style: solid;\nborder-radius:4px;",
-                         style= ZStackPage.Style.Monochrome|ZStackPage.Style.Border,
+                         style= ZScrollPage.Style.Monochrome|ZScrollPage.Style.Border,
                          layout=Zen.Layout.Column,
                          margins=ZMargins(6, 6, 6, 6),
                          spacing=12)
@@ -127,48 +127,47 @@ class PageBox(ZStackPage):
                               columns=Zen.SizePolicy.Minimum)
         self.contain_ztoggle.layout().addItem(self.contain_ztoggle_spacer)
 
-        # self.btn_push7 = ZGhostButton(parent=self,
-        #                          name='btn_push7',
-        #                          text='幽灵按钮',
-        #                          fixed_size=ZSize(100, 40),
-        #                          fixed_stylesheet='border-radius: 4px;\nborder-style: solid;\nborder-width: 1px;',
-        #                          hover_stylesheet='border-radius: 4px;',
-        #                          pressed_stylesheet='border-radius: 4px;')
-        # self.layout().addWidget(self.btn_push7)
+        self.btn_push7 = ZGhostButton(parent=self,
+                                 name='btn_push7',
+                                 text='幽灵按钮',
+                                 fixed_size=ZSize(100, 40),
+                                 fixed_stylesheet='border-radius: 4px;\nborder-style: solid;\nborder-width: 1px;',
+                                 hover_stylesheet='border-radius: 4px;',
+                                 pressed_stylesheet='border-radius: 4px;')
+        self.layout().addWidget(self.btn_push7)
 
-        # self.btn_push8 = ZFillButton(parent=self,
-        #                          name='btn_push8',
-        #                          text='填充按钮',
-        #                          fixed_size=ZSize(100, 40),
-        #                          fixed_stylesheet='border-radius: 4px;\nborder-style: solid;\nborder-width: 1px;',
-        #                          hover_stylesheet='border-radius: 4px;',
-        #                          pressed_stylesheet='border-radius: 4px;')
-        # self.layout().addWidget(self.btn_push8)
+        self.btn_push8 = ZFillButton(parent=self,
+                                 name='btn_push8',
+                                 text='填充按钮',
+                                 fixed_size=ZSize(100, 40),
+                                 fixed_stylesheet='border-radius: 4px;\nborder-style: solid;\nborder-width: 1px;',
+                                 hover_stylesheet='border-radius: 4px;',
+                                 pressed_stylesheet='border-radius: 4px;')
+        self.layout().addWidget(self.btn_push8)
 
-        # self.btn_push9 = ZGradientButton(parent=self,
-        #                          name='btn_push9',
-        #                          text='渐变按钮',
-        #                          fixed_size=ZSize(100, 40),
-        #                          fixed_stylesheet='border-radius: 4px;',
-        #                          hover_stylesheet='border-radius: 4px;',
-        #                          pressed_stylesheet='border-radius: 4px;')
-        # self.layout().addWidget(self.btn_push9)
+        self.btn_push9 = ZGradientButton(parent=self,
+                                 name='btn_push9',
+                                 text='渐变按钮',
+                                 fixed_size=ZSize(100, 40),
+                                 fixed_stylesheet='border-radius: 4px;',
+                                 hover_stylesheet='border-radius: 4px;',
+                                 pressed_stylesheet='border-radius: 4px;')
+        self.layout().addWidget(self.btn_push9)
 
 
-        # self.btn_push10 = ZTransparentButton(parent=self,
-        #                          name='btn_push10',
-        #                          text='透明按钮',
-        #                          fixed_size=ZSize(100, 40),
-        #                          fixed_stylesheet='border-radius: 4px;',
-        #                          hover_stylesheet='border-radius: 4px;')
-        # self.layout().addWidget(self.btn_push10)
+        self.btn_push10 = ZTransparentButton(parent=self,
+                                 name='btn_push10',
+                                 text='透明按钮',
+                                 fixed_size=ZSize(100, 40),
+                                 fixed_stylesheet='border-radius: 4px;',
+                                 hover_stylesheet='border-radius: 4px;')
+        self.layout().addWidget(self.btn_push10)
 
-        # self.btn_push11 = ZNoBackgroundButton(parent=self,
-        #                          name='btn_push11',
-        #                          text='无背景按钮',
-        #                          fixed_size=ZSize(100, 40))
-        # self.layout().addWidget(self.btn_push11)
-        # self.btn_push11.clicked.connect(self.test)
+        self.btn_push11 = ZNoBackgroundButton(parent=self,
+                                 name='btn_push11',
+                                 text='无背景按钮',
+                                 fixed_size=ZSize(100, 40))
+        self.layout().addWidget(self.btn_push11)
 
         self.contain_zslider = ZBox(parent=self,
                                  name='contain_zslider',
@@ -227,6 +226,3 @@ class PageBox(ZStackPage):
                               row=Zen.SizePolicy.Minimum,
                               columns=Zen.SizePolicy.Expanding)
         self.layout().addItem(self.spacer)
-
-    def test(self):
-        self.slider_h2.setValue(5)

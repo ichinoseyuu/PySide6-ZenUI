@@ -18,13 +18,13 @@ class LeftNavigationBar(ZNavigationBar):
         icon2 = QIcon()
         icon2.addFile(u":/icons/svg/fluent/regular/ic_fluent_cube_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
         icon2.addFile(u":/icons/svg/fluent/filled/ic_fluent_cube_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
-        self.btnBox = ZQuickButton.navbarToggleButton(parent=self,
-                                  name="btnBox",
+        self.btnWidget = ZQuickButton.navbarToggleButton(parent=self,
+                                  name="btnWidget",
                                   text="        控件",
                                   icon=icon2,
                                   min_height=self._btn_height,
                                   icon_size=self._btn_icon_size)
-        self.addButton(self.btnBox)
+        self.addButton(self.btnWidget)
 
         icon3 = QIcon()
         icon3.addFile(u":/icons/svg/fluent/regular/ic_fluent_info_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)

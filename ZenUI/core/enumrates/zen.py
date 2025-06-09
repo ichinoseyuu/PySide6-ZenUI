@@ -104,8 +104,10 @@ class Zen:
         '盒子控件'
         Drawer = auto()
         '抽屉控件'
-        StackPage = auto()
-        '堆叠页面控件'
+        Page = auto()
+        '页面控件'
+        ScrollPage = auto()
+        '滚动页面控件'
         PushButton = auto()
         '按钮控件'
         FillButton = auto()
@@ -205,9 +207,3 @@ class Zen:
         Normal = auto()
         Expand = auto()
         Collapsed = auto()
-
-    class ScrollBarPolicy(Enum):
-        """滚动条策略"""
-        AlwaysOff = Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-        AlwaysOn = Qt.ScrollBarPolicy.ScrollBarAlwaysOn
-        AsNeeded = Qt.ScrollBarPolicy.ScrollBarAsNeeded

@@ -153,6 +153,7 @@ class SliderHandle(QWidget):
         inner_radius = base_radius * self._inner_scale
         painter.setBrush(self.innerColor)
         painter.drawEllipse(center, inner_radius, inner_radius)
+        painter.end()
 
     def enterEvent(self, event):
         super().enterEvent(event)

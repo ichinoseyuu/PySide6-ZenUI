@@ -1,2 +1,2 @@
-from .stackpage import ZStackPage
+from .page import ZStackPage
 from .stackpanel import ZStackPanel

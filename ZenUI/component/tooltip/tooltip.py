@@ -4,8 +4,8 @@ from PySide6.QtGui import *
 from ZenUI.component.basewidget import ZWidget
 from ZenUI.component.label import ZTextLabel
 from ZenUI.component.slider import ZSlider
-from ZenUI.component.tooltip.tooltiplayer import ToolTipLayer
-from ZenUI.component.tooltip.tooltipconfig import ToolTipConfig
+from ZenUI.component.tooltip.layer import ToolTipLayer
+from ZenUI.component.tooltip.config import ToolTipConfig
 from ZenUI.core import ZQuickEffect, Zen, ZColorTool
 
 

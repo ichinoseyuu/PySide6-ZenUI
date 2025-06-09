@@ -76,12 +76,15 @@ class ColorPresets(NoInstanceClass):
 
     DARK_LABEL_TEXT = '#ffdcdcdc'
 
-    DARK_SLIDER_TRACK = '#ff868686'
+    DARK_SLIDER_TRACK = '#ff767676'
     DARK_SLIDER_FILL = '#ff955595'
     DARK_SLIDER_HANDLE_INNER = '#ff955595'
-    DARK_SLIDER_HANDLE_OUTER = '#ff9a9a9a'
+    DARK_SLIDER_HANDLE_OUTER = '#ff464646'
     DARK_SLIDER_HANDLE_BORDER = '#ff272727'
 
+    DARK_SCROLLBAR_TRACK = '#ff767676'
+    DARK_SCROLLBAR_HANDLE = '#ff464646'
+    DARK_SCROLLBAR_HANDLE_BORDER = '#ff505050'
 
     # Light theme colors
     LIGHT_WINDOW_BG_A = '#fff3f3f3'
@@ -120,13 +123,15 @@ class ColorPresets(NoInstanceClass):
 
     LIGHT_LABEL_TEXT = '#ff313131'
 
-    LIGHT_SLIDER_TRACK = '#ffb0b0b0'
+    LIGHT_SLIDER_TRACK = '#ffcfcfcf'
     LIGHT_SLIDER_FILL = '#ffa5d2f1'
     LIGHT_SLIDER_HANDLE_INNER = '#ffa5d2f1'
     LIGHT_SLIDER_HANDLE_OUTER = '#ffffffff'
     LIGHT_SLIDER_HANDLE_BORDER = '#ffbfbfbf'
 
-
+    LIGHT_SCROLLBAR_TRACK = "#ffcfcfcf"
+    LIGHT_SCROLLBAR_HANDLE = '#ffffffff'
+    LIGHT_SCROLLBAR_HANDLE_BORDER = '#ffbfbfbf'
 
 class ZThemeColorConfig(ZColorConfig):
     '''主题色彩配置管理'''
@@ -380,4 +385,16 @@ class ZThemeColorConfig(ZColorConfig):
                         Zen.ColorRole.HandleInner: ColorPresets.LIGHT_SLIDER_HANDLE_INNER,
                         Zen.ColorRole.HandleOuter: ColorPresets.LIGHT_SLIDER_HANDLE_OUTER,
                         Zen.ColorRole.HandleBorder: ColorPresets.LIGHT_SLIDER_HANDLE_BORDER,
+                        })
+
+        self.setConfig(Zen.WidgetType.ScrollBar, Zen.Theme.Dark,
+                       {Zen.ColorRole.Track: ColorPresets.DARK_SCROLLBAR_TRACK,
+                        Zen.ColorRole.Handle: ColorPresets.DARK_SCROLLBAR_HANDLE,
+                        Zen.ColorRole.HandleBorder: ColorPresets.DARK_SCROLLBAR_HANDLE_BORDER,
+                        })
+
+        self.setConfig(Zen.WidgetType.ScrollBar, Zen.Theme.Light,
+                       {Zen.ColorRole.Track: ColorPresets.LIGHT_SCROLLBAR_TRACK,
+                        Zen.ColorRole.Handle: ColorPresets.LIGHT_SCROLLBAR_HANDLE,
+                        Zen.ColorRole.HandleBorder: ColorPresets.LIGHT_SCROLLBAR_HANDLE_BORDER,
                         })

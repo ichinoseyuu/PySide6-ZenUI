@@ -1,7 +1,7 @@
 from PySide6.QtGui import QResizeEvent
 from typing import overload
 from ZenUI.component.basewidget import ZWidget
-from ZenUI.component.stackpanel.stackpage import ZStackPage
+from ZenUI.component.stackpanel.page import ZStackPage
 from ZenUI.core import ZPoint
 
 class ZStackPanel(ZWidget):

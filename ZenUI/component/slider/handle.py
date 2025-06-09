@@ -3,7 +3,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.basewidget import ZWidget
-from ZenUI.core import Zen,ZColorTool,ZenGlobal,tooltip
+from ZenUI.core import Zen,ZColorTool,ZenGlobal
 class SliderHandle(QWidget):
     '滑块手柄'
     def __init__(self,
@@ -18,12 +18,12 @@ class SliderHandle(QWidget):
         self._outer_color = QColor(0, 0, 0, 0)
         self._border_color = QColor(0, 0, 0, 0)
         # 添加内外圈大小动画
-        self._inner_scale = 0.4             # 内圈默认为基础半径的0.6倍
+        self._inner_scale = 0.4
         self._inner_scale_normal = 0.4      # 正常状态的内圈大小
         self._inner_scale_hover = 0.6       # 悬停状态的内圈大小
         self._inner_scale_pressed = 0.5     # 按下状态的内圈大小
         self._inner_scale_released = 0.6    # 释放状态的内圈大小
-        self._outer_scale = 0.8             # 外圈默认为基础半径的1.0倍
+        self._outer_scale = 0.8
         self._outer_scale_normal = 0.8      # 正常状态的外圈大小
         self._outer_scale_hover = 1.0       # 悬停状态的外圈大小
         self._outer_scale_pressed = 1.0     # 按下状态的外圈大小
@@ -90,39 +90,39 @@ class SliderHandle(QWidget):
         self._outer_scale = value
         self.update()
 
-    def setInnerScaleTo(self, inner_value):
+    def setInnerScaleTo(self, value):
         '内圈缩放动画'
         self._inner_anim.stop()
         self._inner_anim.setStartValue(self._inner_scale)
-        self._inner_anim.setEndValue(inner_value)
+        self._inner_anim.setEndValue(value)
         self._inner_anim.start()
 
-    def setOuterScaleTo(self, outer_value):
+    def setOuterScaleTo(self, value):
         '外圈缩放动画'
         self._outer_anim.stop()
         self._outer_anim.setStartValue(self._outer_scale)
-        self._outer_anim.setEndValue(outer_value)
+        self._outer_anim.setEndValue(value)
         self._outer_anim.start()
 
-    def setInnerColorTo(self, inner_value):
+    def setInnerColorTo(self, value):
         '内圈颜色动画'
         self._inner_color_anim.stop()
         self._inner_color_anim.setStartValue(self._inner_color)
-        self._inner_color_anim.setEndValue(inner_value)
+        self._inner_color_anim.setEndValue(value)
         self._inner_color_anim.start()
 
-    def setOuterColorTo(self, outer_value):
+    def setOuterColorTo(self, value):
         '外圈颜色动画'
         self._outer_color_anim.stop()
         self._outer_color_anim.setStartValue(self._outer_color)
-        self._outer_color_anim.setEndValue(outer_value)
+        self._outer_color_anim.setEndValue(value)
         self._outer_color_anim.start()
 
-    def setBorderColorTo(self, border_value):
+    def setBorderColorTo(self, value):
         '边框颜色动画'
         self._border_color_anim.stop()
         self._border_color_anim.setStartValue(self._border_color)
-        self._border_color_anim.setEndValue(border_value)
+        self._border_color_anim.setEndValue(value)
         self._border_color_anim.start()
 
     def configColor(self, inner_color, outer_color, border_color):
@@ -177,7 +177,7 @@ class SliderHandle(QWidget):
 
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
-        # 按下时内圈放大,外圈保持放大状态
+        # 按下时内圈缩小,外圈保持放大状态
         self.setInnerScaleTo(self._inner_scale_pressed)
         color = ZColorTool.toQColor(ZColorTool.trans(self._outer_color_config,150))
         self.setOuterColorTo(color)
@@ -189,10 +189,8 @@ class SliderHandle(QWidget):
         super().mouseReleaseEvent(event)
         # 释放时内圈恢复放大状态,外圈保持放大
         self.setInnerScaleTo(self._inner_scale_released)
-        color = ZColorTool.toQColor(self._outer_color_config)
-        self.setOuterColorTo(color)
-        border_color = ZColorTool.toQColor(self._border_color_config)
-        self.setBorderColorTo(border_color)
+        self.setOuterColorTo(ZColorTool.toQColor(self._outer_color_config))
+        self.setBorderColorTo(ZColorTool.toQColor(self._border_color_config))
 
 
     def mouseMoveEvent(self, event):

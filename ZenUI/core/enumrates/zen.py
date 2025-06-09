@@ -83,6 +83,8 @@ class Zen:
         '轨道颜色'
         Fill = auto()
         '填充颜色'
+        Handle = auto()
+        '滑块颜色'
         HandleInner = auto()
         '滑块内部颜色'
         HandleOuter = auto()
@@ -122,6 +124,8 @@ class Zen:
         '文字标签控件'
         Slider = auto()
         '滑块控件'
+        ScrollBar = auto()
+        '滚动条控件'
 
 
 

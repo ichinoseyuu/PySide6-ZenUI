@@ -627,7 +627,16 @@ class ABCToggleButton(QPushButton):
         if self.isWidgetFlagOn(Zen.WidgetFlag.DeleteOnHidden):
             self.deleteLater()
 
+    def _show_tooltip(self):
+        if self._tooltip != "":
+            ZenGlobal.ui.windows["ToolTip"].setText(self._tooltip)
+            ZenGlobal.ui.windows["ToolTip"].setInsideOf(self)
+            ZenGlobal.ui.windows["ToolTip"].showTip()
 
+    def _hide_tooltip(self):
+        if self._tooltip != "":
+            ZenGlobal.ui.windows["ToolTip"].setInsideOf(None)
+            ZenGlobal.ui.windows["ToolTip"].hideTip()
 
     def eventFilter(self, obj, event):
         """事件过滤器处理鼠标移动"""

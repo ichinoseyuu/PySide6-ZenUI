@@ -53,6 +53,8 @@ class ZColors:
     '轨道颜色'
     fill: str = None
     '填充颜色'
+    handle: str = None
+    '滑块颜色'
     handle_inner: str = None
     '滑块内部颜色'
     handle_outer: str = None

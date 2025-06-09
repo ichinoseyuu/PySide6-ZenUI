@@ -12,24 +12,10 @@ class ZScrollPage(ZWidget):
                  name: str = None,
                  scroll_policy: tuple[Zen.ScrollBarPolicy, Zen.ScrollBarPolicy] = None):
         super().__init__(parent, name)
-        # 创建滚动区域
-        self._scroll_area = QScrollArea(self)
-        self._scroll_area.setWidgetResizable(True)
-        self._scroll_area.setFrameShape(QScrollArea.NoFrame)
-
         # 创建内容容器
-        self._content = ZBox(self._scroll_area)
-        self._scroll_area.setWidget(self._content)
-
-        # 设置滚动条策略
-        if scroll_policy:
-            h_policy, v_policy = scroll_policy[0].value, scroll_policy[1].value
-            self._scroll_area.setHorizontalScrollBarPolicy(h_policy)
-            self._scroll_area.setVerticalScrollBarPolicy(v_policy)
-
-        # 初始化布局
-        super().setLayout(ZColumnLayout(self))
-        self.layout().addWidget(self._scroll_area)
+        self._content = ZBox(parent=self,
+                             style=ZBox.Style.Monochrome,
+                             )
 
     def _init_style(self):
         """初始化样式"""

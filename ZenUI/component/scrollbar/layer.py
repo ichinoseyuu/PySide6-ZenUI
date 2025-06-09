@@ -1,7 +1,7 @@
 from textwrap import dedent
 from ZenUI.component.basewidget import ZLayer
-class SliderLayer(ZLayer):
-    '滑块颜色层'
+class ScrollBarLayer(ZLayer):
+    '滚动条颜色层'
     def __init__(self, parent = None):
         super().__init__(parent)
         self._init_style()
@@ -15,5 +15,5 @@ class SliderLayer(ZLayer):
         #判断背景层样式
         sheet = dedent(f'''\
             background-color: {self._bg_color_a};
-            border: 1px solid transparent;''')
+            border: none;''')
         return self._stylesheet_fixed +'\n'+ sheet

@@ -5,6 +5,7 @@ from .label import *
 from .layout import *
 from .navigationbar import *
 from .presets import *
+from .scrollbar import *
 from .slider import *
 from .stackpanel import *
 from .tooltip import *

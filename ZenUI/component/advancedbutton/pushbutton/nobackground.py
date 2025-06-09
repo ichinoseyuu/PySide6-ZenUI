@@ -83,17 +83,6 @@ class ZNoBackgroundButton(ABCButton):
         return self._stylesheet_fixed +'\n'+ sheet
 
 
-    def _show_tooltip(self):
-        if self._tooltip != "" and "ToolTip" in ZenGlobal.ui.windows:
-            ZenGlobal.ui.windows["ToolTip"].setText(self._tooltip)
-            ZenGlobal.ui.windows["ToolTip"].setInsideOf(self)
-            ZenGlobal.ui.windows["ToolTip"].showTip()
-
-    def _hide_tooltip(self):
-        if self._tooltip != "" and "ToolTip" in ZenGlobal.ui.windows:
-            ZenGlobal.ui.windows["ToolTip"].setInsideOf(None)
-            ZenGlobal.ui.windows["ToolTip"].hideTip()
-
     def _hovered_handler(self):
         self.setIconColorTo(self._colors.icon_hover)
         self.setTextColorTo(self._colors.text_hover)

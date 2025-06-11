@@ -76,14 +76,14 @@ class ColorPresets(NoInstanceClass):
 
     DARK_LABEL_TEXT = '#ffdcdcdc'
 
-    DARK_SLIDER_TRACK = '#ff767676'
+    DARK_SLIDER_TRACK = '#ff464646'
     DARK_SLIDER_FILL = '#ff955595'
     DARK_SLIDER_HANDLE_INNER = '#ff955595'
     DARK_SLIDER_HANDLE_OUTER = '#ff464646'
     DARK_SLIDER_HANDLE_BORDER = '#ff272727'
 
-    DARK_SCROLLBAR_TRACK = '#ff767676'
-    DARK_SCROLLBAR_HANDLE = '#ff464646'
+    DARK_SCROLLBAR_TRACK = '#ff464646'
+    DARK_SCROLLBAR_HANDLE = '#ff955595'
     DARK_SCROLLBAR_HANDLE_BORDER = '#ff505050'
 
     DARK_SCROLLPAGE_BG_A = '#ff272727'
@@ -129,21 +129,21 @@ class ColorPresets(NoInstanceClass):
 
     LIGHT_LABEL_TEXT = '#ff313131'
 
-    LIGHT_SLIDER_TRACK = '#ffcfcfcf'
+    LIGHT_SLIDER_TRACK = '#ffe5e5e5'
     LIGHT_SLIDER_FILL = '#ffa5d2f1'
     LIGHT_SLIDER_HANDLE_INNER = '#ffa5d2f1'
     LIGHT_SLIDER_HANDLE_OUTER = '#ffffffff'
     LIGHT_SLIDER_HANDLE_BORDER = '#ffbfbfbf'
 
-    LIGHT_SCROLLBAR_TRACK = "#ffcfcfcf"
-    LIGHT_SCROLLBAR_HANDLE = '#ffffffff'
+    LIGHT_SCROLLBAR_TRACK = "#ffe5e5e5"
+    LIGHT_SCROLLBAR_HANDLE = '#ffa5d2f1'
     LIGHT_SCROLLBAR_HANDLE_BORDER = '#ffbfbfbf'
 
     LIGHT_SCROLLPAGE_BG_A = '#fff9f9f9'
     LIGHT_SCROLLPAGE_BG_B = '#fff9f9f9'
     LIGHT_SCROLLPAGE_BORDER = '#ffe5e5e5'
-    LIGHT_SCROLLPAGE_HANDLE = '#fff5f5f5'
-    LIGHT_SCROLLPAGE_HANDLE_BORDER = '#ffe5e5e5'
+    LIGHT_SCROLLPAGE_HANDLE = '#ffe5e5e5'
+    LIGHT_SCROLLPAGE_HANDLE_BORDER = '#ffc5c5c5'
 
 class ZThemeColorConfig(ZColorConfig):
     '''主题色彩配置管理'''
@@ -214,19 +214,19 @@ class ZThemeColorConfig(ZColorConfig):
                         })
 
         self.setConfig(Zen.WidgetType.ScrollPage, Zen.Theme.Dark,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_STACKPAGE_BG_A,
-                        Zen.ColorRole.BackgroundB: ColorPresets.DARK_STACKPAGE_BG_B,
-                        Zen.ColorRole.Border: ColorPresets.DARK_STACKPAGE_BORDER,
-                        Zen.ColorRole.Handle: ColorPresets.DARK_SCROLLBAR_HANDLE,
-                        Zen.ColorRole.HandleBorder: ColorPresets.DARK_SCROLLBAR_HANDLE_BORDER,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.DARK_SCROLLPAGE_BG_A,
+                        Zen.ColorRole.BackgroundB: ColorPresets.DARK_SCROLLPAGE_BG_B,
+                        Zen.ColorRole.Border: ColorPresets.DARK_SCROLLPAGE_BORDER,
+                        Zen.ColorRole.Handle: ColorPresets.DARK_SCROLLPAGE_HANDLE,
+                        Zen.ColorRole.HandleBorder: ColorPresets.DARK_SCROLLPAGE_HANDLE_BORDER,
                         })
 
         self.setConfig(Zen.WidgetType.ScrollPage, Zen.Theme.Light,
-                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_STACKPAGE_BG_A,
-                        Zen.ColorRole.BackgroundB: ColorPresets.LIGHT_STACKPAGE_BG_B,
-                        Zen.ColorRole.Border: ColorPresets.LIGHT_STACKPAGE_BORDER,
-                        Zen.ColorRole.Handle: ColorPresets.LIGHT_SCROLLBAR_HANDLE,
-                        Zen.ColorRole.HandleBorder: ColorPresets.LIGHT_SCROLLBAR_HANDLE_BORDER,
+                       {Zen.ColorRole.BackgroundA: ColorPresets.LIGHT_SCROLLPAGE_BG_A,
+                        Zen.ColorRole.BackgroundB: ColorPresets.LIGHT_SCROLLPAGE_BG_B,
+                        Zen.ColorRole.Border: ColorPresets.LIGHT_SCROLLPAGE_BORDER,
+                        Zen.ColorRole.Handle: ColorPresets.LIGHT_SCROLLPAGE_HANDLE,
+                        Zen.ColorRole.HandleBorder: ColorPresets.LIGHT_SCROLLPAGE_HANDLE_BORDER,
                         })
 
         self.setConfig(Zen.WidgetType.PushButton, Zen.Theme.Dark,

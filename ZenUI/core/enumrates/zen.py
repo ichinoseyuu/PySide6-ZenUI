@@ -194,12 +194,16 @@ class Zen:
 
     class Direction(IntEnum):
         """方向类型"""
+        Horizontal = auto()
+        Vertical = auto()
         LeftToRight = auto()
         RightToLeft = auto()
         TopToBottom = auto()
         BottomToTop = auto()
-        Horizontal = auto()
-        Vertical = auto()
+        TopLeftToBottomRight = auto()
+        BottomRightToTopLeft = auto()
+        TopRightToBottomLeft = auto()
+        BottomLeftToTopRight = auto()
 
 
     class State(IntEnum):
@@ -207,3 +211,21 @@ class Zen:
         Normal = auto()
         Expand = auto()
         Collapsed = auto()
+
+    class GradientType(IntEnum):
+        """渐变类型"""
+        Linear = auto()
+        '线性'
+        Radial = auto()
+        '径向'
+        Conical = auto()
+        '锥形'
+
+    class ScaleType(IntEnum):
+        """缩放类型"""
+        Fit = 0
+        '适应'
+        Fill = 1
+        '填充'
+        Stretch = 2
+        '拉伸'

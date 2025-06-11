@@ -27,3 +27,9 @@ class ZQuickEffect:
         opacity_effect.setOpacity(opacity)
         widget.setGraphicsEffect(opacity_effect)
 
+    @staticmethod
+    def applyBlurOn(widget: QWidget, radius: int):
+        blur_effect = QGraphicsBlurEffect()
+        blur_effect.setBlurRadius(radius)
+        widget.setGraphicsEffect(blur_effect)
+

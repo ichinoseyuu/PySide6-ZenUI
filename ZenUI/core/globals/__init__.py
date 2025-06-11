@@ -1,1 +1,1 @@
-from .globals import ZenGlobal,tooltip,mainWindow
+from .globals import ZenGlobal,tooltip,mainWindow,getTheme

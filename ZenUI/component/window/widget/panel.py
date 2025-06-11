@@ -1,3 +1,6 @@
+from PySide6.QtWidgets import *
+from PySide6.QtCore import *
+from PySide6.QtGui import *
 from enum import IntFlag
 from textwrap import dedent
 from ZenUI.component.basewidget.widget import ZWidget

@@ -7,7 +7,7 @@ from ZenUI.component.basewidget import ZWidget
 from ZenUI.component.layout import ZColumnLayout
 from ZenUI.component.layout import ZRowLayout
 from ZenUI.component.scrollpage.handle import ScrollPageHandle
-from ZenUI.core import Zen,ZColorTool,ZMargins
+from ZenUI.core import Zen,ZColorTool,ZMargins,drawBorder
 
 class ZScrollPage(ZWidget):
     """可滚动页面组件"""
@@ -26,10 +26,10 @@ class ZScrollPage(ZWidget):
                  fixed_stylesheet: str = None,
                  style: Style = Style.Monochrome|Style.Border,
                  layout: Zen.Layout = Zen.Layout.Column,
-                 margins: ZMargins = ZMargins(6,6,6,6),
+                 margins: ZMargins = ZMargins(8, 8, 8, 8),
                  spacing: int = 0,
                  alignment: Qt.AlignmentFlag = None,
-                 scrollbar_width: int = 10,):
+                 scrollbar_width: int = 8,):
         super().__init__(parent, name)
         self.setWidgetFlag(Zen.WidgetFlag.EnableAnimationSignals)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -319,23 +319,5 @@ class ZScrollPage(ZWidget):
             step = delta / 120 * 50
             # 调用垂直滚动
             self.scrollTo(y=current_y - step)
-            print(current_y - step)
         # 接受事件，防止传递给父组件
         event.accept()
-
-    # def paintEvent(self, event):
-    #     """绘制事件"""
-    #     super().paintEvent(event)
-    #     # 创建 QPainter
-    #     painter = QPainter(self)
-    #     painter.setRenderHint(QPainter.Antialiasing)
-    #     # 设置边框样式
-    #     pen = QPen(QColor(255, 0, 0))  # 红色
-    #     pen.setWidth(1)  # 1px宽度
-    #     painter.setPen(pen)
-    #     painter.setBrush(Qt.NoBrush)  # 不填充
-    #     # 绘制边框矩形
-    #     # 由于 QPen 的宽度是向内外两侧扩展的，所以需要调整绘制区域
-    #     rect = self.rect().adjusted(0, 0, -1, -1)
-    #     painter.drawRect(rect)
-    #     painter.end()

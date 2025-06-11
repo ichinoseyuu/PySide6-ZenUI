@@ -3,7 +3,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from typing import overload
 from ZenUI.component.basewidget import ZWidget
-from ZenUI.component.advancedbutton.widget import ButtonLayer
+from ZenUI.component.button.widget import ButtonLayer
 from ZenUI.core import ZExpAnim,AnimGroup,ZColorTool,ZenGlobal,Zen,ZSize,ZColorSheet,ZColors
 class ABCToggleButton(QPushButton):
     """切换按钮抽象类"""
@@ -684,7 +684,3 @@ class ABCToggleButton(QPushButton):
         if self.rect().contains(event.pos()):
             self.clicked.emit()
             self.setChecked(not self.isChecked())
-        if self._theme_manager.theme() == Zen.Theme.Dark:
-            self.setIconColor('#ff202020')
-        else:
-            self.setIconColor('#fff3f3f3')

@@ -1,22 +1,58 @@
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon,QColor
+from textwrap import dedent
 from ZenUI import *
-
+from rc_rc import *
 class PageHome(ZPage):
     def __init__(self,parent = None,name ='pageHome'):
         super().__init__(parent = parent,
                          name=name,
                          fixed_stylesheet="border-width: 1px;\nborder-style: solid;\nborder-radius:4px;",
-                         style= ZPage.Style.Monochrome|ZPage.Style.Border,
+                         style=ZPage.Style.Border,
                          layout=Zen.Layout.Column,
                          margins=ZMargins(6, 6, 6, 6),
                          spacing=12)
+        self.image_bg = ZImageLayer(parent=self,
+                                  scale_type=Zen.ScaleType.Fill,
+                                  corner_radius=4)
+        self.image_bg_mask = ZImageLayer(parent=self,
+                                  scale_type=Zen.ScaleType.Stretch,
+                                  corner_radius=4)
+        self._load_bg_image()
+
         self._setup_ui()
+
+    def _load_bg_image(self):
+        if getTheme() == Zen.Theme.Light:
+            self.image_bg.setImage(":/image/home_bg_light.png")
+            self.image_bg_mask.setImage(":/image/home_bg_mask_light.png")
+        else:
+            self.image_bg.setImage(":/image/home_bg_dark.png")
+            self.image_bg_mask.setImage(":/image/home_bg_mask_dark.png")
+
+    def _theme_changed_handler(self, theme):
+        super()._theme_changed_handler(theme)
+        self._load_bg_image()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.image_bg.setGeometry(1, 1, self.width()-2, self.height()-2)
+        self.image_bg_mask.setGeometry(1, 1, self.width()-2, self.height()-2)
+
 
     def _setup_ui(self):
         self.label_title = ZTextLabel(parent=self,
                                  name='text',
-                                 text="Hello, ZenUI!")
-        self.label_title.setFixedStyleSheet("padding-top:200px;\nfont-size: 42px;\nfont-weight: bold;\ncolor: pink;")
+                                 text="ZenUI Gallary",
+                                 alignment=Zen.Alignment.Left)
+        sheet = dedent('''\
+                padding-top:30px;
+                padding-left:20px;
+                padding-bottom:30px;
+                font-family: 'Microsoft YaHei';
+                font-size: 30px;
+                font-weight: bold;
+                border-radius: 4px;''')
+        self.label_title.setFixedStyleSheet(sheet)
         self.layout().addWidget(self.label_title)
 
         self.spacer = ZSpacer(minH=40,
@@ -38,13 +74,10 @@ class PageHome(ZPage):
                               columns=Zen.SizePolicy.Minimum)
         self.contain_button.layout().addItem(self.btn_ztrans_spacer)
 
-        self.btn_nextpage = ZPushButton(parent=self.contain_button,
+        self.btn_nextpage = ZQuickButton.transButton(parent=self.contain_button,
                                  name='btn_nextpage',
                                  icon=QIcon(':/icons/svg/fluent/filled/ic_fluent_arrow_right_filled.svg'),
-                                 min_height=40,
-                                 min_width=60,
-                                 sizepolicy=(Zen.SizePolicy.Minimum, Zen.SizePolicy.Minimum),
-                                 idle_style=ZPushButton.IdleStyle.None_,
-                                 hover_style=ZPushButton.HoverStyle.Color,
-                                 pressed_style=ZPushButton.PressedStyle.Flash)
+                                 fixed_size=ZSize(60,40),
+                                 tooltip='下一页'
+                                 )
         self.contain_button.layout().addWidget(self.btn_nextpage)

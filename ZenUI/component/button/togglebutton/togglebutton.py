@@ -2,7 +2,7 @@ from PySide6.QtGui import QIcon,QCursor
 from enum import IntFlag, IntEnum, auto
 from textwrap import dedent
 from ZenUI.component.basewidget.widget import ZWidget
-from ZenUI.component.advancedbutton.abstract.abctogglebutton import ABCToggleButton
+from ZenUI.component.button.abstract.abctogglebutton import ABCToggleButton
 from ZenUI.core import ZColorTool,ZenGlobal,Zen,ZSize
 class ZToggleButton(ABCToggleButton):
     '''切换按钮'''
@@ -360,6 +360,10 @@ class ZToggleButton(ABCToggleButton):
             else:
                 self.setTextColorTo(self._colors.text)
 
+        if self._theme_manager.theme() == Zen.Theme.Dark:
+            self.setIconColor('#ff202020')
+        else:
+            self.setIconColor('#fff3f3f3')
         # 图标色
         if self._checked_style & self.CheckedStyle.Icon and checked:
             if self._hover_style & self.HoverStyle.Icon:

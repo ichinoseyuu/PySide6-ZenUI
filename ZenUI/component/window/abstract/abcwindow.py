@@ -55,7 +55,6 @@ class ABCWindow(QWidget):
                          style=WindowPanel.Style.Monochrome,
                          layout=Zen.Layout.Column,
                          margins=ZMargins(margin, margin, margin, margin))
-        self._centerWidget.updateStyle()
         self._topGrip = ResizeGrip(self, ResizeGrip.Edge.Top,self._grip_width)
         self._bottomGrip = ResizeGrip(self, ResizeGrip.Edge.Bottom,self._grip_width)
         self._leftGrip = ResizeGrip(self, ResizeGrip.Edge.Left,self._grip_width)

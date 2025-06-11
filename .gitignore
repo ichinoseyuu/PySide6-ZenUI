@@ -6,11 +6,12 @@ ZenUi.egg-info/
 design_drawing/
 ZenUI/assets/icons/
 ZenUI/assets/packge/
-
+image/
 
 *.pyc
 *.psd
 test.py
+rc.qrc
 
 build/
 dist/

@@ -6,7 +6,7 @@ from enum import IntEnum
 from ZenUI.component.basewidget import ZWidget
 from ZenUI.component.slider.layer import SliderLayer
 from ZenUI.component.slider.handle import SliderHandle
-from ZenUI.core import Zen,ZColorSheet,ZenGlobal
+from ZenUI.core import Zen,ZenGlobal
 
 class ZSlider(ZWidget):
     """水平滑块控件"""
@@ -52,7 +52,7 @@ class ZSlider(ZWidget):
 
     def _init_style(self):
         #设置样式
-        self._color_sheet = ZColorSheet(self, Zen.WidgetType.Slider)
+        self._color_sheet.loadColorConfig(Zen.WidgetType.Slider)
         self._colors.overwrite(self._color_sheet.getSheet())
         self._track._bg_color_a = self._colors.track
         self._track._stylesheet_fixed =f'border-radius: {int(self._track_width/2)}px;'

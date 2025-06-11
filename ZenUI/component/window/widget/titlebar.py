@@ -2,7 +2,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from ZenUI.component.basewidget.widget import ZWidget
-from ZenUI.component.advancedbutton import ZPushButton
+from ZenUI.component.button import ZPushButton
 from ZenUI.component.label.text import ZTextLabel
 from ZenUI.component.layout.spacer import ZSpacer
 from ZenUI.component.layout.row import ZRowLayout
@@ -25,12 +25,6 @@ class ThemeButton(ZPushButton):
     def _theme_changed_handler(self, theme):
         super()._theme_changed_handler(theme)
         self.hovered.emit()
-        # if theme == Zen.Theme.Dark:
-        #     self._tooltip = '切换到浅色模式'
-        #     ZenGlobal.ui.windows['ToolTip'].setText(self._tooltip)
-        # else:
-        #     self._tooltip = '切换到深色模式'
-        #     ZenGlobal.ui.windows['ToolTip'].setText(self._tooltip)
 
 class ZTitleBar(QWidget):
     '''标题栏'''
@@ -62,6 +56,7 @@ class ZTitleBar(QWidget):
 
         self.btnTheme = ThemeButton(parent=self,
                                     name="btnTheme",
+                                    tooltip="切换主题",
                                     fixed_size=self._btn_size,
                                     idle_style=ZPushButton.IdleStyle.None_,
                                     hover_style=ZPushButton.HoverStyle.Icon,
@@ -71,6 +66,7 @@ class ZTitleBar(QWidget):
         self.btnMin = ZPushButton(parent=self,
                                     name="btnMin",
                                     icon=QIcon(u":/icons/svg/zen_ui/minimize.svg"),
+                                    tooltip="最小化",
                                     fixed_size=self._btn_size,
                                     idle_style=ZPushButton.IdleStyle.None_,
                                     hover_style=ZPushButton.HoverStyle.Icon,
@@ -83,6 +79,7 @@ class ZTitleBar(QWidget):
         self.btnMax = ZPushButton(parent=self,
                                     name="btnMin",
                                     icon=icon2,
+                                    tooltip="最大化",
                                     fixed_size=self._btn_size,
                                     idle_style=ZPushButton.IdleStyle.None_,
                                     hover_style=ZPushButton.HoverStyle.Icon,
@@ -93,6 +90,7 @@ class ZTitleBar(QWidget):
         self.btnExit = ZPushButton(parent=self,
                                     name="btnMin",
                                     icon=QIcon(u":/icons/svg/zen_ui/close.svg"),
+                                    tooltip="关闭",
                                     fixed_size=self._btn_size,
                                     idle_style=ZPushButton.IdleStyle.None_,
                                     hover_style=ZPushButton.HoverStyle.Icon,
@@ -111,15 +109,19 @@ class ZTitleBar(QWidget):
         '切换主题'
         if ZenGlobal.ui.theme_manager.theme() == Zen.Theme.Dark:
             ZenGlobal.ui.theme_manager.setTheme(Zen.Theme.Light)
+            self.btnTheme.setToolTip("切换到深色模式")
         else:
             ZenGlobal.ui.theme_manager.setTheme(Zen.Theme.Dark)
+            self.btnTheme.setToolTip("切换到浅色模式")
 
     def _maxWindow(self):
         '''最大化窗口'''
         if self.window().isMaximized():
             self.window().showNormal()
+            self.btnMax.setToolTip("最大化")
         else:
             self.window().showMaximized()
+            self.btnMax.setToolTip("还原")
         self.btnMax.leaved.emit()
 
 

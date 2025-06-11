@@ -40,52 +40,43 @@ class PageWidget(ZScrollPage):
 
         self.label_zpush = ZTextLabel(parent=self.contain_zpush,
                                  name='label_zpush',
-                                 text='ZPushButton',
+                                 text='基础按钮',
                                  alignment=Zen.Alignment.Center)
         self.label_zpush.setFixedStyleSheet('''padding:10px;\npadding-left:20px;\nfont-size: 12px;\nfont-family: "微软雅黑";''')
         self.contain_zpush.layout().addWidget(self.label_zpush)
 
 
-        self.btn_push1 = ZQuickButton.ghostButton(parent=self.contain_zpush,
-                                 name='btn_push1',
-                                 text='幽灵按钮',
-                                 fixed_size=ZSize(78, 32))
-        self.contain_zpush.layout().addWidget(self.btn_push1)
-
-        self.btn_push2 = ZQuickButton.transButton(parent=self.contain_zpush,
-                                 name='btn_push2',
+        self.btn_trans = ZQuickButton.transButton(parent=self.contain_zpush,
+                                 name='btn_trans',
                                  text='透明按钮',
                                  fixed_size=ZSize(78, 32))
-        self.contain_zpush.layout().addWidget(self.btn_push2)
+        self.contain_zpush.layout().addWidget(self.btn_trans)
 
-        self.btn_push3 = ZQuickButton.gradientButton(parent=self.contain_zpush,
-                                 name='btn_push3',
+        self.btn_fill = ZQuickButton.fillButton(parent=self.contain_zpush,
+                                 name='btn_fill',
+                                 text='填充按钮',
+                                 fixed_size=ZSize(78, 32))
+        self.contain_zpush.layout().addWidget(self.btn_fill)
+
+        self.btn_gradient = ZQuickButton.gradientButton(parent=self.contain_zpush,
+                                 name='btn_gradient',
                                  text='渐变按钮',
                                  fixed_size=ZSize(78, 32))
-        self.contain_zpush.layout().addWidget(self.btn_push3)
+        self.contain_zpush.layout().addWidget(self.btn_gradient)
 
-        self.btn_push4 = ZQuickButton.textButton(parent=self.contain_zpush,
-                                 name='btn_push4',
+        self.btn_text = ZQuickButton.textButton(parent=self.contain_zpush,
+                                 name='btn_text',
                                  text='文本按钮',
                                  tooltip='文本按钮',
                                  fixed_size=ZSize(78, 32))
-        self.contain_zpush.layout().addWidget(self.btn_push4)
+        self.contain_zpush.layout().addWidget(self.btn_text)
 
-        self.btn_push5 = ZQuickButton.iconButton(parent=self.contain_zpush,
-                                 name='btn_push5',
+        self.btn_icon = ZQuickButton.iconButton(parent=self.contain_zpush,
+                                 name='btn_icon',
                                  icon=QIcon(':/icons/svg/fluent/regular/ic_fluent_sparkle_regular.svg'),
                                  tooltip='图标按钮',
                                  fixed_size=ZSize(32, 32))
-        self.contain_zpush.layout().addWidget(self.btn_push5)
-
-        self.btn_push6 = ZPushButton(parent=self.contain_zpush,
-                                 name='btn_push6',
-                                 text='tooltip测试',
-                                 tooltip='tooltip测试',
-                                 immediate_tooltip=False,
-                                 interrupt_tooltip=True,
-                                 fixed_size=ZSize(78, 32))
-        self.contain_zpush.layout().addWidget(self.btn_push6)
+        self.contain_zpush.layout().addWidget(self.btn_icon)
 
         self.btn_zpush_spacer = ZSpacer(minH=20,
                               minW=32,
@@ -94,7 +85,7 @@ class PageWidget(ZScrollPage):
         self.contain_zpush.layout().addItem(self.btn_zpush_spacer)
 
 
-        # region ZToggleButton
+        # region toggle_btn
         self.contain_ztoggle = ZBox(parent=self,
                                  name='contain_ztoggle',
                                  layout=Zen.Layout.Row,
@@ -104,7 +95,7 @@ class PageWidget(ZScrollPage):
 
         self.label_ztoggle = ZTextLabel(parent=self.contain_ztoggle,
                                  name='label_ztab',
-                                 text='ZToggleButton',
+                                 text='切换按钮',
                                  alignment=Zen.Alignment.Center)
         self.label_ztoggle.setFixedStyleSheet('padding:10px;\npadding-left:20px;\nfont-size: 12px;\nfont-family: "微软雅黑";')
         self.contain_ztoggle.layout().addWidget(self.label_ztoggle)
@@ -127,48 +118,7 @@ class PageWidget(ZScrollPage):
                               columns=Zen.SizePolicy.Minimum)
         self.contain_ztoggle.layout().addItem(self.contain_ztoggle_spacer)
 
-        self.btn_push7 = ZGhostButton(parent=self,
-                                 name='btn_push7',
-                                 text='幽灵按钮',
-                                 fixed_size=ZSize(100, 40),
-                                 fixed_stylesheet='border-radius: 4px;\nborder-style: solid;\nborder-width: 1px;',
-                                 hover_stylesheet='border-radius: 4px;',
-                                 pressed_stylesheet='border-radius: 4px;')
-        self.layout().addWidget(self.btn_push7)
-
-        self.btn_push8 = ZFillButton(parent=self,
-                                 name='btn_push8',
-                                 text='填充按钮',
-                                 fixed_size=ZSize(100, 40),
-                                 fixed_stylesheet='border-radius: 4px;\nborder-style: solid;\nborder-width: 1px;',
-                                 hover_stylesheet='border-radius: 4px;',
-                                 pressed_stylesheet='border-radius: 4px;')
-        self.layout().addWidget(self.btn_push8)
-
-        self.btn_push9 = ZGradientButton(parent=self,
-                                 name='btn_push9',
-                                 text='渐变按钮',
-                                 fixed_size=ZSize(100, 40),
-                                 fixed_stylesheet='border-radius: 4px;',
-                                 hover_stylesheet='border-radius: 4px;',
-                                 pressed_stylesheet='border-radius: 4px;')
-        self.layout().addWidget(self.btn_push9)
-
-
-        self.btn_push10 = ZTransparentButton(parent=self,
-                                 name='btn_push10',
-                                 text='透明按钮',
-                                 fixed_size=ZSize(100, 40),
-                                 fixed_stylesheet='border-radius: 4px;',
-                                 hover_stylesheet='border-radius: 4px;')
-        self.layout().addWidget(self.btn_push10)
-
-        self.btn_push11 = ZNoBackgroundButton(parent=self,
-                                 name='btn_push11',
-                                 text='无背景按钮',
-                                 fixed_size=ZSize(100, 40))
-        self.layout().addWidget(self.btn_push11)
-
+        # region slider,scrollbar
         self.contain_zslider = ZBox(parent=self,
                                  name='contain_zslider',
                                  layout=Zen.Layout.Row,

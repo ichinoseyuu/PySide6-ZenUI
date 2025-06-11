@@ -1,15 +1,15 @@
 from PySide6.QtGui import QIcon
 from textwrap import dedent
 from ZenUI.component.basewidget.widget import ZWidget
-from ZenUI.component.advancedbutton.abstract.abcbutton import ABCButton
+from ZenUI.component.button.abstract.abcbutton import ABCButton
 from ZenUI.core import ZColorTool,ZenGlobal,Zen,ZSize
 
-class ZGhostButton(ABCButton):
+class ZGradientButton(ABCButton):
     '''
-    幽灵按钮
-    - 背景透明
-    - 悬停时显示边框
-    - 按下背景闪烁
+    渐变按钮
+    - 渐变背景
+    - 悬停时变色
+    - 按下时变色
     '''
     def __init__(self,
                  parent: ZWidget = None,
@@ -56,51 +56,60 @@ class ZGhostButton(ABCButton):
 
 
     def _init_style(self):
-        self._color_sheet.loadColorConfig(Zen.WidgetType.GhostButton) #获取颜色配置
+        self._color_sheet.loadColorConfig(Zen.WidgetType.GradientButton) #获取颜色配置
         self._colors.overwrite(self._color_sheet.getSheet()) #获取颜色表
 
+        self._bg_color_a = self._colors.background_a
+        self._bg_color_b = self._colors.background_b
         self._text_color = self._colors.text
         self._icon_color = self._colors.icon
 
+        self._anim_bg_color_a.setCurrent(ZColorTool.toArray(self._bg_color_a))
+        self._anim_bg_color_b.setCurrent(ZColorTool.toArray(self._bg_color_b))
         self._anim_text_color.setCurrent(ZColorTool.toArray(self._text_color))
         self._anim_icon_color.setCurrent(ZColorTool.toArray(self._icon_color))
 
         # 判断hover层的样式
-        self._layer_hover.set_style_getter('border_color', lambda: self._layer_hover._border_color)
+        self._layer_hover.set_style_getter('background_color', lambda: self._layer_hover._bg_color_a)
 
         # 判断press层的样式
         self._layer_pressed.set_style_getter('background_color', lambda: self._layer_pressed._bg_color_a)
 
-
     def _theme_changed_handler(self, theme):
         self._colors.overwrite(self._color_sheet.getSheet(theme))
+        self.setColor(self._colors.background_a,self._colors.background_b)
         self.setTextColor(self._colors.text)
         self.setIconColor(self._colors.icon)
-        self._layer_hover.setBorderColor(ZColorTool.trans(self._colors.border_hover))
+
 
 
     def reloadStyleSheet(self):
         super().reloadStyleSheet()
         #判断背景层样式
+        x1, y1, x2, y2 = self._gradient_anchor
         sheet = dedent(f'''\
             color: {self._text_color};
-            background-color: transparent;
-            border: 1px solid transparent;''')
+            background-color: qlineargradient(
+            x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2},
+            stop:0 {self._bg_color_a}, stop:1 {self._bg_color_b});
+            border: none;''')
         return self._stylesheet_fixed +'\n'+ sheet
 
 
     def _hovered_handler(self):
-        self._layer_hover.setBorderColorTo(self._colors.border_hover)
+        self._layer_hover.setColorTo(self._colors.hover)
 
 
     def _leaved_handler(self):
-        self._layer_hover.setBorderColorTo(ZColorTool.trans(self._colors.border_hover))
+        self._layer_hover.setColorTo(ZColorTool.trans(self._colors.hover))
 
 
-    def _clicked_handler(self):
-        self._layer_pressed.setColor(self._colors.flash)
-        self._layer_pressed.setColorTo(ZColorTool.trans(self._colors.flash))
+    def _pressed_handler(self):
+        self._layer_pressed.setColorTo(self._colors.pressed)
 
+
+    def _released_handler(self):
+        self._layer_pressed.setColorTo(ZColorTool.trans(self._colors.pressed))
 
     def _toggled_handler(self, checked):
         if self._theme_manager.theme() == Zen.Theme.Dark:

@@ -17,7 +17,7 @@ class ZenUIGallary(ZMainWindow):
 
     def setupUi(self):
         screen_size = QGuiApplication.primaryScreen().size()
-        self.resize(screen_size.width()*3/5-200,screen_size.height()*3/5)
+        self.resize(screen_size.width()*0.425,screen_size.height()*0.5)
         self.setWindowTitle('ZenUIGallary')
         self.setMinimumSize(800, 600)
         self.content = ZBox(parent=self,
@@ -61,10 +61,10 @@ class ZenUIGallary(ZMainWindow):
 
 if __name__ == '__main__':
     # enable dpi scale
-    #QApplication.setHighDpiScaleFactorRoundingPolicy( #  设置高DPI缩放因子的舍入策略为直接传递，不进行任何处理
-    #     Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    QApplication.setHighDpiScaleFactorRoundingPolicy( #  设置高DPI缩放因子的舍入策略为直接传递，不进行任何处理
+         Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     app = QApplication(sys.argv) #  创建一个QApplication对象，用于管理GUI应用程序的控制流和主要设置
-    #app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings) #  设置应用程序属性，禁止创建原生小部件的兄弟组件，以提高性能和避免潜在的问题
+    app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings) #  设置应用程序属性，禁止创建原生小部件的兄弟组件，以提高性能和避免潜在的问题
     window = ZenUIGallary()
     window.show()
     app.exec()

@@ -5,7 +5,7 @@ from typing import Union, Tuple
 from ZenUI.component.basewidget import ZWidget
 from ZenUI.component.scrollbar.layer import ScrollBarLayer
 from ZenUI.component.scrollbar.handle import ScrollBarHandle
-from ZenUI.core import Zen,ZColorSheet
+from ZenUI.core import Zen
 
 class ZScrollBar(ZWidget):
     """滚动条控件"""
@@ -48,7 +48,7 @@ class ZScrollBar(ZWidget):
                                        height=20)
         '滑块'
         #设置样式
-        self._color_sheet = ZColorSheet(self, Zen.WidgetType.ScrollBar)
+        self._color_sheet.loadColorConfig(Zen.WidgetType.ScrollBar)
         self._colors.overwrite(self._color_sheet.getSheet())
         self._track._bg_color_a = self._colors.track
         self._track._stylesheet_fixed =f'border-radius: {int(self._track_width/2)}px;'

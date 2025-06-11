@@ -1,5 +1,6 @@
 from PySide6.QtGui import QIcon
 from ZenUI.component import ZWidget,ZDrawer,ZToggleButton,ZPushButton,ZSpacer
+from ZenUI.component.button.manager import ZButtonGroupManager
 from ZenUI.component.presets import ZQuickButton
 from ZenUI.core import Zen,ZSize,ZMargins
 class ZNavigationBar(ZDrawer):
@@ -34,9 +35,7 @@ class ZNavigationBar(ZDrawer):
                          expand_width=expand_width)
         self._btn_height = btn_height
         self._btn_icon_size = btn_icon_size
-        self._toggled_btn = None
-        self._last_toggled_btn = None
-        self._btns = {}
+        self._button_group = ZButtonGroupManager(exclusive=True)
         self._btn_count = 0
         self._setup_ui()
         self._init_style()
@@ -52,49 +51,25 @@ class ZNavigationBar(ZDrawer):
                                   icon_size=self._btn_icon_size)
         self.btnCollapse.clicked.connect(self.toggleState)
         self.layout().addWidget(self.btnCollapse)
-
         self.spacer = ZSpacer()
         self.layout().addItem(self.spacer)
 
-
-
     def addButton(self, btn: ZToggleButton|ZPushButton):
-        '''添加按钮'''
+        """添加按钮"""
         if isinstance(btn, ZToggleButton):
-            if self._toggled_btn is None:
-                btn.setChecked(True)
-                self._toggled_btn = btn
-            btn.pressed.connect(lambda: self._btn_pressed_handler(btn))
+            self._button_group.addButton(btn)
             self.layout().insertWidget(self._btn_count + 1, btn)
-            self._btns[f"{btn.objectName()}"] = btn
             self._btn_count += 1
         elif isinstance(btn, ZPushButton):
             self.layout().insertWidget(self._btn_count + 1, btn)
 
 
-    def _btn_pressed_handler(self, btn: ZToggleButton):
-        '''按钮点击事件处理'''
-        btn.setChecked(False)
-        if self._toggled_btn == btn: return
-        self._last_toggled_btn = self._toggled_btn
-        self._last_toggled_btn.setChecked(False)
-        self._last_toggled_btn.leaved.emit()
-        self._toggled_btn = btn
-
     def toggleToNextButton(self):
-        '''切换到下一个按钮'''
-        if self._toggled_btn:
-            self._toggled_btn.click()
-        index = self.layout().indexOf(self._toggled_btn)
-        widget = self.layout().itemAt(index + 1).widget()
-        if isinstance(widget, ZToggleButton):
-            widget.click()
+        """切换到下一个按钮"""
+        self._button_group.toggleToNextButton()
+
+
 
     def toggleToLastButton(self):
-        '''切换到上一个按钮'''
-        if self._toggled_btn:
-            self._toggled_btn.click()
-        index = self.layout().indexOf(self._toggled_btn)
-        widget = self.layout().itemAt(index - 1).widget()
-        if isinstance(widget, ZToggleButton):
-            widget.click()
+        """切换到上一个按钮"""
+        self._button_group.toggleToLastButton()

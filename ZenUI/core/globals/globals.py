@@ -28,3 +28,7 @@ def tooltip():
 def mainWindow():
     '获取主窗口'
     return ZenGlobal.ui.windows.get("main")
+
+def getTheme():
+    '获取当前主题'
+    return ZenGlobal.ui.theme_manager.theme()

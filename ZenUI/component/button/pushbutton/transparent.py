@@ -1,7 +1,7 @@
 from PySide6.QtGui import QIcon
 from textwrap import dedent
 from ZenUI.component.basewidget.widget import ZWidget
-from ZenUI.component.advancedbutton.abstract.abcbutton import ABCButton
+from ZenUI.component.button.abstract.abcbutton import ABCButton
 from ZenUI.core import ZColorTool,ZenGlobal,Zen,ZSize
 
 class ZTransparentButton(ABCButton):

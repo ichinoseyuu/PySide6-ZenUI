@@ -3,7 +3,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from typing import overload
 from ZenUI.component.basewidget import ZWidget
-from ZenUI.component.advancedbutton.widget import ButtonLayer
+from ZenUI.component.button.widget import ButtonLayer
 from ZenUI.core import ZExpAnim,AnimGroup,ZColorTool,ZenGlobal,Zen,ZSize,ZColorSheet,ZColors
 class ABCButton(QPushButton):
     '''按钮抽象类'''

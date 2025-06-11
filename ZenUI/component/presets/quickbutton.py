@@ -2,8 +2,8 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from typing import overload
-from ZenUI.component.advancedbutton import ZPushButton
-from ZenUI.component.advancedbutton import ZToggleButton
+from ZenUI.component.button import ZPushButton
+from ZenUI.component.button import ZToggleButton
 from ZenUI.core import ZSize
 
 class ZQuickButton:
@@ -23,7 +23,7 @@ class ZQuickButton:
         - 文字、图标居左
         - 无背景
         - 悬停时背景变色,
-        - 按下时闪烁，
+        - 按下时背景变色，
         '''
         return ZPushButton(parent=parent,
                              name=name,
@@ -36,28 +36,26 @@ class ZQuickButton:
                              pressed_stylesheet=f'border-radius: {radius}px;',
                              idle_style=ZPushButton.IdleStyle.None_,
                              hover_style=ZPushButton.HoverStyle.Color,
-                             pressed_style=ZPushButton.PressedStyle.Flash)
-
-
-    # region 幽灵按钮
+                             pressed_style=ZPushButton.PressedStyle.Color)
+    # region 填充按钮
     @staticmethod
-    def ghostButton(parent,
-                 name: str,
-                 text: str = None,
-                 icon: QIcon = None,
-                 icon_size: ZSize = None,
-                 min_size: ZSize = None,
-                 max_size: ZSize = None,
-                 fixed_size: ZSize = None,
-                 tooltip: str = None,
-                 radius=4):
+    def fillButton(parent,
+                     name: str,
+                     text: str = None,
+                     icon: QIcon = None,
+                     icon_size: ZSize = None,
+                     min_size: ZSize = None,
+                     max_size: ZSize = None,
+                     fixed_size: ZSize = None,
+                     tooltip: str = None,
+                     radius=4):
         '''
-        幽灵按钮
-        - 背景透明无边框
-        - 悬停时增加边框
-        - 按下时背景变色
+        渐变按钮
+        - 纯色背景
+        - 悬停时高亮
+        - 按下时高亮
         '''
-        sheet = f'border-radius: {radius}px;\nborder-width: 1px;\nborder-style: solid;'
+        sheet = f'border-radius: {radius}px;'
         return ZPushButton(parent=parent,
                              name=name,
                              text=text,
@@ -65,15 +63,14 @@ class ZQuickButton:
                              icon_size=icon_size,
                              min_size=min_size,
                              max_size=max_size,
-                             fixed_size=fixed_size,
                              tooltip=tooltip,
-                             fixed_stylesheet=f'border-radius: {radius}px;\nborder: 1px solid transparent;',
+                             fixed_size=fixed_size,
+                             fixed_stylesheet=sheet,
                              hover_stylesheet=sheet,
                              pressed_stylesheet=sheet,
-                             idle_style=ZPushButton.IdleStyle.None_,
-                             hover_style=ZPushButton.HoverStyle.Border,
+                             idle_style=ZPushButton.IdleStyle.Monochrome,
+                             hover_style=ZPushButton.HoverStyle.Color,
                              pressed_style=ZPushButton.PressedStyle.Color)
-
 
     # region 渐变按钮
     @staticmethod

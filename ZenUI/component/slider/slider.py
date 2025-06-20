@@ -15,20 +15,18 @@ class ZSlider(ZWidget):
                  parent: ZWidget = None,
                  name: str = None,
                  direction: Zen.Direction = Zen.Direction.Horizontal,
-                 track_width: int = 4,
                  track_length: int = 100,
-                 handle_radius: int = 10,
                  value_range: tuple = (0,100),
                  value: int = 0,
                  step: int = 1):
         super().__init__(parent, name)
         self._direction = direction
         '方向'
-        self._track_width = track_width
+        self._track_width = 4
         '轨道宽度'
         self._track_length = track_length
         '轨道长度'
-        self._handle_radius = handle_radius
+        self._handle_radius = 10
         '滑块半径'
         self._value = 0
         '当前数值'
@@ -44,7 +42,7 @@ class ZSlider(ZWidget):
         '轨道'
         self._fill = SliderLayer(self)
         '填充'
-        self._handle = SliderHandle(parent=self,radius=handle_radius)
+        self._handle = SliderHandle(parent=self,radius=self._handle_radius)
         '滑块'
         self._init_style()
         self.setValue(value)
@@ -55,9 +53,9 @@ class ZSlider(ZWidget):
         self._color_sheet.loadColorConfig(Zen.WidgetType.Slider)
         self._colors.overwrite(self._color_sheet.getSheet())
         self._track._bg_color_a = self._colors.track
-        self._track._stylesheet_fixed =f'border-radius: {int(self._track_width/2)}px;'
+        self._track._stylesheet_fixed =f'border-radius: {self._track_width/2}px;'
         self._fill._bg_color_a = self._colors.fill
-        self._fill._stylesheet_fixed =f'border-radius: {int(self._track_width/2)}px;'
+        self._fill._stylesheet_fixed =f'border-radius: {self._track_width/2}px;'
         self._handle.configColor(self._colors.handle_inner, self._colors.handle_outer, self._colors.handle_border)
         #设置大小
         if self._direction == Zen.Direction.Horizontal:

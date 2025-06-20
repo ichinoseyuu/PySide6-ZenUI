@@ -21,6 +21,7 @@ class ABCWindow(QWidget):
         if name: self.setObjectName(name)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint) # 无边框窗口
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground) #透明背景
+        #self.setStyleSheet('background-color:transparent;')
         self._widget_flags = {}
         '组件属性，控制是否具备动画等'
         self._grips = []

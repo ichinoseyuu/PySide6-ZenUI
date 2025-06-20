@@ -67,7 +67,7 @@ class PageWidget(ZScrollPage):
         self.btn_text = ZQuickButton.textButton(parent=self.contain_zpush,
                                  name='btn_text',
                                  text='文本按钮',
-                                 tooltip='文本按钮',
+                                 tooltip='文本按钮00000000000000000000000000000000000000000000',
                                  fixed_size=ZSize(78, 32))
         self.contain_zpush.layout().addWidget(self.btn_text)
 

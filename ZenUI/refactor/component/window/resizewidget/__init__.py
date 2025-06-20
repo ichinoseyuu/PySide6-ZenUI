@@ -1,0 +1,1 @@
+from .resizewidget import ResizeWindow

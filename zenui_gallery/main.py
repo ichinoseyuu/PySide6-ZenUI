@@ -2,14 +2,18 @@ import sys
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
+import os
+# 添加项目根目录到系统路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ZenUI import *
+from ZenUI.refactor import ZFramelessWindow
 from page_home import PageHome
 from page_widget import PageWidget
 from page_about import PageAbout
 from navigation_bar import LeftNavigationBar
 
 
-class ZenUIGallary(ZMainWindow):
+class ZenUIGallery(ZFramelessWindow):
     def __init__(self):
         super().__init__()
         self.setupUi()
@@ -18,8 +22,7 @@ class ZenUIGallary(ZMainWindow):
     def setupUi(self):
         screen_size = QGuiApplication.primaryScreen().size()
         self.resize(screen_size.width()*0.425,screen_size.height()*0.5)
-        self.setWindowTitle('ZenUIGallary')
-        self.setMinimumSize(800, 600)
+        #self.setMinimumSize(800, 600)
         self.content = ZBox(parent=self,
                                name='content',
                                style= ZBox.Style.None_,
@@ -43,7 +46,7 @@ class ZenUIGallary(ZMainWindow):
 
         self.content.layout().addWidget(self.stackPanel)
 
-        self.addWidget(self.content)
+        self.setCenterWidget(self.content)
 
 
 
@@ -65,6 +68,6 @@ if __name__ == '__main__':
          Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     app = QApplication(sys.argv) #  创建一个QApplication对象，用于管理GUI应用程序的控制流和主要设置
     app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings) #  设置应用程序属性，禁止创建原生小部件的兄弟组件，以提高性能和避免潜在的问题
-    window = ZenUIGallary()
+    window = ZenUIGallery()
     window.show()
     app.exec()

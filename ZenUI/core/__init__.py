@@ -3,7 +3,6 @@ from .argclass import *
 from .color import *
 from .effect import *
 from .enumrates import *
-from .font import *
 from .globals import *
 from .metaclass import *
 from .theme import *

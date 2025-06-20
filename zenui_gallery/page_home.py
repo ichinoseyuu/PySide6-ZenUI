@@ -1,7 +1,7 @@
 from PySide6.QtGui import QIcon,QColor
 from textwrap import dedent
 from ZenUI import *
-from rc_rc import *
+from zenui_gallery.rc_rc import *
 class PageHome(ZPage):
     def __init__(self,parent = None,name ='pageHome'):
         super().__init__(parent = parent,

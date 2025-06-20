@@ -6,7 +6,7 @@ class ToolTipConfig:
     '阴影间距'
     SHADOW_BLUR: int = 12  # 阴影模糊半径
     '阴影模糊半径'
-    SHADOW_COLOR: tuple = (0, 0, 0, 100)  # 阴影颜色
+    SHADOW_COLOR: tuple = (0, 0, 0, 40)  # 阴影颜色
     '阴影颜色'
     MIN_HEIGHT: int = 36  # 最小高度
     '最小高度'

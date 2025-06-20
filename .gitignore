@@ -11,6 +11,8 @@ image/
 *.pyc
 *.psd
 test.py
+testgradient.py
+testslider.py
 rc.qrc
 
 build/

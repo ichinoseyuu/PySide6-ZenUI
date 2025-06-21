@@ -11,11 +11,15 @@ from .utils import (WindowsWindowEffect,LPNCCALCSIZE_PARAMS,WinTaskbar,
                     isSystemBorderAccentEnabled, getSystemAccentColor,
                     isMaximized, isFullScreen, getResizeBorderThickness)
 from ZenUI.refactor.core import ZGlobal,ZFramelessWindowStyleData
+from ..tooltip.tooltip import ZToolTip
 class ZFramelessWindow(QWidget):
     """无边框窗口"""
     BORDER_WIDTH = 6
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        ZGlobal.tooltip = ZToolTip()
+        ZGlobal.tooltip.show()
+        ZGlobal.tooltip.setWindowOpacity(0)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setStyleSheet('background-color: transparent;')
         self._titlebar = ZTitleBar(self)

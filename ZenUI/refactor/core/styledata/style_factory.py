@@ -1,8 +1,9 @@
 from typing import Union, Dict, Any
-from .models import ZButtonStyleData, ZTitleBarButtonData, ZFramelessWindowStyleData,ZTextBlockStyleData
+from .models import (ZButtonStyleData, ZTitleBarButtonData, ZFramelessWindowStyleData,
+                    ZTextBlockStyleData,ZToolTipStyleData)
 
-StyleDataType = Union[ZButtonStyleData, ZTitleBarButtonData,
-                      ZFramelessWindowStyleData, ZTextBlockStyleData]
+StyleDataType = Union[ZButtonStyleData, ZTitleBarButtonData,ZFramelessWindowStyleData,
+                      ZTextBlockStyleData,ZToolTipStyleData]
 
 class ZStyleDataFactory:
     @staticmethod
@@ -46,6 +47,13 @@ class ZStyleDataFactory:
             ),
             'ZFramelessWindow': lambda d: ZFramelessWindowStyleData(
                 body=d.get('body')
+            ),
+            'ZToolTip': lambda d: ZToolTipStyleData(
+                text=d.get('text'),
+                body=d.get('body'),
+                border=d.get('border'),
+                radius=int(d.get('radius')),
+                flash=d.get('flash')
             )
         }
         return factories[name](data)

@@ -3,6 +3,7 @@ import logging
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent, Property
 from PySide6.QtGui import QMouseEvent, QEnterEvent
+from ZenUI.refactor.core import ZGlobal
 logging.basicConfig(level=logging.INFO)
 class ZABCButton(QWidget):
     entered = Signal(QPoint)

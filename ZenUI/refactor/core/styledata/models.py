@@ -24,7 +24,7 @@ class ZButtonStyleData:
     radius: int
 
 @dataclass
-class ZTooltipStyleData:
+class ZToolTipStyleData:
     text: str
     body: str
     border: str

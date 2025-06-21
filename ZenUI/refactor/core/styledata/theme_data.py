@@ -40,6 +40,13 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZFramelessWindow': {
                 'body': '#202020'
                 },
+            'ZToolTip': {
+                'text': '#dcdcdc',
+                'body': '#202020',
+                'border': '#2d2d2d',
+                'radius': 5,
+                'flash': '#ffffff',
+                },
             })
 
 
@@ -82,6 +89,13 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 },
             'ZFramelessWindow': {
                 'body': '#f3f3f3'
+                },
+            'ZToolTip': {
+                'text': '#333333',
+                'body': '#ffffff',
+                'border': '#dee2e6',
+                'radius': 5,
+                'flash': '#bfbfbf',
                 },
             })
 

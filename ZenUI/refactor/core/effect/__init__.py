@@ -1,0 +1,1 @@
+from .quickeffect import ZQuickEffect

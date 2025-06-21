@@ -1,8 +1,9 @@
 
 from PySide6.QtGui import QColor, QPainter, QFont, QPen, QIcon
-from PySide6.QtCore import Qt, QRect, QSize, Property, QPropertyAnimation, QEasingCurve, QRectF
+from PySide6.QtCore import Qt, QRect, QSize, QRectF
 from PySide6.QtWidgets import QWidget
-from ZenUI.refactor.core import ZGlobal, ZButtonStyleData
+from ZenUI.refactor.core import (ZGlobal, ZButtonStyleData,BackGroundStyle,BorderStyle,
+                                 CornerStyle,TextStyle,IconStyle)
 from .abcbutton import ZABCButton
 
 class ZButton(ZABCButton):
@@ -17,205 +18,135 @@ class ZButton(ZABCButton):
         self._text: str = None
         self._icon: QIcon = None
         self._icon_size = QSize(16, 16)
-        if text : self.setText(text)
-        if icon : self.setIcon(icon)
-        self.setFont(QFont("Microsoft YaHei", 9))
+        self._font = QFont("Microsoft YaHei", 9)
         self._spacing = 4
-        # 颜色属性
-        self._color_bg = QColor(0, 0, 0)
-        self._color_text = QColor(0, 0, 0)
-        self._color_icon = QColor(0, 0, 0)
-        self._color_border = QColor(0, 0, 0)
-        self._radius = 4
-
+        if text : self.text = text
+        if icon : self.icon = icon
+        # 样式属性
+        self._background_style = BackGroundStyle(self)
+        self._border_style = BorderStyle(self)
+        self._text_style = TextStyle(self)
+        self._icon_style = IconStyle(self)
+        self._corner_style = CornerStyle(self)
         # 样式数据
         self._style_data: ZButtonStyleData = None
-        self.setStyleData(ZGlobal.styleDataManager.getStyleData("ZButton"))
-        # 属性动画
-        self._anim_bg = QPropertyAnimation(self, b"backgroundColor")
-        self._anim_bg.setEasingCurve(QEasingCurve.Type.InOutQuad)
-        self._anim_bg.setDuration(150)
-        self._anim_border = QPropertyAnimation(self, b"borderColor")
-        self._anim_border.setEasingCurve(QEasingCurve.Type.InOutQuad)
-        self._anim_border.setDuration(150)
-        self._anim_icon = QPropertyAnimation(self, b"iconColor")
-        self._anim_icon.setEasingCurve(QEasingCurve.Type.InOutQuad)
-        self._anim_icon.setDuration(150)
-        self._anim_text = QPropertyAnimation(self, b"textColor")
-        self._anim_text.setEasingCurve(QEasingCurve.Type.InOutQuad)
-        self._anim_text.setDuration(150)
+        self.styleData = ZGlobal.styleDataManager.getStyleData("ZButton")
 
         # 设置默认大小
         ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
 
 
     # region Property
-    @Property(QColor)
-    def backgroundColor(self):
-        """获取按钮背景颜色"""
-        return self._color_bg
+    @property
+    def backgroundStyle(self) -> BackGroundStyle:
+        return self._background_style
 
-    @backgroundColor.setter
-    def backgroundColor(self, color: QColor):
-        """设置按钮背景颜色"""
-        self._color_bg = color
+    @property
+    def borderStyle(self) -> BorderStyle:
+        return self._border_style
+
+    @property
+    def textStyle(self) -> TextStyle:
+        return self._text_style
+
+    @property
+    def iconStyle(self) -> IconStyle:
+        return self._icon_style
+
+    @property
+    def cornerStyle(self) -> CornerStyle:
+        return self._corner_style
+
+    @property
+    def text(self) -> str:
+        return self._text
+
+    @text.setter
+    def text(self, text: str) -> None:
+        self._text = text
         self.update()
 
-    @Property(QColor)
-    def borderColor(self):
-        """获取按钮背景颜色"""
-        return self._color_border
+    @property
+    def icon(self) -> QIcon:
+        return self._icon
 
-    @borderColor.setter
-    def borderColor(self, color: QColor):
-        """设置按钮背景颜色"""
-        self._color_border = color
+    @icon.setter
+    def icon(self, icon: QIcon) -> None:
+        self._icon = icon
         self.update()
 
-    @Property(QColor)
-    def iconColor(self):
-        """获取图标颜色"""
-        return self._color_icon
+    @property
+    def iconSize(self) -> QSize:
+        return self._icon_size
 
-    @iconColor.setter
-    def iconColor(self, color: QColor):
-        """设置图标颜色"""
-        self._color_icon = color
+    @iconSize.setter
+    def iconSize(self, size: QSize) -> None:
+        self._icon_size = size
         self.update()
 
-    @Property(QColor)
-    def textColor(self):
-        """获取文字颜色"""
-        return self._color_text
+    @property
+    def spacing(self) -> int:
+        return self._spacing
 
-    @textColor.setter
-    def textColor(self, color: QColor):
-        """设置文字颜色"""
-        self._color_text = color
+    @spacing.setter
+    def spacing(self, spacing: int) -> None:
+        self._spacing = spacing
         self.update()
 
-    @Property(int)
-    def radius(self):
-        """获取按钮圆角半径"""
-        return self._radius
+    @property
+    def font(self) -> QFont:
+        return self._font
 
-    @radius.setter
-    def radius(self, radius: int):
-        """设置按钮圆角半径"""
-        self._radius = radius
+    @font.setter
+    def font(self, font: QFont) -> None:
+        self._font = font
         self.update()
 
-    @Property(ZButtonStyleData)
-    def styleData(self):
+    @property
+    def styleData(self) -> ZButtonStyleData:
         """获取按钮样式数据"""
         return self._style_data
 
     @styleData.setter
-    def styleData(self, style_data: ZButtonStyleData):
+    def styleData(self, style_data: ZButtonStyleData) -> None:
         """设置按钮样式数据"""
         self._style_data = style_data
-        self._color_bg = QColor(style_data.body)
-        self._color_text = QColor(style_data.text)
-        self._color_icon = QColor(style_data.icon)
-        self._color_border = QColor(style_data.border)
-        self._radius = style_data.radius
+        self._background_style.color = QColor(style_data.body)
+        self._text_style.color = QColor(style_data.text)
+        self._icon_style.color = QColor(style_data.icon)
+        self._border_style.color = QColor(style_data.border)
+        self._corner_style.radius = style_data.radius
         self.update()
 
-    # region Public Func
-    def text(self):
-        """获取按钮文本"""
-        return self._text
-
-    def setText(self, text: str):
-        """设置按钮文本"""
-        self._text = text
-        self.update()
-
-    def setIcon(self, icon: QIcon):
-        """设置按钮图标"""
-        self._icon = icon
-        self.update()
-
-    def setIconSize(self, size: QSize):
-        """设置图标大小"""
-        self._icon_size = size
-        self.update()
-
-    def setSpacing(self, spacing: int):
-        """设置图标和文字之间的间距"""
-        self._spacing = spacing
-        self.update()
-
-    def setFont(self, arg__1):
-        super().setFont(arg__1)
-        self.update()
-
-    def setStyleData(self, style_data: ZButtonStyleData):
-        """设置按钮样式数据"""
-        self._style_data = style_data
-        self._color_bg = QColor(style_data.body)
-        self._color_text = QColor(style_data.text)
-        self._color_icon = QColor(style_data.icon)
-        self._color_border = QColor(style_data.border)
-        self._radius = style_data.radius
-        self.update()
-
-    def setBackgroundColorTo(self, color: QColor):
-        """设置按钮背景颜色"""
-        self._anim_bg.stop()
-        self._anim_bg.setStartValue(self._color_bg)
-        self._anim_bg.setEndValue(color)
-        self._anim_bg.start()
-
-    def setBorderColorTo(self, color: QColor):
-        """设置按钮背景颜色"""
-        self._anim_border.stop()
-        self._anim_border.setStartValue(self._color_border)
-        self._anim_border.setEndValue(color)
-        self._anim_border.start()
-
-    def setIconColorTo(self, color: QColor):
-        """设置图标颜色"""
-        self._anim_icon.stop()
-        self._anim_icon.setStartValue(self._color_icon)
-        self._anim_icon.setEndValue(color)
-        self._anim_icon.start()
-
-    def setTextColorTo(self, color: QColor):
-        """设置文字颜色"""
-        self._anim_text.stop()
-        self._anim_text.setStartValue(self._color_text)
-        self._anim_text.setEndValue(color)
-        self._anim_text.start()
 
     # region Slot
     def themeChangeHandler(self, theme):
         """主题改变事件处理"""
         data = ZGlobal.styleDataManager.getStyleData('ZButton',theme.name)
         self._style_data = data
-        self.radius = data.radius
-        self.setBackgroundColorTo(QColor(data.body))
-        self.setBorderColorTo(QColor(data.border))
-        self.setIconColorTo(QColor(data.icon))
-        self.setTextColorTo(QColor(data.text))
+        self._corner_style.radius = data.radius
+        self._background_style.setColorTo(QColor(data.body))
+        self._border_style.setColorTo(QColor(data.border))
+        self._icon_style.setColorTo(QColor(data.icon))
+        self._text_style.setColorTo(QColor(data.text))
 
     def hoverHandler(self, pos):
         """鼠标悬停事件处理"""
-        self.setBackgroundColorTo(QColor(self._style_data.bodyhover))
+        self._background_style.setColorTo(QColor(self.styleData.bodyhover))
 
     def leaveHandler(self):
         """鼠标离开事件处理"""
-        self.setBackgroundColorTo(QColor(self._style_data.body))
+        self._background_style.setColorTo(QColor(self.styleData.body))
 
     def pressHandler(self, pos):
         """鼠标按下事件处理"""
-        self.setBackgroundColorTo(QColor(self._style_data.bodypressed))
+        self._background_style.setColorTo(QColor(self.styleData.bodypressed))
 
     def releaseHandler(self, pos):
         """鼠标释放事件处理"""
-        self.setBackgroundColorTo(QColor(self._style_data.bodyhover))
+        self._background_style.setColorTo(QColor(self.styleData.bodyhover))
 
-    # region Event
+    # region Override
     def paintEvent(self, event):
         """绘制按钮"""
         painter = QPainter(self)
@@ -224,12 +155,12 @@ class ZButton(ZABCButton):
                              QPainter.RenderHint.SmoothPixmapTransform)
         # 绘制背景
         rect = self.rect()
-        radius = self._radius
+        radius = self._corner_style.radius
         painter.setPen(Qt.NoPen)
-        painter.setBrush(self._color_bg)
+        painter.setBrush(self._background_style.color)
         painter.drawRoundedRect(rect, radius, radius)
         # 绘制边框
-        painter.setPen(QPen(self._color_border, 1))
+        painter.setPen(QPen(self._border_style.color, self._border_style.width))
         painter.setBrush(Qt.NoBrush)
         # 调整矩形以避免边框模糊
         painter.drawRoundedRect(
@@ -255,7 +186,7 @@ class ZButton(ZABCButton):
             self._icon.paint(painter, icon_rect)
             # 绘制文本
             painter.setFont(self.font())
-            painter.setPen(self._color_text)
+            painter.setPen(self._text_style.color)
             text_rect = QRect(
                 start_x + self._icon_size.width() + self._spacing,
                 0,
@@ -276,6 +207,6 @@ class ZButton(ZABCButton):
             )
         # 只有文本
         elif self._text:
-            painter.setFont(self.font())
-            painter.setPen(self._color_text)
+            painter.setFont(self.font)
+            painter.setPen(self._text_style.color)
             painter.drawText(rect, Qt.AlignCenter, self._text)

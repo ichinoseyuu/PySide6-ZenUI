@@ -315,7 +315,7 @@ class ZWidget(QWidget):
             y2: 渐变结束点 纵坐标
         """
         self._gradient_anchor = [x1, y1, x2, y2]
-        self._schedule_update()
+        self.updateStyle()
 
     def gradientAnchor(self):
         """获取渐变锚点"""

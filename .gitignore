@@ -7,8 +7,7 @@ design_drawing/
 ZenUI/assets/icons/
 ZenUI/assets/packge/
 image/
-_legacy/
-zenui_gallery/
+
 
 *.pyc
 *.psd

@@ -1,9 +1,9 @@
 
-from PySide6.QtGui import QColor, QPainter, QFont, QPen, QIcon
+from PySide6.QtGui import QPainter, QFont, QPen, QIcon
 from PySide6.QtCore import Qt, QRect, QSize, QRectF
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.base import BackGroundStyle,BorderStyle,CornerStyle,TextStyle,IconStyle
-from ZenUI.core import ZGlobal, ZButtonStyleData
+from ZenUI.core import ZGlobal, ZToggleButtonStyleData
 from .abctogglebutton import ZABCToggleButton
 
 class ZButton(ZABCToggleButton):
@@ -29,8 +29,8 @@ class ZButton(ZABCToggleButton):
         self._icon_style = IconStyle(self)
         self._corner_style = CornerStyle(self)
         # 样式数据
-        self._style_data: ZButtonStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData("ZButton")
+        self._style_data: ZToggleButtonStyleData = None
+        self.styleData = ZGlobal.styleDataManager.getStyleData("ZToggleButton")
 
         # 设置默认大小
         ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
@@ -103,18 +103,18 @@ class ZButton(ZABCToggleButton):
         self.update()
 
     @property
-    def styleData(self) -> ZButtonStyleData:
+    def styleData(self) -> ZToggleButtonStyleData:
         """获取按钮样式数据"""
         return self._style_data
 
     @styleData.setter
-    def styleData(self, style_data: ZButtonStyleData) -> None:
+    def styleData(self, style_data: ZToggleButtonStyleData) -> None:
         """设置按钮样式数据"""
         self._style_data = style_data
-        self._background_style.color = QColor(style_data.body)
-        self._text_style.color = QColor(style_data.text)
-        self._icon_style.color = QColor(style_data.icon)
-        self._border_style.color = QColor(style_data.border)
+        self._background_style.color = style_data.bodytoggled if self._state is self.State.Toggled else style_data.body
+        self._text_style.color = style_data.text
+        self._icon_style.color = style_data.icon
+        self._border_style.color = style_data.border
         self._corner_style.radius = style_data.radius
         self.update()
 
@@ -125,26 +125,26 @@ class ZButton(ZABCToggleButton):
         data = ZGlobal.styleDataManager.getStyleData('ZButton',theme.name)
         self._style_data = data
         self._corner_style.radius = data.radius
-        self._background_style.setColorTo(QColor(data.body))
-        self._border_style.setColorTo(QColor(data.border))
-        self._icon_style.setColorTo(QColor(data.icon))
-        self._text_style.setColorTo(QColor(data.text))
+        self._background_style.setColorTo(data.body)
+        self._border_style.setColorTo(data.border)
+        self._icon_style.setColorTo(data.icon)
+        self._text_style.setColorTo(data.text)
 
     def hoverHandler(self, pos):
         """鼠标悬停事件处理"""
-        self._background_style.setColorTo(QColor(self.styleData.bodyhover))
+        self._background_style.setColorTo(self._style_data.bodyhover)
 
     def leaveHandler(self):
         """鼠标离开事件处理"""
-        self._background_style.setColorTo(QColor(self.styleData.body))
+        self._background_style.setColorTo(self._style_data.body)
 
     def pressHandler(self, pos):
         """鼠标按下事件处理"""
-        self._background_style.setColorTo(QColor(self.styleData.bodypressed))
+        self._background_style.setColorTo(self._style_data.bodypressed)
 
     def releaseHandler(self, pos):
         """鼠标释放事件处理"""
-        self._background_style.setColorTo(QColor(self.styleData.bodyhover))
+        self._background_style.setColorTo(self._style_data.bodyhover)
 
     # region Override
     def paintEvent(self, event):

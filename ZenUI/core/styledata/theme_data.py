@@ -1,5 +1,7 @@
 from typing import Dict, Any
 from types import MappingProxyType
+ACCENT_COLOR_LIGHT: str = '#a5d2f1'
+ACCENT_COLOR_DARK: str = '#955595'
 DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZTextBlock':{
                 'text': '#dcdcdc'
@@ -10,6 +12,16 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 'body': '#2d2d2d',
                 'bodyhover': '#323232',
                 'bodypressed': '#272727',
+                'border': '#323232',
+                'radius': 5
+                },
+            'ZToggleButton': {
+                'text': '#dcdcdc',
+                'icon': '#dcdcdc',
+                'body': '#2d2d2d',
+                'bodyhover': '#323232',
+                'bodypressed': '#272727',
+                'bodytoggled': ACCENT_COLOR_DARK,
                 'border': '#323232',
                 'radius': 5
                 },
@@ -42,8 +54,8 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 },
             'ZToolTip': {
                 'text': '#dcdcdc',
-                'body': '#202020',
-                'border': '#2d2d2d',
+                'body': '#2e2e2e',
+                'border': '#252525',
                 'radius': 5,
                 'flash': '#ffffff',
                 },
@@ -60,6 +72,16 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 'body': '#ffffff',
                 'bodyhover': '#f2f2f2',
                 'bodypressed': '#ebebeb',
+                'border': '#dee2e6',
+                'radius': 5
+                },
+            'ZToggleButton': {
+                'text': '#333333',
+                'icon': '#333333',
+                'body': '#ffffff',
+                'bodyhover': '#f2f2f2',
+                'bodypressed': '#ebebeb',
+                'bodytoggled': ACCENT_COLOR_LIGHT,
                 'border': '#dee2e6',
                 'radius': 5
                 },
@@ -92,7 +114,7 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 },
             'ZToolTip': {
                 'text': '#333333',
-                'body': '#ffffff',
+                'body': '#f8f8f8',
                 'border': '#dee2e6',
                 'radius': 5,
                 'flash': '#bfbfbf',

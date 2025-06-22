@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPainter, QColor, QFont, QFontMetrics
+from PySide6.QtGui import QPainter, QFont, QFontMetrics
 from ZenUI.component.base import TextStyle
 from ZenUI.core import ZGlobal,ZTextBlockStyleData
 class ZTextBlock(QWidget):
@@ -72,13 +72,13 @@ class ZTextBlock(QWidget):
     @styleData.setter
     def styleData(self, style_data: ZTextBlockStyleData) -> None:
         self._style_data = style_data
-        self._text_style.color = QColor(style_data.text)
+        self._text_style.color = style_data.text
         self.update()
 
     # region Slot
     def themeChangeHandler(self, theme):
         self._style_data = ZGlobal.styleDataManager.getStyleData('ZTextBlock', theme.name)
-        self._text_style.setColorTo(QColor(self._style_data.text))
+        self._text_style.setColorTo(self._style_data.text)
 
     # region Override
     def setFont(self, font: QFont) -> None:

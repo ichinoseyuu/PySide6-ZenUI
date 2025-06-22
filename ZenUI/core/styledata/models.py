@@ -1,36 +1,47 @@
 from dataclasses import dataclass
-
+from PySide6.QtGui import QColor
 @dataclass
 class ZFramelessWindowStyleData:
-    body: str
+    body: QColor
 
 @dataclass
 class ZTitleBarButtonData:
-    icon: str
-    iconhover: str
-    iconpressed: str
-    body: str
-    bodyhover: str
-    bodypressed: str
+    icon: QColor
+    iconhover: QColor
+    iconpressed: QColor
+    body: QColor
+    bodyhover: QColor
+    bodypressed: QColor
 
 @dataclass
 class ZButtonStyleData:
-    text: str
-    icon: str
-    body: str
-    bodyhover: str
-    bodypressed: str
-    border: str
+    text: QColor
+    icon: QColor
+    body: QColor
+    bodyhover: QColor
+    bodypressed: QColor
+    border: QColor
+    radius: int
+
+@dataclass
+class ZToggleButtonStyleData:
+    text: QColor
+    icon: QColor
+    body: QColor
+    bodyhover: QColor
+    bodypressed: QColor
+    bodytoggled: QColor
+    border: QColor
     radius: int
 
 @dataclass
 class ZToolTipStyleData:
-    text: str
-    body: str
-    border: str
+    text: QColor
+    body: QColor
+    border: QColor
     radius: int
-    flash: str
+    flash: QColor
 
 @dataclass
 class ZTextBlockStyleData:
-    text: str
+    text: QColor

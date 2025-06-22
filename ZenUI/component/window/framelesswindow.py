@@ -8,6 +8,8 @@ from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve
 from PySide6.QtGui import QResizeEvent,QColor
 from ZenUI.core import ZGlobal,ZFramelessWindowStyleData
 from ZenUI.component.tooltip import ZToolTip
+from ZenUI._legacy.core import ZenGlobal
+from ZenUI._legacy.component import ZToolTip as ZToolTipLegacy
 from .titlebar.titlebar import ZTitleBar
 from .win32utils import (WindowsWindowEffect,LPNCCALCSIZE_PARAMS,WinTaskbar,
                     isSystemBorderAccentEnabled, getSystemAccentColor,
@@ -19,9 +21,16 @@ class ZFramelessWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         #创建tooltip实例
-        ZGlobal.tooltip = ZToolTip()
-        ZGlobal.tooltip.show()
-        ZGlobal.tooltip.setWindowOpacity(0)
+        tooltip = ZToolTip()
+        tooltip.show()
+        tooltip.setWindowOpacity(0)
+        ZGlobal.tooltip = tooltip
+
+
+        tooltiplegacy = ZToolTipLegacy()
+        tooltiplegacy.show()
+        tooltiplegacy.setWindowOpacity(0)
+        ZenGlobal.ui.windows['ToolTip'] = tooltiplegacy
 
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setStyleSheet('background-color: transparent;')
@@ -59,7 +68,7 @@ class ZFramelessWindow(QWidget):
     @styleData.setter
     def styleData(self, data: ZFramelessWindowStyleData) -> None:
         self._style_data = data
-        self.backgroundColor = QColor(data.body)
+        self.backgroundColor = data.body
 
     @Property(QColor)
     def backgroundColor(self) -> QColor:

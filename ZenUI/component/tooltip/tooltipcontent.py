@@ -8,7 +8,7 @@ class ZToolTipContent(QWidget):
         self.setMinimumHeight(24)
         # 基本属性
         self._text: str = None
-        self._font = QFont("Microsoft YaHei", 10)
+        self._font = QFont("Microsoft YaHei", 9)
         self._word_wrap = True
         self._max_content_width = 300
         self._margin: QMargins = QMargins(8, 6, 8, 6)

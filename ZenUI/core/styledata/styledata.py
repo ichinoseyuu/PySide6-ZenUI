@@ -1,12 +1,12 @@
 from typing import Union, overload, Dict
 from ..theme import ZThemeManager
 from .models import (ZButtonStyleData, ZTitleBarButtonData, ZFramelessWindowStyleData,
-                     ZTextBlockStyleData,ZToolTipStyleData)
+                     ZTextBlockStyleData,ZToolTipStyleData, ZToggleButtonStyleData)
 from .theme_data import THEME_DATA
 from .style_factory import ZStyleDataFactory
 
 StyleDataType = Union[ZButtonStyleData, ZTitleBarButtonData,ZFramelessWindowStyleData,
-                      ZTextBlockStyleData,ZToolTipStyleData]
+                      ZTextBlockStyleData,ZToolTipStyleData, ZToggleButtonStyleData]
 
 class ZStyleDataManager:
     def __init__(self):
@@ -39,11 +39,11 @@ class ZStyleDataManager:
 
         theme_data = THEME_DATA.get(theme, {})
         component_data = theme_data.get(name, {})
-        
+
         # 创建样式数据并缓存
         style_data = ZStyleDataFactory.create(name, component_data)
         self._cache[cache_key] = style_data
-        
+
         return style_data
 
     def clearCache(self) -> None:
@@ -53,7 +53,7 @@ class ZStyleDataManager:
     def invalidateCache(self, name: str = None, theme: str = None) -> None:
         """只清除特定主题的缓存"""
         if name is None and theme is None:
-            self.clear_cache()
+            self.clearCache()
             return
 
         keys_to_remove = []
@@ -74,9 +74,9 @@ class ZStyleDataManager:
             'CloseButton',
             'FramelessWindow'
         ]
-        
+
         themes = [theme] if theme else list(THEME_DATA.keys())
-        
+
         for t in themes:
             for component in common_components:
                 self.getStyleData(component, t)

@@ -1,0 +1,43 @@
+<RCC>
+  <qresource prefix="/">
+    <!-- ZenUI 基础图标 -->
+    <file>icons/svg/zen_ui/dark.svg</file>
+    <file>icons/svg/zen_ui/light.svg</file>
+    <file>icons/svg/zen_ui/minimize.svg</file>
+    <file>icons/svg/zen_ui/maximize.svg</file>
+    <file>icons/svg/zen_ui/windowed.svg</file>
+    <file>icons/svg/zen_ui/close.svg</file>
+    <!-- Fluent Ui Filled图标 -->
+    <file>icons/svg/fluent/filled/ic_fluent_weather_sunny_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_weather_moon_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_weather_moon_off_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_navigation_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_home_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_info_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_settings_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_cube_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_thumb_like_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_thumb_dislike_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_arrow_right_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_arrow_left_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_arrow_up_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_arrow_down_filled.svg</file>
+    <file>icons/svg/fluent/filled/ic_fluent_sparkle_filled.svg</file>
+    <!-- Fluent Ui regular图标 -->
+    <file>icons/svg/fluent/regular/ic_fluent_weather_sunny_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_weather_moon_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_weather_moon_off_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_navigation_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_home_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_info_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_settings_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_cube_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_thumb_dislike_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_arrow_right_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_arrow_left_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_arrow_up_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_arrow_down_regular.svg</file>
+    <file>icons/svg/fluent/regular/ic_fluent_sparkle_regular.svg</file>
+    <!-- Fluent Ui Light图标 -->
+  </qresource>
+</RCC>

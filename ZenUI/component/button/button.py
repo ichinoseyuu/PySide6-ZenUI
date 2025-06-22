@@ -1,5 +1,5 @@
 
-from PySide6.QtGui import QColor, QPainter, QFont, QPen, QIcon
+from PySide6.QtGui import QPainter, QFont, QPen, QIcon
 from PySide6.QtCore import Qt, QRect, QSize, QRectF
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.base import BackGroundStyle,BorderStyle,CornerStyle,TextStyle,IconStyle
@@ -111,10 +111,10 @@ class ZButton(ZABCButton):
     def styleData(self, style_data: ZButtonStyleData) -> None:
         """设置按钮样式数据"""
         self._style_data = style_data
-        self._background_style.color = QColor(style_data.body)
-        self._text_style.color = QColor(style_data.text)
-        self._icon_style.color = QColor(style_data.icon)
-        self._border_style.color = QColor(style_data.border)
+        self._background_style.color = style_data.body
+        self._text_style.color = style_data.text
+        self._icon_style.color = style_data.icon
+        self._border_style.color = style_data.border
         self._corner_style.radius = style_data.radius
         self.update()
 
@@ -125,26 +125,26 @@ class ZButton(ZABCButton):
         data = ZGlobal.styleDataManager.getStyleData('ZButton',theme.name)
         self._style_data = data
         self._corner_style.radius = data.radius
-        self._background_style.setColorTo(QColor(data.body))
-        self._border_style.setColorTo(QColor(data.border))
-        self._icon_style.setColorTo(QColor(data.icon))
-        self._text_style.setColorTo(QColor(data.text))
+        self._background_style.setColorTo(data.body)
+        self._border_style.setColorTo(data.border)
+        self._icon_style.setColorTo(data.icon)
+        self._text_style.setColorTo(data.text)
 
     def hoverHandler(self, pos):
         """鼠标悬停事件处理"""
-        self._background_style.setColorTo(QColor(self.styleData.bodyhover))
+        self._background_style.setColorTo(self.styleData.bodyhover)
 
     def leaveHandler(self):
         """鼠标离开事件处理"""
-        self._background_style.setColorTo(QColor(self.styleData.body))
+        self._background_style.setColorTo(self.styleData.body)
 
     def pressHandler(self, pos):
         """鼠标按下事件处理"""
-        self._background_style.setColorTo(QColor(self.styleData.bodypressed))
+        self._background_style.setColorTo(self.styleData.bodypressed)
 
     def releaseHandler(self, pos):
         """鼠标释放事件处理"""
-        self._background_style.setColorTo(QColor(self.styleData.bodyhover))
+        self._background_style.setColorTo(self.styleData.bodyhover)
 
     # region Override
     def paintEvent(self, event):

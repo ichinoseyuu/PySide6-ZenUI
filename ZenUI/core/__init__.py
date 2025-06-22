@@ -6,7 +6,8 @@ from .animation import (ZExpAnimation,ZExpAnimationRefactor,AnimationGroup,
 from .effect import ZQuickEffect
 
 from .styledata import (ZStyleDataManager,ZFramelessWindowStyleData,ZButtonStyleData,
-                        ZTitleBarButtonData,ZTextBlockStyleData,ZToolTipStyleData)
+                        ZTitleBarButtonData,ZTextBlockStyleData,ZToolTipStyleData,
+                        ZToggleButtonStyleData)
 
 from .theme import ZTheme, ZThemeManager
 

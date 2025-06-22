@@ -6,40 +6,63 @@ from ctypes.wintypes import LPRECT, MSG
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve
 from PySide6.QtGui import QResizeEvent,QColor
+from ZenUI.refactor.core import ZGlobal,ZFramelessWindowStyleData, BackGroundStyle
+from ZenUI.refactor.component.tooltip import ZToolTip
 from .titlebar.titlebar import ZTitleBar
 from .utils import (WindowsWindowEffect,LPNCCALCSIZE_PARAMS,WinTaskbar,
                     isSystemBorderAccentEnabled, getSystemAccentColor,
                     isMaximized, isFullScreen, getResizeBorderThickness)
-from ZenUI.refactor.core import ZGlobal,ZFramelessWindowStyleData
-from ..tooltip.tooltip import ZToolTip
+
 class ZFramelessWindow(QWidget):
     """无边框窗口"""
     BORDER_WIDTH = 6
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        #创建tooltip实例
         ZGlobal.tooltip = ZToolTip()
         ZGlobal.tooltip.show()
         ZGlobal.tooltip.setWindowOpacity(0)
+
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setStyleSheet('background-color: transparent;')
         self._titlebar = ZTitleBar(self)
         self._centerWidget = QWidget(self)
-        self._isResizeEnabled = True
+        self._resizable = True
         self._windowEffect = WindowsWindowEffect(self)
         self._windowEffect.addWindowAnimation(self.winId())
-        self.windowHandle().screenChanged.connect(self.__onScreenChanged)
         self._windowEffect.addShadowEffect(self.winId())
+        self.windowHandle().screenChanged.connect(self.__onScreenChanged)
+
         self._color_bg = QColor('#000000')
-        self._style: ZFramelessWindowStyleData = None
-        self.setStyleData(ZGlobal.styleDataManager.getStyleData("ZFramelessWindow", ZGlobal.themeManager.getTheme().name))
-        ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
         self._anim_bg_color = QPropertyAnimation(self, b'backgroundColor')
         self._anim_bg_color.setDuration(150)
         self._anim_bg_color.setEasingCurve(QEasingCurve.Type.InOutQuad)
 
+        self._style_data: ZFramelessWindowStyleData = None
+        self.styleData = ZGlobal.styleDataManager.getStyleData("ZFramelessWindow")
+
+        ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
+
     # region Property
+    @property
+    def resizable(self) -> bool:
+        return self._resizable
+
+    @resizable.setter
+    def resizable(self, enabled: bool) -> None:
+        self._resizable = enabled
+
+    @property
+    def styleData(self) -> ZFramelessWindowStyleData:
+        return self._style_data
+    
+    @styleData.setter
+    def styleData(self, data: ZFramelessWindowStyleData) -> None:
+        self._style_data = data
+        self.backgroundColor = QColor(data.body)
+
     @Property(QColor)
-    def backgroundColor(self):
+    def backgroundColor(self) -> QColor:
         return self._color_bg
 
     @backgroundColor.setter
@@ -47,15 +70,7 @@ class ZFramelessWindow(QWidget):
         self._color_bg = color
         self._windowEffect.setBackgroundColor(self.winId(), color)
 
-    # region Public Func
-    def setStyleData(self, style):
-        self._style = style
-        self.backgroundColor = QColor(self._style.body)
-
-    def setResizeEnabled(self, enabled: bool):
-        """ 设置是否允许调整窗口大小 """
-        self._isResizeEnabled = enabled
-
+    # region Func
     def setBackgroundColorTo(self, color: QColor):
         """ 设置背景颜色 """
         self._anim_bg_color.setStartValue(self._color_bg)
@@ -73,8 +88,8 @@ class ZFramelessWindow(QWidget):
     # region Slot
     def themeChangeHandler(self, theme):
         """ 主题改变 """
-        self._style = ZGlobal.styleDataManager.getStyleData('ZFramelessWindow', theme.name)
-        self.setBackgroundColorTo(QColor(self._style.body))
+        self._style_data = ZGlobal.styleDataManager.getStyleData('ZFramelessWindow', theme.name)
+        self.setBackgroundColorTo(QColor(self._style_data.body))
 
     def __onScreenChanged(self):
         hWnd = int(self.windowHandle().winId())
@@ -87,13 +102,14 @@ class ZFramelessWindow(QWidget):
         super().resizeEvent(event)
         self._titlebar.resize(self.width(), self._titlebar.height())
         self._centerWidget.setGeometry(0, self._titlebar.height(), self.width(), self.height() - self._titlebar.height())
+
     def nativeEvent(self, eventType, message):
         """ Handle the Windows message """
         msg = MSG.from_address(message.__int__())
         if not msg.hWnd:
             return super().nativeEvent(eventType, message)
 
-        if msg.message == win32con.WM_NCHITTEST and self._isResizeEnabled:
+        if msg.message == win32con.WM_NCHITTEST and self._resizable:
             xPos, yPos = win32gui.ScreenToClient(msg.hWnd, win32api.GetCursorPos())
             clientRect = win32gui.GetClientRect(msg.hWnd)
 
@@ -121,6 +137,7 @@ class ZFramelessWindow(QWidget):
                 return True, win32con.HTLEFT
             elif rx:
                 return True, win32con.HTRIGHT
+
         elif msg.message == win32con.WM_NCCALCSIZE:
             if msg.wParam:
                 rect = cast(msg.lParam, LPNCCALCSIZE_PARAMS).contents.rgrc[0]
@@ -154,12 +171,13 @@ class ZFramelessWindow(QWidget):
 
             result = 0 if not msg.wParam else win32con.WVR_REDRAW
             return True, result
+
         elif msg.message == win32con.WM_SETFOCUS and isSystemBorderAccentEnabled():
             self._windowEffect.setBorderAccentColor(self.winId(), getSystemAccentColor())
             return True, 0
+
         elif msg.message == win32con.WM_KILLFOCUS:
             self._windowEffect.removeBorderAccentColor(self.winId())
             return True, 0
 
         return super().nativeEvent(eventType, message)
-

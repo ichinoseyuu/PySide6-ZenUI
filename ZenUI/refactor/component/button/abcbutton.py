@@ -20,6 +20,7 @@ class ZABCButton(QWidget):
         super().__init__(parent)
         #self.setMouseTracking(True)
         self._state = self.State.Idle
+        self._tool_tip: str = ""
         self.entered.connect(self.hoverHandler)
         self.leaved.connect(self.leaveHandler)
         self.pressed.connect(self.pressHandler)
@@ -28,10 +29,9 @@ class ZABCButton(QWidget):
         self.hoverMove.connect(self.hoverMoveHandler)
 
 
-    def setHoverMoveSignal(self, enabled: bool):
-        if enabled: self.setMouseTracking(True)
-        else: self.setMouseTracking(False)
 
+
+    # region Property
     @Property(int)
     def state(self):
         return self._state
@@ -40,6 +40,17 @@ class ZABCButton(QWidget):
     def setState(self, state):
         self._state = state
 
+    # region Func
+    def setHoverMoveSignal(self, enabled: bool):
+        if enabled: self.setMouseTracking(True)
+        else: self.setMouseTracking(False)
+
+    def toolTip(self):
+        return self._tool_tip
+
+    def setToolTip(self, tip: str):
+        self._tool_tip = tip
+        self.update()
 
 
     # region Slot
@@ -73,11 +84,18 @@ class ZABCButton(QWidget):
     def enterEvent(self, event: QEnterEvent):
         """鼠标进入事件"""
         super().enterEvent(event)
+        if self._tool_tip != "" and ZGlobal.tooltip:
+            ZGlobal.tooltip.setInsideOf(self)
+            ZGlobal.tooltip.setText(self._tool_tip)
+            ZGlobal.tooltip.showTip()
         self.entered.emit(event.position().toPoint())
 
     def leaveEvent(self, event: QEvent):
         """鼠标离开事件"""
         super().leaveEvent(event)
+        if self._tool_tip != "" and ZGlobal.tooltip:
+            ZGlobal.tooltip.setInsideOf(None)
+            ZGlobal.tooltip.hideTip()
         self.leaved.emit()
 
     def mousePressEvent(self, event: QMouseEvent):

@@ -7,6 +7,7 @@ design_drawing/
 ZenUI/assets/icons/
 ZenUI/assets/packge/
 image/
+legacy/
 
 *.pyc
 *.psd
@@ -14,6 +15,7 @@ test.py
 testgradient.py
 testslider.py
 rc.qrc
+zenui.log
 
 build/
 dist/

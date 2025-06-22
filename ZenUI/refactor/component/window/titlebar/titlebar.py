@@ -18,7 +18,7 @@ class ZTitleBarBase(QWidget):
         self.dragPosition: QPoint = None
         self.setFixedHeight(32)
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
-        self.setStyleSheet("background-color: transparent;border: 1px solid red;")
+        #self.setStyleSheet("background-color: transparent;border: 1px solid red;")
 
         # connect signal to slot
         self.minBtn.clicked.connect(self.window().showMinimized)

@@ -41,7 +41,7 @@ class MoveExpAnimation(QObject):
         super().__init__(parent)
         self._anim = ZExpAnimationRefactor(self, "pos")
         self._anim.setBias(0.5)
-        self._anim.setFactor(0.25)
+        self._anim.setFactor(0.20)
 
     @property
     def parentWidget(self) -> QWidget:
@@ -105,7 +105,7 @@ class ResizeExpAnimation(QObject):
         super().__init__(parent)
         self._anim = ZExpAnimationRefactor(self, "size")
         self._anim.setBias(0.5)
-        self._anim.setFactor(0.25)
+        self._anim.setFactor(0.20)
 
     @property
     def parentWidget(self) -> QWidget:

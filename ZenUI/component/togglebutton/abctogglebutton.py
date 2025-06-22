@@ -1,6 +1,6 @@
 from enum import IntEnum
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent, Property
+from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from ZenUI.core import ZGlobal
 class ZABCToggleButton(QWidget):
@@ -10,7 +10,6 @@ class ZABCToggleButton(QWidget):
     released = Signal(QPoint)
     clicked = Signal(QPoint)
     toggled = Signal(bool)
-    hoverMove = Signal(QPoint)
     class State(IntEnum):
         Idle = 0
         Hover = 1
@@ -27,7 +26,6 @@ class ZABCToggleButton(QWidget):
         self.released.connect(self.releaseHandler)
         self.clicked.connect(self.clickHandler)
         self.toggled.connect(self.toggleHandler)
-        self.hoverMove.connect(self.hoverMoveHandler)
 
 
     # region Property
@@ -40,10 +38,6 @@ class ZABCToggleButton(QWidget):
         return self._checked
 
     # region Func
-    def setHoverMoveSignal(self, enabled: bool):
-        if enabled: self.setMouseTracking(True)
-        else: self.setMouseTracking(False)
-
     def toolTip(self):
         return self._tool_tip
 
@@ -75,10 +69,6 @@ class ZABCToggleButton(QWidget):
 
     @Slot(bool)
     def toggleHandler(self, checked: bool):
-        pass
-
-    @Slot(QPoint)
-    def hoverMoveHandler(self, pos:QPoint):
         pass
 
     # endregion
@@ -116,12 +106,6 @@ class ZABCToggleButton(QWidget):
                 self.clicked.emit(event.position().toPoint())
                 self._checked = not self._checked
                 self.toggled.emit(self._checked)
-
-
-    def mouseMoveEvent(self, event:QMouseEvent) -> None:
-        super().mouseMoveEvent(event)
-        if event.buttons() == Qt.NoButton:
-            self.hoverMove.emit(event.position().toPoint())
 
     def event(self, event: QEvent):
         if event.type() == QEvent.Type.ToolTip:

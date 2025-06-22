@@ -37,6 +37,14 @@ class ZStyleDataFactory:
                 bordertoggled=QColor(d.get('bordertoggled')),
                 radius=int(d.get('radius'))
             ),
+            'ZThemeButton': lambda d: ZTitleBarButtonData(
+                icon=QColor(d.get('icon')),
+                iconhover=QColor(d.get('iconhover')),
+                iconpressed=QColor(d.get('iconpressed')),
+                body=QColor(d.get('body')),
+                bodyhover=QColor(d.get('bodyhover')),
+                bodypressed=QColor(d.get('bodypressed'))
+            ),
             'ZMinimizeButton': lambda d: ZTitleBarButtonData(
                 icon=QColor(d.get('icon')),
                 iconhover=QColor(d.get('iconhover')),

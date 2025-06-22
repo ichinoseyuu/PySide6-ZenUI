@@ -25,11 +25,19 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 'bodyhover': '#323232',
                 'bodypressed': '#272727',
                 'bodytoggled': ACCENT_COLOR_DARK,
-                'bodytoggledhover': ZColorTool.adjust(ACCENT_COLOR_DARK, 0.1,0.1),
-                'bodytoggledpressed': ZColorTool.adjust(ACCENT_COLOR_DARK, 0.2,0.2),
+                'bodytoggledhover': ZColorTool.adjust(ACCENT_COLOR_DARK, 0.05,0.05),
+                'bodytoggledpressed': ZColorTool.adjust(ACCENT_COLOR_DARK, 0.1,0.1),
                 'border': '#323232',
                 'bordertoggled':ACCENT_COLOR_DARK,
                 'radius': 5
+                },
+            'ZThemeButton': {
+                'icon': '#dcdcdc',
+                'iconhover': '#ffffff',
+                'iconpressed': '#ffffff',
+                'body': '#00ffffff',
+                'bodyhover': '#1affffff',
+                'bodypressed': '#33ffffff'
                 },
             'ZMinimizeButton': {
                 'icon': '#dcdcdc',
@@ -48,7 +56,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 'bodypressed': '#33ffffff'
                 },
             'ZCloseButton': {
-                'icon': '#f0f0f0',
+                'icon': '#dcdcdc',
                 'iconhover': '#ffffff',
                 'iconpressed': '#ffffff',
                 'body': '#00e81b23',
@@ -90,11 +98,19 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 'bodyhover': '#f2f2f2',
                 'bodypressed': '#ebebeb',
                 'bodytoggled': ACCENT_COLOR_LIGHT,
-                'bodytoggledhover': ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.1,0.1),
-                'bodytoggledpressed': ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.2,0.2),
+                'bodytoggledhover': ZColorTool.adjust(ACCENT_COLOR_LIGHT, -0.05),
+                'bodytoggledpressed': ZColorTool.adjust(ACCENT_COLOR_LIGHT, -0.1),
                 'border': '#dee2e6',
                 'bordertoggled':ACCENT_COLOR_LIGHT,
                 'radius': 5
+                },
+            'ZThemeButton': {
+                'icon': '#333333',
+                'iconhover': '#000000',
+                'iconpressed': '#000000',
+                'body': '#00000000',
+                'bodyhover': '#1a000000',
+                'bodypressed': '#33000000'
                 },
             'ZMinimizeButton': {
                 'icon': '#333333',
@@ -113,7 +129,7 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 'bodypressed': '#33000000'
                 },
             'ZCloseButton': {
-                'icon': '#202020',
+                'icon': '#333333',
                 'iconhover': '#ffffff',
                 'iconpressed': '#ffffff',
                 'body': '#00e81b23',

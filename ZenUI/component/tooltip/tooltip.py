@@ -3,7 +3,7 @@ from enum import Enum
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.base import MoveExpAnimation,ResizeExpAnimation,OpacityExpAnimation
+from ZenUI.component.base import MoveExpAnimation,ResizeExpAnimation,WindowOpacityExpAnimation
 from ZenUI.core import ZGlobal,ZToolTipStyleData,ZQuickEffect
 from .tooltipcontent import ZToolTipContent
 
@@ -27,7 +27,7 @@ class ZToolTip(QWidget):
         self._move_anim = MoveExpAnimation(self)
         self._move_anim.animation.setBias(0.5)
         self._move_anim.animation.setFactor(0.15)
-        self._opacity_anim= OpacityExpAnimation(self)
+        self._opacity_anim= WindowOpacityExpAnimation(self)
         self._opacity_anim.animation.setBias(0.05)
         self._opacity_anim.animation.setFactor(0.2)
         self._opacity_anim.animation.finished.connect(self._completely_hid_signal_handler)

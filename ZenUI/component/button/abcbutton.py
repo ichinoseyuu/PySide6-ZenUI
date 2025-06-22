@@ -1,6 +1,6 @@
 from enum import IntEnum
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent, Property
+from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from ZenUI.core import ZGlobal
 
@@ -10,14 +10,12 @@ class ZABCButton(QWidget):
     pressed = Signal(QPoint)
     released = Signal(QPoint)
     clicked = Signal(QPoint)
-    hoverMove = Signal(QPoint)
     class State(IntEnum):
         Idle = 0
         Hover = 1
         Pressed = 2
     def __init__(self, parent=None):
         super().__init__(parent)
-        #self.setMouseTracking(True)
         self._state = self.State.Idle
         self._tool_tip: str = ""
         self.entered.connect(self.hoverHandler)
@@ -25,25 +23,14 @@ class ZABCButton(QWidget):
         self.pressed.connect(self.pressHandler)
         self.released.connect(self.releaseHandler)
         self.clicked.connect(self.clickHandler)
-        self.hoverMove.connect(self.hoverMoveHandler)
-
-
 
 
     # region Property
-    @Property(int)
-    def state(self):
+    @property
+    def state(self) -> State:
         return self._state
 
-    @state.setter
-    def setState(self, state):
-        self._state = state
-
     # region Func
-    def setHoverMoveSignal(self, enabled: bool):
-        if enabled: self.setMouseTracking(True)
-        else: self.setMouseTracking(False)
-
     def toolTip(self):
         return self._tool_tip
 
@@ -71,10 +58,6 @@ class ZABCButton(QWidget):
 
     @Slot(QPoint)
     def clickHandler(self, pos:QPoint):
-        pass
-
-    @Slot(QPoint)
-    def hoverMoveHandler(self, pos:QPoint):
         pass
 
     # endregion
@@ -107,11 +90,6 @@ class ZABCButton(QWidget):
             # 如果鼠标在按钮区域内释放，触发clicked信号
             if self.rect().contains(event.position().toPoint()):
                 self.clicked.emit(event.position().toPoint())
-
-    def mouseMoveEvent(self, event:QMouseEvent) -> None:
-        super().mouseMoveEvent(event)
-        if event.buttons() == Qt.NoButton:
-            self.hoverMove.emit(event.position().toPoint())
 
     def event(self, event: QEvent):
         if event.type() == QEvent.Type.ToolTip:

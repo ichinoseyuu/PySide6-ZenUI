@@ -1,8 +1,8 @@
 
-from PySide6.QtGui import QPainter, QFont, QPen, QIcon
+from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
 from PySide6.QtCore import Qt, QRect, QSize, QRectF
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.base import BackGroundStyle,BorderStyle,CornerStyle,TextStyle,IconStyle
+from ZenUI.component.base import BackGroundStyle,BorderStyle,CornerStyle,TextStyle,IconStyle,OpacityExpAnimation
 from ZenUI.core import ZGlobal, ZButtonStyleData
 from .abcbutton import ZABCButton
 
@@ -28,6 +28,8 @@ class ZButton(ZABCButton):
         self._text_style = TextStyle(self)
         self._icon_style = IconStyle(self)
         self._corner_style = CornerStyle(self)
+        # 动画属性
+        self._opacity_anim = OpacityExpAnimation(self)
         # 样式数据
         self._style_data: ZButtonStyleData = None
         self.styleData = ZGlobal.styleDataManager.getStyleData("ZButton")
@@ -117,6 +119,7 @@ class ZButton(ZABCButton):
         self.update()
 
 
+
     # region Slot
     def themeChangeHandler(self, theme):
         data = ZGlobal.styleDataManager.getStyleData('ZButton',theme.name)
@@ -140,11 +143,20 @@ class ZButton(ZABCButton):
         self._background_style.setColorTo(self.styleData.bodyhover)
 
     # region Override
+    # Method
+    def setEnabled(self, enable: bool) -> None:
+        if enable == self.isEnabled(): return
+        if enable: self._opacity_anim.fadeTo(1.0)
+        else: self._opacity_anim.fadeTo(0.3)
+        super().setEnabled(enable)
+
+    # Event
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing|
                              QPainter.RenderHint.TextAntialiasing|
                              QPainter.RenderHint.SmoothPixmapTransform)
+        painter.setOpacity(self._opacity_anim.opacity)
         # 绘制背景
         rect = self.rect()
         radius = self._corner_style.radius
@@ -169,15 +181,24 @@ class ZButton(ZABCButton):
             # 计算起始x坐标使内容居中
             start_x = (self.width() - total_width) // 2
             # 绘制图标
-            icon_rect = QRect(
+            # 1. 获取原始 QPixmap
+            pixmap = self._icon.pixmap(self._icon_size)
+            # 2. 创建一个新的 QPixmap 用于着色
+            colored_pixmap = QPixmap(pixmap.size())
+            colored_pixmap.fill(Qt.transparent)
+            painter_pix = QPainter(colored_pixmap)
+            painter_pix.drawPixmap(0, 0, pixmap)
+            painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
+            painter_pix.fillRect(colored_pixmap.rect(), self._icon_style.color)
+            painter_pix.end()
+            # 3. 绘制到按钮中心
+            painter.drawPixmap(
                 start_x,
                 (self.height() - self._icon_size.height()) // 2,
-                self._icon_size.width(),
-                self._icon_size.height()
+                colored_pixmap
             )
-            self._icon.paint(painter, icon_rect)
             # 绘制文本
-            painter.setFont(self.font())
+            painter.setFont(self._font)
             painter.setPen(self._text_style.color)
             text_rect = QRect(
                 start_x + self._icon_size.width() + self._spacing,
@@ -188,17 +209,24 @@ class ZButton(ZABCButton):
             painter.drawText(text_rect, Qt.AlignLeft | Qt.AlignVCenter, self._text)
         # 只有图标
         elif self._icon:
-            self._icon.paint(
-                painter,
-                QRect(
-                    (self.width() - self._icon_size.width()) // 2,
-                    (self.height() - self._icon_size.height()) // 2,
-                    self._icon_size.width(),
-                    self._icon_size.height()
-                )
+            # 1. 获取原始 QPixmap
+            pixmap = self._icon.pixmap(self._icon_size)
+            # 2. 创建一个新的 QPixmap 用于着色
+            colored_pixmap = QPixmap(pixmap.size())
+            colored_pixmap.fill(Qt.transparent)
+            painter_pix = QPainter(colored_pixmap)
+            painter_pix.drawPixmap(0, 0, pixmap)
+            painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
+            painter_pix.fillRect(colored_pixmap.rect(), self._icon_style.color)
+            painter_pix.end()
+            # 3. 绘制到按钮中心
+            painter.drawPixmap(
+                (self.width() - self._icon_size.width()) // 2,
+                (self.height() - self._icon_size.height()) // 2,
+                colored_pixmap
             )
         # 只有文本
         elif self._text:
-            painter.setFont(self.font)
+            painter.setFont(self._font)
             painter.setPen(self._text_style.color)
             painter.drawText(rect, Qt.AlignCenter, self._text)

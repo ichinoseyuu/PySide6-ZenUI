@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QPointF
-from PySide6.QtGui import QColor, QPainter, QPen, QPainterPath
+from PySide6.QtGui import QPainter, QPen, QPainterPath
 from ZenUI.core import ZGlobal
 from .abctitlebarbutton import ZABCTitleBarButton
 
@@ -7,28 +7,28 @@ class ZMaximizeButton(ZABCTitleBarButton):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._isMax = False
-        self.setStyleData(ZGlobal.styleDataManager.getStyleData("ZMaximizeButton"))
+        self.styleData = ZGlobal.styleDataManager.getStyleData("ZMaximizeButton")
 
     def themeChangeHandler(self, theme):
         self._style_data = ZGlobal.styleDataManager.getStyleData("ZMaximizeButton", theme.name)
-        self.setIconColorTo(QColor(self._style_data.icon))
-        self.setBackgroundColorTo(QColor(self._style_data.body))
+        self._background_style.setColorTo(self._style_data.body)
+        self._icon_style.setColorTo(self._style_data.icon)
 
     def hoverHandler(self):
-        self.setBackgroundColorTo(self._style_data.bodyhover)
-        self.setIconColorTo(QColor(self._style_data.iconhover))
+        self._background_style.setColorTo(self._style_data.bodyhover)
+        self._icon_style.setColorTo(self._style_data.iconhover)
 
     def leaveHandler(self):
-        self.setBackgroundColorTo(self._style_data.body)
-        self.setIconColorTo(QColor(self._style_data.icon))
+        self._background_style.setColorTo(self._style_data.body)
+        self._icon_style.setColorTo(self._style_data.icon)
 
     def pressHandler(self):
-        self.setBackgroundColorTo(self._style_data.bodypressed)
-        self.setIconColorTo(QColor(self._style_data.iconpressed))
+        self._background_style.setColorTo(self._style_data.bodypressed)
+        self._icon_style.setColorTo(self._style_data.iconpressed)
 
     def releaseHandler(self):
-        self.setBackgroundColorTo(self._style_data.body)
-        self.setIconColorTo(QColor(self._style_data.icon))
+        self._background_style.setColorTo(self._style_data.body)
+        self._icon_style.setColorTo(self._style_data.icon)
 
     def setMaxState(self, isMax):
         if self._isMax == isMax: return
@@ -42,13 +42,13 @@ class ZMaximizeButton(ZABCTitleBarButton):
     def paintEvent(self, e):
         painter = QPainter(self)
         # draw background
-        painter.setBrush(self._color_bg)
+        painter.setBrush(self._background_style.color)
         painter.setPen(Qt.NoPen)
         painter.drawRect(self.rect().adjusted(0, 1, 0, 0))
 
         # draw icon
         painter.setBrush(Qt.NoBrush)
-        pen = QPen(self._color_icon, 1)
+        pen = QPen(self._icon_style.color, 1)
         pen.setCosmetic(True)
         painter.setPen(pen)
 

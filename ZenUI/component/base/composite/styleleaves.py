@@ -7,7 +7,7 @@ import logging
 class AnimatedColorProperty(QObject):
     def __init__(self, parent: QWidget):
         super().__init__(parent)
-        self._color: QColor = QColor('#dcdcdc')
+        self._color: QColor = '#dcdcdc'
         self._anim = QPropertyAnimation(self, b'color')
         self._anim.setDuration(150)
         self._anim.setEasingCurve(QEasingCurve.Type.InOutQuad)
@@ -20,7 +20,7 @@ class AnimatedColorProperty(QObject):
     def parentWidget(self) -> QWidget:
         return self.parent()
 
-    def getColor(self):
+    def getColor(self) -> QColor:
         return self._color
 
     def setColor(self, value: QColor):

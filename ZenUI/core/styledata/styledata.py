@@ -68,11 +68,14 @@ class ZStyleDataManager:
     def preloadCommonStyles(self, theme: str = None) -> None:
         """预加载常用的样式数据"""
         common_components = [
-            'PushButton',
+            'Button',
             'MinimizeButton',
             'MaximizeButton',
             'CloseButton',
-            'FramelessWindow'
+            'FramelessWindow',
+            'TextBlock',
+            'ToolTip',
+            'ToggleButton'
         ]
 
         themes = [theme] if theme else list(THEME_DATA.keys())

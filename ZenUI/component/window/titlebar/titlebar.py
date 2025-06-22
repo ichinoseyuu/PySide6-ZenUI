@@ -2,19 +2,22 @@
 from PySide6.QtCore import QEvent, Qt, QPoint, Signal
 from PySide6.QtGui import QIcon, QMouseEvent
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
+from ZenUI.core import ZGlobal
 from ..win32utils import startSystemMove
 from .abctitlebarbutton import ZABCTitleBarButton
 from .closebutton import ZCloseButton
 from .maximizebutton import ZMaximizeButton
 from .minimizebutton import ZMinimizeButton
+from .themebutton import ZThemeButton
 
 
 class ZTitleBarBase(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
+        self.themeBtn = ZThemeButton(parent=self)
         self.minBtn = ZMinimizeButton(parent=self)
-        self.closeBtn = ZCloseButton(parent=self)
         self.maxBtn = ZMaximizeButton(parent=self)
+        self.closeBtn = ZCloseButton(parent=self)
         self._isDoubleClickEnabled = True
         self._moved = False
         self.dragPosition: QPoint = None
@@ -23,6 +26,7 @@ class ZTitleBarBase(QWidget):
         #self.setStyleSheet("background-color: transparent;border: 1px solid red;")
 
         # connect signal to slot
+        self.themeBtn.clicked.connect(ZGlobal.themeManager.toggleTheme)
         self.minBtn.clicked.connect(self.window().showMinimized)
         self.maxBtn.clicked.connect(self.__toggleMaxState)
         self.closeBtn.clicked.connect(self.window().close)
@@ -92,6 +96,7 @@ class ZTitleBar(ZTitleBarBase):
         self.hBoxLayout.setContentsMargins(0, 0, 0, 0)
         self.hBoxLayout.setAlignment(Qt.AlignVCenter | Qt.AlignLeft)
         self.hBoxLayout.addStretch(1)
+        self.hBoxLayout.addWidget(self.themeBtn, 0, Qt.AlignRight)
         self.hBoxLayout.addWidget(self.minBtn, 0, Qt.AlignRight)
         self.hBoxLayout.addWidget(self.maxBtn, 0, Qt.AlignRight)
         self.hBoxLayout.addWidget(self.closeBtn, 0, Qt.AlignRight)

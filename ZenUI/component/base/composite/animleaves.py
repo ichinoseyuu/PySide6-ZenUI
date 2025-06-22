@@ -4,6 +4,7 @@ from PySide6.QtGui import *
 from ZenUI.core import ZExpAnimationRefactor
 import logging
 
+# region Move
 class MovePropertyAnimation(QObject):
     def __init__(self, parent:QWidget):
         super().__init__(parent)
@@ -68,7 +69,7 @@ class MoveExpAnimation(QObject):
     def parent(self) -> QWidget:
         return super().parent()
 
-
+# region Resize
 class ResizePropertyAnimation(QObject):
     def __init__(self, parent:QWidget):
         super().__init__(parent)
@@ -132,7 +133,8 @@ class ResizeExpAnimation(QObject):
     def parent(self) -> QWidget:
         return super().parent()
 
-class OpacityPropertyAnimation(QObject):
+# region Opacity
+class WindowOpacityPropertyAnimation(QObject):
     def __init__(self, parent: QWidget):
         super().__init__(parent)
         self._anim = QPropertyAnimation(self, b"opacity")
@@ -175,7 +177,7 @@ class OpacityPropertyAnimation(QObject):
     def parent(self) -> QWidget:
         return super().parent()
 
-class OpacityExpAnimation(QObject):
+class WindowOpacityExpAnimation(QObject):
     def __init__(self, parent: QWidget):
         super().__init__(parent)
         self._anim = ZExpAnimationRefactor(self, "opacity")
@@ -219,14 +221,58 @@ class OpacityExpAnimation(QObject):
     def parent(self) -> QWidget:
         return super().parent()
 
+class OpacityExpAnimation(QObject):
+    def __init__(self, parent: QWidget):
+        super().__init__(parent)
+        self._opacity: float = 1.0
+        self._anim = ZExpAnimationRefactor(self, "opacity")
+        self._anim.setBias(0.05)
+        self._anim.setFactor(0.2)
 
+    @property
+    def parentWidget(self) -> QWidget:
+        return self.parent()
+
+    @property
+    def animation(self) -> ZExpAnimationRefactor:
+        return self._anim
+
+    def getOpacity(self) -> float:
+        return self._opacity
+
+    def setOpacity(self, opacity: float) -> None:
+        self._opacity = opacity
+        self.parent().update()
+
+    opacity = Property(float, getOpacity, setOpacity)
+
+    def fadeIn(self) -> None:
+        self._anim.stop()
+        self._anim.setCurrentValue(self.getOpacity())
+        self._anim.setEndValue(1.0)
+        self._anim.start()
+
+    def fadeOut(self) -> None:
+        self._anim.stop()
+        self._anim.setCurrentValue(self.getOpacity())
+        self._anim.setEndValue(0)
+        self._anim.start()
+
+    def fadeTo(self, opacity: float) -> None:
+        self._anim.stop()
+        self._anim.setCurrentValue(self.getOpacity())
+        self._anim.setEndValue(opacity)
+        self._anim.start()
+
+    def parent(self) -> QWidget:
+        return super().parent()
 
 class Panel(QWidget):
     def __init__(self):
         super().__init__()
         self._move_anim = MovePropertyAnimation(self)
         self._resize_anim = ResizePropertyAnimation(self)
-        self._opacity_anim = OpacityPropertyAnimation(self)
+        self._opacity_anim = WindowOpacityPropertyAnimation(self)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setStyleSheet('background-color: #dcdcdc;')
 

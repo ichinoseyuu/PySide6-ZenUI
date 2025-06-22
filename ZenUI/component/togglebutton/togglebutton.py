@@ -5,8 +5,8 @@ from PySide6.QtWidgets import QWidget
 from ZenUI.component.base import BackGroundStyle,BorderStyle,CornerStyle,TextStyle,IconStyle
 from ZenUI.core import ZGlobal, ZToggleButtonStyleData
 from .abctogglebutton import ZABCToggleButton
-
-class ZButton(ZABCToggleButton):
+import logging
+class ZToggleButton(ZABCToggleButton):
     def __init__(self,
                  name: str,
                  parent: QWidget = None,
@@ -111,44 +111,74 @@ class ZButton(ZABCToggleButton):
     def styleData(self, style_data: ZToggleButtonStyleData) -> None:
         """设置按钮样式数据"""
         self._style_data = style_data
-        self._background_style.color = style_data.bodytoggled if self._state is self.State.Toggled else style_data.body
-        self._text_style.color = style_data.text
-        self._icon_style.color = style_data.icon
-        self._border_style.color = style_data.border
         self._corner_style.radius = style_data.radius
+        if self._checked:
+            self._background_style.color = style_data.bodytoggled
+            self._text_style.color = style_data.texttoggled
+            self._icon_style.color = style_data.icontoggled
+            self._border_style.color = style_data.bordertoggled
+        else:
+            self._background_style.color = style_data.body
+            self._text_style.color = style_data.text
+            self._icon_style.color = style_data.icon
+            self._border_style.color = style_data.border
         self.update()
 
 
     # region Slot
     def themeChangeHandler(self, theme):
         """主题改变事件处理"""
-        data = ZGlobal.styleDataManager.getStyleData('ZButton',theme.name)
+        data = ZGlobal.styleDataManager.getStyleData('ZToggleButton',theme.name)
         self._style_data = data
         self._corner_style.radius = data.radius
-        self._background_style.setColorTo(data.body)
-        self._border_style.setColorTo(data.border)
-        self._icon_style.setColorTo(data.icon)
-        self._text_style.setColorTo(data.text)
+        if self._checked:
+            self._background_style.setColorTo(data.bodytoggled)
+            self._border_style.setColorTo(data.bordertoggled)
+            self._icon_style.setColorTo(data.icontoggled)
+            self._text_style.setColorTo(data.texttoggled)
+        else:
+            self._background_style.setColorTo(data.body)
+            self._border_style.setColorTo(data.border)
+            self._icon_style.setColorTo(data.icon)
+            self._text_style.setColorTo(data.text)
 
     def hoverHandler(self, pos):
-        """鼠标悬停事件处理"""
-        self._background_style.setColorTo(self._style_data.bodyhover)
+        logging.warning("hoverHandler--state: %s",self._state.name)
+        if self._checked:
+            self._background_style.setColorTo(self._style_data.bodytoggledhover)
+        else:
+            self._background_style.setColorTo(self._style_data.bodyhover)
 
     def leaveHandler(self):
-        """鼠标离开事件处理"""
-        self._background_style.setColorTo(self._style_data.body)
+        logging.warning("leaveHandler--tate: %s",self._state.name)
+        if self._checked:
+            self._background_style.setColorTo(self._style_data.bodytoggled)
+        else:
+            self._background_style.setColorTo(self._style_data.body)
 
     def pressHandler(self, pos):
-        """鼠标按下事件处理"""
-        self._background_style.setColorTo(self._style_data.bodypressed)
+        logging.warning("pressHandler--state: %s",self._state.name)
+        if self._checked:
+            self._background_style.setColorTo(self._style_data.bodytoggledpressed)
+        else:
+            self._background_style.setColorTo(self._style_data.bodypressed)
 
-    def releaseHandler(self, pos):
-        """鼠标释放事件处理"""
-        self._background_style.setColorTo(self._style_data.bodyhover)
+
+    def toggleHandler(self, checked):
+        logging.warning("toggleHandler--state: %s",self._state.name)
+        if checked:
+            self._background_style.setColorTo(self._style_data.bodytoggledhover)
+            self._border_style.setColorTo(self._style_data.bordertoggled)
+            self._icon_style.setColorTo(self._style_data.icontoggled)
+            self._text_style.setColorTo(self._style_data.texttoggled)
+        else:
+            self._background_style.setColorTo(self._style_data.bodyhover)
+            self._border_style.setColorTo(self._style_data.border)
+            self._icon_style.setColorTo(self._style_data.icon)
+            self._text_style.setColorTo(self._style_data.text)
 
     # region Override
     def paintEvent(self, event):
-        """绘制按钮"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing|
                              QPainter.RenderHint.TextAntialiasing|

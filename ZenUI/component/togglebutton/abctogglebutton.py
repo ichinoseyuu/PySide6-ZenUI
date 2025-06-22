@@ -15,7 +15,6 @@ class ZABCToggleButton(QWidget):
         Idle = 0
         Hover = 1
         Pressed = 2
-        Toggled = 3
     def __init__(self, parent=None):
         super().__init__(parent)
         #self.setMouseTracking(True)
@@ -86,7 +85,6 @@ class ZABCToggleButton(QWidget):
 
     # region Event
     def enterEvent(self, event: QEnterEvent):
-        """鼠标进入事件"""
         super().enterEvent(event)
         if self._tool_tip != "" and ZGlobal.tooltip:
             ZGlobal.tooltip.setInsideOf(self)
@@ -96,7 +94,6 @@ class ZABCToggleButton(QWidget):
         self.entered.emit(event.position().toPoint())
 
     def leaveEvent(self, event: QEvent):
-        """鼠标离开事件"""
         super().leaveEvent(event)
         if self._tool_tip != "" and ZGlobal.tooltip:
             ZGlobal.tooltip.setInsideOf(None)
@@ -105,31 +102,23 @@ class ZABCToggleButton(QWidget):
         self.leaved.emit()
 
     def mousePressEvent(self, event: QMouseEvent):
-        """鼠标按下事件"""
         super().mousePressEvent(event)
         if event.button() == Qt.LeftButton:
             self._state = self.State.Pressed
             self.pressed.emit(event.position().toPoint())
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        """鼠标释放事件"""
         super().mouseReleaseEvent(event)
         if event.button() == Qt.LeftButton:
             self.released.emit(event.position().toPoint())
             # 如果鼠标在按钮区域内释放，触发clicked信号
             if self.rect().contains(event.position().toPoint()):
                 self.clicked.emit(event.position().toPoint())
-                if self._checked:
-                    self._checked = False
-                    self._state = self.State.Hover
-                else:
-                    self._checked = True
-                    self._state = self.State.Toggled
+                self._checked = not self._checked
                 self.toggled.emit(self._checked)
 
 
     def mouseMoveEvent(self, event:QMouseEvent) -> None:
-        """鼠标移动事件"""
         super().mouseMoveEvent(event)
         if event.buttons() == Qt.NoButton:
             self.hoverMove.emit(event.position().toPoint())

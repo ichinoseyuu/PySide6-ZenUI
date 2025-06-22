@@ -26,12 +26,17 @@ class ZButtonStyleData:
 @dataclass
 class ZToggleButtonStyleData:
     text: QColor
+    texttoggled: QColor
     icon: QColor
+    icontoggled: QColor
     body: QColor
     bodyhover: QColor
     bodypressed: QColor
     bodytoggled: QColor
+    bodytoggledhover: QColor
+    bodytoggledpressed: QColor
     border: QColor
+    bordertoggled: QColor
     radius: int
 
 @dataclass

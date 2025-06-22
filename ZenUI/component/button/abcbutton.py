@@ -81,7 +81,6 @@ class ZABCButton(QWidget):
 
     # region Event
     def enterEvent(self, event: QEnterEvent):
-        """鼠标进入事件"""
         super().enterEvent(event)
         if self._tool_tip != "" and ZGlobal.tooltip:
             ZGlobal.tooltip.setInsideOf(self)
@@ -90,7 +89,6 @@ class ZABCButton(QWidget):
         self.entered.emit(event.position().toPoint())
 
     def leaveEvent(self, event: QEvent):
-        """鼠标离开事件"""
         super().leaveEvent(event)
         if self._tool_tip != "" and ZGlobal.tooltip:
             ZGlobal.tooltip.setInsideOf(None)
@@ -98,13 +96,11 @@ class ZABCButton(QWidget):
         self.leaved.emit()
 
     def mousePressEvent(self, event: QMouseEvent):
-        """鼠标按下事件"""
         super().mousePressEvent(event)
         if event.button() == Qt.LeftButton:
             self.pressed.emit(event.position().toPoint())
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        """鼠标释放事件"""
         super().mouseReleaseEvent(event)
         if event.button() == Qt.LeftButton:
             self.released.emit(event.position().toPoint())
@@ -113,7 +109,6 @@ class ZABCButton(QWidget):
                 self.clicked.emit(event.position().toPoint())
 
     def mouseMoveEvent(self, event:QMouseEvent) -> None:
-        """鼠标移动事件"""
         super().mouseMoveEvent(event)
         if event.buttons() == Qt.NoButton:
             self.hoverMove.emit(event.position().toPoint())
@@ -124,14 +119,3 @@ class ZABCButton(QWidget):
         return super().event(event)
 
     # endregion
-
-
-
-if __name__ == "__main__":
-    from PySide6.QtWidgets import QApplication
-    import sys
-
-    app = QApplication(sys.argv)
-    button = ZABCButton()
-    button.show()
-    sys.exit(app.exec())

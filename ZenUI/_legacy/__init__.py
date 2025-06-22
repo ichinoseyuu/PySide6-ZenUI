@@ -1,3 +1,3 @@
-from .assets import *
+from ..resource import *
 from .component import *
 from .core import *

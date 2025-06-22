@@ -22,14 +22,19 @@ class ZStyleDataFactory:
                 border=QColor(d.get('border')),
                 radius=int(d.get('radius'))
             ),
-            'ZButton': lambda d: ZToggleButtonStyleData(
+            'ZToggleButton': lambda d: ZToggleButtonStyleData(
                 text=QColor(d.get('text')),
+                texttoggled=QColor(d.get('texttoggled')),
                 icon=QColor(d.get('icon')),
+                icontoggled=QColor(d.get('icontoggled')),
                 body=QColor(d.get('body')),
                 bodyhover=QColor(d.get('bodyhover')),
                 bodypressed=QColor(d.get('bodypressed')),
                 bodytoggled=QColor(d.get('bodytoggled')),
+                bodytoggledhover=QColor(d.get('bodytoggledhover')),
+                bodytoggledpressed=QColor(d.get('bodytoggledpressed')),
                 border=QColor(d.get('border')),
+                bordertoggled=QColor(d.get('bordertoggled')),
                 radius=int(d.get('radius'))
             ),
             'ZMinimizeButton': lambda d: ZTitleBarButtonData(

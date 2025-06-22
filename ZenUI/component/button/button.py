@@ -104,12 +104,10 @@ class ZButton(ZABCButton):
 
     @property
     def styleData(self) -> ZButtonStyleData:
-        """获取按钮样式数据"""
         return self._style_data
 
     @styleData.setter
     def styleData(self, style_data: ZButtonStyleData) -> None:
-        """设置按钮样式数据"""
         self._style_data = style_data
         self._background_style.color = style_data.body
         self._text_style.color = style_data.text
@@ -121,7 +119,6 @@ class ZButton(ZABCButton):
 
     # region Slot
     def themeChangeHandler(self, theme):
-        """主题改变事件处理"""
         data = ZGlobal.styleDataManager.getStyleData('ZButton',theme.name)
         self._style_data = data
         self._corner_style.radius = data.radius
@@ -131,24 +128,19 @@ class ZButton(ZABCButton):
         self._text_style.setColorTo(data.text)
 
     def hoverHandler(self, pos):
-        """鼠标悬停事件处理"""
         self._background_style.setColorTo(self.styleData.bodyhover)
 
     def leaveHandler(self):
-        """鼠标离开事件处理"""
         self._background_style.setColorTo(self.styleData.body)
 
     def pressHandler(self, pos):
-        """鼠标按下事件处理"""
         self._background_style.setColorTo(self.styleData.bodypressed)
 
     def releaseHandler(self, pos):
-        """鼠标释放事件处理"""
         self._background_style.setColorTo(self.styleData.bodyhover)
 
     # region Override
     def paintEvent(self, event):
-        """绘制按钮"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing|
                              QPainter.RenderHint.TextAntialiasing|

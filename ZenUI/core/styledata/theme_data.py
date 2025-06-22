@@ -1,5 +1,6 @@
 from typing import Dict, Any
 from types import MappingProxyType
+from ..color import ZColorTool
 ACCENT_COLOR_LIGHT: str = '#a5d2f1'
 ACCENT_COLOR_DARK: str = '#955595'
 DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
@@ -17,12 +18,17 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 },
             'ZToggleButton': {
                 'text': '#dcdcdc',
+                'texttoggled': '#dcdcdc',
                 'icon': '#dcdcdc',
+                'icontoggled': '#dcdcdc',
                 'body': '#2d2d2d',
                 'bodyhover': '#323232',
                 'bodypressed': '#272727',
                 'bodytoggled': ACCENT_COLOR_DARK,
+                'bodytoggledhover': ZColorTool.adjust(ACCENT_COLOR_DARK, 0.1,0.1),
+                'bodytoggledpressed': ZColorTool.adjust(ACCENT_COLOR_DARK, 0.2,0.2),
                 'border': '#323232',
+                'bordertoggled':ACCENT_COLOR_DARK,
                 'radius': 5
                 },
             'ZMinimizeButton': {
@@ -77,12 +83,17 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 },
             'ZToggleButton': {
                 'text': '#333333',
+                'texttoggled': '#333333',
                 'icon': '#333333',
+                'icontoggled': '#333333',
                 'body': '#ffffff',
                 'bodyhover': '#f2f2f2',
                 'bodypressed': '#ebebeb',
                 'bodytoggled': ACCENT_COLOR_LIGHT,
+                'bodytoggledhover': ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.1,0.1),
+                'bodytoggledpressed': ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.2,0.2),
                 'border': '#dee2e6',
+                'bordertoggled':ACCENT_COLOR_LIGHT,
                 'radius': 5
                 },
             'ZMinimizeButton': {

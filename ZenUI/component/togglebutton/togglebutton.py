@@ -4,9 +4,9 @@ from PySide6.QtCore import Qt, QRect, QSize, QRectF
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.base import BackGroundStyle,BorderStyle,CornerStyle,TextStyle,IconStyle
 from ZenUI.core import ZGlobal, ZButtonStyleData
-from .abcbutton import ZABCButton
+from .abctogglebutton import ZABCToggleButton
 
-class ZButton(ZABCButton):
+class ZButton(ZABCToggleButton):
     def __init__(self,
                  name: str,
                  parent: QWidget = None,

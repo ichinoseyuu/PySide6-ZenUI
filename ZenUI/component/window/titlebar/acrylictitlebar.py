@@ -2,8 +2,10 @@
 from PySide6.QtCore import QEvent, Qt, QPoint, Signal
 from PySide6.QtGui import QIcon, QMouseEvent
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
-from .titlebarbutton import (ZCloseButton, ZMaximizeButton, ZMinimizeButton,
-                                ZTitleBarButton)
+from .abctitlebarbutton import ZABCTitleBarButton
+from .closebutton import ZCloseButton
+from .maximizebutton import ZMaximizeButton
+from .minimizebutton import ZMinimizeButton
 
 
 class TitleBarBase(QWidget):
@@ -77,19 +79,19 @@ class TitleBarBase(QWidget):
 
 
     def _releaseMouseLeftButton(self):
-        from ..utils import releaseMouseLeftButton
+        from ..win32utils import releaseMouseLeftButton
         releaseMouseLeftButton(self.window().winId())
 
     def _isDragRegion(self, pos):
         width = 0
-        for button in self.findChildren(ZTitleBarButton):
+        for button in self.findChildren(ZABCTitleBarButton):
             if button.isVisible():
                 width += button.width()
 
         return 0 < pos.x() < self.width() - width
 
     def _hasButtonPressed(self):
-        return any(btn.isPressed() for btn in self.findChildren(ZTitleBarButton))
+        return any(btn.isPressed() for btn in self.findChildren(ZABCTitleBarButton))
 
     def canDrag(self, pos):
         return self._isDragRegion(pos) and not self._hasButtonPressed()

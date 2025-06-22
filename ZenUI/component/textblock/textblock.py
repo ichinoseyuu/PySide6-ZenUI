@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter, QColor, QFont, QFontMetrics
-from ZenUI.core import ZGlobal,ZTextBlockStyleData,TextStyle
+from ZenUI.component.base import TextStyle
+from ZenUI.core import ZGlobal,ZTextBlockStyleData
 class ZTextBlock(QWidget):
     def __init__(self, name: str, parent=None, text=None):
         super().__init__(parent)

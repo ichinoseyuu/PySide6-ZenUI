@@ -3,41 +3,42 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent, Property
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from ZenUI.core import ZGlobal
-
-class ZABCButton(QWidget):
+class ZABCToggleButton(QWidget):
     entered = Signal(QPoint)
     leaved = Signal()
     pressed = Signal(QPoint)
     released = Signal(QPoint)
     clicked = Signal(QPoint)
+    toggled = Signal(bool)
     hoverMove = Signal(QPoint)
     class State(IntEnum):
         Idle = 0
         Hover = 1
         Pressed = 2
+        Toggled = 3
     def __init__(self, parent=None):
         super().__init__(parent)
         #self.setMouseTracking(True)
         self._state = self.State.Idle
         self._tool_tip: str = ""
+        self._checked: bool = False
         self.entered.connect(self.hoverHandler)
         self.leaved.connect(self.leaveHandler)
         self.pressed.connect(self.pressHandler)
         self.released.connect(self.releaseHandler)
         self.clicked.connect(self.clickHandler)
+        self.toggled.connect(self.toggleHandler)
         self.hoverMove.connect(self.hoverMoveHandler)
 
 
-
-
     # region Property
-    @Property(int)
-    def state(self):
+    @property
+    def state(self) -> State:
         return self._state
 
-    @state.setter
-    def setState(self, state):
-        self._state = state
+    @property
+    def checked(self) -> bool:
+        return self._checked
 
     # region Func
     def setHoverMoveSignal(self, enabled: bool):
@@ -73,6 +74,10 @@ class ZABCButton(QWidget):
     def clickHandler(self, pos:QPoint):
         pass
 
+    @Slot(bool)
+    def toggleHandler(self, checked: bool):
+        pass
+
     @Slot(QPoint)
     def hoverMoveHandler(self, pos:QPoint):
         pass
@@ -87,6 +92,7 @@ class ZABCButton(QWidget):
             ZGlobal.tooltip.setInsideOf(self)
             ZGlobal.tooltip.setText(self._tool_tip)
             ZGlobal.tooltip.showTip()
+        self._state = self.State.Hover
         self.entered.emit(event.position().toPoint())
 
     def leaveEvent(self, event: QEvent):
@@ -95,12 +101,14 @@ class ZABCButton(QWidget):
         if self._tool_tip != "" and ZGlobal.tooltip:
             ZGlobal.tooltip.setInsideOf(None)
             ZGlobal.tooltip.hideTip()
+        self._state = self.State.Idle
         self.leaved.emit()
 
     def mousePressEvent(self, event: QMouseEvent):
         """鼠标按下事件"""
         super().mousePressEvent(event)
         if event.button() == Qt.LeftButton:
+            self._state = self.State.Pressed
             self.pressed.emit(event.position().toPoint())
 
     def mouseReleaseEvent(self, event: QMouseEvent):
@@ -111,6 +119,14 @@ class ZABCButton(QWidget):
             # 如果鼠标在按钮区域内释放，触发clicked信号
             if self.rect().contains(event.position().toPoint()):
                 self.clicked.emit(event.position().toPoint())
+                if self._checked:
+                    self._checked = False
+                    self._state = self.State.Hover
+                else:
+                    self._checked = True
+                    self._state = self.State.Toggled
+                self.toggled.emit(self._checked)
+
 
     def mouseMoveEvent(self, event:QMouseEvent) -> None:
         """鼠标移动事件"""
@@ -123,15 +139,3 @@ class ZABCButton(QWidget):
             return True
         return super().event(event)
 
-    # endregion
-
-
-
-if __name__ == "__main__":
-    from PySide6.QtWidgets import QApplication
-    import sys
-
-    app = QApplication(sys.argv)
-    button = ZABCButton()
-    button.show()
-    sys.exit(app.exec())

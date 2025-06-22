@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ..animation import ZExpAnimationRefactor
+from ZenUI.core import ZExpAnimationRefactor
 import logging
 
 class MovePropertyAnimation(QObject):

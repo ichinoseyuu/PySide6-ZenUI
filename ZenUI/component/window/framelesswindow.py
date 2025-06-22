@@ -9,7 +9,7 @@ from PySide6.QtGui import QResizeEvent,QColor
 from ZenUI.core import ZGlobal,ZFramelessWindowStyleData
 from ZenUI.component.tooltip import ZToolTip
 from .titlebar.titlebar import ZTitleBar
-from .utils import (WindowsWindowEffect,LPNCCALCSIZE_PARAMS,WinTaskbar,
+from .win32utils import (WindowsWindowEffect,LPNCCALCSIZE_PARAMS,WinTaskbar,
                     isSystemBorderAccentEnabled, getSystemAccentColor,
                     isMaximized, isFullScreen, getResizeBorderThickness)
 

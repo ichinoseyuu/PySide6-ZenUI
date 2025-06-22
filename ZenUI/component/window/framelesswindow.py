@@ -6,8 +6,8 @@ from ctypes.wintypes import LPRECT, MSG
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve
 from PySide6.QtGui import QResizeEvent,QColor
-from ZenUI.refactor.core import ZGlobal,ZFramelessWindowStyleData, BackGroundStyle
-from ZenUI.refactor.component.tooltip import ZToolTip
+from ZenUI.core import ZGlobal,ZFramelessWindowStyleData
+from ZenUI.component.tooltip import ZToolTip
 from .titlebar.titlebar import ZTitleBar
 from .utils import (WindowsWindowEffect,LPNCCALCSIZE_PARAMS,WinTaskbar,
                     isSystemBorderAccentEnabled, getSystemAccentColor,

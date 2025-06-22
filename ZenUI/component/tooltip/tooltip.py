@@ -3,7 +3,7 @@ from enum import Enum
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.refactor.core import (ZGlobal,ZToolTipStyleData,MoveExpAnimation,
+from ZenUI.core import (ZGlobal,ZToolTipStyleData,MoveExpAnimation,
                                  ResizeExpAnimation,OpacityExpAnimation,ZQuickEffect)
 from .tooltipcontent import ZToolTipContent
 

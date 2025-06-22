@@ -6,7 +6,7 @@ import os
 # 添加项目根目录到系统路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ZenUI import *
-from ZenUI.refactor import ZFramelessWindow
+from ZenUI import ZFramelessWindow
 from page_home import PageHome
 from page_widget import PageWidget
 from page_about import PageAbout

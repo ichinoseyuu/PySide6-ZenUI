@@ -3,7 +3,7 @@ from enum import IntEnum
 from PySide6.QtCore import QPointF, Qt, Property, Signal, Slot, QEvent,QPropertyAnimation, QEasingCurve,QLineF
 from PySide6.QtGui import QColor, QPainter, QPainterPath, QPen, QMouseEvent, QEnterEvent
 from PySide6.QtWidgets import QWidget
-from ZenUI.refactor.core import ZGlobal
+from ZenUI.core import ZGlobal
 class State(IntEnum):
     Idle = 0
     Hover = 1

@@ -6,7 +6,7 @@ from ctypes.wintypes import LPRECT, MSG
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QRect,Property,QPoint
 from PySide6.QtGui import QResizeEvent,QColor
-from ZenUI.refactor.core import ZGlobal,ZTheme
+from ZenUI.core import ZGlobal,ZTheme
 from .titlebar.acrylictitlebar import AcrylicTitleBar
 from .resizewidget import ResizeWindow
 from .utils import (WindowsWindowEffect,LPNCCALCSIZE_PARAMS,WinTaskbar,

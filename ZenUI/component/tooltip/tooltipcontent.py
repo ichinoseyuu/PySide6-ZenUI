@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QRectF, QSize, QRect, QMargins
 from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen
-from ZenUI.refactor.core import TextStyle,BackGroundStyle,BorderStyle,CornerStyle
+from ZenUI.core import TextStyle,BackGroundStyle,BorderStyle,CornerStyle
 class ZToolTipContent(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)

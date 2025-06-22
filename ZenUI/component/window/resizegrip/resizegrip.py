@@ -2,7 +2,6 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from enum import IntEnum, auto
-from ZenUI.component.basewidget.widget import ZWidget
 class Edge(IntEnum):
         '''位置'''
         TopLeft = auto()
@@ -25,7 +24,7 @@ class ResizeGrip(QWidget):
     '''调整大小手柄'''
     resized = Signal(QObject)
     def __init__(self,
-                 parent: ZWidget = None,
+                 parent: QWidget = None,
                  position: Edge = None,
                  grip_width: int = None):
         super().__init__(parent)

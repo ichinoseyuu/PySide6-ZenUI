@@ -31,6 +31,13 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 'bordertoggled':ACCENT_COLOR_DARK,
                 'radius': 5
                 },
+            'ZNavBarButton': {
+                'icon': '#dcdcdc',
+                'body': '#00ffffff',
+                'bodyhover': '#1affffff',
+                'bodypressed': '#2affffff',
+                'radius': 5
+                },
             'ZThemeButton': {
                 'icon': '#dcdcdc',
                 'iconhover': '#ffffff',
@@ -104,13 +111,20 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 'bordertoggled':ACCENT_COLOR_LIGHT,
                 'radius': 5
                 },
+            'ZNavBarButton': {
+                'icon': '#555555',
+                'body': '#00000000',
+                'bodyhover': '#1a000000',
+                'bodypressed': '#2a000000',
+                'radius': 5
+                },
             'ZThemeButton': {
                 'icon': '#333333',
                 'iconhover': '#000000',
                 'iconpressed': '#000000',
                 'body': '#00000000',
                 'bodyhover': '#1a000000',
-                'bodypressed': '#33000000'
+                'bodypressed': '#2a000000'
                 },
             'ZMinimizeButton': {
                 'icon': '#333333',

@@ -1,3 +1,4 @@
 from .models import (ZFramelessWindowStyleData,ZButtonStyleData,ZTitleBarButtonData,
-                     ZTextBlockStyleData,ZToolTipStyleData,ZToggleButtonStyleData)
+                     ZTextBlockStyleData,ZToolTipStyleData,ZToggleButtonStyleData,
+                     ZNavBarButtonStyleData)
 from .styledata import ZStyleDataManager

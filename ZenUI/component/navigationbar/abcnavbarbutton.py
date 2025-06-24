@@ -1,10 +1,10 @@
 from enum import IntEnum
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, Signal, Slot, QEvent, QTimer,QSize
+from PySide6.QtCore import Qt, Signal, Slot, QEvent, QSize
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from ZenUI.core import ZGlobal
 
-class ZABCButton(QWidget):
+class ZABCNavBarButton(QWidget):
     entered = Signal()
     leaved = Signal()
     pressed = Signal()
@@ -18,17 +18,6 @@ class ZABCButton(QWidget):
         super().__init__(parent)
         self._state = self.State.Idle
         self._tool_tip: str = ""
-        self._repeat_click = False
-
-        self._repeat_click_timer = QTimer(self) # 重复点击计时器
-        self._repeat_click_timer.setInterval(50)
-        self._repeat_click_timer.timeout.connect(self.clicked.emit)
-
-        self._repeat_click_trigger = QTimer(self) # 重复点击触发器
-        self._repeat_click_trigger.setSingleShot(True)
-        self._repeat_click_trigger.timeout.connect(self._repeat_click_timer.start)
-        self._repeat_click_trigger.setInterval(500)
-
         self.entered.connect(self.hoverHandler)
         self.leaved.connect(self.leaveHandler)
         self.pressed.connect(self.pressHandler)
@@ -39,16 +28,6 @@ class ZABCButton(QWidget):
     @property
     def state(self) -> State:
         return self._state
-
-
-    @property
-    def repeatClick(self) -> bool:
-        return self._repeat_click
-
-    @repeatClick.setter
-    def repeatClick(self, enabled: bool) -> None:
-        self._repeat_click = enabled
-
 
     # region Func
     def toolTip(self):
@@ -105,8 +84,6 @@ class ZABCButton(QWidget):
         if event.button() == Qt.LeftButton:
             self._state = self.State.Pressed
             self.pressed.emit()
-            if self._repeat_click:
-                self._repeat_click_trigger.start()
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         super().mouseReleaseEvent(event)
@@ -116,9 +93,6 @@ class ZABCButton(QWidget):
             # 如果鼠标在按钮区域内释放，触发clicked信号
             if self.rect().contains(event.position().toPoint()):
                 self.clicked.emit()
-            self._repeat_click_trigger.stop()
-            self._repeat_click_timer.stop()
-
 
     def event(self, event: QEvent):
         if event.type() == QEvent.Type.ToolTip:

@@ -144,7 +144,7 @@ class ZToggleButton(ZABCToggleButton):
             self._icon_style.setColorTo(data.icon)
             self._text_style.setColorTo(data.text)
 
-    def hoverHandler(self, pos):
+    def hoverHandler(self):
         if self._checked:
             self._background_style.setColorTo(self._style_data.bodytoggledhover)
         else:
@@ -156,7 +156,7 @@ class ZToggleButton(ZABCToggleButton):
         else:
             self._background_style.setColorTo(self._style_data.body)
 
-    def pressHandler(self, pos):
+    def pressHandler(self):
         if self._checked:
             self._background_style.setColorTo(self._style_data.bodytoggledpressed)
         else:
@@ -263,3 +263,9 @@ class ZToggleButton(ZABCToggleButton):
             painter.setFont(self._font)
             painter.setPen(self._text_style.color)
             painter.drawText(rect, Qt.AlignCenter, self._text)
+
+    def sizeHint(self):
+        if self._icon and not self._text:
+            return QSize(30, 30)
+        else:
+            return QSize(100, 30)

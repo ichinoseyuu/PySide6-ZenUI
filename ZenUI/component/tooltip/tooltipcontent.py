@@ -46,6 +46,7 @@ class ZToolTipContent(QWidget):
     def text(self, text: str) -> None:
         self._text = text
         self.update()
+        self.adjustSize()
 
 
     @property
@@ -128,8 +129,7 @@ class ZToolTipContent(QWidget):
     def sizeHint(self):
         fm = QFontMetrics(self._font)
         margin = self._margin.left() + self._margin.right()  # 左右边距总和（和paintEvent一致）
-        if not self._text:
-            return super().sizeHint()
+        if not self._text: return super().sizeHint()
         # 计算文本实际宽度
         text_width = fm.horizontalAdvance(self._text)
         width = min(text_width + margin, self._max_content_width)

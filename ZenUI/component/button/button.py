@@ -130,16 +130,16 @@ class ZButton(ZABCButton):
         self._icon_style.setColorTo(data.icon)
         self._text_style.setColorTo(data.text)
 
-    def hoverHandler(self, pos):
+    def hoverHandler(self):
         self._background_style.setColorTo(self.styleData.bodyhover)
 
     def leaveHandler(self):
         self._background_style.setColorTo(self.styleData.body)
 
-    def pressHandler(self, pos):
+    def pressHandler(self):
         self._background_style.setColorTo(self.styleData.bodypressed)
 
-    def releaseHandler(self, pos):
+    def releaseHandler(self):
         self._background_style.setColorTo(self.styleData.bodyhover)
 
     # region Override
@@ -230,3 +230,10 @@ class ZButton(ZABCButton):
             painter.setFont(self._font)
             painter.setPen(self._text_style.color)
             painter.drawText(rect, Qt.AlignCenter, self._text)
+
+
+    def sizeHint(self):
+        if self._icon and not self._text:
+            return QSize(30, 30)
+        else:
+            return QSize(100, 30)

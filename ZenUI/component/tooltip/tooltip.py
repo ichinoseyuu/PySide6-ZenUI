@@ -77,28 +77,6 @@ class ZToolTip(QWidget):
         self._content.borderStyle.setColorTo(QColor(data.border))
         self._content.update()
 
-    # 动画结束处理
-    def _completely_hid_signal_handler(self):
-        if self._opacity_anim.opacity == 0:
-            self.resize(2*self._margin, 2*self._margin)
-            self._content.text = ''
-            self._state = self.State.Hidden
-        else:
-            self._state = self.State.Showing
-
-    # 跟踪鼠标位置
-    def _refresh_position(self):
-        '更新位置'
-        pos = self._get_pos_should_be_move()
-        self._move_anim.moveTo(pos)
-
-
-    def _get_pos_should_be_move(self):
-        pos = QCursor.pos()
-        x, y = pos.x()-self.width()/2, pos.y()-self.height()
-        return QPoint(x, y)
-
-
     def insideOf(self):
         return self._inside_of
 
@@ -113,23 +91,42 @@ class ZToolTip(QWidget):
 
 
     def setText(self, text: str, flash: bool = True) -> None:
-        if self._content.text == text: return
+        if flash and self._content.text != text: self._flash()
         self._content.text = text
-        #self._refresh_size()
-        QTimer.singleShot(0, self._refresh_size)
-        if flash: self.flash()
+        self._refresh_size()
+        #QTimer.singleShot(0, self._refresh_size)
+
 
 
     def _refresh_size(self):
         self._content.adjustSize() # 调整内容大小
-        size = self._content.sizeHint() + QSize(2*self._margin, 2*self._margin)
+        size = self._content.size() + QSize(2*self._margin, 2*self._margin)
         self._resize_anim.resizeTo(size)# 设为文字标签的大小加上阴影间距
 
 
-    def flash(self):
-        '闪烁效果'
+    def _flash(self):
         pass
 
+
+    def _completely_hid_signal_handler(self):
+        if self._opacity_anim.opacity == 0:
+            self.resize(2*self._margin, self._content.minimumHeight()+2*self._margin)
+            self._content.text = ''
+            self._state = self.State.Hidden
+        else:
+            self._state = self.State.Showing
+
+
+    def _refresh_position(self):
+        '更新位置'
+        pos = self._get_pos_should_be_move()
+        self._move_anim.moveTo(pos)
+
+
+    def _get_pos_should_be_move(self):
+        pos = QCursor.pos()
+        x, y = pos.x()-self.width()/2, pos.y()-self.height()
+        return QPoint(x, y)
 
     def showTip(self):
         '显示工具提示'

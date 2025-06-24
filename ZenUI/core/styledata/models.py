@@ -24,6 +24,14 @@ class ZButtonStyleData:
     radius: int
 
 @dataclass
+class ZNavBarButtonStyleData:
+    icon: QColor
+    body: QColor
+    bodyhover: QColor
+    bodypressed: QColor
+    radius: int
+
+@dataclass
 class ZToggleButtonStyleData:
     text: QColor
     texttoggled: QColor

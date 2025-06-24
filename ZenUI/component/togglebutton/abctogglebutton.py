@@ -1,14 +1,14 @@
 from enum import IntEnum
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent
+from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent, QSize
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from ZenUI.core import ZGlobal
 class ZABCToggleButton(QWidget):
-    entered = Signal(QPoint)
+    entered = Signal()
     leaved = Signal()
-    pressed = Signal(QPoint)
-    released = Signal(QPoint)
-    clicked = Signal(QPoint)
+    pressed = Signal()
+    released = Signal()
+    clicked = Signal()
     toggled = Signal(bool)
     class State(IntEnum):
         Idle = 0
@@ -47,24 +47,24 @@ class ZABCToggleButton(QWidget):
 
 
     # region Slot
-    @Slot(QPoint)
-    def hoverHandler(self, pos:QPoint):
+    @Slot()
+    def hoverHandler(self):
         pass
 
     @Slot()
     def leaveHandler(self):
         pass
 
-    @Slot(QPoint)
-    def pressHandler(self, pos:QPoint):
+    @Slot()
+    def pressHandler(self):
+        pass
+
+    @Slot()
+    def releaseHandler(self):
         pass
 
     @Slot(QPoint)
-    def releaseHandler(self, pos:QPoint):
-        pass
-
-    @Slot(QPoint)
-    def clickHandler(self, pos:QPoint):
+    def clickHandler(self):
         pass
 
     @Slot(bool)
@@ -81,7 +81,7 @@ class ZABCToggleButton(QWidget):
             ZGlobal.tooltip.setText(self._tool_tip)
             ZGlobal.tooltip.showTip()
         self._state = self.State.Hover
-        self.entered.emit(event.position().toPoint())
+        self.entered.emit()
 
     def leaveEvent(self, event: QEvent):
         super().leaveEvent(event)
@@ -95,15 +95,15 @@ class ZABCToggleButton(QWidget):
         super().mousePressEvent(event)
         if event.button() == Qt.LeftButton:
             self._state = self.State.Pressed
-            self.pressed.emit(event.position().toPoint())
+            self.pressed.emit()
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         super().mouseReleaseEvent(event)
         if event.button() == Qt.LeftButton:
-            self.released.emit(event.position().toPoint())
+            self.released.emit()
             # 如果鼠标在按钮区域内释放，触发clicked信号
             if self.rect().contains(event.position().toPoint()):
-                self.clicked.emit(event.position().toPoint())
+                self.clicked.emit()
                 self._checked = not self._checked
                 self.toggled.emit(self._checked)
 
@@ -111,4 +111,3 @@ class ZABCToggleButton(QWidget):
         if event.type() == QEvent.Type.ToolTip:
             return True
         return super().event(event)
-

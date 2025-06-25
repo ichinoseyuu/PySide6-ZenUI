@@ -7,56 +7,23 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ZenUI._legacy import *
 from ZenUI import ZFramelessWindow
-from page_home import PageHome
-from page_widget import PageWidget
-from page_about import PageAbout
-from navigation_bar import LeftNavigationBar
+from navigation_bar import NavigationBar
 
 
 class ZenUIGallery(ZFramelessWindow):
     def __init__(self):
         super().__init__()
         self.setupUi()
-        self.btnConnect()
 
     def setupUi(self):
         screen_size = QGuiApplication.primaryScreen().size()
-        self.resize(screen_size.width()*0.425,screen_size.height()*0.5)
-        #self.setMinimumSize(800, 600)
-        self.content = ZBox(parent=self,
-                               name='content',
-                               style= ZBox.Style.None_,
-                               layout=Zen.Layout.Row)
-
-        self.navigationBar = LeftNavigationBar(self,'navigationBar')
-        self.content.layout().addWidget(self.navigationBar)
-
-        self.stackPanel= ZStackPanel(parent=self.content,
-                                               name='stackPanel',
-                                               hide_last_page=True,)
-
-        self.pageHome = PageHome(self.stackPanel)
-        self.stackPanel.addPage(self.pageHome, cover=False, anim=False)
-
-        self.pageWidget = PageWidget(self.stackPanel)
-        self.stackPanel.addPage(self.pageWidget, cover=False, anim=False)
-
-        self.pageAbout = PageAbout(self.stackPanel)
-        self.stackPanel.addPage(self.pageAbout, cover=False, anim=False)
-
-        self.content.layout().addWidget(self.stackPanel)
-
-        self.setCenterWidget(self.content)
-
-
-
-
-    def btnConnect(self):
-        self.pageHome.btn_nextpage.clicked.connect(self.navigationBar.toggleToNextButton)
-        self.navigationBar.btnHome.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageHome'))
-        self.navigationBar.btnWidget.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageWidget'))
-        self.navigationBar.btnAbout.clicked.connect(lambda: self.stackPanel.setCurrentPage('pageAbout'))
-
+        self.resize(screen_size.width()*0.5,screen_size.height()*0.6)
+        self.contentLayout = QHBoxLayout(self.centerWidget)
+        self.contentLayout.setContentsMargins(6, 6, 6, 6)
+        self.contentLayout.setSpacing(6)
+        self.contentLayout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.navigationBar = NavigationBar(self.centerWidget)
+        self.contentLayout.addWidget(self.navigationBar)
 
 
 

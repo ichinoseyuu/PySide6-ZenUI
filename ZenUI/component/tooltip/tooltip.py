@@ -4,6 +4,7 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.base import MoveExpAnimation,ResizeExpAnimation,WindowOpacityExpAnimation
+from ZenUI.component.navigationbar import ZNavBarButton,ZNavBarToggleButton
 from ZenUI.core import ZGlobal,ZToolTipStyleData,ZQuickEffect
 from .tooltipcontent import ZToolTipContent
 
@@ -110,7 +111,7 @@ class ZToolTip(QWidget):
 
     def _completely_hid_signal_handler(self):
         if self._opacity_anim.opacity == 0:
-            self.resize(2*self._margin, self._content.minimumHeight()+2*self._margin)
+            self.resize(2*self._margin, self._content.minimumHeight() + 2*self._margin)
             self._content.text = ''
             self._state = self.State.Hidden
         else:
@@ -124,6 +125,10 @@ class ZToolTip(QWidget):
 
 
     def _get_pos_should_be_move(self):
+        if isinstance(self._inside_of, (ZNavBarButton, ZNavBarToggleButton)):
+            offset = QPoint(self._inside_of.width(), (self._inside_of.height()-self.height())/2)
+            pos = self._inside_of.mapToGlobal(offset)
+            return  pos
         pos = QCursor.pos()
         x, y = pos.x()-self.width()/2, pos.y()-self.height()
         return QPoint(x, y)

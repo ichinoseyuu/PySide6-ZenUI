@@ -64,11 +64,15 @@ class ZFramelessWindow(QWidget):
     @property
     def styleData(self) -> ZFramelessWindowStyleData:
         return self._style_data
-    
+
     @styleData.setter
     def styleData(self, data: ZFramelessWindowStyleData) -> None:
         self._style_data = data
         self.backgroundColor = data.body
+
+    @property
+    def centerWidget(self):
+        return self._centerWidget
 
     @Property(QColor)
     def backgroundColor(self) -> QColor:
@@ -86,13 +90,6 @@ class ZFramelessWindow(QWidget):
         self._anim_bg_color.setEndValue(color)
         self._anim_bg_color.start()
 
-    def centerWidget(self):
-        """ 设置中心部件 """
-        return self._centerWidget
-
-    def setCenterWidget(self, widget: QWidget):
-        """ 设置中心部件 """
-        self._centerWidget = widget
 
     # region Slot
     def themeChangeHandler(self, theme):
@@ -109,8 +106,11 @@ class ZFramelessWindow(QWidget):
     def resizeEvent(self, event: QResizeEvent):
         """ 调整窗口大小 """
         super().resizeEvent(event)
-        self._titlebar.resize(self.width(), self._titlebar.height())
-        self._centerWidget.setGeometry(0, self._titlebar.height(), self.width(), self.height() - self._titlebar.height())
+        self._titlebar.setGeometry(0,0,event.size().width(), self._titlebar.height())
+        self._centerWidget.setGeometry(0, self._titlebar.height(), event.size().width(), event.size().height() - self._titlebar.height())
+
+    def adjustSize(self):
+        self.resizeEvent(QResizeEvent(self.size(), self.size()))
 
     def nativeEvent(self, eventType, message):
         """ Handle the Windows message """

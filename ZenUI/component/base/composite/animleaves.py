@@ -242,6 +242,7 @@ class OpacityExpAnimation(QObject):
 
     def setOpacity(self, opacity: float) -> None:
         self._opacity = opacity
+        #logging.info("setOpacity: %s", opacity)
         self.parent().update()
 
     opacity = Property(float, getOpacity, setOpacity)

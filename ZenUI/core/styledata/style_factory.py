@@ -2,11 +2,11 @@ from typing import Union, Dict, Any
 from PySide6.QtGui import QColor
 from .models import (ZButtonStyleData, ZTitleBarButtonData, ZFramelessWindowStyleData,
                     ZTextBlockStyleData, ZToolTipStyleData , ZToggleButtonStyleData,
-                    ZNavBarButtonStyleData)
+                    ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData)
 
 StyleDataType = Union[ZButtonStyleData, ZTitleBarButtonData,ZFramelessWindowStyleData,
                       ZTextBlockStyleData,ZToolTipStyleData,ZToggleButtonStyleData,
-                      ZNavBarButtonStyleData]
+                      ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData]
 
 class ZStyleDataFactory:
     @staticmethod
@@ -52,6 +52,17 @@ class ZStyleDataFactory:
                 body=QColor(d.get('body')),
                 bodyhover=QColor(d.get('bodyhover')),
                 bodypressed=QColor(d.get('bodypressed')),
+                radius=int(d.get('radius'))
+            ),
+            'ZNavBarToggleButton': lambda d: ZNavBarToggleButtonStyleData(
+                icon=QColor(d.get('icon')),
+                icontoggled=QColor(d.get('icontoggled')),
+                body=QColor(d.get('body')),
+                bodyhover=QColor(d.get('bodyhover')),
+                bodypressed=QColor(d.get('bodypressed')),
+                bodytoggled=QColor(d.get('bodytoggled')),
+                bodytoggledhover=QColor(d.get('bodytoggledhover')),
+                bodytoggledpressed=QColor(d.get('bodytoggledpressed')),
                 radius=int(d.get('radius'))
             ),
             'ZMinimizeButton': lambda d: ZTitleBarButtonData(

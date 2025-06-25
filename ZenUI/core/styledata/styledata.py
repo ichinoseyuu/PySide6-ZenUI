@@ -2,13 +2,13 @@ from typing import Union, overload, Dict
 from ..theme import ZThemeManager
 from .models import (ZButtonStyleData, ZTitleBarButtonData, ZFramelessWindowStyleData,
                      ZTextBlockStyleData,ZToolTipStyleData, ZToggleButtonStyleData,
-                     ZNavBarButtonStyleData)
+                     ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData)
 from .theme_data import THEME_DATA
 from .style_factory import ZStyleDataFactory
 
 StyleDataType = Union[ZButtonStyleData, ZTitleBarButtonData,ZFramelessWindowStyleData,
                       ZTextBlockStyleData,ZToolTipStyleData, ZToggleButtonStyleData,
-                      ZNavBarButtonStyleData]
+                      ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData]
 
 class ZStyleDataManager:
     def __init__(self):

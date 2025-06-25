@@ -2,7 +2,9 @@ from typing import Dict, Any
 from types import MappingProxyType
 from ..color import ZColorTool
 ACCENT_COLOR_LIGHT: str = '#a5d2f1'
+
 ACCENT_COLOR_DARK: str = '#955595'
+
 DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZTextBlock':{
                 'text': '#dcdcdc'
@@ -34,8 +36,19 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZNavBarButton': {
                 'icon': '#dcdcdc',
                 'body': '#00ffffff',
-                'bodyhover': '#1affffff',
-                'bodypressed': '#2affffff',
+                'bodyhover': '#10ffffff',
+                'bodypressed': '#1affffff',
+                'radius': 5
+                },
+            'ZNavBarToggleButton': {
+                'icon': '#dcdcdc',
+                'icontoggled': ACCENT_COLOR_DARK,
+                'body': '#00ffffff',
+                'bodyhover': '#10ffffff',
+                'bodypressed': '#1affffff',
+                'bodytoggled': '#10ffffff',
+                'bodytoggledhover': '#1affffff',
+                'bodytoggledpressed': '#15ffffff',
                 'radius': 5
                 },
             'ZThemeButton': {
@@ -114,8 +127,19 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZNavBarButton': {
                 'icon': '#555555',
                 'body': '#00000000',
-                'bodyhover': '#1a000000',
-                'bodypressed': '#2a000000',
+                'bodyhover': "#10000000",
+                'bodypressed': '#1a000000',
+                'radius': 5
+                },
+            'ZNavBarToggleButton': {
+                'icon': '#555555',
+                'icontoggled': ZColorTool.adjust(ACCENT_COLOR_LIGHT, -0.05,0.05),
+                'body': '#00000000',
+                'bodyhover': '#10000000',
+                'bodypressed': '#1a000000',
+                'bodytoggled': '#10000000',
+                'bodytoggledhover': '#1a000000',
+                'bodytoggledpressed': '#15000000',
                 'radius': 5
                 },
             'ZThemeButton': {
@@ -155,12 +179,13 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 },
             'ZToolTip': {
                 'text': '#333333',
-                'body': '#f8f8f8',
+                'body': '#f3f3f3',
                 'border': '#dee2e6',
                 'radius': 5,
                 'flash': '#bfbfbf',
                 },
             })
+
 
 THEME_DATA = {
     'Dark': DARK_THEME,

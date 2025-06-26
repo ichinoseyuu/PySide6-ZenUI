@@ -12,6 +12,7 @@ class ZNavBarButton(ZABCNavBarButton):
                  parent: QWidget = None,
                  icon: QIcon = None):
         super().__init__(parent)
+        self.setMaximumSize(40, 40)
         if name : self.setObjectName(name)
         # 基本属性
         self._icon: QIcon = None

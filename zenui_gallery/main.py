@@ -5,10 +5,11 @@ from PySide6.QtGui import *
 import os
 # 添加项目根目录到系统路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from ZenUI._legacy import *
-from ZenUI import ZFramelessWindow
+from ZenUI import *
 from navigation_bar import NavigationBar
-
+from page_widget import PageWidget
+from page_about import PageAbout
+from page_home import PageHome
 
 class ZenUIGallery(ZFramelessWindow):
     def __init__(self):
@@ -25,6 +26,14 @@ class ZenUIGallery(ZFramelessWindow):
         self.navigationBar = NavigationBar(self.centerWidget)
         self.contentLayout.addWidget(self.navigationBar)
 
+        self.pageHome = PageHome(self.centerWidget)
+        self.contentLayout.addWidget(self.pageHome)
+
+        self.pageWidget = PageWidget(self.centerWidget)
+        self.contentLayout.addWidget(self.pageWidget)
+
+        self.pageAbout = PageAbout(self.centerWidget)
+        self.contentLayout.addWidget(self.pageAbout)
 
 
 

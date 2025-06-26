@@ -61,9 +61,13 @@ class FooterPanel(QWidget):
     def zlayout(self):
         return self._layout
 
+    def sizeHint(self):
+        return self._layout.sizeHint()
+
 class ZNavigationBar(QWidget):
-    def __init__(self, name: str = 'navigationBar', parent: QWidget = None):
+    def __init__(self, name: str = None, parent: QWidget = None):
         super().__init__(parent)
+        if name: self.setObjectName(name)
         self._panel = Panel(self)
         self._footer_panel = FooterPanel(self)
         layout = QVBoxLayout(self)
@@ -84,6 +88,9 @@ class ZNavigationBar(QWidget):
     def footerPanel(self):
         return self._footer_panel
 
+    def sizeHint(self):
+        return self._panel.zlayout.sizeHint()+QSize(self._footer_panel.zlayout.sizeHint().height(),0)
+
     def addButton(self, panel:QWidget, btn: ZNavBarButton):
         if panel is self._panel:
             self._panel.zlayout.addWidget(btn)
@@ -98,6 +105,12 @@ class ZNavigationBar(QWidget):
             self._footer_panel.zlayout.addWidget(btn)
         self._btn_manager.addButton(btn)
         self.adjustSize()
+
+    def toggleToNextButton(self):
+        self._btn_manager.toggleToNextButton()
+
+    def toggleToLastButton(self):
+        self._btn_manager.toggleToLastButton()
 
     def adjustSize(self):
         width = max(self._panel.zlayout.sizeHint().width(), self._footer_panel.zlayout.sizeHint().width())

@@ -39,7 +39,7 @@ class ZToolTip(QWidget):
         self._style_data: ZToolTipStyleData = None
         self.styleData = ZGlobal.styleDataManager.getStyleData('ZToolTip')
 
-        self._tracker_timer = QTimer()  # 跟踪鼠标的计时器
+        self._tracker_timer = QTimer()  # mouse move tracker
         self._tracker_timer.setInterval(int(1000/60))
         self._tracker_timer.timeout.connect(self._refresh_position)
 
@@ -100,9 +100,9 @@ class ZToolTip(QWidget):
 
 
     def _refresh_size(self):
-        self._content.adjustSize() # 调整内容大小
+        self._content.adjustSize() # adjust size to content
         size = self._content.size() + QSize(2*self._margin, 2*self._margin)
-        self._resize_anim.resizeTo(size)# 设为文字标签的大小加上阴影间距
+        self._resize_anim.resizeTo(size)
 
 
     def _flash(self):
@@ -119,7 +119,6 @@ class ZToolTip(QWidget):
 
 
     def _refresh_position(self):
-        '更新位置'
         pos = self._get_pos_should_be_move()
         self._move_anim.moveTo(pos)
 
@@ -134,12 +133,10 @@ class ZToolTip(QWidget):
         return QPoint(x, y)
 
     def showTip(self):
-        '显示工具提示'
         self._opacity_anim.fadeIn()
 
 
     def hideTip(self):
-        '隐藏工具提示'
         self._opacity_anim.fadeOut()
 
 

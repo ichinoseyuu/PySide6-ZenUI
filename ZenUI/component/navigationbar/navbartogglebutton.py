@@ -11,6 +11,7 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
                  parent: QWidget = None,
                  icon: QIcon = None):
         super().__init__(parent)
+        self.setMaximumSize(40, 40)
         if name: self.setObjectName(name)
         # 基本属性
         self._icon: QIcon = None
@@ -83,7 +84,6 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
             self._icon_style.color = style_data.icon
         self.update()
 
-
     # region Slot
     def themeChangeHandler(self, theme):
         """主题改变事件处理"""
@@ -117,12 +117,11 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
 
 
     def toggleHandler(self, checked):
-        if ZGlobal.themeManager.getTheme().name == "Dark":
-            self._icon_style.color = QColor('#202020')
-        else:
-            self._icon_style.color = QColor('#ffffff')
-
         if checked:
+            if ZGlobal.themeManager.getTheme().name == "Dark":
+                self._icon_style.color = QColor('#202020')
+            else:
+                self._icon_style.color = QColor('#f3f3f3')
             self._background_style.setColorTo(self._style_data.bodytoggledhover)
             self._icon_style.setColorTo(self._style_data.icontoggled)
             self._indicator_anim.fadeIn()
@@ -151,9 +150,6 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         painter.setPen(Qt.NoPen)
         painter.setBrush(self._background_style.color)
         painter.drawRoundedRect(rect, radius, radius)
-
-
-
         # 1. 获取原始 QPixmap
         if self._checked:
             pixmap = self._icon.pixmap(self._icon_size, QIcon.Mode.Normal, QIcon.State.On)

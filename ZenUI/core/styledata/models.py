@@ -14,6 +14,12 @@ class ZTitleBarButtonData:
     bodypressed: QColor
 
 @dataclass
+class ZPageStyleData:
+    body: QColor
+    border: QColor
+    radius: int
+
+@dataclass
 class ZButtonStyleData:
     text: QColor
     icon: QColor

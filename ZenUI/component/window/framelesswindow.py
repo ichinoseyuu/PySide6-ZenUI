@@ -16,16 +16,14 @@ from .win32utils import (WindowsWindowEffect,LPNCCALCSIZE_PARAMS,WinTaskbar,
                     isMaximized, isFullScreen, getResizeBorderThickness)
 
 class ZFramelessWindow(QWidget):
-    """无边框窗口"""
     BORDER_WIDTH = 6
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        #创建tooltip实例
+        # create tooltip
         tooltip = ZToolTip()
         tooltip.show()
         tooltip.setWindowOpacity(0)
         ZGlobal.tooltip = tooltip
-
 
         tooltiplegacy = ZToolTipLegacy()
         tooltiplegacy.show()
@@ -93,7 +91,6 @@ class ZFramelessWindow(QWidget):
 
     # region Slot
     def themeChangeHandler(self, theme):
-        """ 主题改变 """
         self._style_data = ZGlobal.styleDataManager.getStyleData('ZFramelessWindow', theme.name)
         self.setBackgroundColorTo(QColor(self._style_data.body))
 
@@ -104,13 +101,10 @@ class ZFramelessWindow(QWidget):
 
     # region Event
     def resizeEvent(self, event: QResizeEvent):
-        """ 调整窗口大小 """
         super().resizeEvent(event)
         self._titlebar.setGeometry(0,0,event.size().width(), self._titlebar.height())
         self._centerWidget.setGeometry(0, self._titlebar.height(), event.size().width(), event.size().height() - self._titlebar.height())
 
-    def adjustSize(self):
-        self.resizeEvent(QResizeEvent(self.size(), self.size()))
 
     def nativeEvent(self, eventType, message):
         """ Handle the Windows message """

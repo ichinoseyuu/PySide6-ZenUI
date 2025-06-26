@@ -25,7 +25,7 @@ class AnimatedColorProperty(QObject):
 
     def setColor(self, value: QColor):
         self._color = value
-        self.parentWidget.update()
+        self.parent().update()
 
     color = Property(QColor, getColor, setColor)
 

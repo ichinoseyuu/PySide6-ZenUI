@@ -9,7 +9,8 @@ from .effect import ZQuickEffect
 
 from .styledata import (ZStyleDataManager,ZFramelessWindowStyleData,ZButtonStyleData,
                         ZTitleBarButtonData,ZTextBlockStyleData,ZToolTipStyleData,
-                        ZToggleButtonStyleData,ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData)
+                        ZToggleButtonStyleData,ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData,
+                        ZPageStyleData)
 
 from .theme import ZTheme, ZThemeManager
 

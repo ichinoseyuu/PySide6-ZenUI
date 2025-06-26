@@ -4,18 +4,21 @@ from PySide6.QtGui import QPainter, QFont, QFontMetrics
 from ZenUI.component.base import TextStyle
 from ZenUI.core import ZGlobal,ZTextBlockStyleData
 class ZTextBlock(QWidget):
-    def __init__(self, name: str, parent=None, text=None):
+    def __init__(self,
+                 name: str = None,
+                 parent: QWidget = None,
+                 text: str = None):
         super().__init__(parent)
-        self.setObjectName(name)
+        if name: self.setObjectName(name)
         self.setMinimumHeight(24)
-        # 基本属性
+        # base property
         self._text = text
         self._font = QFont("Microsoft YaHei", 10)
         self._word_wrap = False
         self._alignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-        # 样式属性
+        # style property
         self._text_style = TextStyle(self)
-        # 样式数据
+        # style data
         self._style_data: ZTextBlockStyleData = None
         self.styleData = ZGlobal.styleDataManager.getStyleData('ZTextBlock')
         ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
@@ -101,8 +104,8 @@ class ZTextBlock(QWidget):
     def sizeHint(self):
         fm = QFontMetrics(self._font)
         max_width = 500
-        padding_w = 4  # 宽度补偿
-        padding_h = 4  # 高度补偿
+        padding_w = 4
+        padding_h = 4
         if self._word_wrap:
             width = min(self.width() if self.width() > 0 else 200, max_width)
             rect = fm.boundingRect(0, 0, width, 1000, Qt.TextFlag.TextWordWrap, self._text)
@@ -114,5 +117,4 @@ class ZTextBlock(QWidget):
     def adjustSize(self):
         size = self.sizeHint()
         self.resize(size)
-        # 或者如果你希望不可拉伸
-        # self.setFixedSize(size)
+        self.setFixedSize(size)

@@ -26,9 +26,7 @@ class ZNavBtnManager(QObject):
         self._buttons[name] = button
         # 使用clicked信号代替toggled信号
         button.clicked.connect(lambda: self._handle_button_clicked(name))
-        #如果是第一个按钮且是互斥模式，则设置为选中状态
-        if len(self._buttons) == 1:
-            self.setCheckedButton(name)
+        if len(self._buttons) == 1: self.setCheckedButton(name)
         self._btn_count += 1
 
 
@@ -56,8 +54,7 @@ class ZNavBtnManager(QObject):
 
     def setCheckedButton(self, name: str, clicked: bool = True):
         """设置选中的按钮"""
-        if not self._enabled or name not in self._buttons:
-            return
+        if not self._enabled or name not in self._buttons: return
         button = self._buttons[name]
         # 取消之前选中的按钮
         if self._checked_button and self._checked_button != name:
@@ -78,28 +75,18 @@ class ZNavBtnManager(QObject):
 
     def _handle_button_clicked(self, name: str):
         """处理按钮点击事件"""
-        if not self._enabled:
-            return
-        button = self._buttons[name]
-        # 如果点击当前选中按钮，保持选中状态
-        if name == self._checked_button:
-            # 由于click事件在toggled事件之前触发，先手动手动设置为非checked状态
-            # 之后按钮的toggled事件会自动设置为checked状态
-            button.checked = False
-            return
+        if not self._enabled: return
+        if name == self._checked_button: return
         # 点击新按钮时
         self._checked_button_last = self._checked_button
         self._checked_button = name
-        # 按钮的toggled事件会自动设置为checked状态，无需手动设置
         if self._checked_button_last:
             # 取消之前选中的按钮
             old_button = self._buttons[self._checked_button_last]
             old_button.checked = False
             old_button.leaved.emit()
-        # 发送信号
         self.buttonChanged.emit(self._checked_button_last, name)
         self.buttonToggled.emit(name, True)
-        return
 
 
     def toggleToNextButton(self, clicked: bool = True):

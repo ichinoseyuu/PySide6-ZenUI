@@ -14,7 +14,7 @@ class ZToggleButton(ZABCToggleButton):
                  icon: QIcon = None):
         super().__init__(parent)
         self.setObjectName(name)
-        # 基本属性
+        # property
         self._text: str = None
         self._icon: QIcon = None
         self._icon_size = QSize(16, 16)
@@ -22,19 +22,18 @@ class ZToggleButton(ZABCToggleButton):
         self._spacing = 4
         if text : self.text = text
         if icon : self.icon = icon
-        # 样式属性
+        # style property
         self._background_style = BackGroundStyle(self)
         self._border_style = BorderStyle(self)
         self._text_style = TextStyle(self)
         self._icon_style = IconStyle(self)
         self._corner_style = CornerStyle(self)
-        # 动画属性
+        # animation property
         self._opacity_anim = OpacityExpAnimation(self)
-        # 样式数据
+        # style data
         self._style_data: ZToggleButtonStyleData = None
         self.styleData = ZGlobal.styleDataManager.getStyleData("ZToggleButton")
 
-        # 设置默认大小
         ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
 
 
@@ -106,12 +105,10 @@ class ZToggleButton(ZABCToggleButton):
 
     @property
     def styleData(self) -> ZToggleButtonStyleData:
-        """获取按钮样式数据"""
         return self._style_data
 
     @styleData.setter
     def styleData(self, style_data: ZToggleButtonStyleData) -> None:
-        """设置按钮样式数据"""
         self._style_data = style_data
         self._corner_style.radius = style_data.radius
         if self._checked:
@@ -129,7 +126,6 @@ class ZToggleButton(ZABCToggleButton):
 
     # region Slot
     def themeChangeHandler(self, theme):
-        """主题改变事件处理"""
         data = ZGlobal.styleDataManager.getStyleData('ZToggleButton',theme.name)
         self._style_data = data
         self._corner_style.radius = data.radius
@@ -190,33 +186,28 @@ class ZToggleButton(ZABCToggleButton):
                              QPainter.RenderHint.TextAntialiasing|
                              QPainter.RenderHint.SmoothPixmapTransform)
         painter.setOpacity(self._opacity_anim.opacity)
-        # 绘制背景
+        # draw background
         rect = self.rect()
         radius = self._corner_style.radius
         painter.setPen(Qt.NoPen)
         painter.setBrush(self._background_style.color)
         painter.drawRoundedRect(rect, radius, radius)
-        # 绘制边框
+        # draw border
         painter.setPen(QPen(self._border_style.color, self._border_style.width))
         painter.setBrush(Qt.NoBrush)
-        # 调整矩形以避免边框模糊
+        # adjust border width
         painter.drawRoundedRect(
-            QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
+            QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # use QRectF to get more accurate result
             radius,
             radius
         )
-        # 计算内容区域
-        # 如果同时有图标和文本，绘制在一起
         if self._icon and self._text:
-            # 计算总宽度
             total_width = self._icon_size.width() + self._spacing + \
                          self.fontMetrics().boundingRect(self._text).width()
-            # 计算起始x坐标使内容居中
             start_x = (self.width() - total_width) // 2
-            # 绘制图标
-            # 1. 获取原始 QPixmap
+
             pixmap = self._icon.pixmap(self._icon_size)
-            # 2. 创建一个新的 QPixmap 用于着色
+
             colored_pixmap = QPixmap(pixmap.size())
             colored_pixmap.fill(Qt.transparent)
             painter_pix = QPainter(colored_pixmap)
@@ -224,13 +215,13 @@ class ZToggleButton(ZABCToggleButton):
             painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
             painter_pix.fillRect(colored_pixmap.rect(), self._icon_style.color)
             painter_pix.end()
-            # 3. 绘制到按钮中心
+
             painter.drawPixmap(
                 start_x,
                 (self.height() - self._icon_size.height()) // 2,
                 colored_pixmap
             )
-            # 绘制文本
+            # draw text
             painter.setFont(self.font)
             painter.setPen(self._text_style.color)
             text_rect = QRect(
@@ -240,11 +231,11 @@ class ZToggleButton(ZABCToggleButton):
                 rect.height()
             )
             painter.drawText(text_rect, Qt.AlignLeft | Qt.AlignVCenter, self._text)
-        # 只有图标
+        # only icon
         elif self._icon:
-            # 1. 获取原始 QPixmap
+            # get icon
             pixmap = self._icon.pixmap(self._icon_size)
-            # 2. 创建一个新的 QPixmap 用于着色
+            # create a new QPixmap for coloring
             colored_pixmap = QPixmap(pixmap.size())
             colored_pixmap.fill(Qt.transparent)
             painter_pix = QPainter(colored_pixmap)
@@ -252,13 +243,13 @@ class ZToggleButton(ZABCToggleButton):
             painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
             painter_pix.fillRect(colored_pixmap.rect(), self._icon_style.color)
             painter_pix.end()
-            # 3. 绘制到按钮中心
+            # draw icon to center
             painter.drawPixmap(
                 (self.width() - self._icon_size.width()) // 2,
                 (self.height() - self._icon_size.height()) // 2,
                 colored_pixmap
             )
-        # 只有文本
+        # only text
         elif self._text:
             painter.setFont(self._font)
             painter.setPen(self._text_style.color)

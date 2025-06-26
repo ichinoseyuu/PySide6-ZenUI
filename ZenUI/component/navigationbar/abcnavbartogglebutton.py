@@ -39,7 +39,8 @@ class ZABCNavBarToggleButton(QWidget):
     @checked.setter
     def checked(self, checked: bool) -> None:
         self._checked = checked
-        self.toggled.emit(self._checked)
+        self.toggled.emit(checked)
+        self.leaved.emit()
         self.update()
 
     # region Func
@@ -109,7 +110,8 @@ class ZABCNavBarToggleButton(QWidget):
             # 如果鼠标在按钮区域内释放，触发clicked信号
             if self.rect().contains(event.position().toPoint()):
                 self.clicked.emit()
-                self._checked = not self._checked
+                if not self._checked: self._checked = True
+                
                 self.toggled.emit(self._checked)
 
     def event(self, event: QEvent):

@@ -101,7 +101,7 @@ class ZABCToggleButton(QWidget):
         super().mouseReleaseEvent(event)
         if event.button() == Qt.LeftButton:
             self.released.emit()
-            # 如果鼠标在按钮区域内释放，触发clicked信号
+            # if mouse is still in button
             if self.rect().contains(event.position().toPoint()):
                 self.clicked.emit()
                 self._checked = not self._checked

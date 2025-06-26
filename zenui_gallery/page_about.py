@@ -1,20 +1,20 @@
-from ZenUI._legacy import *
+from PySide6.QtCore import Qt,QMargins
+from PySide6.QtGui import QFont
+from ZenUI import *
 
 class PageAbout(ZPage):
     def __init__(self,parent = None,name ='pageAbout'):
         super().__init__(parent = parent,
                          name=name,
-                         fixed_stylesheet="border-width: 1px;\nborder-style: solid;\nborder-radius:4px;",
-                         style= ZPage.Style.Monochrome|ZPage.Style.Border,
-                         layout=Zen.Layout.Column,
-                         margins=ZMargins(6, 6, 6, 6),
-                         spacing=12)
+                         layout=self.Layout.Column,
+                         margins=QMargins(6, 6, 6, 6),
+                         spacing=12,
+                         alignment=Qt.AlignmentFlag.AlignTop|Qt.AlignmentFlag.AlignLeft)
         self._setup_ui()
 
     def _setup_ui(self):
-        self.label_title = ZTextLabel(parent=self,
+        self.text = ZTextBlock(parent=self,
                                  name='text',
-                                 text='关于',
-                                 alignment=Zen.Alignment.Left)
-        self.label_title.setFixedStyleSheet('padding:5px;\nfont-size: 24px;\nfont-family: "微软雅黑";\nfont-weight: bold;')
-        self.layout().addWidget(self.label_title)
+                                 text='关于')
+        self.text.setFont(QFont('Microsoft YaHei', 24, QFont.Bold))
+        self.layout().addWidget(self.text)

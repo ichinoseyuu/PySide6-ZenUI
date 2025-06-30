@@ -19,21 +19,29 @@ class ZenUIGallery(ZFramelessWindow):
     def setupUi(self):
         screen_size = QGuiApplication.primaryScreen().size()
         self.resize(screen_size.width()*0.5,screen_size.height()*0.6)
+        self.moveCenter()
         self.contentLayout = QHBoxLayout(self.centerWidget)
         self.contentLayout.setContentsMargins(6, 6, 6, 6)
         self.contentLayout.setSpacing(6)
-        self.contentLayout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.navigationBar = NavigationBar(self.centerWidget)
         self.contentLayout.addWidget(self.navigationBar)
 
-        self.pageHome = PageHome(self.centerWidget)
-        self.contentLayout.addWidget(self.pageHome)
+        self.stackPanel = ZStackPanel(self.centerWidget,name="stackPanel")
+        self.contentLayout.addWidget(self.stackPanel)
 
-        self.pageWidget = PageWidget(self.centerWidget)
-        self.contentLayout.addWidget(self.pageWidget)
+        self.pageHome = PageHome(self.stackPanel)
+        self.stackPanel.addPage(self.pageHome)
 
-        self.pageAbout = PageAbout(self.centerWidget)
-        self.contentLayout.addWidget(self.pageAbout)
+        self.pageWidget = PageWidget(self.stackPanel)
+        self.stackPanel.addPage(self.pageWidget)
+
+        self.pageAbout = PageAbout(self.stackPanel)
+        self.stackPanel.addPage(self.pageAbout)
+
+        self.navigationBar.btnHome.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageHome))
+        self.navigationBar.btnWidget.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageWidget))
+        self.navigationBar.btnAbout.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageAbout))
+
 
 
 

@@ -7,8 +7,8 @@ from .abcnavbartogglebutton import ZABCNavBarToggleButton
 import logging
 class ZNavBarToggleButton(ZABCNavBarToggleButton):
     def __init__(self,
-                 name: str = None,
                  parent: QWidget = None,
+                 name: str = None,
                  icon: QIcon = None):
         super().__init__(parent)
         self.setMaximumSize(40, 40)

@@ -8,12 +8,12 @@ from .abctogglebutton import ZABCToggleButton
 import logging
 class ZToggleButton(ZABCToggleButton):
     def __init__(self,
-                 name: str,
                  parent: QWidget = None,
+                 name: str = None,
                  text: str = None,
                  icon: QIcon = None):
         super().__init__(parent)
-        self.setObjectName(name)
+        if name: self.setObjectName(name)
         # property
         self._text: str = None
         self._icon: QIcon = None

@@ -48,7 +48,7 @@ class Panel(QWidget):
         return self._content_layout.sizeHint()
 
 class FooterPanel(QWidget):
-    def __init__(self, parent: QWidget = None):
+    def __init__(self,parent: QWidget = None):
         super().__init__(parent)
         self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(0, 0, 0, 0)
@@ -65,7 +65,9 @@ class FooterPanel(QWidget):
         return self._layout.sizeHint()
 
 class ZNavigationBar(QWidget):
-    def __init__(self, name: str = None, parent: QWidget = None):
+    def __init__(self,
+                 parent: QWidget = None,
+                 name: str = None):
         super().__init__(parent)
         if name: self.setObjectName(name)
         self._panel = Panel(self)

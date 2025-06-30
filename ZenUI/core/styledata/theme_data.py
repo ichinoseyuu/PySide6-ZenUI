@@ -1,7 +1,7 @@
 from typing import Dict, Any
 from types import MappingProxyType
 from ..color import ZColorTool
-ACCENT_COLOR_LIGHT: str = '#128ddd'
+ACCENT_COLOR_LIGHT: str = '#38b9f2'
 
 ACCENT_COLOR_DARK: str = '#955595'
 

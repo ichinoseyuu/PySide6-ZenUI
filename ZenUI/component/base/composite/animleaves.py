@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
+from typing import overload
 from ZenUI.core import ZExpAnimationRefactor
 import logging
 
@@ -27,7 +28,19 @@ class MovePropertyAnimation(QObject):
 
     pos = Property(QPoint, getPos, setPos)
 
+    @overload
     def moveTo(self, pos:QPoint) -> None:
+        ...
+
+    @overload
+    def moveTo(self, x:int, y:int) -> None:
+        ...
+
+    def moveTo(self, *args) -> None:
+        if len(args) == 1 and isinstance(args[0], QPoint):
+            pos = args[0]
+        elif len(args) == 2:
+            pos = QPoint(args[0], args[1])
         self._anim.stop()
         self._anim.setStartValue(self.getPos())
         self._anim.setEndValue(pos)
@@ -60,7 +73,19 @@ class MoveExpAnimation(QObject):
 
     pos = Property(QPoint, getPos, setPos)
 
+    @overload
     def moveTo(self, pos:QPoint) -> None:
+        ...
+
+    @overload
+    def moveTo(self, x:int, y:int) -> None:
+        ...
+
+    def moveTo(self, *args) -> None:
+        if len(args) == 1 and isinstance(args[0], QPoint):
+            pos = args[0]
+        elif len(args) == 2:
+            pos = QPoint(args[0], args[1])
         self._anim.stop()
         self._anim.setCurrentValue(self.getPos())
         self._anim.setEndValue(pos)
@@ -92,7 +117,19 @@ class ResizePropertyAnimation(QObject):
 
     size = Property(QSize, getSize, setSize)
 
-    def resizeTo(self, size: QSize) -> None:
+    @overload
+    def resizeTo(self, pos:QSize) -> None:
+        ...
+
+    @overload
+    def resizeTo(self, x:int, y:int) -> None:
+        ...
+
+    def resizeTo(self, *args) -> None:
+        if len(args) == 1 and isinstance(args[0], QSize):
+            size = args[0]
+        elif len(args) == 2:
+            size = QSize(args[0], args[1])
         self._anim.stop()
         self._anim.setStartValue(self.getSize())
         self._anim.setEndValue(size)
@@ -124,12 +161,24 @@ class ResizeExpAnimation(QObject):
 
     size = Property(QSize, getSize, setSize)
 
-    def resizeTo(self, size: QSize) -> None:
+    @overload
+    def resizeTo(self, pos:QSize) -> None:
+        ...
+
+    @overload
+    def resizeTo(self, x:int, y:int) -> None:
+        ...
+
+    def resizeTo(self, *args) -> None:
+        if len(args) == 1 and isinstance(args[0], QSize):
+            size = args[0]
+        elif len(args) == 2:
+            size = QSize(args[0], args[1])
         self._anim.stop()
         self._anim.setCurrentValue(self.getSize())
         self._anim.setEndValue(size)
         self._anim.start()
-
+        
     def parent(self) -> QWidget:
         return super().parent()
 

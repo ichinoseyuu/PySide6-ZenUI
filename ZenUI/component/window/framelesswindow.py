@@ -83,10 +83,17 @@ class ZFramelessWindow(QWidget):
 
     # region Func
     def setBackgroundColorTo(self, color: QColor):
-        """ 设置背景颜色 """
         self._anim_bg_color.setStartValue(self._color_bg)
         self._anim_bg_color.setEndValue(color)
         self._anim_bg_color.start()
+
+    def moveCenter(self):
+        screen = self.windowHandle().screen()
+        if screen:
+            rect = screen.availableGeometry()
+            self.move(rect.center().x() - self.width() / 2, rect.center().y() - self.height() / 2)
+        else:
+            self.move(self.x() + self.width() / 2, self.y() + self.height() / 2)
 
 
     # region Slot

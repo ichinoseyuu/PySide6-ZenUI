@@ -1,19 +1,20 @@
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve,QPoint
-from PySide6.QtGui import QResizeEvent,QColor
+from PySide6.QtCore import QPoint
+from PySide6.QtGui import QResizeEvent
 from typing import overload
-from ZenUI._legacy.component.page import ZPage
-from ZenUI._legacy.component.scrollpage import ZScrollPage
-
+from ZenUI.component.page import ZPage
+from ZenUI.component.scrollpanel import ZScrollPanel
 class ZStackPanel(QWidget):
-    '''堆叠面板'''
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
                  start_point: QPoint = QPoint(0, 40),
                  hide_last_page: bool = True
                  ):
-        super().__init__(parent, name)
+        super().__init__(parent)
+        if name: self.setObjectName(name)
+        # self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
+        # self.setStyleSheet('background-color:transparent;border: 1px solid red;')
         self._pages = {}
         self._page_count = 0
         self._current_page = None
@@ -22,10 +23,8 @@ class ZStackPanel(QWidget):
         self._hide_last_page = hide_last_page
 
 
-    def addPage(self, page: ZPage|ZScrollPage, cover: bool = False, anim: bool = False):
+    def addPage(self, page: ZPage|ZScrollPanel, cover: bool = False, anim: bool = False):
         self._pages[self._page_count] = page
-        page._anim_move.setFactor(self._page_factor)
-        page._anim_move.setBias(self._page_bias)
         if not cover:
             self._handle_non_cover_page(page)
         else:
@@ -33,7 +32,7 @@ class ZStackPanel(QWidget):
         self._page_count += 1
 
 
-    def _handle_non_cover_page(self, page: ZPage|ZScrollPage):
+    def _handle_non_cover_page(self, page: ZPage|ZScrollPanel):
         if self._current_page is None:
             self._current_page = page
             self._current_page.resize(self.width(), self.height())
@@ -46,12 +45,10 @@ class ZStackPanel(QWidget):
 
     @overload
     def removePage(self, index: int) -> None:
-        '''根据索引移除页面'''
-        pass
+        ...
     @overload
     def removePage(self, name: str) -> None:
-        '''更具`objectName`移除页面'''
-        pass
+        ...
 
     def removePage(self, arg):
         if isinstance(arg, int):
@@ -65,35 +62,33 @@ class ZStackPanel(QWidget):
 
     @overload
     def setCurrentPage(self, name: str, anim: bool = True) -> None:
-        '''将`objectName`为`name`的页面设置为当前页面'''
-        pass
+        ...
+
     @overload
     def setCurrentPage(self, index: int, anim: bool = True) -> None:
-        '''将索引为`index`的页面设置为当前页面'''
-        pass
+        ...
+
     @overload
-    def setCurrentPage(self, page: ZPage|ZScrollPage, anim: bool = True) -> None:
-        '''将`page`设置为当前页面'''
-        pass
+    def setCurrentPage(self, page: ZPage|ZScrollPanel, anim: bool = True) -> None:
+        ...
 
     def setCurrentPage(self, arg, anim: bool = True):
-        # 获取发送信号的对象
         if isinstance(arg, (int, str)):
             page = self.page(arg)
             if page is not None:
                 self.setCurrentPage(page, anim)
-        elif isinstance(arg, ZPage|ZScrollPage):
+        elif isinstance(arg, ZPage|ZScrollPanel):
             self._last_page = self._current_page
             self._current_page = arg
             self._current_page.resize(self.width(), self.height())
             if anim:
-                self._current_page.move(self._start_point.x, self._start_point.y)
+                self._current_page.move(self._start_point)
                 if self._hide_last_page and self._last_page is not None:
                     self._last_page.hide()
                     self._current_page.show()
                 else:
                     self._current_page.raise_()
-                self._current_page.moveTo(0, 0)
+                self._current_page.moveAnimation.moveTo(0, 0)
             else:
                 self._current_page.move(0, 0)
                 if self._hide_last_page and self._last_page is not None:
@@ -104,12 +99,10 @@ class ZStackPanel(QWidget):
 
 
     def currentPage(self):
-        '''获取当前页面'''
         return self._current_page
 
 
     def currentPageIndex(self) -> int|None:
-        '''获取当前页面的索引'''
         for key, val in self._pages.items():
             if val == self._current_page:
                 return key
@@ -117,18 +110,15 @@ class ZStackPanel(QWidget):
 
 
     def lastPage(self):
-        '''获取上一个页面'''
         return self._last_page
 
 
     @overload
-    def page(self, index: int) -> ZPage|ZScrollPage|None:
-        '''获取页面'''
-        pass
+    def page(self, index: int) -> ZPage|ZScrollPanel|None:
+        ...
     @overload
-    def page(self, name: str) -> ZPage|ZScrollPage|None:
-        '''获取页面'''
-        pass
+    def page(self, name: str) -> ZPage|ZScrollPanel|None:
+        ...
 
     def page(self, arg):
         if isinstance(arg, int):
@@ -141,23 +131,15 @@ class ZStackPanel(QWidget):
 
 
     def pages(self):
-        '''获取所有页面'''
         pages = []
         for val in self._pages.values():
             pages.append(val)
         return pages
 
-
-    def setPageAnim(self, factor: float, bias: float):
-        '''设置页面移动动画'''
-        self._page_factor = factor
-        self._page_bias = bias
-        for i in self.pages():
-            i._anim_move.setFactor(factor)
-            i._anim_move.setBias(bias)
-
     def sizeHint(self):
-        return self._current_page.sizeHint()
+        if self._current_page is not None:
+            return self._current_page.sizeHint()
+        return super().sizeHint()
 
     def resizeEvent(self, event:QResizeEvent):
         super().resizeEvent(event)

@@ -8,8 +8,8 @@ from .abcbutton import ZABCButton
 
 class ZButton(ZABCButton):
     def __init__(self,
-                 name: str,
                  parent: QWidget = None,
+                 name: str = None,
                  text: str = None,
                  icon: QIcon = None):
         super().__init__(parent)

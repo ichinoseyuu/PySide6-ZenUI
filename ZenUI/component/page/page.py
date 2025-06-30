@@ -1,12 +1,13 @@
 from enum import Enum
 from PySide6.QtWidgets import QWidget,QVBoxLayout,QHBoxLayout,QSizePolicy
-from PySide6.QtCore import Qt,QMargins,QRectF
+from PySide6.QtCore import Qt,QMargins,QRectF,Signal
 from PySide6.QtGui import QPainter,QPen
 from ZenUI.component.base import BackGroundStyle,BorderStyle,CornerStyle, MoveExpAnimation
 from ZenUI.core import ZGlobal,ZPageStyleData
 
 
 class ZPage(QWidget):
+    resized = Signal()
     class Layout(Enum):
         Row = 0
         Column = 1
@@ -19,6 +20,8 @@ class ZPage(QWidget):
                  alignment: Qt.AlignmentFlag = None):
         super().__init__(parent)
         if name: self.setObjectName(name)
+        # self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
+        # self.setStyleSheet('background-color:transparent;border: 1px solid red;')
         if layout == self.Layout.Row:
             self._layout = QHBoxLayout(self)
         elif layout == self.Layout.Column:
@@ -76,7 +79,7 @@ class ZPage(QWidget):
         self._corner_style.radius = data.radius
         self._background_style.setColorTo(data.body)
         self._border_style.setColorTo(data.border)
-        
+
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -99,3 +102,7 @@ class ZPage(QWidget):
 
     def sizeHint(self):
         return self._layout.sizeHint()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.resized.emit()

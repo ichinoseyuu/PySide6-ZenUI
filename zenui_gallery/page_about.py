@@ -17,4 +17,5 @@ class PageAbout(ZPage):
                                  name='text',
                                  text='关于')
         self.text.setFont(QFont('Microsoft YaHei', 24, QFont.Bold))
+        self.text.margins = QMargins(12, 0, 6, 0)
         self.layout().addWidget(self.text)

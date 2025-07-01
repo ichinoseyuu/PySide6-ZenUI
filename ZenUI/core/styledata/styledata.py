@@ -1,14 +1,13 @@
 from typing import Union, overload, Dict, Any
 from PySide6.QtGui import QColor
 from ..theme import ZThemeManager
-from .models import (ZButtonStyleData, ZTitleBarButtonData, ZFramelessWindowStyleData,
-                     ZTextBlockStyleData,ZToolTipStyleData, ZToggleButtonStyleData,
-                     ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData,ZPageStyleData)
-from .theme_data import THEME_DATA
+from .models import *
+from .theme_data import *
 
 StyleDataType = Union[ZButtonStyleData, ZTitleBarButtonData,ZFramelessWindowStyleData,
                       ZTextBlockStyleData,ZToolTipStyleData, ZToggleButtonStyleData,
-                      ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData,ZPageStyleData]
+                      ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData,ZPageStyleData,
+                      ZScrollPageStyleData]
 
 class ZStyleDataFactory:
     @staticmethod
@@ -20,6 +19,13 @@ class ZStyleDataFactory:
             'ZPage': lambda d: ZPageStyleData(
                 body=QColor(d.get('body')),
                 border=QColor(d.get('border')),
+                radius=int(d.get('radius'))
+            ),
+            'ZScrollPage': lambda d: ZScrollPageStyleData(
+                body=QColor(d.get('body')),
+                border=QColor(d.get('border')),
+                handlebody=QColor(d.get('handlebody')),
+                handleborder=QColor(d.get('handleborder')),
                 radius=int(d.get('radius'))
             ),
             'ZButton': lambda d: ZButtonStyleData(

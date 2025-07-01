@@ -1,5 +1,11 @@
 from dataclasses import dataclass
 from PySide6.QtGui import QColor
+
+__all__ = ['ZFramelessWindowStyleData','ZButtonStyleData','ZTitleBarButtonData',
+            'ZTextBlockStyleData','ZToolTipStyleData','ZToggleButtonStyleData',
+            'ZNavBarButtonStyleData','ZNavBarToggleButtonStyleData','ZPageStyleData',
+            'ZScrollPageStyleData']
+
 @dataclass
 class ZFramelessWindowStyleData:
     body: QColor
@@ -17,6 +23,14 @@ class ZTitleBarButtonData:
 class ZPageStyleData:
     body: QColor
     border: QColor
+    radius: int
+
+@dataclass
+class ZScrollPageStyleData:
+    body: QColor
+    border: QColor
+    handlebody: QColor
+    handleborder: QColor
     radius: int
 
 @dataclass

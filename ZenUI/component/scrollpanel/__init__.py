@@ -1,1 +1,1 @@
-from .scrollpanel import ZScrollPanel
+from .scrollpage import ZScrollPage

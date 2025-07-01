@@ -5,6 +5,12 @@ from typing import overload
 from ZenUI.core import ZExpAnimationRefactor
 import logging
 
+
+__all__ = ["MoveExpAnimation","MovePropertyAnimation",
+           "ResizeExpAnimation", "ResizePropertyAnimation",
+           "WindowOpacityExpAnimation", "WindowOpacityPropertyAnimation","OpacityExpAnimation",
+           "LengthExpAnimation", "WidthExpAnimation"]
+
 # region Move
 class MovePropertyAnimation(QObject):
     def __init__(self, parent:QWidget):
@@ -316,6 +322,77 @@ class OpacityExpAnimation(QObject):
 
     def parent(self) -> QWidget:
         return super().parent()
+
+# region Length
+class LengthExpAnimation(QObject):
+    def __init__(self, parent: QWidget):
+        super().__init__(parent)
+        self._length: int = 0
+        self._anim = ZExpAnimationRefactor(self, "length")
+        self._anim.setBias(0.05)
+        self._anim.setFactor(0.2)
+
+    @property
+    def parentWidget(self) -> QWidget:
+        return self.parent()
+
+    @property
+    def animation(self) -> ZExpAnimationRefactor:
+        return self._anim
+
+    def getLength(self) -> int:
+        return self._length
+
+    def setLength(self, length: int) -> None:
+        self._length = length
+        self.parent().update()
+
+    length = Property(int, getLength, setLength)
+
+    def setLengthTo(self, length: int) -> None:
+        self._anim.stop()
+        self._anim.setCurrentValue(self.getLength())
+        self._anim.setEndValue(length)
+        self._anim.start()
+
+    def parent(self) -> QWidget:
+        return super().parent()
+
+# region Width
+class WidthExpAnimation(QObject):
+    def __init__(self, parent: QWidget):
+        super().__init__(parent)
+        self._width: int = 0
+        self._anim = ZExpAnimationRefactor(self, "width")
+        self._anim.setBias(0.05)
+        self._anim.setFactor(0.2)
+
+    @property
+    def parentWidget(self) -> QWidget:
+        return self.parent()
+
+    @property
+    def animation(self) -> ZExpAnimationRefactor:
+        return self._anim
+
+    def getWidth(self) -> int:
+        return self._width
+
+    def setWidth(self, width: int) -> None:
+        self._width = width
+        self.parent().update()
+
+    width = Property(int, getWidth, setWidth)
+
+    def setLengthTo(self, width: int) -> None:
+        self._anim.stop()
+        self._anim.setCurrentValue(self.getWidth())
+        self._anim.setEndValue(width)
+        self._anim.start()
+
+    def parent(self) -> QWidget:
+        return super().parent()
+
 
 class Panel(QWidget):
     def __init__(self):

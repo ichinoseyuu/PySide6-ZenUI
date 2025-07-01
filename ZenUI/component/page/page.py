@@ -84,9 +84,9 @@ class ZPage(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        # draw background
         rect = self.rect()
         radius = self._corner_style.radius
+        # draw background
         painter.setPen(Qt.NoPen)
         painter.setBrush(self._background_style.color)
         painter.drawRoundedRect(rect, radius, radius)

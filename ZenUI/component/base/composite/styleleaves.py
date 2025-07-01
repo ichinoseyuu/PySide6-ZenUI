@@ -4,6 +4,8 @@ from PySide6.QtGui import *
 from enum import Enum
 import logging
 
+__all__ = ['IconStyle', 'TextStyle', 'BackGroundStyle', 'BorderStyle', 'CornerStyle','GradientBackGroundStyle']
+
 class AnimatedColorProperty(QObject):
     def __init__(self, parent: QWidget):
         super().__init__(parent)

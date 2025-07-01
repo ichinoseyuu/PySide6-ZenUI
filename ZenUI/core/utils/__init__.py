@@ -1,1 +1,1 @@
-from .decorator import singleton
+from .decorator import *

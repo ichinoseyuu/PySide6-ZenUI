@@ -3,7 +3,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QResizeEvent
 from typing import overload
 from ZenUI.component.page import ZPage
-from ZenUI.component.scrollpanel import ZScrollPanel
+from ZenUI.component.scrollpanel import ZScrollPage
 class ZStackPanel(QWidget):
     def __init__(self,
                  parent: QWidget = None,
@@ -23,7 +23,7 @@ class ZStackPanel(QWidget):
         self._hide_last_page = hide_last_page
 
 
-    def addPage(self, page: ZPage|ZScrollPanel, cover: bool = False, anim: bool = False):
+    def addPage(self, page: ZPage|ZScrollPage, cover: bool = False, anim: bool = False):
         self._pages[self._page_count] = page
         if not cover:
             self._handle_non_cover_page(page)
@@ -32,7 +32,7 @@ class ZStackPanel(QWidget):
         self._page_count += 1
 
 
-    def _handle_non_cover_page(self, page: ZPage|ZScrollPanel):
+    def _handle_non_cover_page(self, page: ZPage|ZScrollPage):
         if self._current_page is None:
             self._current_page = page
             self._current_page.resize(self.width(), self.height())
@@ -69,7 +69,7 @@ class ZStackPanel(QWidget):
         ...
 
     @overload
-    def setCurrentPage(self, page: ZPage|ZScrollPanel, anim: bool = True) -> None:
+    def setCurrentPage(self, page: ZPage|ZScrollPage, anim: bool = True) -> None:
         ...
 
     def setCurrentPage(self, arg, anim: bool = True):
@@ -77,7 +77,7 @@ class ZStackPanel(QWidget):
             page = self.page(arg)
             if page is not None:
                 self.setCurrentPage(page, anim)
-        elif isinstance(arg, ZPage|ZScrollPanel):
+        elif isinstance(arg, ZPage|ZScrollPage):
             self._last_page = self._current_page
             self._current_page = arg
             self._current_page.resize(self.width(), self.height())
@@ -114,10 +114,10 @@ class ZStackPanel(QWidget):
 
 
     @overload
-    def page(self, index: int) -> ZPage|ZScrollPanel|None:
+    def page(self, index: int) -> ZPage|ZScrollPage|None:
         ...
     @overload
-    def page(self, name: str) -> ZPage|ZScrollPanel|None:
+    def page(self, name: str) -> ZPage|ZScrollPage|None:
         ...
 
     def page(self, arg):

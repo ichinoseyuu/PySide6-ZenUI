@@ -1,6 +1,9 @@
 from typing import Dict, Any
 from types import MappingProxyType
 from ..color import ZColorTool
+
+__all__ = ['ACCENT_COLOR_LIGHT', 'ACCENT_COLOR_DARK', 'THEME_DATA', 'DARK_THEME', 'LIGHT_THEME']
+
 ACCENT_COLOR_LIGHT: str = '#38b9f2'
 
 ACCENT_COLOR_DARK: str = '#955595'
@@ -12,6 +15,13 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZPage': {
                 'body': '#272727',
                 'border': '#1d1d1d',
+                'radius': 5
+                },
+            'ZScrollPage': {
+                'body': '#272727',
+                'border': '#1d1d1d',
+                'handlebody': "#454545",
+                'handleborder': '#4d4d4d',
                 'radius': 5
                 },
             'ZButton': {
@@ -108,6 +118,13 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZPage': {
                 'body': '#f9f9f9',
                 'border': '#e5e5e5',
+                'radius': 5
+                },
+            'ZScrollPage': {
+                'body': '#f9f9f9',
+                'border': '#e5e5e5',
+                'handlebody': '#cdcdcd',
+                'handleborder': '#c9c9c9',
                 'radius': 5
                 },
             'ZButton': {

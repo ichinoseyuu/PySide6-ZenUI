@@ -2,26 +2,46 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from enum import Enum
-from ZenUI.component.base import BackGroundStyle,BorderStyle,CornerStyle
-from ZenUI.core import ZColorTool
+from ZenUI.component.base import BackGroundStyle,BorderStyle,CornerStyle,MoveExpAnimation
+from ZenUI.core import ZExpAnimationRefactor
 class ScrollHandle(QWidget):
-    class Direction(Enum):
+    class State(Enum):
+        Normal = 0
+        Hover = 1
+    class Orientation(Enum):
         Vertical = 0
         Horizontal = 1
     def __init__(self,
                  parent: QWidget = None,
-                 direction: Direction = Direction.Vertical):
+                 direction: Orientation = Orientation.Vertical):
         super().__init__(parent)
-        self._direction = direction
-        self._dragging = False
-        self._drag_start_pos = QPoint()
+        self._state: ScrollHandle.State = self.State.Normal
+        self._orientation: ScrollHandle.Orientation = direction
+        self._dragging: bool = False
+        self._drag_start_pos: QPoint = QPoint()
+        self._handle_width: int = 1
+        self._handle_width_max: int = 5
         # style property
         self._background_style = BackGroundStyle(self)
         self._border_style = BorderStyle(self)
         self._corner_style = CornerStyle(self)
+        self._corner_style.radius = self._handle_width / 2
         # anim property
-        self._length_anim = QPropertyAnimation(self, b"length")
-        self._length_anim.setDuration(150)
+        self._move_anim = MoveExpAnimation(self)
+        self._length_anim = ZExpAnimationRefactor(self, "handleLength")
+        self._width_anim = ZExpAnimationRefactor(self, "handleWidth")
+        # trans timer
+        self._trans_timer = QTimer(self)
+        self._trans_timer.setSingleShot(True)
+        self._trans_timer.timeout.connect(self.toTransparent)
+        # init width
+        if self._orientation == self.Orientation.Vertical: 
+            self.setFixedWidth(self._handle_width_max) 
+        else:
+            self.setFixedHeight(self._handle_width_max)
+        # init style
+        self._background_style.transparent()
+        self._border_style.transparent()
 
     @property
     def backgroundStyle(self):
@@ -35,41 +55,64 @@ class ScrollHandle(QWidget):
     def cornerStyle(self):
         return self._corner_style
 
+    @property
+    def moveAnimation(self):
+        return self._move_anim
+
     @Property(int)
-    def length(self):
+    def handleLength(self):
         """根据方向返回长度"""
-        return self.height() if self._direction == self.Direction.Vertical else self.width()
+        return self.height() if self._orientation == self.Orientation.Vertical else self.width()
 
-    @length.setter
-    def length(self, value):
+    @handleLength.setter
+    def handleLength(self, value):
         """根据方向设置长度"""
-        if self._direction == self.Direction.Vertical:
-            self.resize(self.width(), value)
-        else:
-            self.resize(value, self.height())
+        self.setFixedHeight(value) if self._orientation == self.Orientation.Vertical else self.setFixedWidth(value)
 
-    def setLengthTo(self, value):
+    def setHandleLengthTo(self, value):
         '长度动画'
         self._length_anim.stop()
-        self._length_anim.setStartValue(self.length)
+        self._length_anim.setCurrentValue(self.handleLength)
         self._length_anim.setEndValue(value)
         self._length_anim.start()
+
+    @Property(int)
+    def handleWidth(self):
+        """根据方向返回宽度"""
+        return self._handle_width
+
+    @handleWidth.setter
+    def handleWidth(self, value):
+        """根据方向设置宽度"""
+        self._handle_width = value
+        self._corner_style.radius = value / 2
+        self.update()
+
+    def setHandleWidthTo(self, value):
+        '宽度动画'
+        self._width_anim.stop()
+        self._width_anim.setCurrentValue(self.handleWidth)
+        self._width_anim.setEndValue(value)
+        self._width_anim.start()
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        rect = QRectF(1, 1, self.width()-2, self.height()-2)
+        if self._orientation == self.Orientation.Vertical:
+            rect = QRectF(self.width()-self._handle_width +.5, .5, self._handle_width-1, self.height()-1)
+        else:
+            rect = QRectF(.5, self.height()-self._handle_width+.5, self.width()-1, self._handle_width-1)
         radius = self._corner_style.radius
-        # 绘制外边框
-        painter.setPen(QPen(self._border_style.color, 1))
-        painter.setBrush(Qt.NoBrush)
-        painter.drawRoundedRect(rect, radius, radius)
-        # 绘制内部填充
-        inner_rect = rect.adjusted(0, 0, 0, 0)
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(self._background_style.color)
-        painter.drawRoundedRect(inner_rect, radius, radius)
-        painter.end()
+        # normal 状态只绘制边框
+        if self._state == self.State.Normal:
+            painter.setPen(QPen(self._border_style.color, 1))
+            painter.setBrush(Qt.NoBrush)
+            painter.drawRoundedRect(rect, radius, radius)
+        # hover 状态绘制边框和内部填充
+        elif self._state == self.State.Hover:
+            painter.setPen(QPen(self._border_style.color, 1))
+            painter.setBrush(self._background_style.color)
+            painter.drawRoundedRect(rect, radius, radius)
 
 
     def mousePressEvent(self, event: QMouseEvent):
@@ -80,27 +123,24 @@ class ScrollHandle(QWidget):
             self.setCursor(Qt.ClosedHandCursor)
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        if not self._dragging:
-            return
-        scroll_page = self.parent()
-        # 计算新的滑块位置
+        if not self._dragging: return
+
+        panel = self.parent()
+
         new_pos = event.globalPos() - self._drag_start_pos
-        if self._direction == self.Direction.Vertical:
-            # 垂直方向滚动
-            y = max(0, min(new_pos.y(), 
-                          scroll_page.height() - scroll_page._handle_h.height() - self.height()))
-            percentage = y / (scroll_page.height() - scroll_page._handle_h.height() - self.height())
-            max_scroll = scroll_page._content.height() - scroll_page.height()
+
+        if self._orientation == self.Orientation.Vertical:
+            y = max(0, min(new_pos.y(), panel.height() - panel._handle_h.height() - self.height()))
+            percentage = y / (panel.height() - panel._handle_h.height() - self.height())
+            max_scroll = panel._content.height() - panel.height()
             scroll_pos = int(percentage * max_scroll)
-            scroll_page.scrollTo(y=scroll_pos)
+            panel.scrollTo(y=scroll_pos)
         else:
-            # 水平方向滚动
-            x = max(0, min(new_pos.x(), 
-                          scroll_page.width() - scroll_page._handle_v.width() - self.width()))
-            percentage = x / (scroll_page.width() - scroll_page._handle_v.width() - self.width())
-            max_scroll = scroll_page._content.width() - scroll_page.width()
+            x = max(0, min(new_pos.x(), panel.width() - panel._handle_v.width() - self.width()))
+            percentage = x / (panel.width() - panel._handle_v.width() - self.width())
+            max_scroll = panel._content.width() - panel.width()
             scroll_pos = int(percentage * max_scroll)
-            scroll_page.scrollTo(x=scroll_pos)
+            panel.scrollTo(x=scroll_pos)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
@@ -109,7 +149,34 @@ class ScrollHandle(QWidget):
 
 
     def enterEvent(self, event):
-        pass
+        self._state = self.State.Hover
+        self._trans_timer.stop()
+        self._background_style.toOpaque()
+        self._border_style.toOpaque()
+        self.setHandleWidthTo(5)
 
     def leaveEvent(self, event):
-        pass
+        self._state = self.State.Normal
+        self.setHandleWidthTo(1)
+        self._trans_timer.start(1200)
+
+
+    def toTransparent(self):
+        self.backgroundStyle.toTransparent()
+        self.borderStyle.toTransparent()
+        self._trans_timer.stop()
+
+    def transparent(self):
+        self.backgroundStyle.transparent()
+        self.borderStyle.transparent()
+        self._trans_timer.stop()
+
+    def toOpaque(self):
+        self.backgroundStyle.toOpaque()
+        self.borderStyle.toOpaque()
+        self._trans_timer.start(1200)
+
+    def opaque(self):
+        self.backgroundStyle.opaque()
+        self.borderStyle.opaque()
+        self._trans_timer.start(1200)

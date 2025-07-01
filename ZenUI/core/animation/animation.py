@@ -3,14 +3,16 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-global_fps = 60
 
+__all__ = ['ZExpAnimation','ZExpAnimationRefactor','AnimationGroup',
+            'ExpAccelerateAnim','SqrExpAnimation','CounterAnimation']
+
+global_fps = 60
 
 class Curve:
     @staticmethod
     def LINEAR(x):
         return x
-
 
 class ABCAnimation(QObject):
     ticked = Signal(object)     # 动画进行一刻的信号

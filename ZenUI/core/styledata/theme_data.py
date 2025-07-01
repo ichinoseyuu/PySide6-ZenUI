@@ -123,8 +123,8 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZScrollPage': {
                 'body': '#f9f9f9',
                 'border': '#e5e5e5',
-                'handlebody': '#cdcdcd',
-                'handleborder': '#c9c9c9',
+                'handlebody': '#cfcfcf',
+                'handleborder': '#cdcdcd',
                 'radius': 5
                 },
             'ZButton': {

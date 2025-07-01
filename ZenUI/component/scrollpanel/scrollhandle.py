@@ -19,7 +19,7 @@ class ScrollHandle(QWidget):
         self._orientation: ScrollHandle.Orientation = direction
         self._dragging: bool = False
         self._drag_start_pos: QPoint = QPoint()
-        self._handle_width: int = 1
+        self._handle_width: int = 2
         self._handle_width_max: int = 5
         # style property
         self._background_style = BackGroundStyle(self)
@@ -98,10 +98,11 @@ class ScrollHandle(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
+        rect = self.rect()
         if self._orientation == self.Orientation.Vertical:
-            rect = QRectF(self.width()-self._handle_width +.5, .5, self._handle_width-1, self.height()-1)
+            rect = QRectF(self.width()-self._handle_width +.5, 3, self._handle_width-1, self.height()-3)
         else:
-            rect = QRectF(.5, self.height()-self._handle_width+.5, self.width()-1, self._handle_width-1)
+            rect = QRectF(3, self.height()-self._handle_width+.5, self.width()-3, self._handle_width-1)
         radius = self._corner_style.radius
         # normal 状态只绘制边框
         if self._state == self.State.Normal:
@@ -157,7 +158,7 @@ class ScrollHandle(QWidget):
 
     def leaveEvent(self, event):
         self._state = self.State.Normal
-        self.setHandleWidthTo(1)
+        self.setHandleWidthTo(2)
         self._trans_timer.start(1200)
 
 

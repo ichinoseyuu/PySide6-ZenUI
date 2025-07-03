@@ -256,7 +256,7 @@ class ZScrollPage(QWidget):
         self._content.moveAnimation.moveTo(self._content.x(), -new_scroll_pos)
 
         # 计算滑块高度
-        handle_h= max(10, vh * min(1.0, vh / ch))
+        handle_h= max(30, vh * min(1.0, vh / ch))
         # 计算滑块位置
         handle_space = vh - handle_h
         handle_pos = (new_scroll_pos / max_scroll) * handle_space
@@ -292,7 +292,7 @@ class ZScrollPage(QWidget):
         self._content.moveAnimation.moveTo(new_scroll_pos, self._content.y())
 
         # 计算滑块宽度
-        handle_w = max(10, vw * min(1.0, vw / cw))
+        handle_w = max(30, vw * min(1.0, vw / cw))
         # 计算滑块位置
         handle_space = vw - handle_w
         handle_pos = (new_scroll_pos / max_scroll) * handle_space

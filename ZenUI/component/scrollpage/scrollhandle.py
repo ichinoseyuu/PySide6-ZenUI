@@ -20,7 +20,8 @@ class ScrollHandle(QWidget):
         self._dragging: bool = False
         self._drag_start_pos: QPoint = QPoint()
         self._handle_width: int = 2
-        self._handle_width_max: int = 5
+        self._handle_width_min: int = 2
+        self._handle_width_max: int = 6
         # style property
         self._background_style = BackGroundStyle(self)
         self._border_style = BorderStyle(self)
@@ -30,6 +31,8 @@ class ScrollHandle(QWidget):
         self._move_anim = MoveExpAnimation(self)
         self._length_anim = ZExpAnimationRefactor(self, "handleLength")
         self._width_anim = ZExpAnimationRefactor(self, "handleWidth")
+        self._width_anim.setBias(0.5)
+        self._width_anim.setFactor(0.05)
         # trans timer
         self._trans_timer = QTimer(self)
         self._trans_timer.setSingleShot(True)
@@ -152,13 +155,13 @@ class ScrollHandle(QWidget):
     def enterEvent(self, event):
         self._state = self.State.Hover
         self._trans_timer.stop()
-        self._background_style.toOpaque()
-        self._border_style.toOpaque()
-        self.setHandleWidthTo(5)
+        self.backgroundStyle.opaque()
+        self.borderStyle.opaque()
+        self.setHandleWidthTo(self._handle_width_max)
 
     def leaveEvent(self, event):
         self._state = self.State.Normal
-        self.setHandleWidthTo(2)
+        self.setHandleWidthTo(self._handle_width_min)
         self._trans_timer.start(1200)
 
 

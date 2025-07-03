@@ -3,7 +3,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QResizeEvent
 from typing import overload
 from ZenUI.component.page import ZPage
-from ZenUI.component.scrollpanel import ZScrollPage
+from ZenUI.component.scrollpage import ZScrollPage
 class ZStackPanel(QWidget):
     def __init__(self,
                  parent: QWidget = None,

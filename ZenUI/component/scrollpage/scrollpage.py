@@ -4,20 +4,8 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.base import MoveExpAnimation,BorderStyle,CornerStyle,BackGroundStyle
 from ZenUI.core import ZScrollPageStyleData,ZGlobal
-from .scrollhandle import ScrollHandle
-class ZScrollContent(QWidget):
-    resized = Signal()
-    def __init__(self, parent: QWidget = None):
-        super().__init__(parent)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self._move_animation = MoveExpAnimation(self)
-
-    @property
-    def moveAnimation(self):
-        return self._move_animation
-
-    def resizeEvent(self, event: QResizeEvent) -> None:
-        self.resized.emit()
+from .handle import ScrollHandle
+from .content import ZScrollContent
 
 class ZScrollPage(QWidget):
     class Layout(Enum):
@@ -96,26 +84,26 @@ class ZScrollPage(QWidget):
     @styleData.setter
     def styleData(self, style_data: ZScrollPageStyleData):
         self._style_data = style_data
-        self._background_style.color = style_data.body
-        self._border_style.color = style_data.border
-        self._corner_style.width = style_data.radius
-        self._handle_h.backgroundStyle.color = style_data.handlebody
-        self._handle_v.backgroundStyle.color = style_data.handlebody
-        self._handle_h.borderStyle.color = style_data.handleborder
-        self._handle_v.borderStyle.color = style_data.handleborder
+        self._background_style.color = style_data.Body
+        self._border_style.color = style_data.Border
+        self._corner_style.width = style_data.Radius
+        self._handle_h.backgroundStyle.color = style_data.Handle
+        self._handle_v.backgroundStyle.color = style_data.Handle
+        self._handle_h.borderStyle.color = style_data.HandleBorder
+        self._handle_v.borderStyle.color = style_data.HandleBorder
         self._handle_h.update()
         self._handle_v.update()
         self.update()
 
     def themeChangHandler(self, theme):
         data = ZGlobal.styleDataManager.getStyleData('ZScrollPage', theme.name)
-        self._corner_style.radius = data.radius
-        self._background_style.setColorTo(data.body)
-        self._border_style.setColorTo(data.border)
-        self._handle_h.backgroundStyle.setColorTo(data.handlebody)
-        self._handle_v.backgroundStyle.setColorTo(data.handlebody)
-        self._handle_h.borderStyle.setColorTo(data.handleborder)
-        self._handle_v.borderStyle.setColorTo(data.handleborder)
+        self._corner_style.radius = data.Radius
+        self._background_style.setColorTo(data.Body)
+        self._border_style.setColorTo(data.Border)
+        self._handle_h.backgroundStyle.setColorTo(data.Handle)
+        self._handle_v.backgroundStyle.setColorTo(data.Handle)
+        self._handle_h.borderStyle.setColorTo(data.HandleBorder)
+        self._handle_v.borderStyle.setColorTo(data.HandleBorder)
         self._handle_h._trans_timer.start(1200)
         self._handle_v._trans_timer.start(1200)
 

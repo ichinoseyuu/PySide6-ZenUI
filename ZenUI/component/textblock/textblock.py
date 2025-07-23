@@ -91,13 +91,13 @@ class ZTextBlock(QWidget):
     @styleData.setter
     def styleData(self, style_data: ZTextBlockStyleData) -> None:
         self._style_data = style_data
-        self._text_style.color = style_data.text
+        self._text_style.color = style_data.Text
         self.update()
 
     # region Slot
     def themeChangeHandler(self, theme):
         self._style_data = ZGlobal.styleDataManager.getStyleData('ZTextBlock', theme.name)
-        self._text_style.setColorTo(self._style_data.text)
+        self._text_style.setColorTo(self._style_data.Text)
 
     # region Override
     def setFont(self, font: QFont) -> None:

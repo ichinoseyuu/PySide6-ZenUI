@@ -13,29 +13,13 @@ class ZThemeButton(ZABCTitleBarButton):
                     QSize(), QIcon.Mode.Normal, QIcon.State.On)
         self._icon: QIcon = icon
         self._theme: ZTheme = ZGlobal.themeManager.getTheme()
-        self.styleData = ZGlobal.styleDataManager.getStyleData("ZThemeButton")
+        self.styleData = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__)
 
     def themeChangeHandler(self, theme):
         self._theme = theme
-        self._style_data = ZGlobal.styleDataManager.getStyleData("ZThemeButton", theme.name)
-        self._background_style.setColorTo(self._style_data.body)
-        self._icon_style.setColorTo(self._style_data.icon)
-
-    def hoverHandler(self):
-        self._background_style.setColorTo(self._style_data.bodyhover)
-        self._icon_style.setColorTo(self._style_data.iconhover)
-
-    def leaveHandler(self):
-        self._background_style.setColorTo(self._style_data.body)
-        self._icon_style.setColorTo(self._style_data.icon)
-
-    def pressHandler(self):
-        self._background_style.setColorTo(self._style_data.bodypressed)
-        self._icon_style.setColorTo(self._style_data.iconpressed)
-
-    def releaseHandler(self):
-        self._background_style.setColorTo(self._style_data.body)
-        self._icon_style.setColorTo(self._style_data.icon)
+        self._style_data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
+        self._background_style.setColorTo(self._style_data.Body)
+        self._icon_style.setColorTo(self._style_data.Icon)
 
     def paintEvent(self, e):
         painter = QPainter(self)

@@ -45,8 +45,8 @@ class ZABCTitleBarButton(QWidget):
     @styleData.setter
     def styleData(self, style_data: ZTitleBarButtonData):
         self._style_data = style_data
-        self._background_style.color = style_data.body
-        self._icon_style.color = style_data.icon
+        self._background_style.color = style_data.Body
+        self._icon_style.color = style_data.Icon
         self.update()
 
     # region Func
@@ -56,19 +56,25 @@ class ZABCTitleBarButton(QWidget):
 
     # region Slot
     def themeChangeHandler(self, theme):
-        pass
+        self._style_data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
+        self._background_style.setColorTo(self._style_data.Body)
+        self._icon_style.setColorTo(self._style_data.Icon)
 
     def hoverHandler(self):
-        pass
+        self._background_style.setColorTo(self._style_data.BodyHover)
+        self._icon_style.setColorTo(self._style_data.IconHover)
 
     def leaveHandler(self):
-        pass
+        self._background_style.setColorTo(self._style_data.Body)
+        self._icon_style.setColorTo(self._style_data.Icon)
 
     def pressHandler(self):
-        pass
+        self._background_style.setColorTo(self._style_data.BodyPressed)
+        self._icon_style.setColorTo(self._style_data.IconPressed)
 
     def releaseHandler(self):
-        pass
+        self._background_style.setColorTo(self._style_data.Body)
+        self._icon_style.setColorTo(self._style_data.Icon)
 
     def clickHandler(self):
         pass

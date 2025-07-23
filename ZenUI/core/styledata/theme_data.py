@@ -1,5 +1,6 @@
 from typing import Dict, Any
 from types import MappingProxyType
+from .stylekey import StyleKey as K
 from ..color import ZColorTool
 
 __all__ = ['ACCENT_COLOR_LIGHT', 'ACCENT_COLOR_DARK', 'THEME_DATA', 'DARK_THEME', 'LIGHT_THEME']
@@ -10,206 +11,204 @@ ACCENT_COLOR_DARK: str = '#955595'
 
 DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZTextBlock':{
-                'text': '#dcdcdc'
+                K.Text: '#dcdcdc'
                 },
             'ZPage': {
-                'body': '#272727',
-                'border': '#1d1d1d',
-                'radius': 5
+                K.Body: '#272727',
+                K.Border: '#1d1d1d',
+                K.Radius: 5
                 },
             'ZScrollPage': {
-                'body': '#272727',
-                'border': '#1d1d1d',
-                'handlebody': "#454545",
-                'handleborder': '#4d4d4d',
-                'radius': 5
+                K.Body: '#272727',
+                K.Border: '#1d1d1d',
+                K.Handle: "#454545",
+                K.HandleBorder: '#4d4d4d',
+                K.Radius: 5
                 },
             'ZButton': {
-                'text': '#dcdcdc',
-                'icon': '#dcdcdc',
-                'body': '#2d2d2d',
-                'bodyhover': '#323232',
-                'bodypressed': '#272727',
-                'border': '#323232',
-                'radius': 5
+                K.Text: '#dcdcdc',
+                K.Icon: '#dcdcdc',
+                K.Body: '#2d2d2d',
+                K.BodyHover: '#323232',
+                K.BodyPressed: '#272727',
+                K.Border: '#323232',
+                K.Radius: 5
                 },
             'ZToggleButton': {
-                'text': '#dcdcdc',
-                'texttoggled': '#dcdcdc',
-                'icon': '#dcdcdc',
-                'icontoggled': '#dcdcdc',
-                'body': '#2d2d2d',
-                'bodyhover': '#323232',
-                'bodypressed': '#272727',
-                'bodytoggled': ACCENT_COLOR_DARK,
-                'bodytoggledhover': ZColorTool.adjust(ACCENT_COLOR_DARK, 0.05,0.05),
-                'bodytoggledpressed': ZColorTool.adjust(ACCENT_COLOR_DARK, 0.1,0.1),
-                'border': '#323232',
-                'bordertoggled':ACCENT_COLOR_DARK,
-                'radius': 5
+                K.Text: '#dcdcdc',
+                K.TextToggled: '#dcdcdc',
+                K.Icon: '#dcdcdc',
+                K.IconToggled: ACCENT_COLOR_DARK,
+                K.Body: '#2d2d2d',
+                K.BodyHover: '#323232',
+                K.BodyPressed: '#272727',
+                K.BodyToggled: ACCENT_COLOR_DARK,
+                K.BodyToggledHover: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.05,0.05),
+                K.BodyToggledPressed: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.1,0.1),
+                K.Border: '#323232',
+                K.BorderToggled:ACCENT_COLOR_DARK,
+                K.Radius: 5
                 },
             'ZNavBarButton': {
-                'icon': '#dcdcdc',
-                'body': '#00ffffff',
-                'bodyhover': '#1affffff',
-                'bodypressed': '#14ffffff',
-                'radius': 5
+                K.Icon: '#dcdcdc',
+                K.Body: '#00ffffff',
+                K.BodyHover: '#1affffff',
+                K.BodyPressed: '#14ffffff',
+                K.Radius: 5
                 },
             'ZNavBarToggleButton': {
-                'icon': '#dcdcdc',
-                'icontoggled': ACCENT_COLOR_DARK,
-                'body': '#00ffffff',
-                'bodyhover': '#1affffff',
-                'bodypressed': '#14ffffff',
-                'bodytoggled': '#10ffffff',
-                'bodytoggledhover': '#22ffffff',
-                'bodytoggledpressed': '#16ffffff',
-                'radius': 5
+                K.Icon: '#dcdcdc',
+                K.IconToggled: ACCENT_COLOR_DARK,
+                K.Body: '#00ffffff',
+                K.BodyHover: '#1affffff',
+                K.BodyPressed: '#14ffffff',
+                K.BodyToggled: '#10ffffff',
+                K.BodyToggledHover: '#22ffffff',
+                K.BodyToggledPressed: '#16ffffff',
+                K.Radius: 5
                 },
             'ZThemeButton': {
-                'icon': '#dcdcdc',
-                'iconhover': '#ffffff',
-                'iconpressed': '#ffffff',
-                'body': '#00ffffff',
-                'bodyhover': '#1affffff',
-                'bodypressed': '#12ffffff'
+                K.Icon: '#dcdcdc',
+                K.IconHover: '#ffffff',
+                K.IconPressed: '#ffffff',
+                K.Body: '#00ffffff',
+                K.BodyHover: '#1affffff',
+                K.BodyPressed: '#12ffffff'
                 },
             'ZMinimizeButton': {
-                'icon': '#dcdcdc',
-                'iconhover': '#ffffff',
-                'iconpressed': '#ffffff',
-                'body': '#00ffffff',
-                'bodyhover': '#1affffff',
-                'bodypressed': '#12ffffff'
+                K.Icon: '#dcdcdc',
+                K.IconHover: '#ffffff',
+                K.IconPressed: '#ffffff',
+                K.Body: '#00ffffff',
+                K.BodyHover: '#1affffff',
+                K.BodyPressed: '#12ffffff'
                 },
             'ZMaximizeButton': {
-                'icon': '#dcdcdc',
-                'iconhover': '#ffffff',
-                'iconpressed': '#ffffff',
-                'body': '#00ffffff',
-                'bodyhover': '#1affffff',
-                'bodypressed': '#12ffffff'
+                K.Icon: '#dcdcdc',
+                K.IconHover: '#ffffff',
+                K.IconPressed: '#ffffff',
+                K.Body: '#00ffffff',
+                K.BodyHover: '#1affffff',
+                K.BodyPressed: '#12ffffff'
                 },
             'ZCloseButton': {
-                'icon': '#dcdcdc',
-                'iconhover': '#ffffff',
-                'iconpressed': '#ffffff',
-                'body': '#00e81b23',
-                'bodyhover': '#ffe81b23',
-                'bodypressed': '#fff1707a'
+                K.Icon: '#dcdcdc',
+                K.IconHover: '#ffffff',
+                K.IconPressed: '#ffffff',
+                K.Body: '#00e81b23',
+                K.BodyHover: '#ffe81b23',
+                K.BodyPressed: '#fff1707a'
                 },
             'ZFramelessWindow': {
-                'body': '#202020'
+                K.Body: '#202020'
                 },
             'ZToolTip': {
-                'text': '#dcdcdc',
-                'body': '#2e2e2e',
-                'border': '#252525',
-                'radius': 5,
-                'flash': '#ffffff',
+                K.Text: '#dcdcdc',
+                K.Body: '#2e2e2e',
+                K.Border: '#252525',
+                K.Radius: 5,
                 },
             })
 
 
 LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZTextBlock':{
-                'text': '#333333'
+                K.Text: '#333333'
                 },
             'ZPage': {
-                'body': '#f9f9f9',
-                'border': '#e5e5e5',
-                'radius': 5
+                K.Body: '#ffffff',
+                K.Border: '#e5e5e5',
+                K.Radius: 5
                 },
             'ZScrollPage': {
-                'body': '#f9f9f9',
-                'border': '#e5e5e5',
-                'handlebody': '#cfcfcf',
-                'handleborder': '#cdcdcd',
-                'radius': 5
+                K.Body: '#f9f9f9',
+                K.Border: '#e5e5e5',
+                K.Handle: "#cfcfcf",
+                K.HandleBorder: '#cdcdcd',
+                K.Radius: 5
                 },
             'ZButton': {
-                'text': '#333333',
-                'icon': '#333333',
-                'body': '#ffffff',
-                'bodyhover': '#f2f2f2',
-                'bodypressed': '#ebebeb',
-                'border': '#dee2e6',
-                'radius': 5
+                K.Text: '#333333',
+                K.Icon: '#333333',
+                K.Body: '#ffffff',
+                K.BodyHover: '#f2f2f2',
+                K.BodyPressed: '#ebebeb',
+                K.Border: '#dee2e6',
+                K.Radius: 5
                 },
             'ZToggleButton': {
-                'text': '#333333',
-                'texttoggled': '#333333',
-                'icon': '#333333',
-                'icontoggled': '#333333',
-                'body': '#ffffff',
-                'bodyhover': '#f2f2f2',
-                'bodypressed': '#ebebeb',
-                'bodytoggled': ACCENT_COLOR_LIGHT,
-                'bodytoggledhover': ZColorTool.adjust(ACCENT_COLOR_LIGHT, -0.05),
-                'bodytoggledpressed': ZColorTool.adjust(ACCENT_COLOR_LIGHT, -0.1),
-                'border': '#dee2e6',
-                'bordertoggled':ACCENT_COLOR_LIGHT,
-                'radius': 5
+                K.Text: '#333333',
+                K.TextToggled: '#333333',
+                K.Icon: '#333333',
+                K.IconToggled: '#333333',
+                K.Body: '#ffffff',
+                K.BodyHover: '#f2f2f2',
+                K.BodyPressed: '#ebebeb',
+                K.BodyToggled: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.05,0.05),
+                K.BodyToggledHover: ACCENT_COLOR_LIGHT,
+                K.BodyToggledPressed: ZColorTool.adjust(ACCENT_COLOR_LIGHT, -0.1),
+                K.Border: '#dee2e6',
+                K.BorderToggled: '#00dee2e6',
+                K.Radius: 5
                 },
             'ZNavBarButton': {
-                'icon': '#555555',
-                'body': '#00000000',
-                'bodyhover': "#16000000",
-                'bodypressed': '#10000000',
-                'radius': 5
+                K.Icon: '#555555',
+                K.Body: '#00000000',
+                K.BodyHover: "#16000000",
+                K.BodyPressed: '#10000000',
+                K.Radius: 5
                 },
             'ZNavBarToggleButton': {
-                'icon': '#555555',
-                'icontoggled': ACCENT_COLOR_LIGHT,
-                'body': '#00000000',
-                'bodyhover': '#16000000',
-                'bodypressed': '#10000000',
-                'bodytoggled': '#0d000000',
-                'bodytoggledhover': '#18000000',
-                'bodytoggledpressed': '#12000000',
-                'radius': 5
+                K.Icon: '#555555',
+                K.IconToggled: ACCENT_COLOR_LIGHT,
+                K.Body: '#00000000',
+                K.BodyHover: '#16000000',
+                K.BodyPressed: '#10000000',
+                K.BodyToggled: '#0d000000',
+                K.BodyToggledHover: '#18000000',
+                K.BodyToggledPressed: '#12000000',
+                K.Radius: 5
                 },
             'ZThemeButton': {
-                'icon': '#333333',
-                'iconhover': '#000000',
-                'iconpressed': '#000000',
-                'body': '#00000000',
-                'bodyhover': '#1a000000',
-                'bodypressed': '#12000000'
+                K.Icon: '#333333',
+                K.IconHover: '#000000',
+                K.IconPressed: '#000000',
+                K.Body: '#00000000',
+                K.BodyHover: '#1a000000',
+                K.BodyPressed: '#12000000'
                 },
             'ZMinimizeButton': {
-                'icon': '#333333',
-                'iconhover': '#000000',
-                'iconpressed': '#000000',
-                'body': '#00000000',
-                'bodyhover': '#1a000000',
-                'bodypressed': '#12000000'
+                K.Icon: '#333333',
+                K.IconHover: '#000000',
+                K.IconPressed: '#000000',
+                K.Body: '#00000000',
+                K.BodyHover: '#1a000000',
+                K.BodyPressed: '#12000000'
                 },
             'ZMaximizeButton': {
-                'icon': '#333333',
-                'iconhover': '#000000',
-                'iconpressed': '#000000',
-                'body': '#00000000',
-                'bodyhover': '#1a000000',
-                'bodypressed': '#12000000'
+                K.Icon: '#333333',
+                K.IconHover: '#000000',
+                K.IconPressed: '#000000',
+                K.Body: '#00000000',
+                K.BodyHover: '#1a000000',
+                K.BodyPressed: '#12000000'
                 },
             'ZCloseButton': {
-                'icon': '#333333',
-                'iconhover': '#ffffff',
-                'iconpressed': '#ffffff',
-                'body': '#00e81b23',
-                'bodyhover': '#ffe81b23',
-                'bodypressed': '#fff1707a'
+                K.Icon: '#333333',
+                K.IconHover: '#ffffff',
+                K.IconPressed: '#ffffff',
+                K.Body: '#00e81b23',
+                K.BodyHover: '#ffe81b23',
+                K.BodyPressed: '#fff1707a'
                 },
             'ZFramelessWindow': {
-                'body': '#f3f3f3'
+                K.Body: '#f3f3f3'
                 },
             'ZToolTip': {
-                'text': '#333333',
-                'body': '#f3f3f3',
-                'border': '#dee2e6',
-                'radius': 5,
-                'flash': '#bfbfbf',
+                K.Text: '#333333',
+                K.Body: '#f3f3f3',
+                K.Border: '#dee2e6',
+                K.Radius: 5,
                 },
             })
 

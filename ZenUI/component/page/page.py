@@ -69,16 +69,16 @@ class ZPage(QWidget):
     @styleData.setter
     def styleData(self, style_data: ZPageStyleData):
         self._style_data = style_data
-        self._background_style.color = style_data.body
-        self._border_style.color = style_data.border
-        self._corner_style.width = style_data.radius
+        self._background_style.color = style_data.Body
+        self._border_style.color = style_data.Border
+        self._corner_style.width = style_data.Radius
         self.update()
 
     def themeChangHandler(self, theme):
         data = ZGlobal.styleDataManager.getStyleData('ZPage', theme.name)
-        self._corner_style.radius = data.radius
-        self._background_style.setColorTo(data.body)
-        self._border_style.setColorTo(data.border)
+        self._corner_style.radius = data.Radius
+        self._background_style.setColorTo(data.Body)
+        self._border_style.setColorTo(data.Border)
 
 
     def paintEvent(self, event):

@@ -69,9 +69,9 @@ class ZNavBarButton(ZABCNavBarButton):
     @styleData.setter
     def styleData(self, style_data: ZNavBarButtonStyleData) -> None:
         self._style_data = style_data
-        self._background_style.color = style_data.body
-        self._icon_style.color = style_data.icon
-        self._corner_style.radius = style_data.radius
+        self._background_style.color = style_data.Body
+        self._icon_style.color = style_data.Icon
+        self._corner_style.radius = style_data.Radius
         self.update()
 
 
@@ -79,21 +79,21 @@ class ZNavBarButton(ZABCNavBarButton):
     def themeChangeHandler(self, theme):
         data = ZGlobal.styleDataManager.getStyleData('ZNavBarButton',theme.name)
         self._style_data = data
-        self._corner_style.radius = data.radius
-        self._background_style.setColorTo(data.body)
-        self._icon_style.setColorTo(data.icon)
+        self._corner_style.radius = data.Radius
+        self._background_style.setColorTo(data.Body)
+        self._icon_style.setColorTo(data.Icon)
 
     def hoverHandler(self):
-        self._background_style.setColorTo(self.styleData.bodyhover)
+        self._background_style.setColorTo(self.styleData.BodyHover)
 
     def leaveHandler(self):
-        self._background_style.setColorTo(self.styleData.body)
+        self._background_style.setColorTo(self.styleData.Body)
 
     def pressHandler(self):
-        self._background_style.setColorTo(self.styleData.bodypressed)
+        self._background_style.setColorTo(self.styleData.BodyPressed)
 
     def releaseHandler(self):
-        self._background_style.setColorTo(self.styleData.bodyhover)
+        self._background_style.setColorTo(self.styleData.BodyHover)
 
     # region Override
     # Method

@@ -63,19 +63,19 @@ class ZToolTip(QWidget):
     @styleData.setter
     def styleData(self, data: ZToolTipStyleData):
         self._style_data = data
-        self._content.textStyle.color = QColor(data.text)
-        self._content.backgroundStyle.color = QColor(data.body)
-        self._content.borderStyle.color = QColor(data.border)
-        self._content.cornerStyle.radius = data.radius
+        self._content.textStyle.color = data.Text
+        self._content.backgroundStyle.color = data.Body
+        self._content.borderStyle.color = data.Border
+        self._content.cornerStyle.radius = data.Radius
         self._content.update()
 
     def themeChangeHandler(self, theme):
         data = ZGlobal.styleDataManager.getStyleData('ZToolTip', theme.name)
         self._style_data = data
-        self._content.cornerStyle.radius = data.radius
-        self._content.textStyle.setColorTo(QColor(data.text))
-        self._content.backgroundStyle.setColorTo(QColor(data.body))
-        self._content.borderStyle.setColorTo(QColor(data.border))
+        self._content.cornerStyle.radius = data.Radius
+        self._content.textStyle.setColorTo(data.Text)
+        self._content.backgroundStyle.setColorTo(data.Body)
+        self._content.borderStyle.setColorTo(data.Border)
         self._content.update()
 
     def insideOf(self):

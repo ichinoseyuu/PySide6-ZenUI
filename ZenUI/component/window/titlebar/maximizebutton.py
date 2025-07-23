@@ -7,28 +7,7 @@ class ZMaximizeButton(ZABCTitleBarButton):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._isMax = False
-        self.styleData = ZGlobal.styleDataManager.getStyleData("ZMaximizeButton")
-
-    def themeChangeHandler(self, theme):
-        self._style_data = ZGlobal.styleDataManager.getStyleData("ZMaximizeButton", theme.name)
-        self._background_style.setColorTo(self._style_data.body)
-        self._icon_style.setColorTo(self._style_data.icon)
-
-    def hoverHandler(self):
-        self._background_style.setColorTo(self._style_data.bodyhover)
-        self._icon_style.setColorTo(self._style_data.iconhover)
-
-    def leaveHandler(self):
-        self._background_style.setColorTo(self._style_data.body)
-        self._icon_style.setColorTo(self._style_data.icon)
-
-    def pressHandler(self):
-        self._background_style.setColorTo(self._style_data.bodypressed)
-        self._icon_style.setColorTo(self._style_data.iconpressed)
-
-    def releaseHandler(self):
-        self._background_style.setColorTo(self._style_data.body)
-        self._icon_style.setColorTo(self._style_data.icon)
+        self.styleData = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__)
 
     def setMaxState(self, isMax):
         if self._isMax == isMax: return

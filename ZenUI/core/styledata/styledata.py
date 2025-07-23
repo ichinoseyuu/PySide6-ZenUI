@@ -1,4 +1,6 @@
 from typing import Union, overload, Dict, Any
+from dataclasses import fields, is_dataclass
+from enum import Enum
 from PySide6.QtGui import QColor
 from ..theme import ZThemeManager
 from .models import *
@@ -10,110 +12,50 @@ StyleDataType = Union[ZButtonStyleData, ZTitleBarButtonData,ZFramelessWindowStyl
                       ZScrollPageStyleData]
 
 class ZStyleDataFactory:
+    dataclass_map = {
+            'ZTextBlock': ZTextBlockStyleData,
+            'ZPage': ZPageStyleData,
+            'ZScrollPage': ZScrollPageStyleData,
+            'ZButton': ZButtonStyleData,
+            'ZToggleButton': ZToggleButtonStyleData,
+            'ZThemeButton': ZTitleBarButtonData,
+            'ZNavBarButton': ZNavBarButtonStyleData,
+            'ZNavBarToggleButton': ZNavBarToggleButtonStyleData,
+            'ZMinimizeButton': ZTitleBarButtonData,
+            'ZMaximizeButton': ZTitleBarButtonData,
+            'ZCloseButton': ZTitleBarButtonData,
+            'ZFramelessWindow': ZFramelessWindowStyleData,
+            'ZToolTip': ZToolTipStyleData,
+        }
     @staticmethod
     def create(name: str, data: Dict[str, Any]) -> StyleDataType:
-        factories = {
-            'ZTextBlock': lambda d: ZTextBlockStyleData(
-                text=QColor(d.get('text')),
-            ),
-            'ZPage': lambda d: ZPageStyleData(
-                body=QColor(d.get('body')),
-                border=QColor(d.get('border')),
-                radius=int(d.get('radius'))
-            ),
-            'ZScrollPage': lambda d: ZScrollPageStyleData(
-                body=QColor(d.get('body')),
-                border=QColor(d.get('border')),
-                handlebody=QColor(d.get('handlebody')),
-                handleborder=QColor(d.get('handleborder')),
-                radius=int(d.get('radius'))
-            ),
-            'ZButton': lambda d: ZButtonStyleData(
-                text=QColor(d.get('text')),
-                icon=QColor(d.get('icon')),
-                body=QColor(d.get('body')),
-                bodyhover=QColor(d.get('bodyhover')),
-                bodypressed=QColor(d.get('bodypressed')),
-                border=QColor(d.get('border')),
-                radius=int(d.get('radius'))
-            ),
-            'ZToggleButton': lambda d: ZToggleButtonStyleData(
-                text=QColor(d.get('text')),
-                texttoggled=QColor(d.get('texttoggled')),
-                icon=QColor(d.get('icon')),
-                icontoggled=QColor(d.get('icontoggled')),
-                body=QColor(d.get('body')),
-                bodyhover=QColor(d.get('bodyhover')),
-                bodypressed=QColor(d.get('bodypressed')),
-                bodytoggled=QColor(d.get('bodytoggled')),
-                bodytoggledhover=QColor(d.get('bodytoggledhover')),
-                bodytoggledpressed=QColor(d.get('bodytoggledpressed')),
-                border=QColor(d.get('border')),
-                bordertoggled=QColor(d.get('bordertoggled')),
-                radius=int(d.get('radius'))
-            ),
-            'ZThemeButton': lambda d: ZTitleBarButtonData(
-                icon=QColor(d.get('icon')),
-                iconhover=QColor(d.get('iconhover')),
-                iconpressed=QColor(d.get('iconpressed')),
-                body=QColor(d.get('body')),
-                bodyhover=QColor(d.get('bodyhover')),
-                bodypressed=QColor(d.get('bodypressed'))
-            ),
-            'ZNavBarButton': lambda d: ZNavBarButtonStyleData(
-                icon=QColor(d.get('icon')),
-                body=QColor(d.get('body')),
-                bodyhover=QColor(d.get('bodyhover')),
-                bodypressed=QColor(d.get('bodypressed')),
-                radius=int(d.get('radius'))
-            ),
-            'ZNavBarToggleButton': lambda d: ZNavBarToggleButtonStyleData(
-                icon=QColor(d.get('icon')),
-                icontoggled=QColor(d.get('icontoggled')),
-                body=QColor(d.get('body')),
-                bodyhover=QColor(d.get('bodyhover')),
-                bodypressed=QColor(d.get('bodypressed')),
-                bodytoggled=QColor(d.get('bodytoggled')),
-                bodytoggledhover=QColor(d.get('bodytoggledhover')),
-                bodytoggledpressed=QColor(d.get('bodytoggledpressed')),
-                radius=int(d.get('radius'))
-            ),
-            'ZMinimizeButton': lambda d: ZTitleBarButtonData(
-                icon=QColor(d.get('icon')),
-                iconhover=QColor(d.get('iconhover')),
-                iconpressed=QColor(d.get('iconpressed')),
-                body=QColor(d.get('body')),
-                bodyhover=QColor(d.get('bodyhover')),
-                bodypressed=QColor(d.get('bodypressed'))
-            ),
-            'ZMaximizeButton': lambda d: ZTitleBarButtonData(
-                icon=QColor(d.get('icon')),
-                iconhover=QColor(d.get('iconhover')),
-                iconpressed=QColor(d.get('iconpressed')),
-                body=QColor(d.get('body')),
-                bodyhover=QColor(d.get('bodyhover')),
-                bodypressed=QColor(d.get('bodypressed'))
-            ),
-            'ZCloseButton': lambda d: ZTitleBarButtonData(
-                icon=QColor(d.get('icon')),
-                iconhover=QColor(d.get('iconhover')),
-                iconpressed=QColor(d.get('iconpressed')),
-                body=QColor(d.get('body')),
-                bodyhover=QColor(d.get('bodyhover')),
-                bodypressed=QColor(d.get('bodypressed'))
-            ),
-            'ZFramelessWindow': lambda d: ZFramelessWindowStyleData(
-                body=QColor(d.get('body')),
-            ),
-            'ZToolTip': lambda d: ZToolTipStyleData(
-                text=QColor(d.get('text')),
-                body=QColor(d.get('body')),
-                border=QColor(d.get('border')),
-                radius=int(d.get('radius')),
-                flash=QColor(d.get('flash'))
-            )
-        }
-        return factories[name](data)
+        cls = ZStyleDataFactory.dataclass_map.get(name)
+        if cls is None:
+            raise ValueError(f"Unknown style data class for component: {name}")
+        return ZStyleDataFactory.dict_to_dataclass(cls, data)
+
+
+    def dict_to_dataclass(cls, data: dict) -> StyleDataType:
+        if not is_dataclass(cls):
+            raise TypeError(f"{cls} is not a dataclass")
+        field_map = {f.name: f.type for f in fields(cls)}
+        filtered = {}
+        for k, v in data.items():
+            # 统一 key 为字符串
+            key_str = k.value if isinstance(k, Enum) else str(k)
+            if key_str in field_map:
+                target_type = field_map[key_str]
+                # 自动类型转换
+                if target_type is QColor:
+                    filtered[key_str] = QColor(v)
+                elif target_type is int:
+                    filtered[key_str] = int(v)
+                elif target_type is float:
+                    filtered[key_str] = float(v)
+                else:
+                    filtered[key_str] = v
+        return cls(**filtered)
+
 
 class ZStyleDataManager:
     def __init__(self):

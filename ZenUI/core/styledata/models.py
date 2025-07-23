@@ -6,87 +6,97 @@ __all__ = ['ZFramelessWindowStyleData','ZButtonStyleData','ZTitleBarButtonData',
             'ZNavBarButtonStyleData','ZNavBarToggleButtonStyleData','ZPageStyleData',
             'ZScrollPageStyleData']
 
+
+
 @dataclass
 class ZFramelessWindowStyleData:
-    body: QColor
+    Body: QColor
 
 @dataclass
 class ZTitleBarButtonData:
-    icon: QColor
-    iconhover: QColor
-    iconpressed: QColor
-    body: QColor
-    bodyhover: QColor
-    bodypressed: QColor
+    Icon: QColor
+    IconHover: QColor
+    IconPressed: QColor
+    Body: QColor
+    BodyHover: QColor
+    BodyPressed: QColor
 
 @dataclass
 class ZPageStyleData:
-    body: QColor
-    border: QColor
-    radius: int
+    Body: QColor
+    Border: QColor
+    Radius: int
 
 @dataclass
 class ZScrollPageStyleData:
-    body: QColor
-    border: QColor
-    handlebody: QColor
-    handleborder: QColor
-    radius: int
+    Body: QColor
+    Border: QColor
+    Handle: QColor
+    HandleBorder: QColor
+    Radius: int
 
 @dataclass
 class ZButtonStyleData:
-    text: QColor
-    icon: QColor
-    body: QColor
-    bodyhover: QColor
-    bodypressed: QColor
-    border: QColor
-    radius: int
+    Text: QColor
+    Icon: QColor
+    Body: QColor
+    BodyHover: QColor
+    BodyPressed: QColor
+    Border: QColor
+    Radius: int
 
 @dataclass
 class ZNavBarButtonStyleData:
-    icon: QColor
-    body: QColor
-    bodyhover: QColor
-    bodypressed: QColor
-    radius: int
+    Icon: QColor
+    Body: QColor
+    BodyHover: QColor
+    BodyPressed: QColor
+    Radius: int
 
 @dataclass
 class ZNavBarToggleButtonStyleData:
-    icon: QColor
-    icontoggled: QColor
-    body: QColor
-    bodyhover: QColor
-    bodypressed: QColor    
-    bodytoggled: QColor
-    bodytoggledhover: QColor
-    bodytoggledpressed: QColor
-    radius: int
+    Icon: QColor
+    IconToggled: QColor
+    Body: QColor
+    BodyHover: QColor
+    BodyPressed: QColor    
+    BodyToggled: QColor
+    BodyToggledHover: QColor
+    BodyToggledPressed: QColor
+    Radius: int
 
 @dataclass
 class ZToggleButtonStyleData:
-    text: QColor
-    texttoggled: QColor
-    icon: QColor
-    icontoggled: QColor
-    body: QColor
-    bodyhover: QColor
-    bodypressed: QColor
-    bodytoggled: QColor
-    bodytoggledhover: QColor
-    bodytoggledpressed: QColor
-    border: QColor
-    bordertoggled: QColor
-    radius: int
+    Text: QColor
+    TextToggled: QColor
+    Icon: QColor
+    IconToggled: QColor
+    Body: QColor
+    BodyHover: QColor
+    BodyPressed: QColor
+    BodyToggled: QColor
+    BodyToggledHover: QColor
+    BodyToggledPressed: QColor
+    Border: QColor
+    BorderToggled: QColor
+    Radius: int
+
+@dataclass
+class ZSliderStyleData:
+    Track: QColor
+    TrackBorder: QColor
+    TrackFilledStart: QColor
+    TrackFilledEnd: QColor
+    Handle: QColor
+    HandleBorder: QColor
 
 @dataclass
 class ZToolTipStyleData:
-    text: QColor
-    body: QColor
-    border: QColor
-    radius: int
-    flash: QColor
+    Text: QColor
+    Body: QColor
+    Border: QColor
+    Radius: int
 
 @dataclass
 class ZTextBlockStyleData:
-    text: QColor
+    Text: QColor

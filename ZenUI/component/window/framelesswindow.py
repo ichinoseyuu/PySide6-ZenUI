@@ -66,7 +66,7 @@ class ZFramelessWindow(QWidget):
     @styleData.setter
     def styleData(self, data: ZFramelessWindowStyleData) -> None:
         self._style_data = data
-        self.backgroundColor = data.body
+        self.backgroundColor = data.Body
 
     @property
     def centerWidget(self):
@@ -99,7 +99,7 @@ class ZFramelessWindow(QWidget):
     # region Slot
     def themeChangeHandler(self, theme):
         self._style_data = ZGlobal.styleDataManager.getStyleData('ZFramelessWindow', theme.name)
-        self.setBackgroundColorTo(QColor(self._style_data.body))
+        self.setBackgroundColorTo(QColor(self._style_data.Body))
 
     def __onScreenChanged(self):
         hWnd = int(self.windowHandle().winId())

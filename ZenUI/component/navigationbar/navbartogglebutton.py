@@ -75,13 +75,13 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
     def styleData(self, style_data: ZNavBarToggleButtonStyleData) -> None:
         """设置按钮样式数据"""
         self._style_data = style_data
-        self._corner_style.radius = style_data.radius
+        self._corner_style.radius = style_data.Radius
         if self._checked:
-            self._background_style.color = style_data.bodytoggled
-            self._icon_style.color = style_data.icontoggled
+            self._background_style.color = style_data.BodyToggled
+            self._icon_style.color = style_data.IconToggled
         else:
-            self._background_style.color = style_data.body
-            self._icon_style.color = style_data.icon
+            self._background_style.color = style_data.Body
+            self._icon_style.color = style_data.Icon
         self.update()
 
     # region Slot
@@ -89,31 +89,31 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         """主题改变事件处理"""
         data = ZGlobal.styleDataManager.getStyleData('ZNavBarToggleButton',theme.name)
         self._style_data = data
-        self._corner_style.radius = data.radius
+        self._corner_style.radius = data.Radius
         if self._checked:
-            self._background_style.setColorTo(data.bodytoggled)
-            self._icon_style.setColorTo(data.icontoggled)
+            self._background_style.setColorTo(data.BodyToggled)
+            self._icon_style.setColorTo(data.IconToggled)
         else:
-            self._background_style.setColorTo(data.body)
-            self._icon_style.setColorTo(data.icon)
+            self._background_style.setColorTo(data.Body)
+            self._icon_style.setColorTo(data.Icon)
 
     def hoverHandler(self):
         if self._checked:
-            self._background_style.setColorTo(self._style_data.bodytoggledhover)
+            self._background_style.setColorTo(self._style_data.BodyToggledHover)
         else:
-            self._background_style.setColorTo(self._style_data.bodyhover)
+            self._background_style.setColorTo(self._style_data.BodyHover)
 
     def leaveHandler(self):
         if self._checked:
-            self._background_style.setColorTo(self._style_data.bodytoggled)
+            self._background_style.setColorTo(self._style_data.BodyToggled)
         else:
-            self._background_style.setColorTo(self._style_data.body)
+            self._background_style.setColorTo(self._style_data.Body)
 
     def pressHandler(self):
         if self._checked:
-            self._background_style.setColorTo(self._style_data.bodytoggledpressed)
+            self._background_style.setColorTo(self._style_data.BodyToggledPressed)
         else:
-            self._background_style.setColorTo(self._style_data.bodypressed)
+            self._background_style.setColorTo(self._style_data.BodyPressed)
 
 
     def toggleHandler(self, checked):
@@ -122,12 +122,12 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
                 self._icon_style.color = QColor('#202020')
             else:
                 self._icon_style.color = QColor('#f3f3f3')
-            self._background_style.setColorTo(self._style_data.bodytoggledhover)
-            self._icon_style.setColorTo(self._style_data.icontoggled)
+            self._background_style.setColorTo(self._style_data.BodyToggledHover)
+            self._icon_style.setColorTo(self._style_data.IconToggled)
             self._indicator_anim.fadeIn()
         else:
-            self._background_style.setColorTo(self._style_data.bodyhover)
-            self._icon_style.setColorTo(self._style_data.icon)
+            self._background_style.setColorTo(self._style_data.BodyHover)
+            self._icon_style.setColorTo(self._style_data.Icon)
             self._indicator_anim.fadeOut()
 
     # region Override

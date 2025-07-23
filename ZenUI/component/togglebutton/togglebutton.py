@@ -110,17 +110,17 @@ class ZToggleButton(ZABCToggleButton):
     @styleData.setter
     def styleData(self, style_data: ZToggleButtonStyleData) -> None:
         self._style_data = style_data
-        self._corner_style.radius = style_data.radius
+        self._corner_style.radius = style_data.Radius
         if self._checked:
-            self._background_style.color = style_data.bodytoggled
-            self._text_style.color = style_data.texttoggled
-            self._icon_style.color = style_data.icontoggled
-            self._border_style.color = style_data.bordertoggled
+            self._background_style.color = style_data.BodyToggled
+            self._text_style.color = style_data.TextToggled
+            self._icon_style.color = style_data.IconToggled
+            self._border_style.color = style_data.BorderToggled
         else:
-            self._background_style.color = style_data.body
-            self._text_style.color = style_data.text
-            self._icon_style.color = style_data.icon
-            self._border_style.color = style_data.border
+            self._background_style.color = style_data.Body
+            self._text_style.color = style_data.Text
+            self._icon_style.color = style_data.Icon
+            self._border_style.color = style_data.Border
         self.update()
 
 
@@ -128,48 +128,48 @@ class ZToggleButton(ZABCToggleButton):
     def themeChangeHandler(self, theme):
         data = ZGlobal.styleDataManager.getStyleData('ZToggleButton',theme.name)
         self._style_data = data
-        self._corner_style.radius = data.radius
+        self._corner_style.radius = data.Radius
         if self._checked:
-            self._background_style.setColorTo(data.bodytoggled)
-            self._border_style.setColorTo(data.bordertoggled)
-            self._icon_style.setColorTo(data.icontoggled)
-            self._text_style.setColorTo(data.texttoggled)
+            self._background_style.setColorTo(data.BodyToggled)
+            self._border_style.setColorTo(data.BorderToggled)
+            self._icon_style.setColorTo(data.IconToggled)
+            self._text_style.setColorTo(data.TextToggled)
         else:
-            self._background_style.setColorTo(data.body)
-            self._border_style.setColorTo(data.border)
-            self._icon_style.setColorTo(data.icon)
-            self._text_style.setColorTo(data.text)
+            self._background_style.setColorTo(data.Body)
+            self._border_style.setColorTo(data.Border)
+            self._icon_style.setColorTo(data.Icon)
+            self._text_style.setColorTo(data.Text)
 
     def hoverHandler(self):
         if self._checked:
-            self._background_style.setColorTo(self._style_data.bodytoggledhover)
+            self._background_style.setColorTo(self._style_data.BodyToggledHover)
         else:
-            self._background_style.setColorTo(self._style_data.bodyhover)
+            self._background_style.setColorTo(self._style_data.BodyHover)
 
     def leaveHandler(self):
         if self._checked:
-            self._background_style.setColorTo(self._style_data.bodytoggled)
+            self._background_style.setColorTo(self._style_data.BodyToggled)
         else:
-            self._background_style.setColorTo(self._style_data.body)
+            self._background_style.setColorTo(self._style_data.Body)
 
     def pressHandler(self):
         if self._checked:
-            self._background_style.setColorTo(self._style_data.bodytoggledpressed)
+            self._background_style.setColorTo(self._style_data.BodyToggledPressed)
         else:
-            self._background_style.setColorTo(self._style_data.bodypressed)
+            self._background_style.setColorTo(self._style_data.BodyPressed)
 
 
     def toggleHandler(self, checked):
         if checked:
-            self._background_style.setColorTo(self._style_data.bodytoggledhover)
-            self._border_style.setColorTo(self._style_data.bordertoggled)
-            self._icon_style.setColorTo(self._style_data.icontoggled)
-            self._text_style.setColorTo(self._style_data.texttoggled)
+            self._background_style.setColorTo(self._style_data.BodyToggledHover)
+            self._border_style.setColorTo(self._style_data.BorderToggled)
+            self._icon_style.setColorTo(self._style_data.IconToggled)
+            self._text_style.setColorTo(self._style_data.TextToggled)
         else:
-            self._background_style.setColorTo(self._style_data.bodyhover)
-            self._border_style.setColorTo(self._style_data.border)
-            self._icon_style.setColorTo(self._style_data.icon)
-            self._text_style.setColorTo(self._style_data.text)
+            self._background_style.setColorTo(self._style_data.BodyHover)
+            self._border_style.setColorTo(self._style_data.Border)
+            self._icon_style.setColorTo(self._style_data.Icon)
+            self._text_style.setColorTo(self._style_data.Text)
 
     # region Override
     # Method

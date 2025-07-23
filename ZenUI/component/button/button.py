@@ -110,11 +110,11 @@ class ZButton(ZABCButton):
     @styleData.setter
     def styleData(self, style_data: ZButtonStyleData) -> None:
         self._style_data = style_data
-        self._background_style.color = style_data.body
-        self._text_style.color = style_data.text
-        self._icon_style.color = style_data.icon
-        self._border_style.color = style_data.border
-        self._corner_style.radius = style_data.radius
+        self._background_style.color = style_data.Body
+        self._text_style.color = style_data.Text
+        self._icon_style.color = style_data.Icon
+        self._border_style.color = style_data.Border
+        self._corner_style.radius = style_data.Radius
         self.update()
 
 
@@ -123,23 +123,23 @@ class ZButton(ZABCButton):
     def themeChangeHandler(self, theme):
         data = ZGlobal.styleDataManager.getStyleData('ZButton',theme.name)
         self._style_data = data
-        self._corner_style.radius = data.radius
-        self._background_style.setColorTo(data.body)
-        self._border_style.setColorTo(data.border)
-        self._icon_style.setColorTo(data.icon)
-        self._text_style.setColorTo(data.text)
+        self._corner_style.radius = data.Radius
+        self._background_style.setColorTo(data.Body)
+        self._border_style.setColorTo(data.Border)
+        self._icon_style.setColorTo(data.Icon)
+        self._text_style.setColorTo(data.Text)
 
     def hoverHandler(self):
-        self._background_style.setColorTo(self.styleData.bodyhover)
+        self._background_style.setColorTo(self.styleData.BodyHover)
 
     def leaveHandler(self):
-        self._background_style.setColorTo(self.styleData.body)
+        self._background_style.setColorTo(self.styleData.Body)
 
     def pressHandler(self):
-        self._background_style.setColorTo(self.styleData.bodypressed)
+        self._background_style.setColorTo(self.styleData.BodyPressed)
 
     def releaseHandler(self):
-        self._background_style.setColorTo(self.styleData.bodyhover)
+        self._background_style.setColorTo(self.styleData.BodyHover)
 
     # region Override
     # Method

@@ -7,28 +7,7 @@ from .abctitlebarbutton import ZABCTitleBarButton
 class ZMinimizeButton(ZABCTitleBarButton):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.styleData = ZGlobal.styleDataManager.getStyleData("ZMinimizeButton")
-
-    def themeChangeHandler(self, theme):
-        self._style_data = ZGlobal.styleDataManager.getStyleData("ZMinimizeButton", theme.name)
-        self._background_style.setColorTo(self._style_data.body)
-        self._icon_style.setColorTo(self._style_data.icon)
-
-    def hoverHandler(self):
-        self._background_style.setColorTo(self._style_data.bodyhover)
-        self._icon_style.setColorTo(self._style_data.iconhover)
-
-    def leaveHandler(self):
-        self._background_style.setColorTo(self._style_data.body)
-        self._icon_style.setColorTo(self._style_data.icon)
-
-    def pressHandler(self):
-        self._background_style.setColorTo(self._style_data.bodypressed)
-        self._icon_style.setColorTo(self._style_data.iconpressed)
-
-    def releaseHandler(self):
-        self._background_style.setColorTo(self._style_data.body)
-        self._icon_style.setColorTo(self._style_data.icon)
+        self.styleData = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__)
 
     def paintEvent(self, e):
         painter = QPainter(self)

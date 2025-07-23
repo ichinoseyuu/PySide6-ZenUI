@@ -4,6 +4,7 @@ from .togglebutton import *
 from .navigationbar import *
 from .page import *
 from .scrollpage import *
+from .slider import *
 from .stackpanel import *
 from .tooltip import *
 from .textblock import *

@@ -4,7 +4,7 @@ from PySide6.QtGui import QColor
 __all__ = ['ZFramelessWindowStyleData','ZButtonStyleData','ZTitleBarButtonData',
             'ZTextBlockStyleData','ZToolTipStyleData','ZToggleButtonStyleData',
             'ZNavBarButtonStyleData','ZNavBarToggleButtonStyleData','ZPageStyleData',
-            'ZScrollPageStyleData']
+            'ZScrollPageStyleData','ZSliderStyleData']
 
 
 
@@ -87,8 +87,10 @@ class ZSliderStyleData:
     TrackBorder: QColor
     TrackFilledStart: QColor
     TrackFilledEnd: QColor
-    Handle: QColor
+    HandleInner: QColor
+    HandleOuter: QColor
     HandleBorder: QColor
+    Radius: int
 
 @dataclass
 class ZToolTipStyleData:

@@ -150,23 +150,28 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         painter.setPen(Qt.NoPen)
         painter.setBrush(self._background_style.color)
         painter.drawRoundedRect(rect, radius, radius)
+
         # 1. 获取原始 QPixmap
         if self._checked:
             pixmap = self._icon.pixmap(self._icon_size, QIcon.Mode.Normal, QIcon.State.On)
         else:
             pixmap = self._icon.pixmap(self._icon_size, QIcon.Mode.Normal, QIcon.State.Off)
+
         # 2. 创建一个新的 QPixmap 用于着色
         colored_pixmap = QPixmap(pixmap.size())
+        colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
         colored_pixmap.fill(Qt.transparent)
         painter_pix = QPainter(colored_pixmap)
         painter_pix.drawPixmap(0, 0, pixmap)
         painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
         painter_pix.fillRect(colored_pixmap.rect(), self._icon_style.color)
         painter_pix.end()
+
         # 3. 绘制到按钮中心
         icon_x = (self.width() - self._icon_size.width()) // 2
         icon_y = (self.height() - self._icon_size.height()) // 2
         painter.drawPixmap(icon_x, icon_y, colored_pixmap)
+
         # draw indicator
         painter.setOpacity(self._indicator_anim.opacity)
         indicator_width = 3

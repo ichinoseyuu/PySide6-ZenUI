@@ -28,6 +28,10 @@ class SliderFill(QWidget):
     def moveAnimation(self):
         return self._move_animation
 
+    @property
+    def resizeAnimation(self):
+        return self._resize_animation
+
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -40,7 +44,7 @@ class SliderFill(QWidget):
 
         # 绘制背景
         if self._background_style.type == self._background_style.Type.Linear:
-            x1, y1, x2, y2 = self.background.linearPoints
+            x1, y1, x2, y2 = self._background_style.linearPoints
             gradient = QLinearGradient(
                 rect.width() * x1,
                 rect.height() * y1,
@@ -49,7 +53,7 @@ class SliderFill(QWidget):
             )
         elif self._background_style.type == self._background_style.Type.Radial:
             center = QPointF(self.width() / 2, self.height() / 2)
-            gradient = QRadialGradient(center, self.background.radialRadius, center)
+            gradient = QRadialGradient(center, self._background_style.radialRadius, center)
         elif self._background_style.type == self._background_style.Type.Conical:
             center = QPointF(self.width() / 2, self.height() / 2)
             gradient = QConicalGradient(center, self._background_style.conicalAngle)

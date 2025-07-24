@@ -9,13 +9,14 @@ from .theme_data import *
 StyleDataType = Union[ZButtonStyleData, ZTitleBarButtonData,ZFramelessWindowStyleData,
                       ZTextBlockStyleData,ZToolTipStyleData, ZToggleButtonStyleData,
                       ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData,ZPageStyleData,
-                      ZScrollPageStyleData]
+                      ZScrollPageStyleData,ZSliderStyleData]
 
 class ZStyleDataFactory:
     dataclass_map = {
             'ZTextBlock': ZTextBlockStyleData,
             'ZPage': ZPageStyleData,
             'ZScrollPage': ZScrollPageStyleData,
+            'ZSlider': ZSliderStyleData,
             'ZButton': ZButtonStyleData,
             'ZToggleButton': ZToggleButtonStyleData,
             'ZThemeButton': ZTitleBarButtonData,

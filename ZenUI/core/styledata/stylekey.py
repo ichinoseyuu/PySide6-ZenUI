@@ -42,6 +42,8 @@ class StyleKey(Enum):
     HandleHover = 'HandleHover'
     HandlePressed = 'HandlePressed'
     HandleBorder = 'HandleBorder'
+    HandleInner = 'HandleInner'
+    HandleOuter = 'HandleOuter'
 
     Track = 'Track'
     TrackFilled = 'TrackFilled'

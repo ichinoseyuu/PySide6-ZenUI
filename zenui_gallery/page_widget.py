@@ -8,7 +8,8 @@ class PageWidget(ZScrollPage):
         super().__init__(parent = parent,
                          name=name,
                          margins=QMargins(6, 6, 6, 6),
-                         spacing=12)
+                         spacing=12,
+                         alignment=Qt.AlignmentFlag.AlignTop|Qt.AlignmentFlag.AlignLeft)
         self._setup_ui()
 
     def _setup_ui(self):
@@ -35,3 +36,26 @@ class PageWidget(ZScrollPage):
                       text='切换按钮')
         self.toggle_btn.setToolTip('这是一个切换按钮')
         self.btn_box.addWidget(self.toggle_btn)
+
+        self.slider_box = QHBoxLayout()
+        self.slider_box.setContentsMargins(0, 0, 0, 0)
+        self.slider_box.setSpacing(6)
+        self.slider_box.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.content.layout().addLayout(self.slider_box)
+
+        self.slider = ZSlider(parent=self,
+                      name='slider',
+                      orientation=ZSlider.Orientation.Horizontal,
+                      scope=(0, 100),
+                      step=5,
+                      accuracy=1,
+                      value=20)
+        self.vslider = ZSlider(parent=self,
+                      name='vslider',
+                      orientation=ZSlider.Orientation.Vertical,
+                      scope=(0, 100),
+                      step=0.1,
+                      accuracy=0.1,
+                      value=30.00)
+        self.slider_box.addWidget(self.slider)
+        self.slider_box.addWidget(self.vslider)

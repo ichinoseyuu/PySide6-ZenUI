@@ -5,6 +5,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.base import MoveExpAnimation,ResizeExpAnimation,WindowOpacityExpAnimation
 from ZenUI.component.navigationbar import ZNavBarButton,ZNavBarToggleButton
+from ZenUI.component.slider import ZSlider
 from ZenUI.core import ZGlobal,ZToolTipStyleData,ZQuickEffect
 from .tooltipcontent import ZToolTipContent
 
@@ -41,7 +42,7 @@ class ZToolTip(QWidget):
 
         self._tracker_timer = QTimer()  # mouse move tracker
         self._tracker_timer.setInterval(int(1000/60))
-        self._tracker_timer.timeout.connect(self._refresh_position)
+        self._tracker_timer.timeout.connect(self._update_pos)
 
         ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
         ZQuickEffect.applyDropShadowOn(widget=self,color=(0, 0, 0, 40),blur_radius=12)
@@ -94,12 +95,12 @@ class ZToolTip(QWidget):
     def setText(self, text: str, flash: bool = True) -> None:
         if flash and self._content.text != text: self._flash()
         self._content.text = text
-        self._refresh_size()
-        #QTimer.singleShot(0, self._refresh_size)
+        self._update_size()
+        #QTimer.singleShot(0, self._update_size)
 
 
 
-    def _refresh_size(self):
+    def _update_size(self):
         self._content.adjustSize() # adjust size to content
         size = self._content.size() + QSize(2*self._margin, 2*self._margin)
         self._resize_anim.resizeTo(size)
@@ -118,16 +119,28 @@ class ZToolTip(QWidget):
             self._state = self.State.Showing
 
 
-    def _refresh_position(self):
+    def _update_pos(self):
         pos = self._get_pos_should_be_move()
         self._move_anim.moveTo(pos)
 
 
-    def _get_pos_should_be_move(self):
+    def _get_pos_should_be_move(self) -> QPoint:
         if isinstance(self._inside_of, (ZNavBarButton, ZNavBarToggleButton)):
             offset = QPoint(self._inside_of.width(), (self._inside_of.height()-self.height())/2)
             pos = self._inside_of.mapToGlobal(offset)
-            return  pos
+            return pos
+
+        if isinstance(self._inside_of, ZSlider):
+            handle = self._inside_of.handle
+            ancher = handle.mapToGlobal(handle.rect().center())
+            if self._inside_of.orientation == ZSlider.Orientation.Horizontal:
+                x = ancher.x() - self.width() / 2  # 水平居中对齐
+                y = ancher.y() - self.height() - 6  # 显示在滑块上方，留出6px间距
+                return QPoint(x, y)
+            x = ancher.x() - self.width() - 6 # 显示在滑块右侧，留出6px间距
+            y = ancher.y() - self.height() / 2  # 垂直居中对齐
+            return QPoint(x, y)
+
         pos = QCursor.pos()
         x, y = pos.x()-self.width()/2, pos.y()-self.height()
         return QPoint(x, y)

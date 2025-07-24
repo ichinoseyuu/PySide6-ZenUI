@@ -25,6 +25,16 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.HandleBorder: '#4d4d4d',
                 K.Radius: 5
                 },
+            'ZSlider': {
+                K.Track: '#464646',
+                K.TrackBorder: '#505050',
+                K.TrackFilledStart: ACCENT_COLOR_DARK,
+                K.TrackFilledEnd: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.1),
+                K.HandleInner: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.1),
+                K.HandleOuter: '#464646',
+                K.HandleBorder: '#505050',
+                K.Radius: 2
+                },
             'ZButton': {
                 K.Text: '#dcdcdc',
                 K.Icon: '#dcdcdc',
@@ -126,6 +136,16 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Handle: "#cfcfcf",
                 K.HandleBorder: '#cdcdcd',
                 K.Radius: 5
+                },
+            'ZSlider': {
+                K.Track: '#e5e5e5',
+                K.TrackBorder: '#e0e0e0',
+                K.TrackFilledStart: ACCENT_COLOR_LIGHT,
+                K.TrackFilledEnd: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.15),
+                K.HandleInner: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.15),
+                K.HandleOuter: '#ffffff',
+                K.HandleBorder: '#bfbfbf',
+                K.Radius: 2
                 },
             'ZButton': {
                 K.Text: '#333333',

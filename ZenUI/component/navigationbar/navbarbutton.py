@@ -117,6 +117,7 @@ class ZNavBarButton(ZABCNavBarButton):
 
         pixmap = self._icon.pixmap(self._icon_size)
         colored_pixmap = QPixmap(pixmap.size())
+        colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
         colored_pixmap.fill(Qt.transparent)
         painter_pix = QPainter(colored_pixmap)
         painter_pix.drawPixmap(0, 0, pixmap)

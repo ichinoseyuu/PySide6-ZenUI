@@ -2,60 +2,166 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from enum import IntEnum
-from ZenUI.core import ZGlobal
+from typing import overload
+from ZenUI.core import ZGlobal,ZSliderStyleData
 from .fill import SliderFill
 from .track import SliderTrack
+from .handle import SliderHandle
 class ZSlider(QWidget):
     class Orientation(IntEnum):
         Horizontal = 0
         Vertical = 1
     valueChanged = Signal(object)
+    displayValueChanged = Signal(str)
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
                  orientation: Orientation = Orientation.Horizontal,
-                 length: int = 100,
                  scope: tuple = (0, 100),
                  step: int = 1,
-                 value: int = 0,):
+                 step_multiplier: int = 1,
+                 accuracy: float = 1,
+                 value: int = 0,
+                 auto_strip_zero: bool = False):
         super().__init__(parent)
         if name: self.setObjectName(name)
         self._orientation = orientation
-        self._length = length
         self._scope = scope
         self._max = scope[1]
         self._min = scope[0]
-        self._step = step
-        self._value = value
+        self._step = max(step, accuracy)
+        self._step_multiplier = step_multiplier
+        self._accuracy = accuracy
+        self._value: int | float = 0
+        self._auto_strip_zero = auto_strip_zero
+
         self._percentage = 0
-        self._fill = SliderFill(self)
-        self._track = SliderTrack(self)
         self._track_width = 4
+        self._track_length: int = 0
         self._handle_radius = 10
+        self._min_length = 200
+        self._fixed_length = None
+
+        self._track = SliderTrack(self)
+        self._fill = SliderFill(self)
+        self._handle = SliderHandle(self,10)
+
         if self._orientation == self.Orientation.Horizontal:
-            self.setFixedHeight(self._handle_radius*2)
-            self.setFixedWidth(self._length + self._handle_radius*2)
+            self.setFixedHeight(2*self._handle_radius)
         elif self._orientation == self.Orientation.Vertical:
-            self.setFixedWidth(self._handle_radius*2)
-            self.setFixedHeight(self._length + self._handle_radius*2)
+            self._fill.backgroundStyle.reverse = True
+            self.setFixedWidth(2*self._handle_radius)
+
+        self._style_data: ZSliderStyleData = None
+        self.styleData = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__)
+        ZGlobal.themeManager.themeChanged.connect(self._theme_changed_handler)
         self.setValue(value)
-        # self._style_data: ZSlider = None
-        # self.styleData = ZGlobal.styleDataManager.getStyleData('ZScrollPage')
+
+        # self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
+        # self.setStyleSheet('background:transparent;border:1px solid red;')
+    @property
+    def autoStripZero(self):
+        return self._auto_strip_zero
+
+    @autoStripZero.setter
+    def autoStripZero(self, value: bool):
+        self._auto_strip_zero = value
 
     @property
     def value(self):
-        return self._value
+        if self._accuracy >= 1:
+            return int(round(self._value))
+        else:
+            decimal_places = max(0, len(str(self._accuracy).split('.')[-1]))
+            return round(self._value, decimal_places)
+
+    @property
+    def displayValue(self):
+        if self._accuracy >= 1:
+            return str(int(round(self._value)))
+        else:
+            decimal_places = max(0, len(str(self._accuracy).split('.')[-1]))
+            s = f"{self._value:.{decimal_places}f}"
+            if self._auto_strip_zero:
+                # 去掉多余的0和小数点
+                s = s.rstrip('0').rstrip('.') if '.' in s else s
+            return s
 
     @value.setter
-    def value(self, value):
-        self._value = self._normalize_value(value)
+    def value(self, value: int | float):
+        clamped = max(self._min, min(value, self._max))
+        self._value = clamped
         self._percentage = (self._value - self._min) / (self._max - self._min)
-        self._update_track()
+        self._update_value()
         self.valueChanged.emit(self._value)
+
+
+
+    @property
+    def scope(self):
+        return self._scope
+
+    @scope.setter
+    def scope(self, scope: tuple):
+        self._scope = scope
+        self._max = scope[1]
+        self._min = scope[0]
+        self.setValue(self._value)
+
+    @property
+    def max(self):
+        return self._max
+
+    @max.setter
+    def max(self, max: int | float):
+        self._max = max 
+        self._scope = (self._min, self._max)
+        self.setValue(self._value)
+
+    @property
+    def min(self):
+        return self._min
+
+    @min.setter
+    def min(self, min: int | float):
+        self._min = min
+        self._scope = (self._min, self._max)
+        self.setValue(self._value)
+
+    @property
+    def step(self):
+        return self._step
+
+    @step.setter
+    def step(self, step: int | float):
+        self._step = max(step, self._accuracy)
+
+    @property
+    def stepMultiplier(self):
+        return self._step_multiplier
+
+    @stepMultiplier.setter
+    def stepMultiplier(self, step_multiplier: int):
+        self._step_multiplier = step_multiplier
+
+    @property
+    def accuracy(self):
+        return self._accuracy
+
+    @accuracy.setter
+    def accuracy(self, accuracy: int | float):
+        self._accuracy = accuracy
+        self._step = max(self._step, accuracy)
+        self.setValue(self._value)
+
 
     @property
     def percentage(self):
         return self._percentage
+
+    @property
+    def orientation(self):
+        return self._orientation
 
     @property
     def track(self):
@@ -69,85 +175,88 @@ class ZSlider(QWidget):
     def handle(self):
         return self._handle
 
-    def setValue(self,value: int | float):
-        self._value = self._normalize_value(value)
+
+    @property
+    def styleData(self):
+        return self._style_data
+
+    @styleData.setter
+    def styleData(self, style_data: ZSliderStyleData):
+        self._style_data = style_data
+        self._track.backgroundStyle.color = style_data.Track
+        self._track.borderStyle.color = style_data.TrackBorder
+        self._track.cornerStyle.radius = style_data.Radius
+        self._fill.backgroundStyle.colorStart = style_data.TrackFilledStart
+        self._fill.backgroundStyle.colorEnd = style_data.TrackFilledEnd
+        self._fill.borderStyle.color = style_data.TrackBorder
+        self._fill.cornerStyle.radius = style_data.Radius
+        self._handle.innerStyle.color = style_data.HandleInner
+        self._handle.outerStyle.color = style_data.HandleOuter
+        self._handle.borderStyle.color = style_data.HandleBorder
+        self.update()
+
+
+    def _theme_changed_handler(self, theme):
+        self._style_data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
+        self._track.backgroundStyle.setColorTo(self._style_data.Track)
+        self._track.borderStyle.setColorTo(self._style_data.TrackBorder)
+        self._track.cornerStyle.radius = self._style_data.Radius
+        self._fill.backgroundStyle.setColorTo(self._style_data.TrackFilledStart,self._style_data.TrackFilledEnd)
+        self._fill.borderStyle.setColorTo(self._style_data.TrackBorder)
+        self._fill.cornerStyle.radius = self._style_data.Radius
+        self._handle.innerStyle.setColorTo(self._style_data.HandleInner)
+        self._handle.outerStyle.setColorTo(self._style_data.HandleOuter)
+        self._handle.borderStyle.setColorTo(self._style_data.HandleBorder)
+
+    @overload
+    def stepValue(self, step: int, multiplier: int = 1) -> None:
+        "根据步长调整值，使用自定义步进倍数"
+        ...
+
+    @overload
+    def stepValue(self, step: int) -> None:
+        "根据步长调整值，使用默认的步进倍数"
+        ...
+
+    def stepValue(self, *args) -> None:
+        if len(args) == 1:
+            new_value = self._value + args[0] * self._step * self._step_multiplier
+            self.setValue(new_value)
+        elif len(args) == 2:
+            new_value = self._value + args[0] * self._step * args[1]
+            self.setValue(new_value)
+
+
+    def setValue(self, value: int | float):
+        clamped = max(self._min, min(value, self._max))
+        self._value = clamped
         self._percentage = (self._value - self._min) / (self._max - self._min)
-        self._update_track()
+        self._update_value()
         self.valueChanged.emit(self._value)
 
 
-    def _normalize_value(self, value: float) -> float:
-        """标准化输入值，将输入值调整为合法的步进值,并确保在范围内"""
-        # 计算步长小数位
-        step_str = str(self._step)
-        decimal_places = len(step_str.split('.')[-1]) if '.' in step_str else 0
-        # 调整到步进值
-        adjusted = round(value / self._step) * self._step
-        # 确保在范围内
-        clamped = max(self._min, min(adjusted, self._max))
-        # 格式化小数位
-        return round(clamped, decimal_places)
-
-
-    def _update_track(self) -> None:
-        """更新轨道和填充条位置"""
+    def setFixedLength(self, length: int):
+        """设置滑块长度为固定值"""
+        self._fixed_length = max(length, self._min_length)
         if self._orientation == self.Orientation.Horizontal:
-            self._update_horizontal_track()
+            self.setFixedWidth(self._fixed_length + self._handle_radius * 2)
         else:
-            self._update_vertical_track()
-
-
-    def _update_horizontal_track(self):
-        """更新水平方向轨道"""
-        y = (self.height() - self._track_width) / 2
-        # 更新轨道
-        self._track.setGeometry(
-            self._handle_radius, 
-            y,
-            self._length,
-            self._track_width
-            )
-        # 更新填充条
-        self._fill.setGeometry(
-            self._handle_radius,
-            y, 
-            self._percentage * self._length,
-            self._track_width
-            )
-        # 更新滑块
-        # self._handle.move(
-        #     self._percentage * self._track_length,
-        #     (self.height() - 2 * self._handle_radius) / 2
-        #     )
-
-    def _update_vertical_track(self):
-        """更新垂直方向轨道"""
-        x = (self.width() - self._track_width) / 2
-        # 更新轨道
-        self._track.setGeometry(
-            x,
-            self._handle_radius,
-            self._track_width,
-            self._length
-        )
-        # 更新填充条
-        fill_height = self._percentage * self._length
-        self._fill.setGeometry(
-            x,
-            self._length - fill_height + self._handle_radius,
-            self._track_width,
-            fill_height
-        )
-        # 更新滑块
-        # self._handle.move(
-        #     (self.width() - 2 * self._handle_radius) / 2,
-        #     self._track_length - self._percentage * self._track_length
-        # )
+            self.setFixedHeight(self._fixed_length + self._handle_radius * 2)
+        self._update_track()
 
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
+        # 轨道长度不小于最小长度
+        if self._fixed_length is None:
+            if self._orientation == self.Orientation.Horizontal:
+                self._track_length = max(self._min_length, self.width() - self._handle_radius * 2)
+            else:
+                self._track_length = max(self._min_length, self.height() - self._handle_radius * 2)
+        else:
+            self._track_length = max(self._min_length, self._fixed_length)
         self._update_track()
+
 
     def enterEvent(self, event):
         """鼠标进入事件"""
@@ -166,48 +275,39 @@ class ZSlider(QWidget):
         # 根据滑块方向处理不同的按键
         if self._orientation == self.Orientation.Horizontal:
             if event.key() == Qt.Key_Left:
-                new_value = self._value - self._step
-                self.setValue(new_value)
-                ZGlobal.tooltip.setText(str(self.value()))
+                self.stepValue(-1)
+                ZGlobal.tooltip.setText(self.displayValue)
                 event.accept()
                 return
             elif event.key() == Qt.Key_Right:
-                new_value = self._value + self._step
-                self.setValue(new_value)
-                ZGlobal.tooltip.setText(str(self.value()))
+                self.stepValue(1)
+                ZGlobal.tooltip.setText(self.displayValue)
                 event.accept()
                 return
         else:  # 垂直方向
             if event.key() == Qt.Key_Up:
-                new_value = self._value + self._step
-                self.setValue(new_value)
-                ZGlobal.tooltip.setText(str(self.value()))
+                self.stepValue(1)
+                ZGlobal.tooltip.setText(self.displayValue)
                 event.accept()
                 return
             elif event.key() == Qt.Key_Down:
-                new_value = self._value - self._step
-                self.setValue(new_value)
-                ZGlobal.tooltip.setText(str(self.value()))
+                self.stepValue(-1)
+                ZGlobal.tooltip.setText(self.displayValue)
                 event.accept()
                 return
         super().keyPressEvent(event)
 
+
     def wheelEvent(self, event: QWheelEvent):
         """处理鼠标滚轮事件"""
-        # 获取handle相对于屏幕的全局位置
+        steps = event.angleDelta().y() / 120
+        self.stepValue(steps)
+        ZGlobal.tooltip.setText(self.displayValue)
         ZGlobal.tooltip.setInsideOf(self)
         ZGlobal.tooltip.showTip()
-        # 获取滚轮滚动的角度，通常为 120 或 -120
-        delta = event.angleDelta().y()
-        # 计算滚动步数（向上为正，向下为负）
-        steps = delta / 120
-        # 计算值的变化
-        new_value = self._value + steps * self._step
-        # 更新值（内部会处理方向及范围限制）
-        self.setValue(new_value)
-        ZGlobal.tooltip.setText(str(self.value()))
         # 阻止事件继续传播
         event.accept()
+
 
     def leaveEvent(self, event):
         """鼠标离开事件"""
@@ -219,6 +319,59 @@ class ZSlider(QWidget):
         # 清除焦点
         self.clearFocus()
 
-    def _theme_changed_handler(self, theme):
-        """主题改变处理"""
-    pass
+    def sizeHint(self):
+        if self._orientation == self.Orientation.Horizontal:
+            if self._fixed_length is None:
+                return QSize(self._min_length + self._handle_radius * 2, self._track_width)
+            else:
+                w = max(self._fixed_length, self._min_length)
+                return QSize(w + self._handle_radius * 2, self._track_width)
+        else:
+            if self._fixed_length is None:
+                return QSize(self._track_width, self._min_length + self._handle_radius * 2)
+            else:
+                h = max(self._fixed_length, self._min_length)
+                return QSize(self._track_width, h + self._handle_radius * 2)
+
+
+    def _update_track(self) -> None:
+        """更新轨道和填充条"""
+        if self._orientation == self.Orientation.Horizontal:
+            y = (self.height() - self._track_width) / 2
+            # 更新轨道
+            geo_track = QRect(self._handle_radius, y, self._track_length, self._track_width)
+            self._track.setGeometry(geo_track)
+            # 更新填充条
+            geo_fill = QRect(self._handle_radius, y, self._percentage * self._track_length, self._track_width)
+            self._fill.setGeometry(geo_fill)
+            # 更新滑块
+            self._handle.move(self._percentage * self._track_length, 0)
+            return
+        x = (self.width() - self._track_width) / 2
+        # 更新轨道
+        geo_track = QRect(x, self._handle_radius, self._track_width, self._track_length)
+        self._track.setGeometry(geo_track)
+        # 更新填充条
+        fill_height = self._percentage * self._track_length
+        geo_fill = QRect(x, self._track_length - fill_height + self._handle_radius, self._track_width, fill_height)
+        self._fill.setGeometry(geo_fill)
+        # 更新滑块
+        self._handle.move(0, self._track_length - self._percentage * self._track_length)
+
+    def _update_value(self) -> None:
+        """更新滑块值"""
+        if self._orientation == self.Orientation.Horizontal:
+            # 更新填充条
+            size_fill = QSize(self._percentage * self._track_length, self._track_width)
+            self._fill.resize(size_fill)
+            # 更新滑块
+            handle_pos = QPoint(self._percentage * self._track_length, 0)
+            self._handle.moveAnimation.moveTo(handle_pos)
+            return
+        x = (self.width() - self._track_width) / 2
+        # 更新填充条
+        fill_height = self._percentage * self._track_length
+        geo_fill = QRect(x, self._track_length - fill_height + self._handle_radius, self._track_width, fill_height)
+        self._fill.setGeometry(geo_fill)
+        # 更新滑块
+        self._handle.moveAnimation.moveTo(0, self._track_length - self._percentage * self._track_length)

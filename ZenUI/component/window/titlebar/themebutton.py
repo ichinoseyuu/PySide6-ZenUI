@@ -31,12 +31,15 @@ class ZThemeButton(ZABCTitleBarButton):
 
         # draw icon
         # 1. 获取原始 QPixmap
+
         if self._theme is ZTheme.Dark:
-            pixmap = self._icon.pixmap(QSize(16,16), QIcon.Normal, QIcon.On)
+            pixmap = self._icon.pixmap(QSize(16, 16), QIcon.Normal, QIcon.On)
         else:
-            pixmap = self._icon.pixmap(QSize(16,16), QIcon.Normal, QIcon.Off)
+            pixmap = self._icon.pixmap(QSize(16, 16), QIcon.Normal, QIcon.Off)
         # 2. 创建一个新的 QPixmap 用于着色
         colored_pixmap = QPixmap(pixmap.size())
+        # 适配高DPI
+        colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
         colored_pixmap.fill(Qt.transparent)
         painter_pix = QPainter(colored_pixmap)
         painter_pix.drawPixmap(0, 0, pixmap)

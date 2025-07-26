@@ -1,6 +1,6 @@
 from enum import IntEnum
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, Signal, Slot, QEvent, QTimer,QSize
+from PySide6.QtCore import Qt, Signal, Slot, QEvent, QTimer,QSize,QPoint
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from ZenUI.core import ZGlobal
 
@@ -85,18 +85,14 @@ class ZABCButton(QWidget):
     # region Event
     def enterEvent(self, event: QEnterEvent):
         super().enterEvent(event)
-        if self._tool_tip != "" and ZGlobal.tooltip:
-            ZGlobal.tooltip.setInsideOf(self)
-            ZGlobal.tooltip.setText(self._tool_tip)
-            ZGlobal.tooltip.showTip()
+        if self._tool_tip != "":
+            ZGlobal.tooltip.showTip(text=self._tool_tip, target=self)
         self._state = self.State.Hover
         self.entered.emit()
 
     def leaveEvent(self, event: QEvent):
         super().leaveEvent(event)
-        if self._tool_tip != "" and ZGlobal.tooltip:
-            ZGlobal.tooltip.setInsideOf(None)
-            ZGlobal.tooltip.hideTip()
+        if self._tool_tip != "": ZGlobal.tooltip.hideTip()
         self._state = self.State.Idle
         self.leaved.emit()
 

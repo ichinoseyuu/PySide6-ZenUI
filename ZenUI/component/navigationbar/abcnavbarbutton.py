@@ -1,6 +1,6 @@
 from enum import IntEnum
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, Signal, Slot, QEvent, QSize
+from PySide6.QtCore import Qt, Signal, Slot, QEvent, QSize,QPoint
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from ZenUI.core import ZGlobal
 
@@ -14,10 +14,16 @@ class ZABCNavBarButton(QWidget):
         Idle = 0
         Hover = 1
         Pressed = 2
+    class TipPosition(IntEnum):
+        Top = 0
+        Bottom = 1
+        Left = 2
+        Right = 3
     def __init__(self, parent=None):
         super().__init__(parent)
         self._state = self.State.Idle
         self._tool_tip: str = ""
+        self._tip_position = self.TipPosition.Top
         self.entered.connect(self.hoverHandler)
         self.leaved.connect(self.leaveHandler)
         self.pressed.connect(self.pressHandler)
@@ -64,18 +70,20 @@ class ZABCNavBarButton(QWidget):
     # region Event
     def enterEvent(self, event: QEnterEvent):
         super().enterEvent(event)
-        if self._tool_tip != "" and ZGlobal.tooltip:
-            ZGlobal.tooltip.setInsideOf(self)
-            ZGlobal.tooltip.setText(self._tool_tip)
-            ZGlobal.tooltip.showTip()
+        if self._tool_tip != "": 
+            ZGlobal.tooltip.showTip(
+                text = self._tool_tip,
+                target = self,
+                mode = ZGlobal.tooltip.Mode.AlignTarget,
+                position = ZGlobal.tooltip.Pos.Right,
+                offset = QPoint(10, 0)
+                )
         self._state = self.State.Hover
         self.entered.emit()
 
     def leaveEvent(self, event: QEvent):
         super().leaveEvent(event)
-        if self._tool_tip != "" and ZGlobal.tooltip:
-            ZGlobal.tooltip.setInsideOf(None)
-            ZGlobal.tooltip.hideTip()
+        if self._tool_tip != "": ZGlobal.tooltip.hideTip()
         self._state = self.State.Idle
         self.leaved.emit()
 

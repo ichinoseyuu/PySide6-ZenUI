@@ -113,7 +113,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Body: '#202020'
                 },
             'ZToolTip': {
-                K.Text: '#dcdcdc',
+                K.Text: '#bfbfbf',
                 K.Body: '#2e2e2e',
                 K.Border: '#252525',
                 K.Radius: 5,
@@ -225,8 +225,8 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Body: '#f3f3f3'
                 },
             'ZToolTip': {
-                K.Text: '#333333',
-                K.Body: '#f3f3f3',
+                K.Text: '#555555',
+                K.Body: '#f9f9f9',
                 K.Border: '#dee2e6',
                 K.Radius: 5,
                 },

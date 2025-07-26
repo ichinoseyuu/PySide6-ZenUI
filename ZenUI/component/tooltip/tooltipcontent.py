@@ -1,11 +1,11 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QRectF, QSize, QRect, QMargins
 from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen
-from ZenUI.component.base import BackGroundStyle,BorderStyle,CornerStyle,TextStyle
+from ZenUI.component.base import BackGroundStyle,BorderStyle,CornerStyle,TextStyle,ResizeExpAnimation
 class ZToolTipContent(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMinimumHeight(24)
+        self.setMinimumHeight(28)
         # 基本属性
         self._text: str = None
         self._font = QFont("Microsoft YaHei", 9)
@@ -37,6 +37,9 @@ class ZToolTipContent(QWidget):
     def cornerStyle(self) -> CornerStyle:
         return self._corner_style
 
+    @property
+    def reziseAnima(self) -> ResizeExpAnimation:
+        return self._rezise_anim
 
     @property
     def text(self) -> str:
@@ -45,8 +48,8 @@ class ZToolTipContent(QWidget):
     @text.setter
     def text(self, text: str) -> None:
         self._text = text
-        self.update()
         self.adjustSize()
+        self.update()
 
 
     @property
@@ -139,6 +142,7 @@ class ZToolTipContent(QWidget):
         # 计算高度，自动换行
         rect = fm.boundingRect(0, 0, content_width, 1000, Qt.TextWordWrap, self._text)
         height = rect.height() + self._margin.top() + self._margin.bottom() # 上下边距
+        height = max(height, self.minimumHeight()) # 最小高度
 
         return QSize(width, height)
 

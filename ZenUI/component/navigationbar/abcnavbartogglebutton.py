@@ -82,18 +82,20 @@ class ZABCNavBarToggleButton(QWidget):
     # region Event
     def enterEvent(self, event: QEnterEvent):
         super().enterEvent(event)
-        if self._tool_tip != "" and ZGlobal.tooltip:
-            ZGlobal.tooltip.setInsideOf(self)
-            ZGlobal.tooltip.setText(self._tool_tip)
-            ZGlobal.tooltip.showTip()
+        if self._tool_tip != "":
+            ZGlobal.tooltip.showTip(
+                text = self._tool_tip,
+                target = self,
+                mode = ZGlobal.tooltip.Mode.AlignTarget,
+                position = ZGlobal.tooltip.Pos.Right,
+                offset = QPoint(10, 0)
+                )
         self._state = self.State.Hover
         self.entered.emit()
 
     def leaveEvent(self, event: QEvent):
         super().leaveEvent(event)
-        if self._tool_tip != "" and ZGlobal.tooltip:
-            ZGlobal.tooltip.setInsideOf(None)
-            ZGlobal.tooltip.hideTip()
+        if self._tool_tip != "": ZGlobal.tooltip.hideTip()
         self._state = self.State.Idle
         self.leaved.emit()
 

@@ -35,20 +35,25 @@ class MovePropertyAnimation(QObject):
     pos = Property(QPoint, getPos, setPos)
 
     @overload
-    def moveTo(self, pos:QPoint) -> None:
-        ...
+    def moveTo(self, pos: QPoint) -> None: ...
 
     @overload
-    def moveTo(self, x:int, y:int) -> None:
-        ...
+    def moveTo(self, start: QPoint, end: QPoint) -> None: ...
+
+    @overload
+    def moveTo(self, x:int, y:int) -> None: ...
 
     def moveTo(self, *args) -> None:
+        self._anim.stop()
         if len(args) == 1 and isinstance(args[0], QPoint):
             pos = args[0]
-        elif len(args) == 2:
+            self._anim.setStartValue(self.parent().pos())
+        elif len(args) == 2 and isinstance(args[0], int):
             pos = QPoint(args[0], args[1])
-        self._anim.stop()
-        self._anim.setStartValue(self.getPos())
+            self._anim.setStartValue(self.parent().pos())
+        elif len(args) == 2 and isinstance(args[0], QPoint):
+            pos = args[1]
+            self._anim.setStartValue(args[0])
         self._anim.setEndValue(pos)
         self._anim.start()
 
@@ -60,7 +65,7 @@ class MoveExpAnimation(QObject):
     def __init__(self, parent:QWidget):
         super().__init__(parent)
         self._anim = ZExpAnimationRefactor(self, "pos")
-        self._anim.setBias(0.5)
+        self._anim.setBias(1)
         self._anim.setFactor(0.20)
 
     @property
@@ -80,20 +85,25 @@ class MoveExpAnimation(QObject):
     pos = Property(QPoint, getPos, setPos)
 
     @overload
-    def moveTo(self, pos:QPoint) -> None:
-        ...
+    def moveTo(self, pos: QPoint) -> None: ...
 
     @overload
-    def moveTo(self, x:int, y:int) -> None:
-        ...
+    def moveTo(self, start: QPoint, end: QPoint) -> None: ...
+
+    @overload
+    def moveTo(self, x:int, y:int) -> None: ...
 
     def moveTo(self, *args) -> None:
+        self._anim.stop()
         if len(args) == 1 and isinstance(args[0], QPoint):
             pos = args[0]
-        elif len(args) == 2:
+            self._anim.setCurrentValue(self.parent().pos())
+        elif len(args) == 2 and isinstance(args[0], int):
             pos = QPoint(args[0], args[1])
-        self._anim.stop()
-        self._anim.setCurrentValue(self.getPos())
+            self._anim.setCurrentValue(self.parent().pos())
+        elif len(args) == 2 and isinstance(args[0], QPoint):
+            pos = args[1]
+            self._anim.setCurrentValue(args[0])
         self._anim.setEndValue(pos)
         self._anim.start()
 
@@ -124,20 +134,25 @@ class ResizePropertyAnimation(QObject):
     size = Property(QSize, getSize, setSize)
 
     @overload
-    def resizeTo(self, pos:QSize) -> None:
-        ...
+    def resizeTo(self, size:QSize) -> None: ...
 
     @overload
-    def resizeTo(self, x:int, y:int) -> None:
-        ...
+    def resizeTo(self, start:QSize, end:QSize) -> None: ...
+
+    @overload
+    def resizeTo(self, x:int, y:int) -> None: ...
 
     def resizeTo(self, *args) -> None:
+        self._anim.stop()
         if len(args) == 1 and isinstance(args[0], QSize):
             size = args[0]
-        elif len(args) == 2:
+            self._anim.setStartValue(self.parent().size())
+        elif len(args) == 2 and isinstance(args[0], int):
             size = QSize(args[0], args[1])
-        self._anim.stop()
-        self._anim.setStartValue(self.getSize())
+            self._anim.setStartValue(self.parent().size())
+        elif len(args) == 2 and isinstance(args[0], QSize):
+            size = args[1]
+            self._anim.setStartValue(args[0])
         self._anim.setEndValue(size)
         self._anim.start()
 
@@ -148,7 +163,7 @@ class ResizeExpAnimation(QObject):
     def __init__(self, parent:QWidget):
         super().__init__(parent)
         self._anim = ZExpAnimationRefactor(self, "size")
-        self._anim.setBias(0.5)
+        self._anim.setBias(1)
         self._anim.setFactor(0.20)
 
     @property
@@ -168,23 +183,28 @@ class ResizeExpAnimation(QObject):
     size = Property(QSize, getSize, setSize)
 
     @overload
-    def resizeTo(self, pos:QSize) -> None:
-        ...
+    def resizeTo(self, size:QSize) -> None: ...
 
     @overload
-    def resizeTo(self, x:int, y:int) -> None:
-        ...
+    def resizeTo(self, start:QSize, end:QSize) -> None: ...
+
+    @overload
+    def resizeTo(self, x:int, y:int) -> None: ...
 
     def resizeTo(self, *args) -> None:
+        self._anim.stop()
         if len(args) == 1 and isinstance(args[0], QSize):
             size = args[0]
-        elif len(args) == 2:
+            self._anim.setCurrentValue(self.parent().size())
+        elif len(args) == 2 and isinstance(args[0], int):
             size = QSize(args[0], args[1])
-        self._anim.stop()
-        self._anim.setCurrentValue(self.getSize())
+            self._anim.setCurrentValue(self.parent().size())
+        elif len(args) == 2 and isinstance(args[0], QSize):
+            size = args[1]
+            self._anim.setCurrentValue(args[0])
         self._anim.setEndValue(size)
         self._anim.start()
-        
+
     def parent(self) -> QWidget:
         return super().parent()
 
@@ -213,19 +233,30 @@ class WindowOpacityPropertyAnimation(QObject):
 
     def fadeIn(self) -> None:
         self._anim.stop()
-        self._anim.setStartValue(self.getOpacity())
+        self._anim.setStartValue(self.parent().windowOpacity())
         self._anim.setEndValue(1.0)
         self._anim.start()
 
     def fadeOut(self) -> None:
         self._anim.stop()
-        self._anim.setStartValue(self.getOpacity())
+        self._anim.setStartValue(self.parent().windowOpacity())
         self._anim.setEndValue(0)
         self._anim.start()
 
-    def fadeTo(self, opacity: float) -> None:
+    @overload
+    def fadeTo(self, opacity: float) -> None: ...
+
+    @overload
+    def fadeTo(self, start: float, end: float) -> None: ...
+
+    def fadeTo(self, *args) -> None:
         self._anim.stop()
-        self._anim.setStartValue(self.getOpacity())
+        if len(args) == 1 and isinstance(args[0], float):
+            opacity = args[0]
+            self._anim.setStartValue(self.parent().windowOpacity())
+        elif len(args) == 2 and isinstance(args[0], float):
+            opacity = args[1]
+            self._anim.setStartValue(args[0])
         self._anim.setEndValue(opacity)
         self._anim.start()
 
@@ -257,19 +288,30 @@ class WindowOpacityExpAnimation(QObject):
 
     def fadeIn(self) -> None:
         self._anim.stop()
-        self._anim.setCurrentValue(self.getOpacity())
+        self._anim.setCurrentValue(self.parent().windowOpacity())
         self._anim.setEndValue(1.0)
         self._anim.start()
 
     def fadeOut(self) -> None:
         self._anim.stop()
-        self._anim.setCurrentValue(self.getOpacity())
+        self._anim.setCurrentValue(self.parent().windowOpacity())
         self._anim.setEndValue(0)
         self._anim.start()
 
-    def fadeTo(self, opacity: float) -> None:
+    @overload
+    def fadeTo(self, opacity: float) -> None: ...
+
+    @overload
+    def fadeTo(self, start: float, end: float) -> None: ...
+
+    def fadeTo(self, *args) -> None:
         self._anim.stop()
-        self._anim.setCurrentValue(self.getOpacity())
+        if len(args) == 1 and isinstance(args[0], float):
+            opacity = args[0]
+            self._anim.setCurrentValue(self.parent().windowOpacity())
+        elif len(args) == 2 and isinstance(args[0], float):
+            opacity = args[1]
+            self._anim.setCurrentValue(args[0])
         self._anim.setEndValue(opacity)
         self._anim.start()
 
@@ -304,19 +346,30 @@ class OpacityExpAnimation(QObject):
 
     def fadeIn(self) -> None:
         self._anim.stop()
-        self._anim.setCurrentValue(self.getOpacity())
+        self._anim.setCurrentValue(self._opacity)
         self._anim.setEndValue(1.0)
         self._anim.start()
 
     def fadeOut(self) -> None:
         self._anim.stop()
-        self._anim.setCurrentValue(self.getOpacity())
+        self._anim.setCurrentValue(self._opacity)
         self._anim.setEndValue(0)
         self._anim.start()
 
-    def fadeTo(self, opacity: float) -> None:
+    @overload
+    def fadeTo(self, opacity: float) -> None: ...
+
+    @overload
+    def fadeTo(self, start: float, end: float) -> None: ...
+
+    def fadeTo(self, *args) -> None:
         self._anim.stop()
-        self._anim.setCurrentValue(self.getOpacity())
+        if len(args) == 1 and isinstance(args[0], float):
+            opacity = args[0]
+            self._anim.setCurrentValue(self._opacity)
+        elif len(args) == 2 and isinstance(args[0], float):
+            opacity = args[1]
+            self._anim.setCurrentValue(args[0])
         self._anim.setEndValue(opacity)
         self._anim.start()
 

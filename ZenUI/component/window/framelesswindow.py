@@ -24,11 +24,10 @@ class ZFramelessWindow(QWidget):
         tooltip.show()
         tooltip.setWindowOpacity(0)
         ZGlobal.tooltip = tooltip
-
-        tooltiplegacy = ZToolTipLegacy()
-        tooltiplegacy.show()
-        tooltiplegacy.setWindowOpacity(0)
-        ZenGlobal.ui.windows['ToolTip'] = tooltiplegacy
+        # tooltiplegacy = ZToolTipLegacy()
+        # tooltiplegacy.show()
+        # tooltiplegacy.setWindowOpacity(0)
+        # ZenGlobal.ui.windows['ToolTip'] = tooltiplegacy
 
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setStyleSheet('background-color: transparent;')

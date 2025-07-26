@@ -1,4 +1,7 @@
 import logging
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ZenUI.component.tooltip import ZToolTip
 from ..theme import ZThemeManager
 from ..styledata import ZStyleDataManager
 
@@ -26,10 +29,6 @@ def configureLogging():
 
 class ZGlobal:
     configureLogging()
-    tooltip = None
+    tooltip: 'ZToolTip' = None
     themeManager = ZThemeManager()
     styleDataManager = ZStyleDataManager()
-
-
-
-

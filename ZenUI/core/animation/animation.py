@@ -491,6 +491,10 @@ class ZExpAnimationRefactor(QAbstractAnimation):
         return -1
 
     def start(self, *args, **kwargs):
+        # Add check for equal start and end values
+        if (self._current_value == self._end_value).all():
+            # If current value equals end value, do not start the animation
+            return
         if self.state() != QAbstractAnimation.State.Running:
             super().start(*args, **kwargs)
 

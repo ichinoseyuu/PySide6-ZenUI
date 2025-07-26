@@ -1,12 +1,14 @@
+
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from PySide6.QtWidgets import QWidget
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ZenUI.component.slider.slider import ZSlider
 from ZenUI.component.base import BackGroundStyle,BorderStyle,MoveExpAnimation
 from ZenUI.core import ZGlobal
 
 class SliderHandle(QWidget):
-    '滑块手柄'
     def __init__(self,
                  parent: QWidget = None,
                  radius: int = 6):
@@ -109,21 +111,29 @@ class SliderHandle(QWidget):
 
     def enterEvent(self, event):
         super().enterEvent(event)
-        ZGlobal.tooltip.setText(self.parent().displayValue)
-        ZGlobal.tooltip.setInsideOf(self.parent())
-        ZGlobal.tooltip.showTip()
         # 悬停时内外圈都放大
-        self.setInnerScaleTo(self._inner_scale_hover) 
+        self.setInnerScaleTo(self._inner_scale_hover)
         self.setOuterScaleTo(self._outer_scale_hover)
+        if self.parent().isHorizontal:
+            ZGlobal.tooltip.showTip(
+                text = self.parent().displayValue,
+                target = self,
+                mode = ZGlobal.tooltip.Mode.TrackTarget,
+                position = ZGlobal.tooltip.Pos.Top)
+        else:
+            ZGlobal.tooltip.showTip(
+                text = self.parent().displayValue,
+                target = self,
+                mode = ZGlobal.tooltip.Mode.TrackTarget,
+                position = ZGlobal.tooltip.Pos.Left)
 
 
     def leaveEvent(self, event):
         super().leaveEvent(event)
-        ZGlobal.tooltip.setInsideOf(None)
-        ZGlobal.tooltip.hideTip()
         # 离开时内外圈都恢复原始大小
         self.setInnerScaleTo(self._inner_scale_normal)
         self.setOuterScaleTo(self._outer_scale_normal)
+        ZGlobal.tooltip.hideTipDelayed(1000)
 
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
@@ -145,10 +155,7 @@ class SliderHandle(QWidget):
 
     def mouseMoveEvent(self, event):
         super().mouseMoveEvent(event)
-        from ZenUI.component.slider.slider import ZSlider
-        slider: ZSlider = self.parent()
-        # 获取鼠标相对于slider的位置
-        # 这里需要使用handle的半径来调整起始位置
+        slider = self.parent()
         pos = event.globalPos() - slider.mapToGlobal(QPoint(self._radius, self._radius))
         if slider._orientation == slider.Orientation.Horizontal:
             delta = max(0, min(pos.x(), slider._track_length))
@@ -156,5 +163,7 @@ class SliderHandle(QWidget):
         elif slider._orientation == slider.Orientation.Vertical:
             delta = max(0, min(pos.y(), slider._track_length))
             slider.setValue(slider._max - delta / slider._track_length * slider._max)
-        # 更新位置和样式
-        ZGlobal.tooltip.setText(slider.displayValue)
+
+
+    def parent(self) -> 'ZSlider':
+        return super().parent()

@@ -54,7 +54,7 @@ class PageWidget(ZScrollPage):
                       name='vslider',
                       orientation=ZSlider.Orientation.Vertical,
                       scope=(0, 100),
-                      step=0.1,
+                      step=5,
                       accuracy=0.1,
                       value=30.00)
         self.slider_box.addWidget(self.slider)

@@ -10,10 +10,12 @@ class ZABCButton(QWidget):
     pressed = Signal()
     released = Signal()
     clicked = Signal()
+
     class State(IntEnum):
         Idle = 0
         Hover = 1
         Pressed = 2
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self._state = self.State.Idle
@@ -37,22 +39,17 @@ class ZABCButton(QWidget):
 
     # region Property
     @property
-    def state(self) -> State:
-        return self._state
-
+    def state(self) -> State: return self._state
 
     @property
-    def repeatClick(self) -> bool:
-        return self._repeat_click
-
+    def repeatClick(self) -> bool: return self._repeat_click
     @repeatClick.setter
     def repeatClick(self, enabled: bool) -> None:
         self._repeat_click = enabled
 
 
     # region Func
-    def toolTip(self):
-        return self._tool_tip
+    def toolTip(self): return self._tool_tip
 
     def setToolTip(self, tip: str):
         self._tool_tip = tip

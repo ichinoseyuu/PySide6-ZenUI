@@ -88,7 +88,7 @@ class ZStackPanel(QWidget):
                     self._current_page.show()
                 else:
                     self._current_page.raise_()
-                self._current_page.moveAnimation.moveTo(0, 0)
+                self._current_page.locationMgr.moveTo(0, 0)
             else:
                 self._current_page.move(0, 0)
                 if self._hide_last_page and self._last_page is not None:

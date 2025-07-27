@@ -21,13 +21,13 @@ class ZMaximizeButton(ZABCTitleBarButton):
     def paintEvent(self, e):
         painter = QPainter(self)
         # draw background
-        painter.setBrush(self._background_style.color)
+        painter.setBrush(self._body_color_mgr.color)
         painter.setPen(Qt.NoPen)
         painter.drawRect(self.rect().adjusted(0, 1, 0, 0))
 
         # draw icon
         painter.setBrush(Qt.NoBrush)
-        pen = QPen(self._icon_style.color, 1)
+        pen = QPen(self._icon_color_mgr.color, 1)
         pen.setCosmetic(True)
         painter.setPen(pen)
 

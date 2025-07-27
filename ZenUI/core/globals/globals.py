@@ -1,4 +1,5 @@
 import logging
+from enum import Enum,IntEnum,Flag,IntFlag,auto
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ZenUI.component.tooltip import ZToolTip
@@ -26,6 +27,16 @@ def configureLogging():
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
+
+class TipPos(IntEnum):
+    Top = 0
+    Bottom = 1
+    Left = 2
+    Right = 3
+    TopLeft = 4
+    TopRight = 5
+    BottomLeft = 6
+    BottomRight = 7
 
 class ZGlobal:
     configureLogging()

@@ -1,1 +1,1 @@
-from .globals import ZGlobal
+from .globals import ZGlobal,TipPos

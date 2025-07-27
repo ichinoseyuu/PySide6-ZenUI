@@ -10,30 +10,35 @@ ACCENT_COLOR_LIGHT: str = '#38b9f2'
 ACCENT_COLOR_DARK: str = '#955595'
 
 DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
+            'ZCard': {
+                K.Body: '#222222',
+                K.Border: '#1d1d1d',
+                K.Radius: 5.0
+                },
             'ZTextBlock':{
                 K.Text: '#dcdcdc'
                 },
             'ZPage': {
                 K.Body: '#272727',
                 K.Border: '#1d1d1d',
-                K.Radius: 5
+                K.Radius: 5.0
                 },
             'ZScrollPage': {
                 K.Body: '#272727',
                 K.Border: '#1d1d1d',
                 K.Handle: "#454545",
                 K.HandleBorder: '#4d4d4d',
-                K.Radius: 5
+                K.Radius: 5.0
                 },
             'ZSlider': {
                 K.Track: '#464646',
                 K.TrackBorder: '#505050',
-                K.TrackFilledStart: ACCENT_COLOR_DARK,
-                K.TrackFilledEnd: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.1),
-                K.HandleInner: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.1),
+                K.FillAreaStart: ACCENT_COLOR_DARK,
+                K.FillAreaEnd: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.15),
+                K.FillAreaBorder: ACCENT_COLOR_DARK,
+                K.HandleInner: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.15),
                 K.HandleOuter: '#464646',
-                K.HandleBorder: '#505050',
-                K.Radius: 2
+                K.HandleBorder: '#505050'
                 },
             'ZButton': {
                 K.Text: '#dcdcdc',
@@ -42,7 +47,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.BodyHover: '#323232',
                 K.BodyPressed: '#272727',
                 K.Border: '#323232',
-                K.Radius: 5
+                K.Radius: 5.0
                 },
             'ZToggleButton': {
                 K.Text: '#dcdcdc',
@@ -57,14 +62,14 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.BodyToggledPressed: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.1,0.1),
                 K.Border: '#323232',
                 K.BorderToggled:ACCENT_COLOR_DARK,
-                K.Radius: 5
+                K.Radius: 5.0
                 },
             'ZNavBarButton': {
                 K.Icon: '#dcdcdc',
                 K.Body: '#00ffffff',
                 K.BodyHover: '#1affffff',
                 K.BodyPressed: '#14ffffff',
-                K.Radius: 5
+                K.Radius: 5.0
                 },
             'ZNavBarToggleButton': {
                 K.Icon: '#dcdcdc',
@@ -75,7 +80,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.BodyToggled: '#10ffffff',
                 K.BodyToggledHover: '#22ffffff',
                 K.BodyToggledPressed: '#16ffffff',
-                K.Radius: 5
+                K.Radius: 5.0
                 },
             'ZThemeButton': {
                 K.Icon: '#dcdcdc',
@@ -116,36 +121,41 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Text: '#bfbfbf',
                 K.Body: '#2e2e2e',
                 K.Border: '#252525',
-                K.Radius: 5,
+                K.Radius: 5.0
                 },
             })
 
 
 LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
+            'ZCard': {
+                K.Body: '#f6f6f6',
+                K.Border: '#e5e5e5',
+                K.Radius: 5.0
+                },
             'ZTextBlock':{
                 K.Text: '#333333'
                 },
             'ZPage': {
                 K.Body: '#ffffff',
                 K.Border: '#e5e5e5',
-                K.Radius: 5
+                K.Radius: 5.0
                 },
             'ZScrollPage': {
                 K.Body: '#f9f9f9',
                 K.Border: '#e5e5e5',
                 K.Handle: "#cfcfcf",
                 K.HandleBorder: '#cdcdcd',
-                K.Radius: 5
+                K.Radius: 5.0
                 },
             'ZSlider': {
                 K.Track: '#e5e5e5',
                 K.TrackBorder: '#e0e0e0',
-                K.TrackFilledStart: ACCENT_COLOR_LIGHT,
-                K.TrackFilledEnd: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.15),
+                K.FillAreaStart: ACCENT_COLOR_LIGHT,
+                K.FillAreaEnd: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.15),
+                K.FillAreaBorder: ACCENT_COLOR_LIGHT,
                 K.HandleInner: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.15),
                 K.HandleOuter: '#ffffff',
-                K.HandleBorder: '#bfbfbf',
-                K.Radius: 2
+                K.HandleBorder: '#bfbfbf'
                 },
             'ZButton': {
                 K.Text: '#333333',
@@ -154,7 +164,7 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.BodyHover: '#f2f2f2',
                 K.BodyPressed: '#ebebeb',
                 K.Border: '#dee2e6',
-                K.Radius: 5
+                K.Radius: 5.0
                 },
             'ZToggleButton': {
                 K.Text: '#333333',
@@ -169,14 +179,14 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.BodyToggledPressed: ZColorTool.adjust(ACCENT_COLOR_LIGHT, -0.1),
                 K.Border: '#dee2e6',
                 K.BorderToggled: '#00dee2e6',
-                K.Radius: 5
+                K.Radius: 5.0
                 },
             'ZNavBarButton': {
                 K.Icon: '#555555',
                 K.Body: '#00000000',
                 K.BodyHover: "#16000000",
                 K.BodyPressed: '#10000000',
-                K.Radius: 5
+                K.Radius: 5.0
                 },
             'ZNavBarToggleButton': {
                 K.Icon: '#555555',
@@ -187,7 +197,7 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.BodyToggled: '#0d000000',
                 K.BodyToggledHover: '#18000000',
                 K.BodyToggledPressed: '#12000000',
-                K.Radius: 5
+                K.Radius: 5.0
                 },
             'ZThemeButton': {
                 K.Icon: '#333333',
@@ -228,7 +238,7 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Text: '#555555',
                 K.Body: '#f9f9f9',
                 K.Border: '#dee2e6',
-                K.Radius: 5,
+                K.Radius: 5.0
                 },
             })
 

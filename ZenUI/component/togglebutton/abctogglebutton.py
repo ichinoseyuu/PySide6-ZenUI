@@ -10,10 +10,12 @@ class ZABCToggleButton(QWidget):
     released = Signal()
     clicked = Signal()
     toggled = Signal(bool)
+
     class State(IntEnum):
         Idle = 0
         Hover = 1
         Pressed = 2
+
     def __init__(self, parent=None):
         super().__init__(parent)
         #self.setMouseTracking(True)
@@ -30,16 +32,15 @@ class ZABCToggleButton(QWidget):
 
     # region Property
     @property
-    def state(self) -> State:
-        return self._state
+    def state(self) -> State: return self._state
+
 
     @property
-    def checked(self) -> bool:
-        return self._checked
+    def checked(self) -> bool: return self._checked
+
 
     # region Func
-    def toolTip(self):
-        return self._tool_tip
+    def toolTip(self): return self._tool_tip
 
     def setToolTip(self, tip: str):
         self._tool_tip = tip

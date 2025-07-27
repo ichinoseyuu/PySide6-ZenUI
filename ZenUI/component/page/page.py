@@ -2,7 +2,7 @@ from enum import Enum
 from PySide6.QtWidgets import QWidget,QVBoxLayout,QHBoxLayout,QSizePolicy
 from PySide6.QtCore import Qt,QMargins,QRectF,Signal
 from PySide6.QtGui import QPainter,QPen
-from ZenUI.component.base import BackGroundStyle,BorderStyle,CornerStyle, MoveExpAnimation
+from ZenUI.component.base import ColorManager,FloatManager,LocationManager
 from ZenUI.core import ZGlobal,ZPageStyleData
 
 
@@ -33,12 +33,12 @@ class ZPage(QWidget):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # style property
-        self._background_style = BackGroundStyle(self)
-        self._border_style = BorderStyle(self)
-        self._corner_style = CornerStyle(self)
+        self._body_color_mgr = ColorManager(self)
+        self._border_color_mgr = ColorManager(self)
+        self._radius_mgr = FloatManager(self)
 
         # animation property
-        self._move_animation = MoveExpAnimation(self)
+        self._location_mgr = LocationManager(self)
 
         # style data
         self._style_data: ZPageStyleData = None
@@ -47,51 +47,45 @@ class ZPage(QWidget):
         ZGlobal.themeManager.themeChanged.connect(self.themeChangHandler)
 
     @property
-    def backgroundStyle(self):
-        return self._background_style
+    def bodyColorMgr(self): return self._body_color_mgr
 
     @property
-    def borderStyle(self):
-        return self._border_style
+    def borderColorMgr(self): return self._border_color_mgr
 
     @property
-    def cornerStyle(self):
-        return self._corner_style
+    def radiusMgr(self): return self._radius_mgr
 
     @property
-    def moveAnimation(self):
-        return self._move_animation
+    def locationMgr(self): return self._location_mgr
 
     @property
-    def styleData(self):
-        return self._style_data
-
+    def styleData(self): return self._style_data
     @styleData.setter
     def styleData(self, style_data: ZPageStyleData):
         self._style_data = style_data
-        self._background_style.color = style_data.Body
-        self._border_style.color = style_data.Border
-        self._corner_style.width = style_data.Radius
+        self._body_color_mgr.color = style_data.Body
+        self._border_color_mgr.color = style_data.Border
+        self._radius_mgr.value = style_data.Radius
         self.update()
 
     def themeChangHandler(self, theme):
         data = ZGlobal.styleDataManager.getStyleData('ZPage', theme.name)
-        self._corner_style.radius = data.Radius
-        self._background_style.setColorTo(data.Body)
-        self._border_style.setColorTo(data.Border)
+        self._radius_mgr.value = data.Radius
+        self._body_color_mgr.setColorTo(data.Body)
+        self._border_color_mgr.setColorTo(data.Border)
 
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         rect = self.rect()
-        radius = self._corner_style.radius
+        radius = self._radius_mgr.value
         # draw background
         painter.setPen(Qt.NoPen)
-        painter.setBrush(self._background_style.color)
+        painter.setBrush(self._body_color_mgr.color)
         painter.drawRoundedRect(rect, radius, radius)
         # draw border
-        painter.setPen(QPen(self._border_style.color, self._border_style.width))
+        painter.setPen(QPen(self._border_color_mgr.color, 1))
         painter.setBrush(Qt.NoBrush)
         # adjust border width
         painter.drawRoundedRect(

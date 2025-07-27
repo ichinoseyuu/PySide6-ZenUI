@@ -7,9 +7,9 @@ class ZThemeButton(ZABCTitleBarButton):
     def __init__(self, parent=None):
         super().__init__(parent)
         icon = QIcon()
-        icon.addFile(u":/icons/svg/fluent/filled/ic_fluent_weather_moon_filled.svg",
+        icon.addFile(u":/icons/fluent/filled/ic_fluent_weather_moon_filled.svg",
                     QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        icon.addFile(u":/icons/svg/fluent/filled/ic_fluent_weather_sunny_filled.svg",
+        icon.addFile(u":/icons/fluent/filled/ic_fluent_weather_sunny_filled.svg",
                     QSize(), QIcon.Mode.Normal, QIcon.State.On)
         self._icon: QIcon = icon
         self._theme: ZTheme = ZGlobal.themeManager.getTheme()
@@ -18,14 +18,14 @@ class ZThemeButton(ZABCTitleBarButton):
     def themeChangeHandler(self, theme):
         self._theme = theme
         self._style_data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
-        self._background_style.setColorTo(self._style_data.Body)
-        self._icon_style.setColorTo(self._style_data.Icon)
+        self._body_color_mgr.setColorTo(self._style_data.Body)
+        self._icon_color_mgr.setColorTo(self._style_data.Icon)
 
     def paintEvent(self, e):
         painter = QPainter(self)
         painter.setRenderHints(QPainter.SmoothPixmapTransform)
         # draw background
-        painter.setBrush(self._background_style.color)
+        painter.setBrush(self._body_color_mgr.color)
         painter.setPen(Qt.NoPen)
         painter.drawRect(self.rect().adjusted(0, 1, 0, 0))
 
@@ -44,7 +44,7 @@ class ZThemeButton(ZABCTitleBarButton):
         painter_pix = QPainter(colored_pixmap)
         painter_pix.drawPixmap(0, 0, pixmap)
         painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
-        painter_pix.fillRect(colored_pixmap.rect(), self._icon_style.color)
+        painter_pix.fillRect(colored_pixmap.rect(), self._icon_color_mgr.color)
         painter_pix.end()
         # 3. 绘制到按钮中心
         painter.drawPixmap(

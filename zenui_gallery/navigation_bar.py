@@ -9,22 +9,22 @@ class NavigationBar(ZNavigationBar):
 
     def _setup_ui(self):
         icon1 = QIcon()
-        icon1.addFile(u":/icons/svg/fluent/regular/ic_fluent_home_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
-        icon1.addFile(u":/icons/svg/fluent/filled/ic_fluent_home_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
+        icon1.addFile(u":/icons/fluent/regular/ic_fluent_home_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
+        icon1.addFile(u":/icons/fluent/filled/ic_fluent_home_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
         self.btnHome = ZNavBarToggleButton(self, "btnHome", icon1)
         self.btnHome.setToolTip("主页")
         self.addToggleButton(self.panel, self.btnHome)
 
         icon2 = QIcon()
-        icon2.addFile(u":/icons/svg/fluent/regular/ic_fluent_cube_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
-        icon2.addFile(u":/icons/svg/fluent/filled/ic_fluent_cube_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
+        icon2.addFile(u":/icons/fluent/regular/ic_fluent_cube_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
+        icon2.addFile(u":/icons/fluent/filled/ic_fluent_cube_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
         self.btnWidget = ZNavBarToggleButton(self, "btnWidget", icon2)
         self.btnWidget.setToolTip("控件演示")
         self.addToggleButton(self.panel, self.btnWidget)
 
         icon3 = QIcon()
-        icon3.addFile(u":/icons/svg/fluent/regular/ic_fluent_info_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
-        icon3.addFile(u":/icons/svg/fluent/filled/ic_fluent_info_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
+        icon3.addFile(u":/icons/fluent/regular/ic_fluent_info_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
+        icon3.addFile(u":/icons/fluent/filled/ic_fluent_info_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
         self.btnAbout = ZNavBarToggleButton(self, "btnAbout", icon3)
         self.btnAbout.setToolTip("关于")
         self.addToggleButton(self.footerPanel, self.btnAbout)

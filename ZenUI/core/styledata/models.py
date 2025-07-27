@@ -4,7 +4,7 @@ from PySide6.QtGui import QColor
 __all__ = ['ZFramelessWindowStyleData','ZButtonStyleData','ZTitleBarButtonData',
             'ZTextBlockStyleData','ZToolTipStyleData','ZToggleButtonStyleData',
             'ZNavBarButtonStyleData','ZNavBarToggleButtonStyleData','ZPageStyleData',
-            'ZScrollPageStyleData','ZSliderStyleData']
+            'ZScrollPageStyleData','ZSliderStyleData','ZCardStyleData']
 
 
 
@@ -25,7 +25,7 @@ class ZTitleBarButtonData:
 class ZPageStyleData:
     Body: QColor
     Border: QColor
-    Radius: int
+    Radius: float
 
 @dataclass
 class ZScrollPageStyleData:
@@ -33,7 +33,7 @@ class ZScrollPageStyleData:
     Border: QColor
     Handle: QColor
     HandleBorder: QColor
-    Radius: int
+    Radius: float
 
 @dataclass
 class ZButtonStyleData:
@@ -43,7 +43,7 @@ class ZButtonStyleData:
     BodyHover: QColor
     BodyPressed: QColor
     Border: QColor
-    Radius: int
+    Radius: float
 
 @dataclass
 class ZNavBarButtonStyleData:
@@ -51,7 +51,7 @@ class ZNavBarButtonStyleData:
     Body: QColor
     BodyHover: QColor
     BodyPressed: QColor
-    Radius: int
+    Radius: float
 
 @dataclass
 class ZNavBarToggleButtonStyleData:
@@ -63,7 +63,7 @@ class ZNavBarToggleButtonStyleData:
     BodyToggled: QColor
     BodyToggledHover: QColor
     BodyToggledPressed: QColor
-    Radius: int
+    Radius: float
 
 @dataclass
 class ZToggleButtonStyleData:
@@ -79,26 +79,33 @@ class ZToggleButtonStyleData:
     BodyToggledPressed: QColor
     Border: QColor
     BorderToggled: QColor
-    Radius: int
+    Radius: float
 
 @dataclass
 class ZSliderStyleData:
     Track: QColor
     TrackBorder: QColor
-    TrackFilledStart: QColor
-    TrackFilledEnd: QColor
+    FillAreaStart: QColor
+    FillAreaEnd: QColor
+    FillAreaBorder: QColor
     HandleInner: QColor
     HandleOuter: QColor
     HandleBorder: QColor
-    Radius: int
 
 @dataclass
 class ZToolTipStyleData:
     Text: QColor
     Body: QColor
     Border: QColor
-    Radius: int
+    Radius: float
 
 @dataclass
 class ZTextBlockStyleData:
     Text: QColor
+
+
+@dataclass
+class ZCardStyleData:
+    Body: QColor
+    Border: QColor
+    Radius: float

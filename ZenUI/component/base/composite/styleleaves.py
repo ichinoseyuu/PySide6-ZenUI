@@ -2,11 +2,13 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from enum import Enum
+from dataclasses import dataclass
 import logging
 
-__all__ = ['IconStyle', 'TextStyle', 'BackGroundStyle', 'BorderStyle', 'CornerStyle','GradientBackGroundStyle']
+__all__ = ['IconStyle', 'TextStyle', 'BackGroundStyle', 'BorderStyle',
+           'AdvancedCornerStyle','CornerStyle','GradientBackGroundStyle']
 
-class AnimatedColorProperty(QObject):
+class ColorManager(QObject):
     def __init__(self, parent: QWidget):
         super().__init__(parent)
         self._color: QColor = QColor('#dcdcdc')
@@ -57,22 +59,36 @@ class AnimatedColorProperty(QObject):
         target.setAlpha(255)
         self.setColor(target)
 
+    def setAlpha(self, alpha: int) -> None:
+        target = QColor(self._color)
+        target.setAlpha(alpha)
+        self.setColor(target)
+
+    def setAlphaTo(self, alpha: int) -> None:
+        target = QColor(self._color)
+        target.setAlpha(alpha)
+        self.setColorTo(target)
+
     def parent(self) -> QWidget:
         return super().parent()
 
-class IconStyle(AnimatedColorProperty):
+class IconStyle(ColorManager):
     pass
 
-class TextStyle(AnimatedColorProperty):
+class TextStyle(ColorManager):
     pass
 
-class BackGroundStyle(AnimatedColorProperty):
+class BackGroundStyle(ColorManager):
     pass
 
-class BorderStyle(AnimatedColorProperty):
+class BorderStyle(ColorManager):
     def __init__(self, parent: QWidget):
         super().__init__(parent)
         self._width: int = 1
+
+    @property
+    def parentWidget(self) -> QWidget:
+        return self.parent()
 
     @property
     def width(self) -> int:
@@ -87,20 +103,80 @@ class BorderStyle(AnimatedColorProperty):
 class CornerStyle(QObject):
     def __init__(self, parent: QWidget):
         super().__init__(parent)
-        self._radius: int = 5
+        self._radius: float = 5
+
+    @property
+    def radius(self) -> float:
+        return self._radius
+
+    @radius.setter
+    def radius(self, value: float) -> None:
+        self._radius = value
+        self.parent().update()
+
+    def parent(self) -> QWidget:
+        return super().parent()
+
+class AdvancedCornerStyle(QObject):
+    @dataclass
+    class Radius:
+        topLeft: float
+        topRight: float
+        bottomLeft: float
+        bottomRight: float
+
+    def __init__(self, parent: QWidget):
+        super().__init__(parent)
+        self._radius: AdvancedCornerStyle.Radius = self.Radius(5, 5, 5, 5)
 
     @property
     def parentWidget(self) -> QWidget:
         return self.parent()
 
     @property
-    def radius(self) -> int:
+    def radius(self) -> Radius:
         return self._radius
 
     @radius.setter
-    def radius(self, value: int) -> None:
+    def radius(self, value: Radius) -> None:
         self._radius = value
-        self.parentWidget.update()
+        self.parent().update()
+
+    @property
+    def topLeft(self) -> float:
+        return self._radius.topLeft
+
+    @topLeft.setter
+    def topLeft(self, value: float) -> None:
+        self._radius.topLeft = value
+        self.parent().update()
+
+    @property
+    def topRight(self) -> float:
+        return self._radius.topRight
+
+    @topRight.setter
+    def topRight(self, value: float) -> None:
+        self._radius.topRight = value
+        self.parent().update()
+
+    @property
+    def bottomLeft(self) -> float:
+        return self._radius.bottomLeft
+
+    @bottomLeft.setter
+    def bottomLeft(self, value: float) -> None:
+        self._radius.bottomLeft = value
+        self.parent().update()
+
+    @property
+    def bottomRight(self) -> float:
+        return self._radius.bottomRight
+
+    @bottomRight.setter
+    def bottomRight(self, value: float) -> None:
+        self._radius.bottomRight = value
+        self.parent().update()
 
     def parent(self) -> QWidget:
         return super().parent()

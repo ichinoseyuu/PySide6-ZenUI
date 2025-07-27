@@ -2,7 +2,7 @@ from enum import IntEnum
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal, Slot, QEvent, QSize,QPoint
 from PySide6.QtGui import QMouseEvent, QEnterEvent
-from ZenUI.core import ZGlobal
+from ZenUI.core import ZGlobal,TipPos
 
 class ZABCNavBarButton(QWidget):
     entered = Signal()
@@ -10,20 +10,16 @@ class ZABCNavBarButton(QWidget):
     pressed = Signal()
     released = Signal()
     clicked = Signal()
+
     class State(IntEnum):
         Idle = 0
         Hover = 1
         Pressed = 2
-    class TipPosition(IntEnum):
-        Top = 0
-        Bottom = 1
-        Left = 2
-        Right = 3
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self._state = self.State.Idle
         self._tool_tip: str = ""
-        self._tip_position = self.TipPosition.Top
         self.entered.connect(self.hoverHandler)
         self.leaved.connect(self.leaveHandler)
         self.pressed.connect(self.pressHandler)
@@ -32,12 +28,10 @@ class ZABCNavBarButton(QWidget):
 
     # region Property
     @property
-    def state(self) -> State:
-        return self._state
+    def state(self) -> State: return self._state
 
     # region Func
-    def toolTip(self):
-        return self._tool_tip
+    def toolTip(self): return self._tool_tip
 
     def setToolTip(self, tip: str):
         self._tool_tip = tip
@@ -75,7 +69,7 @@ class ZABCNavBarButton(QWidget):
                 text = self._tool_tip,
                 target = self,
                 mode = ZGlobal.tooltip.Mode.AlignTarget,
-                position = ZGlobal.tooltip.Pos.Right,
+                position = TipPos.Right,
                 offset = QPoint(10, 0)
                 )
         self._state = self.State.Hover

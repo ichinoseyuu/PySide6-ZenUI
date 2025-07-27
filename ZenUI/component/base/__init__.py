@@ -1,2 +1,1 @@
-
-from .composite import *
+from .managers import *

@@ -8,8 +8,6 @@ from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve
 from PySide6.QtGui import QResizeEvent,QColor
 from ZenUI.core import ZGlobal,ZFramelessWindowStyleData
 from ZenUI.component.tooltip import ZToolTip
-from ZenUI._legacy.core import ZenGlobal
-from ZenUI._legacy.component import ZToolTip as ZToolTipLegacy
 from .titlebar.titlebar import ZTitleBar
 from .win32utils import (WindowsWindowEffect,LPNCCALCSIZE_PARAMS,WinTaskbar,
                     isSystemBorderAccentEnabled, getSystemAccentColor,
@@ -24,10 +22,6 @@ class ZFramelessWindow(QWidget):
         tooltip.show()
         tooltip.setWindowOpacity(0)
         ZGlobal.tooltip = tooltip
-        # tooltiplegacy = ZToolTipLegacy()
-        # tooltiplegacy.show()
-        # tooltiplegacy.setWindowOpacity(0)
-        # ZenGlobal.ui.windows['ToolTip'] = tooltiplegacy
 
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setStyleSheet('background-color: transparent;')
@@ -40,7 +34,7 @@ class ZFramelessWindow(QWidget):
         self.windowHandle().screenChanged.connect(self.__onScreenChanged)
 
         self._color_bg = QColor('#000000')
-        self._anim_bg_color = QPropertyAnimation(self, b'backgroundColor')
+        self._anim_bg_color = QPropertyAnimation(self, b'bodyColor')
         self._anim_bg_color.setDuration(150)
         self._anim_bg_color.setEasingCurve(QEasingCurve.Type.InOutQuad)
 
@@ -51,40 +45,36 @@ class ZFramelessWindow(QWidget):
 
     # region Property
     @property
-    def resizable(self) -> bool:
-        return self._resizable
-
+    def resizable(self) -> bool: return self._resizable
     @resizable.setter
-    def resizable(self, enabled: bool) -> None:
-        self._resizable = enabled
+    def resizable(self, enabled: bool) -> None: self._resizable = enabled
 
     @property
-    def styleData(self) -> ZFramelessWindowStyleData:
-        return self._style_data
+    def centerWidget(self): return self._centerWidget
 
-    @styleData.setter
-    def styleData(self, data: ZFramelessWindowStyleData) -> None:
-        self._style_data = data
-        self.backgroundColor = data.Body
 
-    @property
-    def centerWidget(self):
-        return self._centerWidget
+    def getBodyColor(self) -> QColor: return self._color_bg
 
-    @Property(QColor)
-    def backgroundColor(self) -> QColor:
-        return self._color_bg
-
-    @backgroundColor.setter
-    def backgroundColor(self, color: QColor):
+    def setBodyColor(self, color: QColor):
         self._color_bg = color
         self._windowEffect.setBackgroundColor(self.winId(), color)
 
-    # region Func
-    def setBackgroundColorTo(self, color: QColor):
+    bodyColor: QColor = Property(QColor, getBodyColor, setBodyColor)
+
+
+    def setBodyColorTo(self, color: QColor):
         self._anim_bg_color.setStartValue(self._color_bg)
         self._anim_bg_color.setEndValue(color)
         self._anim_bg_color.start()
+
+
+    @property
+    def styleData(self) -> ZFramelessWindowStyleData: return self._style_data
+    @styleData.setter
+    def styleData(self, data: ZFramelessWindowStyleData) -> None:
+        self._style_data = data
+        self.bodyColor = data.Body
+
 
     def moveCenter(self):
         screen = self.windowHandle().screen()
@@ -95,17 +85,19 @@ class ZFramelessWindow(QWidget):
             self.move(self.x() + self.width() / 2, self.y() + self.height() / 2)
 
 
-    # region Slot
+
     def themeChangeHandler(self, theme):
         self._style_data = ZGlobal.styleDataManager.getStyleData('ZFramelessWindow', theme.name)
-        self.setBackgroundColorTo(QColor(self._style_data.Body))
+        self.setBodyColorTo(self._style_data.Body)
+
 
     def __onScreenChanged(self):
         hWnd = int(self.windowHandle().winId())
-        win32gui.SetWindowPos(hWnd, None, 0, 0, 0, 0, win32con.SWP_NOMOVE |
-                              win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED)
+        win32gui.SetWindowPos(
+            hWnd, None, 0, 0, 0, 0,
+            win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED)
 
-    # region Event
+
     def resizeEvent(self, event: QResizeEvent):
         super().resizeEvent(event)
         self._titlebar.setGeometry(0,0,event.size().width(), self._titlebar.height())

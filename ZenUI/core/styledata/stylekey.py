@@ -46,7 +46,9 @@ class StyleKey(Enum):
     HandleOuter = 'HandleOuter'
 
     Track = 'Track'
-    TrackFilled = 'TrackFilled'
-    TrackFilledStart = 'TrackFilledStart'
-    TrackFilledEnd = 'TrackFilledEnd'
     TrackBorder = 'TrackBorder'
+
+    FillArea = 'FillArea'
+    FillAreaStart = 'FillAreaStart'
+    FillAreaEnd = 'FillAreaEnd'
+    FillAreaBorder = 'FillAreaBorder'

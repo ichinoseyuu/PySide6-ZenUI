@@ -10,12 +10,12 @@ class ZCloseButton(ZABCTitleBarButton):
 
     def paintEvent(self, e):
         painter = QPainter(self)
-        painter.setBrush(self._background_style.color)
+        painter.setBrush(self._body_color_mgr.color)
         painter.setPen(Qt.NoPen)
         painter.drawRect(self.rect().adjusted(0, 1, -1, 0))
         r = self.devicePixelRatioF()
 
-        pen = QPen(self._icon_style.color, 1.2 * 1/r)  # 增加线宽
+        pen = QPen(self._icon_color_mgr.color, 1.2 * 1/r)  # 增加线宽
         pen.setCapStyle(Qt.RoundCap)  # 设置线段端点为圆形
         pen.setJoinStyle(Qt.RoundJoin)  # 设置线段连接处为圆形
         pen.setCosmetic(True)

@@ -1,32 +1,33 @@
-from typing import Union, overload, Dict, Any
+from typing import Union, overload, Dict, Any,TYPE_CHECKING
 from dataclasses import fields, is_dataclass
 from enum import Enum
 from PySide6.QtGui import QColor
 from ..theme import ZThemeManager
 from .models import *
 from .theme_data import *
-
+    
 StyleDataType = Union[ZButtonStyleData, ZTitleBarButtonData,ZFramelessWindowStyleData,
                       ZTextBlockStyleData,ZToolTipStyleData, ZToggleButtonStyleData,
                       ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData,ZPageStyleData,
-                      ZScrollPageStyleData,ZSliderStyleData]
+                      ZScrollPageStyleData,ZSliderStyleData,ZCardStyleData]
 
 class ZStyleDataFactory:
     dataclass_map = {
-            'ZTextBlock': ZTextBlockStyleData,
-            'ZPage': ZPageStyleData,
-            'ZScrollPage': ZScrollPageStyleData,
-            'ZSlider': ZSliderStyleData,
-            'ZButton': ZButtonStyleData,
-            'ZToggleButton': ZToggleButtonStyleData,
-            'ZThemeButton': ZTitleBarButtonData,
-            'ZNavBarButton': ZNavBarButtonStyleData,
-            'ZNavBarToggleButton': ZNavBarToggleButtonStyleData,
-            'ZMinimizeButton': ZTitleBarButtonData,
-            'ZMaximizeButton': ZTitleBarButtonData,
-            'ZCloseButton': ZTitleBarButtonData,
-            'ZFramelessWindow': ZFramelessWindowStyleData,
-            'ZToolTip': ZToolTipStyleData,
+        'ZCard': ZCardStyleData,
+        'ZTextBlock': ZTextBlockStyleData,
+        'ZPage': ZPageStyleData,
+        'ZScrollPage': ZScrollPageStyleData,
+        'ZSlider': ZSliderStyleData,
+        'ZButton': ZButtonStyleData,
+        'ZToggleButton': ZToggleButtonStyleData,
+        'ZThemeButton': ZTitleBarButtonData,
+        'ZNavBarButton': ZNavBarButtonStyleData,
+        'ZNavBarToggleButton': ZNavBarToggleButtonStyleData,
+        'ZMinimizeButton': ZTitleBarButtonData,
+        'ZMaximizeButton': ZTitleBarButtonData,
+        'ZCloseButton': ZTitleBarButtonData,
+        'ZFramelessWindow': ZFramelessWindowStyleData,
+        'ZToolTip': ZToolTipStyleData,
         }
     @staticmethod
     def create(name: str, data: Dict[str, Any]) -> StyleDataType:

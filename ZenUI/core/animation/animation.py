@@ -1,11 +1,10 @@
 from typing import Any
-from concurrent.futures import ThreadPoolExecutor
 import numpy
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 
-__all__ = ['ZExpAnimation','ZExpAnimationRefactor','AnimationGroup',
-            'ExpAccelerateAnim','SqrExpAnimation','CounterAnimation']
+__all__ = ['ZExpAnimation','AnimationGroup','ExpAccelerateAnim',
+           'SqrExpAnimation','CounterAnimation']
 
 global_fps = 60
 
@@ -167,8 +166,6 @@ class ZExpAnimation(ABCAnimation):
         super().__init__(parent)
         self.factor = 0.25
         self.bias = 1
-        # 创建线程池
-        self._thread_pool = ThreadPoolExecutor(max_workers=1)
 
     def init(self, factor: float, bias: float, current: Any, target: Any, fps: int = 60):
         self.setFactor(factor)
@@ -397,169 +394,6 @@ class AnimationGroup:
         raise ValueError(f"未在代号组中找到传入的代号：{aim_token}")
 
 
-class TypeConversionFuncs:
-    functions = {
-        QPoint.__name__: [
-            lambda x: numpy.array((x.x(), x.y()), dtype="float32"),
-            lambda x: QPoint(int(x[0]), int(x[1]))
-        ],
-        QPointF.__name__: [
-            lambda x: numpy.array((x.x(), x.y()), dtype="float32"),
-            lambda x: QPointF(float(x[0]), float(x[1])),
-        ],
-        QSize.__name__: [
-            lambda x: numpy.array((x.width(), x.height()), dtype="float32"),
-            lambda x: QSize(int(x[0]), int(x[1])),
-        ],
-        QSizeF.__name__: [
-            lambda x: numpy.array((x.width(), x.height()), dtype="float32"),
-            lambda x: QSizeF(float(x[0]), float(x[1])),
-        ],
-        QRect.__name__: [
-            lambda x: numpy.array((x.x(), x.y(), x.width(), x.height()), dtype="float32"),
-            lambda x: QRect(int(x[0]), int(x[1]), int(x[2]), int(x[3]))
-        ],
-        QRectF.__name__: [
-            lambda x: numpy.array((x.x(), x.y(), x.width(), x.height()), dtype="float32"),
-            lambda x: QRect(float(x[0]), float(x[1]), float(x[2]), float(x[3]))
-        ],
-        QColor.__name__: [
-            lambda x: numpy.array(x.getRgb(), dtype="float32"),
-            lambda x: QColor(int(x[0]), int(x[1]), int(x[2]), int(x[3]))
-        ]
-    }
 
 
-class ZExpAnimationRefactor(QAbstractAnimation):
-    valueChanged = Signal(object)
 
-    def __init__(self, target: QObject, property_name=None, parent=None) -> None:
-        super().__init__(parent)
-        self.start_after_timer = QTimer(self)
-
-        self._target = target
-        self._property_name = None
-        self._property_type = None
-        self._in_func = None
-        self._out_func = None
-        self._end_value = None
-        self._current_value = None
-        self.factor = 1/4
-        self.bias = 0.5
-
-        self._velocity_inertia = 0.0  #值介于0和1之间，值越大，动画越难加速。
-        self._velocity = 0
-
-        if property_name is not None:
-            self.setPropertyName(property_name)
-
-    def init(self, factor: float, bias: float, current_value, end_value) -> None:
-        self.factor = factor
-        self.bias = bias
-        self.setCurrentValue(current_value)
-        self.setEndValue(end_value)
-        self.resetVelocity()
-
-    def setFactor(self, factor: float):
-        self.factor = factor
-
-    def setBias(self, bias: float):
-        self.bias = bias
-
-    def target(self) -> QObject:
-        return self._target
-
-    def propertyName(self) -> str:
-        return self._property_name
-
-    def endValue(self, raw=False) -> Any:
-        if raw is True:
-            return self._end_value
-        else:
-            return self._out_func(self._end_value)
-
-    def currentValue(self, raw=False) -> Any:
-        if raw is True:
-            return self._current_value
-        else:
-            return self._out_func(self._current_value)
-
-    def distance(self) -> numpy.array:
-        return self._end_value - self._current_value
-
-    def duration(self) -> int:
-        return -1
-
-    def start(self, *args, **kwargs):
-        # Add check for equal start and end values
-        if (self._current_value == self._end_value).all():
-            # If current value equals end value, do not start the animation
-            return
-        if self.state() != QAbstractAnimation.State.Running:
-            super().start(*args, **kwargs)
-
-    def startAfter(self, msec: int):
-        self.start_after_timer.singleShot(msec, self.start)
-
-    def fromProperty(self):
-        """ load value from target's property """
-        self.setCurrentValue(self._target.property(self._property_name))
-
-    def toProperty(self):
-        """ set target's property to animation value """
-        self._target.setProperty(self._property_name, self._out_func(self._current_value))
-
-    def setPropertyName(self, name: str) -> None:
-        self._property_name = name
-        self._property_type = type(self._target.property(name))
-        self._loadConversionFuncs()
-        self._end_value = self._in_func(self._target.property(name))
-        self._current_value = self._in_func(self._target.property(name))
-
-    def setEndValue(self, value: Any) -> None:
-        if isinstance(value, self._property_type):
-            self._end_value = self._in_func(value)
-        else:
-            self._end_value = numpy.array(value)
-
-    def setCurrentValue(self, value: Any) -> None:
-        if isinstance(value, self._property_type):
-            self._current_value = self._in_func(value)
-        else:
-            self._current_value = numpy.array(value)
-        self.valueChanged.emit(self._current_value)
-
-    def resetVelocity(self):
-        self._velocity = 0 * self._current_value
-
-    def setVelocityInertia(self, n: float):
-        self._velocity_inertia = n
-
-    def updateCurrentTime(self, _) -> None:
-        # print(self.distance())
-        if (self.distance() == 0).all():
-            self.stop()
-            return
-
-        distance = self._end_value - self._current_value
-        flag = numpy.array(abs(distance) <= self.bias, dtype="int8")
-        step = abs(distance) * self.factor + self.bias                   # 基本指数动画运算
-        step = step * (numpy.array(distance > 0, dtype="int8") * 2 - 1)  # 确定动画方向
-        step = step * (1 - flag) + distance * flag                       # 差距小于偏置的项，返回差距
-
-        self._velocity = self._velocity * self._velocity_inertia + step * (1 - self._velocity_inertia)
-
-        self._current_value = self._current_value + self._velocity
-        self.valueChanged.emit(self._current_value)
-        try:
-            self._target.setProperty(self._property_name, self._out_func(self._current_value))
-        except RuntimeError:
-            pass
-
-    def _loadConversionFuncs(self) -> None:
-        if self._property_type.__name__ in TypeConversionFuncs.functions.keys():
-            self._in_func = TypeConversionFuncs.functions.get(self._property_type.__name__)[0]
-            self._out_func = TypeConversionFuncs.functions.get(self._property_type.__name__)[1]
-        else:
-            self._in_func = lambda x: numpy.array(x)
-            self._out_func = lambda x: self._property_type(numpy.array(x, dtype="float32"))

@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QSize, QMargins
 from PySide6.QtGui import QPainter, QFont, QFontMetrics
-from ZenUI.component.base import TextStyle
+from ZenUI.component.base import ColorManager
 from ZenUI.core import ZGlobal,ZTextBlockStyleData
 class ZTextBlock(QWidget):
     def __init__(self,
@@ -20,54 +20,41 @@ class ZTextBlock(QWidget):
         self._word_wrap = False
         self._alignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
         # style property
-        self._text_style = TextStyle(self)
+        self._text_color_mgr = ColorManager(self)
         # style data
         self._style_data: ZTextBlockStyleData = None
         self._custom_style: ZTextBlockStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData('ZTextBlock')
+        self.styleData = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__)
         ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
 
     # region Property
     @property
-    def textStyle(self) -> TextStyle:
-        return self._text_style
-
+    def textColorMgr(self) -> ColorManager: return self._text_color_mgr
 
     @property
-    def text(self) -> str:
-        return self._text
-
+    def text(self) -> str: return self._text
     @text.setter
     def text(self, text: str) -> None:
         self._text = text
         self.adjustSize()
         self.update()
 
-
     @property
-    def font(self) -> QFont:
-        return self._font
-
+    def font(self) -> QFont: return self._font
     @font.setter
     def font(self, font: QFont) -> None:
         self._font = font
         self.update()
 
-
     @property
-    def wordWrap(self) -> bool:
-        return self._word_wrap
-
+    def wordWrap(self) -> bool: return self._word_wrap
     @wordWrap.setter
     def wordWrap(self, enabled: bool) -> None:
         self._word_wrap = enabled
         self.update()
 
-
     @property
-    def margins(self) -> QMargins:
-        return self._margins
-
+    def margins(self) -> QMargins: return self._margins
     @margins.setter
     def margins(self, margins: QMargins) -> None:
         self._margins = margins
@@ -75,9 +62,7 @@ class ZTextBlock(QWidget):
 
 
     @property
-    def alignment(self) -> Qt.AlignmentFlag:
-        return self._alignment
-
+    def alignment(self) -> Qt.AlignmentFlag: return self._alignment
     @alignment.setter
     def alignment(self, alignment: Qt.AlignmentFlag) -> None:
         self._alignment = alignment
@@ -85,19 +70,17 @@ class ZTextBlock(QWidget):
 
 
     @property
-    def styleData(self) -> ZTextBlockStyleData:
-        return self._style_data
-
+    def styleData(self) -> ZTextBlockStyleData: return self._style_data
     @styleData.setter
     def styleData(self, style_data: ZTextBlockStyleData) -> None:
         self._style_data = style_data
-        self._text_style.color = style_data.Text
+        self._text_color_mgr.color = style_data.Text
         self.update()
 
     # region Slot
     def themeChangeHandler(self, theme):
-        self._style_data = ZGlobal.styleDataManager.getStyleData('ZTextBlock', theme.name)
-        self._text_style.setColorTo(self._style_data.Text)
+        self._style_data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
+        self._text_color_mgr.setColorTo(self._style_data.Text)
 
     # region Override
     def setFont(self, font: QFont) -> None:
@@ -108,7 +91,7 @@ class ZTextBlock(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
         painter.setFont(self._font)
-        painter.setPen(self._text_style.color)
+        painter.setPen(self._text_color_mgr.color)
         rect = self.rect().adjusted(
             self._margins.left(),
             self._margins.top(),

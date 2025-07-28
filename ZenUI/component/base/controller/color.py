@@ -4,7 +4,8 @@ from PySide6.QtGui import QColor
 from enum import Enum
 import logging
 
-class ColorManager(QObject):
+class ColorController(QObject):
+    '''颜色控制器，用于控制颜色变化'''
     def __init__(self, parent: QWidget):
         super().__init__(parent)
         self._color: QColor = QColor('#dcdcdc')
@@ -66,7 +67,8 @@ class ColorManager(QObject):
         return super().parent()
 
 
-class LinearGradientManager(QObject):
+class LinearGradientController(QObject):
+    '''线性渐变控制器，用于控制线性渐变颜色变化'''
     class Direction(Enum):
         Horizontal = 0
         Vertical = 1
@@ -78,7 +80,7 @@ class LinearGradientManager(QObject):
         super().__init__(parent)
         self._color1: QColor = QColor('#202020')
         self._color2: QColor = QColor('#202020')
-        self._direction: LinearGradientManager.Direction = self.Direction.Diagonal
+        self._direction: LinearGradientController.Direction = self.Direction.Diagonal
         self._reverse: bool = False
         self._linear_points: tuple[float, float, float, float] = (0, 0, 1, 1)
         self._anim1 = QPropertyAnimation(self, b'colorStart')

@@ -33,7 +33,7 @@ class ZFramelessWindow(QWidget):
         self._windowEffect.addShadowEffect(self.winId())
         self.windowHandle().screenChanged.connect(self.__onScreenChanged)
 
-        self._color_bg = QColor('#000000')
+        self._color_body = QColor('#000000')
         self._anim_bg_color = QPropertyAnimation(self, b'bodyColor')
         self._anim_bg_color.setDuration(150)
         self._anim_bg_color.setEasingCurve(QEasingCurve.Type.InOutQuad)
@@ -53,17 +53,17 @@ class ZFramelessWindow(QWidget):
     def centerWidget(self): return self._centerWidget
 
 
-    def getBodyColor(self) -> QColor: return self._color_bg
+    def getBodyColor(self) -> QColor: return self._color_body
 
     def setBodyColor(self, color: QColor):
-        self._color_bg = color
+        self._color_body = color
         self._windowEffect.setBackgroundColor(self.winId(), color)
 
     bodyColor: QColor = Property(QColor, getBodyColor, setBodyColor)
 
 
     def setBodyColorTo(self, color: QColor):
-        self._anim_bg_color.setStartValue(self._color_bg)
+        self._anim_bg_color.setStartValue(self._color_body)
         self._anim_bg_color.setEndValue(color)
         self._anim_bg_color.start()
 

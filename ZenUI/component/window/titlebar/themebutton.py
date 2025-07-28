@@ -13,19 +13,19 @@ class ZThemeButton(ZABCTitleBarButton):
                     QSize(), QIcon.Mode.Normal, QIcon.State.On)
         self._icon: QIcon = icon
         self._theme: ZTheme = ZGlobal.themeManager.getTheme()
-        self.styleData = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__)
+        self.styleData = ZGlobal.styleDataManager.getStyleData('ZThemeButton')
 
     def themeChangeHandler(self, theme):
         self._theme = theme
-        self._style_data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
-        self._body_color_mgr.setColorTo(self._style_data.Body)
-        self._icon_color_mgr.setColorTo(self._style_data.Icon)
+        self._style_data = ZGlobal.styleDataManager.getStyleData('ZThemeButton', theme.name)
+        self._body_cc.setColorTo(self._style_data.Body)
+        self._icon_cc.setColorTo(self._style_data.Icon)
 
     def paintEvent(self, e):
         painter = QPainter(self)
         painter.setRenderHints(QPainter.SmoothPixmapTransform)
         # draw background
-        painter.setBrush(self._body_color_mgr.color)
+        painter.setBrush(self._body_cc.color)
         painter.setPen(Qt.NoPen)
         painter.drawRect(self.rect().adjusted(0, 1, 0, 0))
 
@@ -44,7 +44,7 @@ class ZThemeButton(ZABCTitleBarButton):
         painter_pix = QPainter(colored_pixmap)
         painter_pix.drawPixmap(0, 0, pixmap)
         painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
-        painter_pix.fillRect(colored_pixmap.rect(), self._icon_color_mgr.color)
+        painter_pix.fillRect(colored_pixmap.rect(), self._icon_cc.color)
         painter_pix.end()
         # 3. 绘制到按钮中心
         painter.drawPixmap(

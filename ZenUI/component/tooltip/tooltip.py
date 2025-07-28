@@ -3,7 +3,7 @@ from enum import Enum, IntEnum
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.base import LocationManager,SizeManager,WindowOpacityManager
+from ZenUI.component.base import LocationController,SizeController,WindowOpacityController
 from ZenUI.core import ZGlobal,ZToolTipStyleData,ZQuickEffect,TipPos
 from .tooltipcontent import ZToolTipContent
 
@@ -34,18 +34,18 @@ class ZToolTip(QWidget):
 
         self._content = ZToolTipContent(self)
 
-        self._location_mgr = LocationManager(self)
-        self._location_mgr.animation.setBias(1)
-        self._location_mgr.animation.setFactor(0.1)
+        self._location_ctrl = LocationController(self)
+        self._location_ctrl.animation.setBias(1)
+        self._location_ctrl.animation.setFactor(0.1)
 
-        self._size_mgr = SizeManager(self)
-        self._size_mgr.animation.setBias(1)
-        self._size_mgr.animation.setFactor(0.1)
+        self._size_ctrl = SizeController(self)
+        self._size_ctrl.animation.setBias(1)
+        self._size_ctrl.animation.setFactor(0.1)
 
-        self._opacity_mgr= WindowOpacityManager(self)
-        self._opacity_mgr.animation.setBias(0.02)
-        self._opacity_mgr.animation.setFactor(0.2)
-        self._opacity_mgr.animation.finished.connect(self._completely_hid_signal_handler)
+        self._opacity_ctrl= WindowOpacityController(self)
+        self._opacity_ctrl.animation.setBias(0.02)
+        self._opacity_ctrl.animation.setFactor(0.2)
+        self._opacity_ctrl.animation.finished.connect(self._completely_hid_signal_handler)
 
         self._repeat_timer = QTimer() # 节流,防止频繁调用showTip()方法
         self._repeat_timer.setSingleShot(True)
@@ -116,20 +116,20 @@ class ZToolTip(QWidget):
     @styleData.setter
     def styleData(self, data: ZToolTipStyleData):
         self._style_data = data
-        self._content.textColorMgr.color = data.Text
-        self._content.bodyColorMgr.color = data.Body
-        self._content.borderColorMgr.color = data.Border
-        self._content.radiusMgr.value = data.Radius
+        self._content.textColorCtrl.color = data.Text
+        self._content.bodyColorCtrl.color = data.Body
+        self._content.borderColorCtrl.color = data.Border
+        self._content.radiusCtrl.value = data.Radius
         self._content.update()
 
 
     def themeChangeHandler(self, theme):
         data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
         self._style_data = data
-        self._content.radiusMgr.value = data.Radius
-        self._content.textColorMgr.setColorTo(data.Text)
-        self._content.bodyColorMgr.setColorTo(data.Body)
-        self._content.borderColorMgr.setColorTo(data.Border)
+        self._content.radiusCtrl.value = data.Radius
+        self._content.textColorCtrl.setColorTo(data.Text)
+        self._content.bodyColorCtrl.setColorTo(data.Body)
+        self._content.borderColorCtrl.setColorTo(data.Border)
         self._content.update()
 
 
@@ -170,18 +170,18 @@ class ZToolTip(QWidget):
         if self.windowOpacity() == 0 or distance.manhattanLength() > 150:
             self.resize(self.sizeHint())
             self.move(self._get_initial_pos())
-            self._location_mgr.moveTo(new_pos)
+            self._location_ctrl.moveTo(new_pos)
         else:
-            self._size_mgr.resizeTo(self.sizeHint())
-            self._location_mgr.moveTo(new_pos)
+            self._size_ctrl.resizeTo(self.sizeHint())
+            self._location_ctrl.moveTo(new_pos)
 
-        self._opacity_mgr.fadeIn()
+        self._opacity_ctrl.fadeIn()
         if hide_delay > 0: self._hide_timer.start(hide_delay)
         self._repeat_timer.start(33)
 
     def hideTip(self):
         #self.target = None
-        self._opacity_mgr.fadeOut()
+        self._opacity_ctrl.fadeOut()
 
     def hideTipDelayed(self, delay: int):
         if self._hide_timer.isActive(): self._hide_timer.stop()
@@ -199,7 +199,7 @@ class ZToolTip(QWidget):
         if self.windowOpacity() == 0:
             self.move(pos)
         else:
-            self._location_mgr.moveTo(pos)
+            self._location_ctrl.moveTo(pos)
 
 
     def _update_size(self):
@@ -207,11 +207,11 @@ class ZToolTip(QWidget):
         if self.windowOpacity() == 0:
             self.resize(size)
         else:
-            self._size_mgr.resizeTo(size)
+            self._size_ctrl.resizeTo(size)
 
 
     def _completely_hid_signal_handler(self):
-        if self._opacity_mgr.opacity == 0:
+        if self._opacity_ctrl.opacity == 0:
             self.target = None
 
 

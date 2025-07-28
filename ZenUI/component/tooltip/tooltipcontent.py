@@ -1,46 +1,38 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QRectF, QSize, QRect, QMargins
 from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen
-from ZenUI.component.base import ColorManager,SizeManager,FloatManager
+from ZenUI.component.base import ColorController,FloatController
 class ZToolTipContent(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setMinimumHeight(28)
-        # 基本属性
+
         self._text: str = None
         self._font = QFont("Microsoft YaHei", 9)
         self._word_wrap = True
         self._max_content_width = 300
         self._margin: QMargins = QMargins(8, 6, 8, 6)
         self._alignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-        # 样式属性
-        self._border_width = 1
-        self._text_color_mgr = ColorManager(self)
-        self._body_color_mgr = ColorManager(self)
-        self._border_color_mgr = ColorManager(self)
-        self._radius_mgr = FloatManager(self)
+
+        self._text_cc = ColorController(self)
+        self._body_cc = ColorController(self)
+        self._border_cc = ColorController(self)
+        self._radius_ctrl = FloatController(self)
 
 
 
     # region Property
     @property
-    def textColorMgr(self) -> ColorManager: return self._text_color_mgr
+    def textColorCtrl(self) -> ColorController: return self._text_cc
 
     @property
-    def bodyColorMgr(self) -> ColorManager: return self._body_color_mgr
+    def bodyColorCtrl(self) -> ColorController: return self._body_cc
 
     @property
-    def borderColorMgr(self) -> ColorManager: return self._border_color_mgr
+    def borderColorCtrl(self) -> ColorController: return self._border_cc
 
     @property
-    def radiusMgr(self) -> FloatManager: return self._radius_mgr
-
-    @property
-    def borderWidth(self) -> int: return self._border_width
-    @borderWidth.setter
-    def borderWidth(self, width: int) -> None:
-        self._border_width = width
-        self.update()
+    def radiusCtrl(self) -> FloatController: return self._radius_ctrl
 
     @property
     def text(self) -> str: return self._text
@@ -97,12 +89,12 @@ class ZToolTipContent(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing|QPainter.RenderHint.TextAntialiasing)
         # 绘制背景
         rect = self.rect()
-        radius = self._radius_mgr.value
+        radius = self._radius_ctrl.value
         painter.setPen(Qt.NoPen)
-        painter.setBrush(self._body_color_mgr.color)
+        painter.setBrush(self._body_cc.color)
         painter.drawRoundedRect(rect, radius, radius)
         # 绘制边框
-        painter.setPen(QPen(self._border_color_mgr.color, self._border_width))
+        painter.setPen(QPen(self._border_cc.color, 1))
         painter.setBrush(Qt.NoBrush)
         # 调整矩形以避免边框模糊
         painter.drawRoundedRect(
@@ -111,7 +103,7 @@ class ZToolTipContent(QWidget):
             radius
         )
         painter.setFont(self._font)
-        painter.setPen(self._text_color_mgr.color)
+        painter.setPen(self._text_cc.color)
         if self._word_wrap:
             self._alignment |= Qt.TextWordWrap
         painter.drawText(rect.adjusted(self._margin.left(), 0, -self._margin.right(), 0), self._alignment, self._text)

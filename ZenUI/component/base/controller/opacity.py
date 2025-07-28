@@ -3,7 +3,8 @@ from PySide6.QtCore import QObject, Property
 from typing import overload
 from ZenUI.core import ZExpAnimationRefactor
 
-class OpacityManager(QObject):
+class OpacityController(QObject):
+    '''透明度控制器，用于控制透明度变化'''
     def __init__(self, parent: QWidget):
         super().__init__(parent)
         self._opacity: float = 1.0
@@ -58,7 +59,8 @@ class OpacityManager(QObject):
         return super().parent()
 
 
-class WindowOpacityManager(QObject):
+class WindowOpacityController(QObject):
+    '''窗口透明度控制器，用于控制窗口透明度变化'''
     def __init__(self, parent: QWidget):
         super().__init__(parent)
         self._anim = ZExpAnimationRefactor(self, "opacity")

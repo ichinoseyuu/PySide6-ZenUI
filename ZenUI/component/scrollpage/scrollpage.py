@@ -2,7 +2,7 @@ from enum import Enum
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.base import LocationManager,ColorManager,FloatManager
+from ZenUI.component.base import LocationController,ColorController,FloatController
 from ZenUI.core import ZScrollPageStyleData,ZGlobal
 from .handle import ScrollHandle
 from .content import ZScrollContent
@@ -32,7 +32,6 @@ class ZScrollPage(QWidget):
         self._layout.setAlignment(Qt.AlignmentFlag.AlignTop|Qt.AlignmentFlag.AlignLeft)
         if alignment: self._layout.setAlignment(alignment)
 
-        # handle
         self._last_v_handle_pos: float = 0.0
         self._last_v_handle_len: float = 0.0
         self._last_h_handle_pos: float = 0.0
@@ -40,15 +39,11 @@ class ZScrollPage(QWidget):
         self._handle_v = ScrollHandle(self,ScrollHandle.Orientation.Vertical)
         self._handle_h = ScrollHandle(self,ScrollHandle.Orientation.Horizontal)
 
-        # style property
-        self._body_color_mgr = ColorManager(self)
-        self._border_color_mgr = ColorManager(self)
-        self._radius_mgr = FloatManager(self)
+        self._body_cc = ColorController(self)
+        self._border_cc = ColorController(self)
+        self._radius_ctrl = FloatController(self)
+        self._location_ctrl = LocationController(self)
 
-        # animation property
-        self._location_mgr = LocationManager(self)
-
-        # style data
         self._style_data: ZScrollPageStyleData = None
         self.styleData = ZGlobal.styleDataManager.getStyleData('ZScrollPage')
 
@@ -57,45 +52,45 @@ class ZScrollPage(QWidget):
         self._content.resized.connect(self._update_handles_and_content)
 
     @property
-    def bodyColorMgr(self): return self._body_color_mgr
+    def bodyColorCtrl(self): return self._body_cc
 
     @property
-    def borderColorMgr(self): return self._border_color_mgr
+    def borderColorCtrl(self): return self._border_cc
 
     @property
-    def radiusMgr(self): return self._radius_mgr
+    def radiusCtrl(self): return self._radius_ctrl
+
+    @property
+    def locationCtrl(self): return self._location_ctrl
 
     @property
     def content(self): return self._content
-
-    @property
-    def locationMgr(self): return self._location_mgr
 
     @property
     def styleData(self): return self._style_data
     @styleData.setter
     def styleData(self, style_data: ZScrollPageStyleData):
         self._style_data = style_data
-        self._body_color_mgr.color = style_data.Body
-        self._border_color_mgr.color = style_data.Border
-        self._radius_mgr.value = style_data.Radius
-        self._handle_h.bodyColorMgr.color = style_data.Handle
-        self._handle_v.bodyColorMgr.color = style_data.Handle
-        self._handle_h.borderColorMgr.color = style_data.HandleBorder
-        self._handle_v.borderColorMgr.color = style_data.HandleBorder
+        self._body_cc.color = style_data.Body
+        self._border_cc.color = style_data.Border
+        self._radius_ctrl.value = style_data.Radius
+        self._handle_h.bodyColorCtrl.color = style_data.Handle
+        self._handle_v.bodyColorCtrl.color = style_data.Handle
+        self._handle_h.borderColorCtrl.color = style_data.HandleBorder
+        self._handle_v.borderColorCtrl.color = style_data.HandleBorder
         self._handle_h.update()
         self._handle_v.update()
         self.update()
 
     def themeChangHandler(self, theme):
         data = ZGlobal.styleDataManager.getStyleData('ZScrollPage', theme.name)
-        self._radius_mgr.value = data.Radius
-        self._body_color_mgr.setColorTo(data.Body)
-        self._border_color_mgr.setColorTo(data.Border)
-        self._handle_h.bodyColorMgr.setColorTo(data.Handle)
-        self._handle_v.bodyColorMgr.setColorTo(data.Handle)
-        self._handle_h.borderColorMgr.setColorTo(data.HandleBorder)
-        self._handle_v.borderColorMgr.setColorTo(data.HandleBorder)
+        self._radius_ctrl.value = data.Radius
+        self._body_cc.setColorTo(data.Body)
+        self._border_cc.setColorTo(data.Border)
+        self._handle_h.bodyColorCtrl.setColorTo(data.Handle)
+        self._handle_v.bodyColorCtrl.setColorTo(data.Handle)
+        self._handle_h.borderColorCtrl.setColorTo(data.HandleBorder)
+        self._handle_v.borderColorCtrl.setColorTo(data.HandleBorder)
         self._handle_h._trans_timer.start(1200)
         self._handle_v._trans_timer.start(1200)
 
@@ -104,13 +99,13 @@ class ZScrollPage(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         rect = self.rect()
-        radius = self._radius_mgr.value
+        radius = self._radius_ctrl.value
         # draw background
         painter.setPen(Qt.NoPen)
-        painter.setBrush(self._body_color_mgr.color)
+        painter.setBrush(self._body_cc.color)
         painter.drawRoundedRect(rect, radius, radius)
         # draw border
-        painter.setPen(QPen(self._border_color_mgr.color, 1))
+        painter.setPen(QPen(self._border_cc.color, 1))
         painter.setBrush(Qt.NoBrush)
         # adjust border width
         painter.drawRoundedRect(
@@ -166,7 +161,7 @@ class ZScrollPage(QWidget):
                 x = max(0, min(x, max_scroll_x))
                 current_x = -x
 
-        self._content.locationMgr.moveTo(current_x, current_y)
+        self._content.locationCtrl.moveTo(current_x, current_y)
         self._sync_scroll_handles(current_x, current_y)
 
 
@@ -186,7 +181,7 @@ class ZScrollPage(QWidget):
                 self._handle_v.opaque()
             self._last_v_handle_pos = handle_pos
             # 更新滑块位置
-            self._handle_v.locationMgr.moveTo(
+            self._handle_v.locationCtrl.moveTo(
                 self.width() - self._handle_v.width(),
                 handle_pos
             )
@@ -205,7 +200,7 @@ class ZScrollPage(QWidget):
                 self._handle_h.opaque()
             self._last_h_handle_pos = handle_pos
             # 更新滑块位置
-            self._handle_h.locationMgr.moveTo(
+            self._handle_h.locationCtrl.moveTo(
                 int(handle_pos),
                 self.height() - self._handle_h.height()
             )
@@ -233,7 +228,7 @@ class ZScrollPage(QWidget):
         # 根据内容相对位置计算新的滚动位置
         new_scroll_pos = max(0, min(int(content_visible_ratio * ch), max_scroll))
         # 更新内容位置
-        self._content.locationMgr.moveTo(self._content.x(), -new_scroll_pos)
+        self._content.locationCtrl.moveTo(self._content.x(), -new_scroll_pos)
 
         # 计算滑块高度
         handle_h= max(30, vh * min(1.0, vh / ch))
@@ -250,7 +245,7 @@ class ZScrollPage(QWidget):
         self._last_v_handle_len = handle_h
         self._handle_v.setHandleLengthTo(handle_h)
         self._handle_v.move(self.width() - self._handle_v.width(), self._handle_v.y())
-        self._handle_v.locationMgr.moveTo(
+        self._handle_v.locationCtrl.moveTo(
             self.width() - self._handle_v.width(),
             handle_pos
         )
@@ -269,7 +264,7 @@ class ZScrollPage(QWidget):
         # 根据内容相对位置计算新的滚动位置
         new_scroll_pos = max(0, min(int(content_visible_ratio * cw), max_scroll))
         # 更新内容位置
-        self._content.locationMgr.moveTo(new_scroll_pos, self._content.y())
+        self._content.locationCtrl.moveTo(new_scroll_pos, self._content.y())
 
         # 计算滑块宽度
         handle_w = max(30, vw * min(1.0, vw / cw))
@@ -286,7 +281,7 @@ class ZScrollPage(QWidget):
         self._last_h_handle_len = handle_w
         self._handle_h.setHandleLengthTo(handle_w)
         self._handle_h.move(self._handle_h.x(), self.height() - self._handle_h.height())
-        self._handle_h.locationMgr.moveTo(
+        self._handle_h.locationCtrl.moveTo(
             int(handle_pos),
             self.height() - self._handle_h.height()
         )

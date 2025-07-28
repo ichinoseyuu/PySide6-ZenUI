@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QSize, QMargins
 from PySide6.QtGui import QPainter, QFont, QFontMetrics
-from ZenUI.component.base import ColorManager
+from ZenUI.component.base import ColorController
 from ZenUI.core import ZGlobal,ZTextBlockStyleData
 class ZTextBlock(QWidget):
     def __init__(self,
@@ -13,23 +13,24 @@ class ZTextBlock(QWidget):
         self.setMinimumHeight(24)
         # self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         # self.setStyleSheet('background:transparent;border:1px solid red;')
-        # base property
+
         self._text = text
         self._font = QFont("Microsoft YaHei", 10)
         self._margins = QMargins(0, 0, 0, 0)
         self._word_wrap = False
         self._alignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
-        # style property
-        self._text_color_mgr = ColorManager(self)
-        # style data
+
+        self._text_cc = ColorController(self)
+
         self._style_data: ZTextBlockStyleData = None
         self._custom_style: ZTextBlockStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__)
+
+        self.styleData = ZGlobal.styleDataManager.getStyleData('ZTextBlock')
         ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
 
     # region Property
     @property
-    def textColorMgr(self) -> ColorManager: return self._text_color_mgr
+    def textColorCtrl(self) -> ColorController: return self._text_cc
 
     @property
     def text(self) -> str: return self._text
@@ -74,13 +75,13 @@ class ZTextBlock(QWidget):
     @styleData.setter
     def styleData(self, style_data: ZTextBlockStyleData) -> None:
         self._style_data = style_data
-        self._text_color_mgr.color = style_data.Text
+        self._text_cc.color = style_data.Text
         self.update()
 
     # region Slot
     def themeChangeHandler(self, theme):
-        self._style_data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
-        self._text_color_mgr.setColorTo(self._style_data.Text)
+        self._style_data = ZGlobal.styleDataManager.getStyleData('ZTextBlock', theme.name)
+        self._text_cc.setColorTo(self._style_data.Text)
 
     # region Override
     def setFont(self, font: QFont) -> None:
@@ -91,7 +92,7 @@ class ZTextBlock(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
         painter.setFont(self._font)
-        painter.setPen(self._text_color_mgr.color)
+        painter.setPen(self._text_cc.color)
         rect = self.rect().adjusted(
             self._margins.left(),
             self._margins.top(),

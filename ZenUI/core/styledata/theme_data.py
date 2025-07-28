@@ -11,8 +11,8 @@ ACCENT_COLOR_DARK: str = '#955595'
 
 DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZCard': {
-                K.Body: '#222222',
-                K.Border: '#1d1d1d',
+                K.Body: '#2f2f2f',
+                K.Border: '#383838',
                 K.Radius: 5.0
                 },
             'ZTextBlock':{
@@ -34,9 +34,9 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Track: '#464646',
                 K.TrackBorder: '#505050',
                 K.FillAreaStart: ACCENT_COLOR_DARK,
-                K.FillAreaEnd: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.15),
+                K.FillAreaEnd: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.2),
                 K.FillAreaBorder: ACCENT_COLOR_DARK,
-                K.HandleInner: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.15),
+                K.HandleInner: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.2),
                 K.HandleOuter: '#464646',
                 K.HandleBorder: '#505050'
                 },
@@ -128,7 +128,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
 
 LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZCard': {
-                K.Body: '#f6f6f6',
+                K.Body: '#fcfcfc',
                 K.Border: '#e5e5e5',
                 K.Radius: 5.0
                 },
@@ -151,9 +151,9 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Track: '#e5e5e5',
                 K.TrackBorder: '#e0e0e0',
                 K.FillAreaStart: ACCENT_COLOR_LIGHT,
-                K.FillAreaEnd: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.15),
+                K.FillAreaEnd: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.2),
                 K.FillAreaBorder: ACCENT_COLOR_LIGHT,
-                K.HandleInner: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.15),
+                K.HandleInner: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.2),
                 K.HandleOuter: '#ffffff',
                 K.HandleBorder: '#bfbfbf'
                 },

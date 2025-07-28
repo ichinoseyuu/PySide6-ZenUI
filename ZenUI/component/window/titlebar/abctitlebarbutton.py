@@ -2,7 +2,7 @@ from enum import Enum
 from PySide6.QtCore import Qt, Signal, QEvent
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.base import ColorManager
+from ZenUI.component.base import ColorController
 from ZenUI.core import ZGlobal, ZTitleBarButtonData
 
 class ZABCTitleBarButton(QWidget):
@@ -21,18 +21,20 @@ class ZABCTitleBarButton(QWidget):
         super().__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_NoMousePropagation) # 防止鼠标事件传播到父组件
         self.setFixedSize(46, 32)
+
         self.entered.connect(self.hoverHandler)
         self.leaved.connect(self.leaveHandler)
         self.pressed.connect(self.pressHandler)
         self.released.connect(self.releaseHandler)
         self.clicked.connect(self.clickHandler)
-        # 属性
+
         self._state = self.State.Idle
+
+        self._body_cc = ColorController(self)
+        self._icon_cc = ColorController(self)
+
         self._style_data: ZTitleBarButtonData = None
-        # 样式属性
-        self._body_color_mgr = ColorManager(self)
-        self._icon_color_mgr = ColorManager(self)
-        # 主题管理
+
         ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
 
     # region Property
@@ -44,8 +46,8 @@ class ZABCTitleBarButton(QWidget):
     @styleData.setter
     def styleData(self, style_data: ZTitleBarButtonData):
         self._style_data = style_data
-        self._body_color_mgr.color = style_data.Body
-        self._icon_color_mgr.color = style_data.Icon
+        self._body_cc.color = style_data.Body
+        self._icon_cc.color = style_data.Icon
         self.update()
 
 
@@ -55,24 +57,24 @@ class ZABCTitleBarButton(QWidget):
     # region Slot
     def themeChangeHandler(self, theme):
         self._style_data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
-        self._body_color_mgr.setColorTo(self._style_data.Body)
-        self._icon_color_mgr.setColorTo(self._style_data.Icon)
+        self._body_cc.setColorTo(self._style_data.Body)
+        self._icon_cc.setColorTo(self._style_data.Icon)
 
     def hoverHandler(self):
-        self._body_color_mgr.setColorTo(self._style_data.BodyHover)
-        self._icon_color_mgr.setColorTo(self._style_data.IconHover)
+        self._body_cc.setColorTo(self._style_data.BodyHover)
+        self._icon_cc.setColorTo(self._style_data.IconHover)
 
     def leaveHandler(self):
-        self._body_color_mgr.setColorTo(self._style_data.Body)
-        self._icon_color_mgr.setColorTo(self._style_data.Icon)
+        self._body_cc.setColorTo(self._style_data.Body)
+        self._icon_cc.setColorTo(self._style_data.Icon)
 
     def pressHandler(self):
-        self._body_color_mgr.setColorTo(self._style_data.BodyPressed)
-        self._icon_color_mgr.setColorTo(self._style_data.IconPressed)
+        self._body_cc.setColorTo(self._style_data.BodyPressed)
+        self._icon_cc.setColorTo(self._style_data.IconPressed)
 
     def releaseHandler(self):
-        self._body_color_mgr.setColorTo(self._style_data.Body)
-        self._icon_color_mgr.setColorTo(self._style_data.Icon)
+        self._body_cc.setColorTo(self._style_data.Body)
+        self._icon_cc.setColorTo(self._style_data.Icon)
 
     def clickHandler(self):
         pass

@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QRectF,Signal
 from PySide6.QtGui import QPainter,QPen,QPainterPath
-from ZenUI.component.base import ColorManager,FloatManager, LocationManager
+from ZenUI.component.base import ColorController,FloatController, LocationController
 from ZenUI.core import ZGlobal,ZCardStyleData
 
 class ZCard(QWidget):
@@ -15,64 +15,65 @@ class ZCard(QWidget):
         # self.setStyleSheet('background-color:transparent;border: 1px solid red;')
 
         # style property
-        self._body_color_mgr = ColorManager(self)
-        self._border_color_mgr = ColorManager(self)
-        self._radius_mgr = FloatManager(self)
+        self._body_cc = ColorController(self)
+        self._border_cc = ColorController(self)
+        self._radius_ctrl = FloatController(self)
 
         # animation property
-        self._location_mgr = LocationManager(self)
+        self._location_ctrl = LocationController(self)
 
         # style data
         self._style_data: ZCardStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__)
+        self.styleData = ZGlobal.styleDataManager.getStyleData('ZCard')
 
         ZGlobal.themeManager.themeChanged.connect(self.themeChangHandler)
 
     @property
-    def bodyColorMgr(self): return self._body_color_mgr
+    def bodyColorCtrl(self): return self._body_cc
 
     @property
-    def borderColorMgr(self): return self._border_color_mgr
+    def borderColorCtrl(self): return self._border_cc
 
     @property
-    def radiusMgr(self): return self._radius_mgr
+    def radiusCtrl(self): return self._radius_ctrl
 
     @property
-    def locationMgr(self): return self._location_mgr
+    def locationCtrl(self): return self._location_ctrl
 
     @property
     def styleData(self): return self._style_data
     @styleData.setter
     def styleData(self, style_data: ZCardStyleData):
         self._style_data = style_data
-        self._body_color_mgr.color = style_data.Body
-        self._border_color_mgr.color = style_data.Border
-        self._radius_mgr.value = style_data.Radius
+        self._body_cc.color = style_data.Body
+        self._border_cc.color = style_data.Border
+        self._radius_ctrl.value = style_data.Radius
         self.update()
 
     def themeChangHandler(self, theme):
-        data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
-        self._radius_mgr.value = data.Radius
-        self._body_color_mgr.setColorTo(data.Body)
-        self._border_color_mgr.setColorTo(data.Border)
+        data = ZGlobal.styleDataManager.getStyleData('ZCard', theme.name)
+        self._radius_ctrl.value = data.Radius
+        self._body_cc.setColorTo(data.Body)
+        self._border_cc.setColorTo(data.Border)
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         rect = self.rect()
-        radius = self._radius_mgr.value
+        radius = self._radius_ctrl.value
         # draw background
         painter.setPen(Qt.NoPen)
-        painter.setBrush(self._body_color_mgr.color)
+        painter.setBrush(self._body_cc.color)
         painter.drawRoundedRect(rect, radius, radius)
         # draw border
-        painter.setPen(QPen(self._border_color_mgr.color, 1))
+        painter.setPen(QPen(self._border_cc.color, 1))
         painter.setBrush(Qt.NoBrush)
         # adjust border width
         painter.drawRoundedRect(
             QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
-            5,0)
-
+            radius,
+            radius
+        )
     # def paintEvent(self, event):
     #     painter = QPainter(self)
     #     painter.setRenderHint(QPainter.RenderHint.Antialiasing)

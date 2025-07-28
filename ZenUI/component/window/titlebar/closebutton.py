@@ -6,16 +6,16 @@ from .abctitlebarbutton import ZABCTitleBarButton
 class ZCloseButton(ZABCTitleBarButton):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.styleData = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__)
+        self.styleData = ZGlobal.styleDataManager.getStyleData('ZCloseButton')
 
     def paintEvent(self, e):
         painter = QPainter(self)
-        painter.setBrush(self._body_color_mgr.color)
+        painter.setBrush(self._body_cc.color)
         painter.setPen(Qt.NoPen)
         painter.drawRect(self.rect().adjusted(0, 1, -1, 0))
         r = self.devicePixelRatioF()
 
-        pen = QPen(self._icon_color_mgr.color, 1.2 * 1/r)  # 增加线宽
+        pen = QPen(self._icon_cc.color, 1.2 * 1/r)  # 增加线宽
         pen.setCapStyle(Qt.RoundCap)  # 设置线段端点为圆形
         pen.setJoinStyle(Qt.RoundJoin)  # 设置线段连接处为圆形
         pen.setCosmetic(True)

@@ -1,7 +1,7 @@
 from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
 from PySide6.QtCore import Qt, QRect, QSize, QRectF
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.base import ColorManager,FloatManager,OpacityManager
+from ZenUI.component.base import ColorController,FloatController,OpacityController
 from ZenUI.core import ZGlobal, ZButtonStyleData
 from .abcbutton import ZABCButton
 
@@ -21,37 +21,35 @@ class ZButton(ZABCButton):
         self._spacing = 4
         if text : self.text = text
         if icon : self.icon = icon
-        # 样式属性
-        self._body_color_mgr = ColorManager(self)
-        self._border_color_mgr = ColorManager(self)
-        self._text_color_mgr = ColorManager(self)
-        self._icon_color_mgr = ColorManager(self)
-        self._radius_mgr = FloatManager(self)
-        # 动画属性
-        self._opacity_mgr = OpacityManager(self)
-        # 样式数据
+
+        self._body_cc = ColorController(self)
+        self._border_cc = ColorController(self)
+        self._text_cc = ColorController(self)
+        self._icon_cc = ColorController(self)
+        self._radius_ctrl = FloatController(self)
+        self._opacity_ctrl = OpacityController(self)
+
         self._style_data: ZButtonStyleData = None
         self.styleData = ZGlobal.styleDataManager.getStyleData("ZButton")
 
-        # 设置默认大小
         ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
 
 
     # region Property
     @property
-    def bodyColorMgr(self): return self._body_color_mgr
+    def bodyColorCtrl(self): return self._body_cc
 
     @property
-    def borderColorMgr(self): return self._border_color_mgr
+    def borderColorCtrl(self): return self._border_cc
 
     @property
-    def textColorMgr(self): return self._text_color_mgr
+    def textColorCtrl(self): return self._text_cc
 
     @property
-    def iconColorMgr(self): return self._icon_color_mgr
+    def iconColorCtrl(self): return self._icon_cc
 
     @property
-    def radiusMgr(self): return self._radius_mgr
+    def radiusCtrl(self): return self._radius_ctrl
 
     @property
     def text(self) -> str: return self._text
@@ -93,43 +91,43 @@ class ZButton(ZABCButton):
     @styleData.setter
     def styleData(self, style_data: ZButtonStyleData) -> None:
         self._style_data = style_data
-        self._body_color_mgr.color = style_data.Body
-        self._text_color_mgr.color = style_data.Text
-        self._icon_color_mgr.color = style_data.Icon
-        self._border_color_mgr.color = style_data.Border
-        self._radius_mgr.value = style_data.Radius
+        self._body_cc.color = style_data.Body
+        self._text_cc.color = style_data.Text
+        self._icon_cc.color = style_data.Icon
+        self._border_cc.color = style_data.Border
+        self._radius_ctrl.value = style_data.Radius
         self.update()
 
 
 
     # region Slot
     def themeChangeHandler(self, theme):
-        data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__,theme.name)
+        data = ZGlobal.styleDataManager.getStyleData('ZButton',theme.name)
         self._style_data = data
-        self._radius_mgr.value = data.Radius
-        self._body_color_mgr.setColorTo(data.Body)
-        self._border_color_mgr.setColorTo(data.Border)
-        self._icon_color_mgr.setColorTo(data.Icon)
-        self._text_color_mgr.setColorTo(data.Text)
+        self._radius_ctrl.value = data.Radius
+        self._body_cc.setColorTo(data.Body)
+        self._border_cc.setColorTo(data.Border)
+        self._icon_cc.setColorTo(data.Icon)
+        self._text_cc.setColorTo(data.Text)
 
     def hoverHandler(self):
-        self._body_color_mgr.setColorTo(self.styleData.BodyHover)
+        self._body_cc.setColorTo(self.styleData.BodyHover)
 
     def leaveHandler(self):
-        self._body_color_mgr.setColorTo(self.styleData.Body)
+        self._body_cc.setColorTo(self.styleData.Body)
 
     def pressHandler(self):
-        self._body_color_mgr.setColorTo(self.styleData.BodyPressed)
+        self._body_cc.setColorTo(self.styleData.BodyPressed)
 
     def releaseHandler(self):
-        self._body_color_mgr.setColorTo(self.styleData.BodyHover)
+        self._body_cc.setColorTo(self.styleData.BodyHover)
 
     # region Override
     # Method
     def setEnabled(self, enable: bool) -> None:
         if enable == self.isEnabled(): return
-        if enable: self._opacity_mgr.fadeTo(1.0)
-        else: self._opacity_mgr.fadeTo(0.3)
+        if enable: self._opacity_ctrl.fadeTo(1.0)
+        else: self._opacity_ctrl.fadeTo(0.3)
         super().setEnabled(enable)
 
     # Event
@@ -138,15 +136,15 @@ class ZButton(ZABCButton):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing|
                              QPainter.RenderHint.TextAntialiasing|
                              QPainter.RenderHint.SmoothPixmapTransform)
-        painter.setOpacity(self._opacity_mgr.opacity)
+        painter.setOpacity(self._opacity_ctrl.opacity)
         # 绘制背景
         rect = self.rect()
-        radius = self._radius_mgr.value
+        radius = self._radius_ctrl.value
         painter.setPen(Qt.NoPen)
-        painter.setBrush(self._body_color_mgr.color)
+        painter.setBrush(self._body_cc.color)
         painter.drawRoundedRect(rect, radius, radius)
         # 绘制边框
-        painter.setPen(QPen(self._border_color_mgr.color, 1))
+        painter.setPen(QPen(self._border_cc.color, 1))
         painter.setBrush(Qt.NoBrush)
         # 调整矩形以避免边框模糊
         painter.drawRoundedRect(
@@ -172,7 +170,7 @@ class ZButton(ZABCButton):
             painter_pix = QPainter(colored_pixmap)
             painter_pix.drawPixmap(0, 0, pixmap)
             painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
-            painter_pix.fillRect(colored_pixmap.rect(), self._icon_color_mgr.color)
+            painter_pix.fillRect(colored_pixmap.rect(), self._icon_cc.color)
             painter_pix.end()
             # 3. 绘制到按钮中心
             painter.drawPixmap(
@@ -182,7 +180,7 @@ class ZButton(ZABCButton):
             )
             # 绘制文本
             painter.setFont(self._font)
-            painter.setPen(self._text_color_mgr.color)
+            painter.setPen(self._text_cc.color)
             text_rect = QRect(
                 start_x + self._icon_size.width() + self._spacing,
                 0,
@@ -201,7 +199,7 @@ class ZButton(ZABCButton):
             painter_pix = QPainter(colored_pixmap)
             painter_pix.drawPixmap(0, 0, pixmap)
             painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
-            painter_pix.fillRect(colored_pixmap.rect(), self._icon_color_mgr.color)
+            painter_pix.fillRect(colored_pixmap.rect(), self._icon_cc.color)
             painter_pix.end()
             # 3. 绘制到按钮中心
             painter.drawPixmap(
@@ -212,7 +210,7 @@ class ZButton(ZABCButton):
         # 只有文本
         elif self._text:
             painter.setFont(self._font)
-            painter.setPen(self._text_color_mgr.color)
+            painter.setPen(self._text_cc.color)
             painter.drawText(rect, Qt.AlignCenter, self._text)
 
 

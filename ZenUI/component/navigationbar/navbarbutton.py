@@ -2,7 +2,7 @@
 from PySide6.QtGui import QPainter, QIcon, QPixmap
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.base import ColorManager,FloatManager,OpacityManager
+from ZenUI.component.base import ColorController,FloatController,OpacityController
 from ZenUI.core import ZGlobal, ZNavBarButtonStyleData
 from .abcnavbarbutton import ZABCNavBarButton
 
@@ -14,32 +14,31 @@ class ZNavBarButton(ZABCNavBarButton):
         super().__init__(parent)
         self.setMaximumSize(40, 40)
         if name : self.setObjectName(name)
-        # 基本属性
+
         self._icon: QIcon = None
         self._icon_size = QSize(20, 20)
         if icon : self.icon = icon
-        # 样式属性
-        self._body_color_mgr = ColorManager(self)
-        self._icon_color_mgr = ColorManager(self)
-        self._radius_mgr = FloatManager(self)
-        # 动画属性
-        self._opacity_mgr = OpacityManager(self)
-        # 样式数据
+
+        self._body_cc = ColorController(self)
+        self._icon_cc = ColorController(self)
+        self._radius_ctrl = FloatController(self)
+        self._opacity_ctrl = OpacityController(self)
+
         self._style_data: ZNavBarButtonStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__)
+        self.styleData = ZGlobal.styleDataManager.getStyleData('ZNavBarButton')
 
         ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
 
 
     # region Property
     @property
-    def bodyColorMgr(self): return self._body_color_mgr
+    def bodyColorCtrl(self): return self._body_cc
 
     @property
-    def iconColorMgr(self): return self._icon_color_mgr
+    def iconColorCtrl(self): return self._icon_cc
 
     @property
-    def radiusMgr(self): return self._radius_mgr
+    def radiusCtrl(self): return self._radius_ctrl
 
     @property
     def icon(self) -> QIcon: return self._icon
@@ -60,9 +59,9 @@ class ZNavBarButton(ZABCNavBarButton):
     @styleData.setter
     def styleData(self, style_data: ZNavBarButtonStyleData) -> None:
         self._style_data = style_data
-        self._body_color_mgr.color = style_data.Body
-        self._icon_color_mgr.color = style_data.Icon
-        self._radius_mgr.value = style_data.Radius
+        self._body_cc.color = style_data.Body
+        self._icon_cc.color = style_data.Icon
+        self._radius_ctrl.value = style_data.Radius
         self.update()
 
 
@@ -70,28 +69,28 @@ class ZNavBarButton(ZABCNavBarButton):
     def themeChangeHandler(self, theme):
         data = ZGlobal.styleDataManager.getStyleData('ZNavBarButton',theme.name)
         self._style_data = data
-        self._radius_mgr.value = data.Radius
-        self._body_color_mgr.setColorTo(data.Body)
-        self._icon_color_mgr.setColorTo(data.Icon)
+        self._radius_ctrl.value = data.Radius
+        self._body_cc.setColorTo(data.Body)
+        self._icon_cc.setColorTo(data.Icon)
 
     def hoverHandler(self):
-        self._body_color_mgr.setColorTo(self.styleData.BodyHover)
+        self._body_cc.setColorTo(self.styleData.BodyHover)
 
     def leaveHandler(self):
-        self._body_color_mgr.setColorTo(self.styleData.Body)
+        self._body_cc.setColorTo(self.styleData.Body)
 
     def pressHandler(self):
-        self._body_color_mgr.setColorTo(self.styleData.BodyPressed)
+        self._body_cc.setColorTo(self.styleData.BodyPressed)
 
     def releaseHandler(self):
-        self._body_color_mgr.setColorTo(self.styleData.BodyHover)
+        self._body_cc.setColorTo(self.styleData.BodyHover)
 
     # region Override
     # Method
     def setEnabled(self, enable: bool) -> None:
         if enable == self.isEnabled(): return
-        if enable: self._opacity_mgr.fadeTo(1.0)
-        else: self._opacity_mgr.fadeTo(0.3)
+        if enable: self._opacity_ctrl.fadeTo(1.0)
+        else: self._opacity_ctrl.fadeTo(0.3)
         super().setEnabled(enable)
 
     # Event
@@ -99,11 +98,11 @@ class ZNavBarButton(ZABCNavBarButton):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing |
                             QPainter.RenderHint.SmoothPixmapTransform)
-        painter.setOpacity(self._opacity_mgr.opacity)
+        painter.setOpacity(self._opacity_ctrl.opacity)
         rect = self.rect()
-        radius = self._radius_mgr.radius
+        radius = self._radius_ctrl.radius
         painter.setPen(Qt.NoPen)
-        painter.setBrush(self._body_color_mgr.color)
+        painter.setBrush(self._body_cc.color)
         painter.drawRoundedRect(rect, radius, radius)
 
         pixmap = self._icon.pixmap(self._icon_size)
@@ -113,7 +112,7 @@ class ZNavBarButton(ZABCNavBarButton):
         painter_pix = QPainter(colored_pixmap)
         painter_pix.drawPixmap(0, 0, pixmap)
         painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
-        painter_pix.fillRect(colored_pixmap.rect(), self._icon_color_mgr.color)
+        painter_pix.fillRect(colored_pixmap.rect(), self._icon_cc.color)
         painter_pix.end()
         icon_x = (self.width() - self._icon_size.width()) // 2
         icon_y = (self.height() - self._icon_size.height()) // 2

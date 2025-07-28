@@ -59,10 +59,11 @@ class ZSlider(QWidget):
         self._handle = SliderHandle(self,10)
 
         self._style_data: ZSliderStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__)
+        self.styleData = ZGlobal.styleDataManager.getStyleData('ZSlider')
+
         ZGlobal.themeManager.themeChanged.connect(self._theme_changed_handler)
-        #将handle移动一次的信号连接fill的更新
-        self._handle.locationMgr.animation.valueChanged.connect(self._update_fill)
+
+        self._handle.locationCtrl.animation.valueChanged.connect(self._update_fill)
         self._init_style(value)
 
         # self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
@@ -174,26 +175,26 @@ class ZSlider(QWidget):
     @styleData.setter
     def styleData(self, style_data: ZSliderStyleData):
         self._style_data = style_data
-        self._track.bodyColorMgr.color = style_data.Track
-        self._track.borderColorMgr.color = style_data.TrackBorder
-        self._fill.bodyColorMgr.colorStart = style_data.FillAreaStart
-        self._fill.bodyColorMgr.colorEnd = style_data.FillAreaEnd
-        self._fill.borderColorMgr.color = style_data.FillAreaBorder
-        self._handle.innerColorMgr.color = style_data.HandleInner
-        self._handle.outerColorMgr.color = style_data.HandleOuter
-        self._handle.borderColorMgr.color = style_data.HandleBorder
+        self._track.bodyColorCtrl.color = style_data.Track
+        self._track.borderColorCtrl.color = style_data.TrackBorder
+        self._fill.bodyColorCtrl.colorStart = style_data.FillAreaStart
+        self._fill.bodyColorCtrl.colorEnd = style_data.FillAreaEnd
+        self._fill.borderColorCtrl.color = style_data.FillAreaBorder
+        self._handle.innerColorCtrl.color = style_data.HandleInner
+        self._handle.outerColorCtrl.color = style_data.HandleOuter
+        self._handle.borderColorCtrl.color = style_data.HandleBorder
         self.update()
 
 
     def _theme_changed_handler(self, theme):
-        style_data = self._style_data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
-        self._track.bodyColorMgr.setColorTo(style_data.Track)
-        self._track.borderColorMgr.setColorTo(style_data.TrackBorder)
-        self._fill.bodyColorMgr.setColorTo(style_data.FillAreaStart,style_data.FillAreaEnd)
-        self._fill.borderColorMgr.setColorTo(style_data.FillAreaBorder)
-        self._handle.innerColorMgr.setColorTo(style_data.HandleInner)
-        self._handle.outerColorMgr.setColorTo(style_data.HandleOuter)
-        self._handle.borderColorMgr.setColorTo(style_data.HandleBorder)
+        style_data = self._style_data = ZGlobal.styleDataManager.getStyleData('ZSlider', theme.name)
+        self._track.bodyColorCtrl.setColorTo(style_data.Track)
+        self._track.borderColorCtrl.setColorTo(style_data.TrackBorder)
+        self._fill.bodyColorCtrl.setColorTo(style_data.FillAreaStart,style_data.FillAreaEnd)
+        self._fill.borderColorCtrl.setColorTo(style_data.FillAreaBorder)
+        self._handle.innerColorCtrl.setColorTo(style_data.HandleInner)
+        self._handle.outerColorCtrl.setColorTo(style_data.HandleOuter)
+        self._handle.borderColorCtrl.setColorTo(style_data.HandleBorder)
 
     @overload
     def stepValue(self, step: int, multiplier: int = 1) -> None:
@@ -322,10 +323,12 @@ class ZSlider(QWidget):
 
     def _init_style(self, value):
         if self.isHorizontal:
+            self._fill.bodyColorCtrl.direction = 0
             self.setFixedHeight(2 * self._handle_radius)
             self.setMinimumWidth(self._min_length + self._handle_radius * 2)
         else:
-            self._fill.bodyColorMgr.reverse = True
+            self._fill.bodyColorCtrl.reverse = True
+            self._fill.bodyColorCtrl.direction = 1
             self.setFixedWidth(2 * self._handle_radius)
             self.setMinimumHeight(self._min_length + self._handle_radius * 2)
         self._update_track_radius()
@@ -342,8 +345,8 @@ class ZSlider(QWidget):
 
 
     def _update_track_radius(self):
-        self._track.radiusMgr.value = self._track_width / 2
-        self._fill.radiusMgr.value = self._track_width / 2
+        self._track.radiusCtrl.value = self._track_width / 2
+        self._fill.radiusCtrl.value = self._track_width / 2
 
     def _update_track(self):
         # 更新轨道,resizeEvent时调用
@@ -374,9 +377,9 @@ class ZSlider(QWidget):
         #更新值/更新滑块位置
         if self.isHorizontal:
             handle_pos = QPoint(self._percentage * self._track_length, 0)
-            self._handle.locationMgr.moveTo(handle_pos)
+            self._handle.locationCtrl.moveTo(handle_pos)
         else:
-            self._handle.locationMgr.moveTo(0, self._track_length - self._percentage * self._track_length)
+            self._handle.locationCtrl.moveTo(0, self._track_length - self._percentage * self._track_length)
 
 
     def _update_fill(self):

@@ -3,7 +3,8 @@ from PySide6.QtCore import QObject, Property, QSize
 from typing import overload
 from ZenUI.core import ZExpAnimationRefactor
 
-class SizeManager(QObject):
+class SizeController(QObject):
+    '''尺寸控制器，用于控制尺寸变化'''
     def __init__(self, parent:QWidget):
         super().__init__(parent)
         self._anim = ZExpAnimationRefactor(self, "size")

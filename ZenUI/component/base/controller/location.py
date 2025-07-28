@@ -3,7 +3,8 @@ from PySide6.QtCore import QObject, Property, QPoint
 from typing import overload
 from ZenUI.core import ZExpAnimationRefactor
 
-class LocationManager(QObject):
+class LocationController(QObject):
+    '''位置控制器，用于控制位置变化'''
     def __init__(self, parent:QWidget):
         super().__init__(parent)
         self._anim = ZExpAnimationRefactor(self, "pos")

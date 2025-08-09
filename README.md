@@ -1,32 +1,41 @@
 # ZenUI
 
-## How to use
+## preview
 
-### install
+![深色主题预览](https://cdn.jsdelivr.net/gh/ichinoseyuu/Image/202508100210398.png)
+![深色主题预览](https://cdn.jsdelivr.net/gh/ichinoseyuu/Image/202508100210400.png)
+![浅色主题预览](https://cdn.jsdelivr.net/gh/ichinoseyuu/Image/202508100210401.png)
+![浅色主题预览](https://cdn.jsdelivr.net/gh/ichinoseyuu/Image/202508100210402.png)
 
-```powershell
-pip install pyside6
+## initialization
 
-python setup.py sdist
-pip install ./dist/zenui-0.1.1.tar.gz
-# or
-python setup.py install
-```
-
-### uninstall
+Recommend using uv tools to manage projects
 
 ```powershell
-pip uninstall ZenUI
+uv init
+uv sync
+uv pip install -e .
 ```
 
-### preview
+## build
 
-![浅色主题预览](https://cdn.jsdelivr.net/gh/ichinoseyuu/Image/202505121700512.png)
+```powershell
+uv build
+```
 
-![深色主题预览](https://cdn.jsdelivr.net/gh/ichinoseyuu/Image/202505121700783.png)
+## install
 
-### gallery打包
+```powershell
+uv add ./dist/zenui-0.1.0-py3-none-any.whl #or
+uv add ./dist/zenui-0.1.0.tar.gz
+```
+
+## pack zenui_gallery
 
 ```powershell
 nuitka --mingw64 --show-progress --standalone --disable-console --remove-output  ./zenui_gallery/main.py
+```
+
+```powershell
+pyinstaller -D -w ./zenui_gallery/main.py
 ```

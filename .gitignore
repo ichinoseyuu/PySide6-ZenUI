@@ -2,6 +2,7 @@ __pycache__/
 .venv/
 .vscode/
 test/
+src/ZenUI.egg-info
 src/ZenUI/_legacy/
 src/ZenUI/resource/icons
 src/ZenUI/resource/packge

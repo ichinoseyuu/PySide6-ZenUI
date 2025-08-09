@@ -1,8 +1,6 @@
 __pycache__/
 .venv/
 .vscode/
-docs/
-scripts/
 test/
 src/ZenUI/_legacy/
 src/ZenUI/resource/icons
@@ -14,6 +12,7 @@ zenui.log
 
 *.pyc
 *.psd
+*.bkp
 
 build/
 dist/

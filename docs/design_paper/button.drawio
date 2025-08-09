@@ -1,0 +1,175 @@
+<mxfile host="Electron" modified="2025-06-12T08:55:36.787Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.0.2 Chrome/114.0.5735.289 Electron/25.8.4 Safari/537.36" etag="7pu0iNco61QWXBFcSwgV" version="22.0.2" type="device">
+  <diagram name="第 1 页" id="zXatni1pzqpMf48aNfHY">
+    <mxGraphModel dx="1022" dy="640" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-41" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bR23BMnwEC_2DaW9xukJ-39" target="bR23BMnwEC_2DaW9xukJ-40">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-43" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bR23BMnwEC_2DaW9xukJ-39" target="bR23BMnwEC_2DaW9xukJ-42">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-45" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bR23BMnwEC_2DaW9xukJ-39" target="bR23BMnwEC_2DaW9xukJ-44">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-39" value="abcbutton" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="520" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-40" value="abcpushbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="640" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-42" value="abctoggledbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="260" y="640" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-44" value="abclongpressedbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="420" y="640" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-46" value="textbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="120" y="410" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-47" value="iconbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="260" y="410" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-48" value="icontextbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="400" y="410" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-49" value="transbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="260" y="470" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-50" value="gradientbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="400" y="470" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-51" value="nobackground" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="120" y="470" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-52" value="textbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="20" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-54" value="nobackground" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-55" value="abcpushbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="100" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-57" value="iconbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="230" y="20" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-58" value="nobackground" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="230" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-59" value="abcpushbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="230" y="100" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-63" value="textbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="540" y="20" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-64" value="iconbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="670" y="20" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-67" value="icontextbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="800" y="20" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-68" value="transbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="540" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-69" value="transbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="800" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-70" value="transbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="670" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-71" value="abcpushbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="540" y="100" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-72" value="abcpushbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="670" y="100" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-73" value="abcpushbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="800" y="100" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-83" value="textbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="160" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-84" value="iconbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="230" y="160" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-85" value="icontextbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="360" y="160" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-89" value="abcpushbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="240" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-90" value="abcpushbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="230" y="240" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-91" value="abcpushbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="360" y="240" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-92" value="gradientbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="200" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-93" value="gradientbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="230" y="200" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-94" value="gradientbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="360" y="200" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-96" value="textbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="560" y="280" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-97" value="iconbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="690" y="280" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-98" value="icontextbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="820" y="280" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-99" value="transbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="560" y="320" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-100" value="transbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="820" y="320" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-101" value="transbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="690" y="320" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-105" value="abctoggledbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="560" y="360" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-106" value="abctoggledbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="690" y="360" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-107" value="abctoggledbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="820" y="360" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-108" value="textbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="560" y="430" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-109" value="iconbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="690" y="430" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-110" value="icontextbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="820" y="430" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-112" value="monochrome" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="820" y="470" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-114" value="abctoggledbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="560" y="510" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-115" value="abctoggledbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="690" y="510" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-116" value="abctoggledbutton" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="820" y="510" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-117" value="monochrome" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="690" y="470" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bR23BMnwEC_2DaW9xukJ-118" value="monochrome" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="560" y="470" width="120" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -91,27 +91,23 @@ class SliderHandle(QWidget):
 
 
     def leaveEvent(self, event):
-        super().leaveEvent(event)
         self._inner_scale_ctrl.setValueTo(self._inner_scale_normal)
         self._outer_scale_ctrl.setValueTo(self._outer_scale_normal)
         ZGlobal.tooltip.hideTipDelayed(500)
 
     def mousePressEvent(self, event):
-        super().mousePressEvent(event)
         self._inner_scale_ctrl.setValueTo(self._inner_scale_pressed)
         self._outer_cc.setAlphaTo(150)
         self._border_cc.setAlphaTo(150)
 
 
     def mouseReleaseEvent(self, event):
-        super().mouseReleaseEvent(event)
         self._inner_scale_ctrl.setValueTo(self._inner_scale_released)
         self._outer_cc.setAlphaTo(255)
         self._border_cc.setAlphaTo(255)
 
 
     def mouseMoveEvent(self, event):
-        super().mouseMoveEvent(event)
         slider = self.parent()
         pos = event.globalPos() - slider.mapToGlobal(QPoint(self._radius, self._radius))
         if slider.isHorizontal:

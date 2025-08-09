@@ -24,23 +24,26 @@ class ZStackPanel(QWidget):
 
 
     def addPage(self, page: ZPage|ZScrollPage, cover: bool = False, anim: bool = False):
+        # 添加页面到页面字典并调整大小
         self._pages[self._page_count] = page
-        if not cover:
-            self._handle_non_cover_page(page)
-        else:
+        page.resize(self.width(), self.height())
+        if cover:
+            # 直接覆盖当前页面的情况
             self.setCurrentPage(page, anim)
-        self._page_count += 1
-
-
-    def _handle_non_cover_page(self, page: ZPage|ZScrollPage):
-        if self._current_page is None:
-            self._current_page = page
-            self._current_page.resize(self.width(), self.height())
-            self._current_page.raise_()
         else:
-            self._current_page.raise_()
-            if self._hide_last_page:
-                page.hide()
+            # 不覆盖当前页面的情况
+            if self._current_page is None:
+                # 如果是第一个页面，设为当前页
+                self._current_page = page
+                self._current_page.raise_()
+            else:
+                # 对于非第一个页面，先显示再根据条件隐藏
+                page.show()  # 强制完成渲染
+                self._current_page.raise_()
+                if self._hide_last_page:
+                    page.hide()
+        # 增加页面计数
+        self._page_count += 1
 
 
     @overload

@@ -218,3 +218,17 @@ def starSystemResize(window, globalPos, edges):
         edges (int): 窗口边缘
     """
     pass
+
+
+def toggleWindowState(window):
+    """ 切换窗口最大化和窗口化状态
+
+    Args:
+        window (QWidget): 窗口
+    """
+    hWnd = int(window.winId())
+    style = win32gui.GetWindowLong(hWnd, win32con.GWL_STYLE)
+    if style & win32con.WS_MAXIMIZE:
+        win32gui.ShowWindow(hWnd, win32con.SW_RESTORE)
+    else:
+        win32gui.ShowWindow(hWnd, win32con.SW_MAXIMIZE)

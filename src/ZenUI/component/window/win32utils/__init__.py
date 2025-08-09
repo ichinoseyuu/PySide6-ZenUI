@@ -6,7 +6,8 @@ from .c_structures import (WINDOWCOMPOSITIONATTRIB,ACCENT_STATE,DWMNCRENDERINGPO
 from .win32_func import (getSystemAccentColor,isSystemBorderAccentEnabled,isMaximized,isFullScreen,
                          isCompositionEnabled,getMonitorInfo,getResizeBorderThickness,getSystemMetrics,
                          getDpiForWindow,findWindow,isGreaterEqualVersion,isGreaterEqualWin8_1,isGreaterEqualWin10,
-                         isGreaterEqualWin11,isWin7,releaseMouseLeftButton,startSystemMove,starSystemResize)
+                         isGreaterEqualWin11,isWin7,releaseMouseLeftButton,startSystemMove,starSystemResize,
+                         toggleWindowState)
 
 from .window_effect import WindowsWindowEffect
 

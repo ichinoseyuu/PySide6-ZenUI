@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt,QMargins
 from PySide6.QtGui import QFont
 from ZenUI import *
-from zenui_gallery.rc_rc import *
+from rc_rc import *
 class PageHome(ZPage):
     def __init__(self,parent = None,name ='pageHome'):
         super().__init__(parent = parent,

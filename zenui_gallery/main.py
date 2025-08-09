@@ -2,9 +2,6 @@ import sys
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-import os
-# 添加项目根目录到系统路径
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ZenUI import *
 from navigation_bar import NavigationBar
 from page_widget import PageWidget
@@ -48,10 +45,10 @@ class ZenUIGallery(ZFramelessWindow):
 
 if __name__ == '__main__':
     # enable dpi scale
-    QApplication.setHighDpiScaleFactorRoundingPolicy( #  设置高DPI缩放因子的舍入策略为直接传递，不进行任何处理
-         Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-    app = QApplication(sys.argv) #  创建一个QApplication对象，用于管理GUI应用程序的控制流和主要设置
-    app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings) #  设置应用程序属性，禁止创建原生小部件的兄弟组件，以提高性能和避免潜在的问题
+    # QApplication.setHighDpiScaleFactorRoundingPolicy( #  设置高DPI缩放因子的舍入策略为直接传递，不进行任何处理
+    #      Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    #app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings) #  设置应用程序属性，禁止创建原生小部件的兄弟组件，以提高性能和避免潜在的问题
+    app = QApplication(sys.argv)
     window = ZenUIGallery()
     window.show()
     app.exec()

@@ -3,7 +3,7 @@ from PySide6.QtCore import QEvent, Qt, QPoint, Signal
 from PySide6.QtGui import QIcon, QMouseEvent
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget,QSpacerItem,QSizePolicy
 from ZenUI.core import ZGlobal
-from ..win32utils import startSystemMove
+from ..win32utils import startSystemMove, toggleWindowState
 from .abctitlebarbutton import ZABCTitleBarButton
 from .closebutton import ZCloseButton
 from .maximizebutton import ZMaximizeButton
@@ -55,11 +55,7 @@ class ZTitleBarBase(QWidget):
         if not self.canDrag(event.pos()): return
 
     def __toggleMaxState(self):
-        """ Toggles the maximization state of the window and change icon """
-        if self.window().isMaximized():
-            self.window().showNormal()
-        else:
-            self.window().showMaximized()
+        toggleWindowState(self.window())
         self._releaseMouseLeftButton()
 
 
@@ -86,7 +82,6 @@ class ZTitleBarBase(QWidget):
         return any(btn.isPressed() for btn in self.findChildren(ZABCTitleBarButton))
 
     def canDrag(self, pos):
-        
         return self._isDragRegion(pos) and not self._hasButtonPressed()
 
     def setDoubleClickEnabled(self, isEnabled):

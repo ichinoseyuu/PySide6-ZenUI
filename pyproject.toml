@@ -1,0 +1,11 @@
+[project]
+name = "ZenUI"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.3.2",
+    "pyside6>=6.9.1",
+    "pywin32>=311",
+]

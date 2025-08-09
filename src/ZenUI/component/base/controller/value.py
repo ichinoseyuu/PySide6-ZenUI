@@ -1,6 +1,5 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QPropertyAnimation, QObject, Property, QEasingCurve
-from enum import Enum
 
 class IntegerController(QObject):
     '''整数控制器，用于控制整数变化'''

@@ -2,7 +2,7 @@
 from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
 from PySide6.QtCore import Qt, QRect, QSize, QRectF
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.base import ColorController,FloatController,OpacityController
+from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
 from ZenUI.core import ZGlobal, ZToggleButtonStyleData
 from .abctogglebutton import ZABCToggleButton
 import logging
@@ -29,12 +29,9 @@ class ZToggleButton(ZABCToggleButton):
         self._icon_cc = ColorController(self)
         self._radius_ctrl = FloatController(self)
         self._opacity_ctrl = OpacityController(self)
-
-        self._style_data: ZToggleButtonStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData('ZToggleButton')
-
-        ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
-
+        self._style_data = StyleData[ZToggleButtonStyleData](self, 'ZToggleButton')
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
+        self._initStyle()
 
     # region Property
     @property
@@ -54,6 +51,9 @@ class ZToggleButton(ZABCToggleButton):
 
     @property
     def opacityCtrl(self) -> OpacityController: return self._opacity_ctrl
+
+    @property
+    def styleData(self): return self._style_data
 
     @property
     def text(self) -> str: return self._text
@@ -90,29 +90,23 @@ class ZToggleButton(ZABCToggleButton):
         self._font = font
         self.update()
 
-    @property
-    def styleData(self) -> ZToggleButtonStyleData: return self._style_data
-    @styleData.setter
-    def styleData(self, style_data: ZToggleButtonStyleData) -> None:
-        self._style_data = style_data
-        self._radius_ctrl.radius = style_data.Radius
+    def _initStyle(self):
+        data = self._style_data.data
+        self._radius_ctrl.radius = data.Radius
         if self._checked:
-            self._body_cc.color = style_data.BodyToggled
-            self._text_cc.color = style_data.TextToggled
-            self._icon_cc.color = style_data.IconToggled
-            self._border_cc.color = style_data.BorderToggled
+            self._body_cc.color = data.BodyToggled
+            self._text_cc.color = data.TextToggled
+            self._icon_cc.color = data.IconToggled
+            self._border_cc.color = data.BorderToggled
         else:
-            self._body_cc.color = style_data.Body
-            self._text_cc.color = style_data.Text
-            self._icon_cc.color = style_data.Icon
-            self._border_cc.color = style_data.Border
+            self._body_cc.color = data.Body
+            self._text_cc.color = data.Text
+            self._icon_cc.color = data.Icon
+            self._border_cc.color = data.Border
         self.update()
 
-
-    # region Slot
-    def themeChangeHandler(self, theme):
-        data = ZGlobal.styleDataManager.getStyleData('ZToggleButton',theme.name)
-        self._style_data = data
+    def _styleChangeHandler(self):
+        data = self._style_data.data
         self._radius_ctrl.radius = data.Radius
         if self._checked:
             self._body_cc.setColorTo(data.BodyToggled)
@@ -127,34 +121,35 @@ class ZToggleButton(ZABCToggleButton):
 
     def hoverHandler(self):
         if self._checked:
-            self._body_cc.setColorTo(self._style_data.BodyToggledHover)
+            self._body_cc.setColorTo(self._style_data.data.BodyToggledHover)
         else:
-            self._body_cc.setColorTo(self._style_data.BodyHover)
+            self._body_cc.setColorTo(self._style_data.data.BodyHover)
 
     def leaveHandler(self):
         if self._checked:
-            self._body_cc.setColorTo(self._style_data.BodyToggled)
+            self._body_cc.setColorTo(self._style_data.data.BodyToggled)
         else:
-            self._body_cc.setColorTo(self._style_data.Body)
+            self._body_cc.setColorTo(self._style_data.data.Body)
 
     def pressHandler(self):
         if self._checked:
-            self._body_cc.setColorTo(self._style_data.BodyToggledPressed)
+            self._body_cc.setColorTo(self._style_data.data.BodyToggledPressed)
         else:
-            self._body_cc.setColorTo(self._style_data.BodyPressed)
+            self._body_cc.setColorTo(self._style_data.data.BodyPressed)
 
 
     def toggleHandler(self, checked):
+        data = self._style_data.data
         if checked:
-            self._body_cc.setColorTo(self._style_data.BodyToggledHover)
-            self._border_cc.setColorTo(self._style_data.BorderToggled)
-            self._icon_cc.setColorTo(self._style_data.IconToggled)
-            self._text_cc.setColorTo(self._style_data.TextToggled)
+            self._body_cc.setColorTo(data.BodyToggledHover)
+            self._border_cc.setColorTo(data.BorderToggled)
+            self._icon_cc.setColorTo(data.IconToggled)
+            self._text_cc.setColorTo(data.TextToggled)
         else:
-            self._body_cc.setColorTo(self._style_data.BodyHover)
-            self._border_cc.setColorTo(self._style_data.Border)
-            self._icon_cc.setColorTo(self._style_data.Icon)
-            self._text_cc.setColorTo(self._style_data.Text)
+            self._body_cc.setColorTo(data.BodyHover)
+            self._border_cc.setColorTo(data.Border)
+            self._icon_cc.setColorTo(data.Icon)
+            self._text_cc.setColorTo(data.Text)
 
     # region Override
     # Method

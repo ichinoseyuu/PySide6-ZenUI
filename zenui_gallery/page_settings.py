@@ -30,21 +30,21 @@ class PageSettings(ZPage):
         self.text_theme_set.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Normal))
         self.theme_set_box.addWidget(self.text_theme_set)
 
-        self.btn_theme_set_1 = ZToggleButton(
+        self.btn_theme_set_1 = ZButton(
             parent=self,
             name='btn_theme_set_1',
             text='浅色')
         self.btn_theme_set_1.clicked.connect(lambda: ZGlobal.themeManager.setThemeForce(ZTheme.Light))
         self.theme_set_box.addWidget(self.btn_theme_set_1)
 
-        self.btn_theme_set_2 = ZToggleButton(
+        self.btn_theme_set_2 = ZButton(
             parent=self,
             name='btn_theme_set_1',
             text='深色')
         self.btn_theme_set_2.clicked.connect(lambda: ZGlobal.themeManager.setThemeForce(ZTheme.Dark))
         self.theme_set_box.addWidget(self.btn_theme_set_2)
 
-        self.btn_theme_set_3 = ZToggleButton(
+        self.btn_theme_set_3 = ZButton(
             parent=self,
             name='btn_theme_set_3',
             text='跟随系统')

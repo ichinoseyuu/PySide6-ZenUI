@@ -3,7 +3,7 @@ from enum import Enum, IntEnum
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.base import LocationController,SizeController,WindowOpacityController
+from ZenUI.component.base import LocationController,SizeController,WindowOpacityController,StyleData
 from ZenUI.core import ZGlobal,ZToolTipStyleData,TipPos,ZQuickEffect
 from .tooltipcontent import ZToolTipContent
 
@@ -58,10 +58,9 @@ class ZToolTip(QWidget):
         self._hide_timer.setSingleShot(True)
         self._hide_timer.timeout.connect(self.hideTip)
 
-        self._style_data: ZToolTipStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__)
-
-        ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
+        self._style_data = StyleData[ZToolTipStyleData](self, 'ZToolTip')
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
+        self._initStyle()
 
         ZQuickEffect.applyDropShadowOn(widget=self._content,color=(0, 0, 0, 40),blur_radius=12)
         #阴影设置在content上，在切换window主题时才不会产生阴影绘制错误
@@ -71,6 +70,9 @@ class ZToolTip(QWidget):
     def state(self) -> State:
         if self.windowOpacity() == 0: return self.State.Hidden
         else: return self.State.Showing
+
+    @property
+    def styleData(self): return self._style_data
 
     @property
     def mode(self) -> Mode: return self._mode
@@ -112,27 +114,21 @@ class ZToolTip(QWidget):
         if self._target is None: self._tracker_timer.stop()
 
 
-    @property
-    def styleData(self) -> ZToolTipStyleData: return self._style_data
-    @styleData.setter
-    def styleData(self, data: ZToolTipStyleData):
-        self._style_data = data
+    def _initStyle(self):
+        data = self._style_data.data
         self._content.textColorCtrl.color = data.Text
         self._content.bodyColorCtrl.color = data.Body
         self._content.borderColorCtrl.color = data.Border
         self._content.radiusCtrl.value = data.Radius
         self._content.update()
 
-
-    def themeChangeHandler(self, theme):
-        data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
-        self._style_data = data
+    def _styleChangeHandler(self):
+        data = self._style_data.data
         self._content.radiusCtrl.value = data.Radius
         self._content.textColorCtrl.setColorTo(data.Text)
         self._content.bodyColorCtrl.setColorTo(data.Body)
         self._content.borderColorCtrl.setColorTo(data.Border)
         self._content.update()
-
 
     def showTip(self,
                 text: str,

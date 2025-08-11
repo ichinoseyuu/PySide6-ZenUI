@@ -2,7 +2,7 @@
 from PySide6.QtGui import QPainter, QIcon, QPixmap
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.base import ColorController,FloatController,OpacityController
+from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
 from ZenUI.core import ZGlobal, ZNavBarButtonStyleData
 from .abcnavbarbutton import ZABCNavBarButton
 
@@ -24,10 +24,9 @@ class ZNavBarButton(ZABCNavBarButton):
         self._radius_ctrl = FloatController(self)
         self._opacity_ctrl = OpacityController(self)
 
-        self._style_data: ZNavBarButtonStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData('ZNavBarButton')
-
-        ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
+        self._style_data = StyleData[ZNavBarButtonStyleData](self, 'ZNavBarButton')
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
+        self._initStyle()
 
 
     # region Property
@@ -39,6 +38,9 @@ class ZNavBarButton(ZABCNavBarButton):
 
     @property
     def radiusCtrl(self): return self._radius_ctrl
+
+    @property
+    def styleData(self): return self._style_data
 
     @property
     def icon(self) -> QIcon: return self._icon
@@ -54,36 +56,31 @@ class ZNavBarButton(ZABCNavBarButton):
         self._icon_size = size
         self.update()
 
-    @property
-    def styleData(self) -> ZNavBarButtonStyleData: return self._style_data
-    @styleData.setter
-    def styleData(self, style_data: ZNavBarButtonStyleData) -> None:
-        self._style_data = style_data
-        self._body_cc.color = style_data.Body
-        self._icon_cc.color = style_data.Icon
-        self._radius_ctrl.value = style_data.Radius
+
+    def _initStyle(self):
+        data = self._style_data.data
+        self._body_cc.color = data.Body
+        self._icon_cc.color = data.Icon
+        self._radius_ctrl.value = data.Radius
         self.update()
 
-
-    # region Slot
-    def themeChangeHandler(self, theme):
-        data = ZGlobal.styleDataManager.getStyleData('ZNavBarButton',theme.name)
-        self._style_data = data
+    def _styleChangeHandler(self):
+        data = self._style_data.data
         self._radius_ctrl.value = data.Radius
         self._body_cc.setColorTo(data.Body)
         self._icon_cc.setColorTo(data.Icon)
 
     def hoverHandler(self):
-        self._body_cc.setColorTo(self.styleData.BodyHover)
+        self._body_cc.setColorTo(self._style_data.data.BodyHover)
 
     def leaveHandler(self):
-        self._body_cc.setColorTo(self.styleData.Body)
+        self._body_cc.setColorTo(self._style_data.data.Body)
 
     def pressHandler(self):
-        self._body_cc.setColorTo(self.styleData.BodyPressed)
+        self._body_cc.setColorTo(self._style_data.data.BodyPressed)
 
     def releaseHandler(self):
-        self._body_cc.setColorTo(self.styleData.BodyHover)
+        self._body_cc.setColorTo(self._style_data.data.BodyHover)
 
     # region Override
     # Method

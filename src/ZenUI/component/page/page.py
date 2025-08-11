@@ -2,8 +2,8 @@ from enum import Enum
 from PySide6.QtWidgets import QWidget,QVBoxLayout,QHBoxLayout,QSizePolicy
 from PySide6.QtCore import Qt,QMargins,QRectF,Signal
 from PySide6.QtGui import QPainter,QPen
-from ZenUI.component.base import ColorController,FloatController,LocationController
-from ZenUI.core import ZGlobal,ZPageStyleData
+from ZenUI.component.base import ColorController,FloatController,LocationController,StyleData
+from ZenUI.core import ZPageStyleData
 
 
 class ZPage(QWidget):
@@ -36,11 +36,9 @@ class ZPage(QWidget):
         self._border_cc = ColorController(self)
         self._radius_ctrl = FloatController(self)
         self._location_ctrl = LocationController(self)
-
-        self._style_data: ZPageStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData('ZPage')
-
-        ZGlobal.themeManager.themeChanged.connect(self.themeChangHandler)
+        self._style_data = StyleData[ZPageStyleData](self, 'ZPage')
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
+        self._initStyle()
 
     @property
     def bodyColorCtrl(self): return self._body_cc
@@ -56,20 +54,19 @@ class ZPage(QWidget):
 
     @property
     def styleData(self): return self._style_data
-    @styleData.setter
-    def styleData(self, style_data: ZPageStyleData):
-        self._style_data = style_data
-        self._body_cc.color = style_data.Body
-        self._border_cc.color = style_data.Border
-        self._radius_ctrl.value = style_data.Radius
+
+    def _initStyle(self):
+        data = self._style_data.data
+        self._body_cc.color = data.Body
+        self._border_cc.color = data.Border
+        self._radius_ctrl.value = data.Radius
         self.update()
 
-    def themeChangHandler(self, theme):
-        data = ZGlobal.styleDataManager.getStyleData('ZPage', theme.name)
+    def _styleChangeHandler(self):
+        data = self._style_data.data
         self._radius_ctrl.value = data.Radius
         self._body_cc.setColorTo(data.Body)
         self._border_cc.setColorTo(data.Border)
-
 
     def paintEvent(self, event):
         painter = QPainter(self)

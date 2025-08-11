@@ -8,6 +8,7 @@ from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve
 from PySide6.QtGui import QResizeEvent,QColor
 from ZenUI.core import ZGlobal,ZFramelessWindowStyleData
 from ZenUI.component.tooltip import ZToolTip
+from ZenUI.component.base import StyleData
 from .titlebar.titlebar import ZTitleBar
 from .win32utils import (WindowsWindowEffect,LPNCCALCSIZE_PARAMS,WinTaskbar,
                     isSystemBorderAccentEnabled, getSystemAccentColor,
@@ -32,10 +33,9 @@ class ZFramelessWindow(QWidget):
         self._anim_bg_color.setDuration(150)
         self._anim_bg_color.setEasingCurve(QEasingCurve.Type.InOutQuad)
 
-        self._style_data: ZFramelessWindowStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData("ZFramelessWindow")
-
-        ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
+        self._style_data = StyleData[ZFramelessWindowStyleData](self, 'ZFramelessWindow')
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
+        self._initStyle()
 
         # create tooltip
         tooltip = ZToolTip()
@@ -67,14 +67,14 @@ class ZFramelessWindow(QWidget):
         self._anim_bg_color.setEndValue(color)
         self._anim_bg_color.start()
 
-
     @property
-    def styleData(self) -> ZFramelessWindowStyleData: return self._style_data
-    @styleData.setter
-    def styleData(self, data: ZFramelessWindowStyleData) -> None:
-        self._style_data = data
-        self.bodyColor = data.Body
+    def styleData(self): return self._style_data
 
+    def _initStyle(self):
+        self.bodyColor = self._style_data.data.Body
+
+    def _styleChangeHandler(self):
+        self.setBodyColorTo(self._style_data.data.Body)
 
     def moveCenter(self):
         screen = self.windowHandle().screen()
@@ -84,11 +84,6 @@ class ZFramelessWindow(QWidget):
         else:
             self.move(self.x() + self.width() / 2, self.y() + self.height() / 2)
 
-
-
-    def themeChangeHandler(self, theme):
-        self._style_data = ZGlobal.styleDataManager.getStyleData('ZFramelessWindow', theme.name)
-        self.setBodyColorTo(self._style_data.Body)
 
 
     def __onScreenChanged(self):

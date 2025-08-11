@@ -2,7 +2,7 @@ from enum import Enum
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.base import LocationController,ColorController,FloatController
+from ZenUI.component.base import LocationController,ColorController,FloatController,StyleData
 from ZenUI.core import ZScrollPageStyleData,ZGlobal
 from .handle import ScrollHandle
 from .content import ZScrollContent
@@ -43,13 +43,11 @@ class ZScrollPage(QWidget):
         self._border_cc = ColorController(self)
         self._radius_ctrl = FloatController(self)
         self._location_ctrl = LocationController(self)
-
-        self._style_data: ZScrollPageStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData('ZScrollPage')
-
-        ZGlobal.themeManager.themeChanged.connect(self.themeChangHandler)
+        self._style_data = StyleData[ZScrollPageStyleData](self, 'ZScrollPage')
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
 
         self._content.resized.connect(self._update_handles_and_content)
+        self._initStyle()
 
     @property
     def bodyColorCtrl(self): return self._body_cc
@@ -68,22 +66,22 @@ class ZScrollPage(QWidget):
 
     @property
     def styleData(self): return self._style_data
-    @styleData.setter
-    def styleData(self, style_data: ZScrollPageStyleData):
-        self._style_data = style_data
-        self._body_cc.color = style_data.Body
-        self._border_cc.color = style_data.Border
-        self._radius_ctrl.value = style_data.Radius
-        self._handle_h.bodyColorCtrl.color = style_data.Handle
-        self._handle_v.bodyColorCtrl.color = style_data.Handle
-        self._handle_h.borderColorCtrl.color = style_data.HandleBorder
-        self._handle_v.borderColorCtrl.color = style_data.HandleBorder
+
+    def _initStyle(self):
+        data = self._style_data.data
+        self._body_cc.color = data.Body
+        self._border_cc.color = data.Border
+        self._radius_ctrl.value = data.Radius
+        self._handle_h.bodyColorCtrl.color = data.Handle
+        self._handle_v.bodyColorCtrl.color = data.Handle
+        self._handle_h.borderColorCtrl.color = data.HandleBorder
+        self._handle_v.borderColorCtrl.color = data.HandleBorder
         self._handle_h.update()
         self._handle_v.update()
         self.update()
 
-    def themeChangHandler(self, theme):
-        data = ZGlobal.styleDataManager.getStyleData('ZScrollPage', theme.name)
+    def _styleChangeHandler(self):
+        data = self._style_data.data
         self._radius_ctrl.value = data.Radius
         self._body_cc.setColorTo(data.Body)
         self._border_cc.setColorTo(data.Border)
@@ -93,7 +91,6 @@ class ZScrollPage(QWidget):
         self._handle_v.borderColorCtrl.setColorTo(data.HandleBorder)
         self._handle_h._trans_timer.start(1200)
         self._handle_v._trans_timer.start(1200)
-
 
     def paintEvent(self, event):
         painter = QPainter(self)

@@ -1,8 +1,9 @@
-from typing import overload,Dict
+from typing import overload,Dict,Generic
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Signal
-from ZenUI.core import StyleDataType, ZGlobal
-class StyleData(QObject):
+from ZenUI.core import StyleDataT, ZGlobal
+
+class StyleData(QObject, Generic[StyleDataT]):
     '''样式数据管理器
 
     - 决定控件的当前样式
@@ -13,19 +14,19 @@ class StyleData(QObject):
         super().__init__(parent)
         self._custom: bool = False
         self._key: str = key
-        self._data: StyleDataType = None
-        self._custom_data: Dict[str, StyleDataType] = {'Light': None, 'Dark': None}
+        self._data: StyleDataT = None
+        self._custom_data: Dict[str, StyleDataT] = {'Light': None, 'Dark': None}
         self._data = ZGlobal.styleDataManager.getStyleData(key)
         ZGlobal.themeManager.themeChanged.connect(self._updateStyleData)
 
     @property
-    def data(self,) -> StyleDataType: return self._data
+    def data(self,) -> StyleDataT: return self._data
 
     @overload
-    def setData(self, theme: str, data: StyleDataType) -> None: ...
+    def setData(self, theme: str, data: StyleDataT) -> None: ...
 
     @overload
-    def setData(self, light_data: StyleDataType, dark_data: StyleDataType) -> None: ...
+    def setData(self, light_data: StyleDataT, dark_data: StyleDataT) -> None: ...
 
     def setData(self, *args) -> None:
         self._custom = True
@@ -38,7 +39,7 @@ class StyleData(QObject):
             if self._custom_data[other_theme] is None:
                 # 如果另一个主题没有自定义样式，使用默认样式
                 self._custom_data[other_theme] = ZGlobal.styleDataManager.getStyleData(self._key, other_theme)
-        elif len(args) == 2 and isinstance(args[0], StyleDataType):
+        elif len(args) == 2 and isinstance(args[0], StyleDataT):
             # 同时设置Light和Dark主题的样式
             self._custom_data['Light'] = args[0]
             self._custom_data['Dark'] = args[1]

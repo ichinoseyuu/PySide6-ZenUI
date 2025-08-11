@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, Signal, QEvent
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.base import ColorController
-from ZenUI.core import ZGlobal, ZTitleBarButtonData
+from ZenUI.core import ZTitleBarButtonStyleData
 
 class ZABCTitleBarButton(QWidget):
     entered = Signal()
@@ -33,48 +33,25 @@ class ZABCTitleBarButton(QWidget):
         self._body_cc = ColorController(self)
         self._icon_cc = ColorController(self)
 
-        self._style_data: ZTitleBarButtonData = None
-
-        ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
-
     # region Property
     @property
     def state(self) -> State: return self._state
-
-    @property
-    def styleData(self) -> ZTitleBarButtonData: return self._style_data
-    @styleData.setter
-    def styleData(self, style_data: ZTitleBarButtonData):
-        self._style_data = style_data
-        self._body_cc.color = style_data.Body
-        self._icon_cc.color = style_data.Icon
-        self.update()
-
 
     # region Func
     def isPressed(self) -> bool: return self._state == self.State.Pressed
 
     # region Slot
-    def themeChangeHandler(self, theme):
-        self._style_data = ZGlobal.styleDataManager.getStyleData(self.__class__.__name__, theme.name)
-        self._body_cc.setColorTo(self._style_data.Body)
-        self._icon_cc.setColorTo(self._style_data.Icon)
-
     def hoverHandler(self):
-        self._body_cc.setColorTo(self._style_data.BodyHover)
-        self._icon_cc.setColorTo(self._style_data.IconHover)
+        pass
 
     def leaveHandler(self):
-        self._body_cc.setColorTo(self._style_data.Body)
-        self._icon_cc.setColorTo(self._style_data.Icon)
+        pass
 
     def pressHandler(self):
-        self._body_cc.setColorTo(self._style_data.BodyPressed)
-        self._icon_cc.setColorTo(self._style_data.IconPressed)
+        pass
 
     def releaseHandler(self):
-        self._body_cc.setColorTo(self._style_data.Body)
-        self._icon_cc.setColorTo(self._style_data.Icon)
+        pass
 
     def clickHandler(self):
         pass

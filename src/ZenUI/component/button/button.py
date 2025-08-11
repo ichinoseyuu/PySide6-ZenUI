@@ -2,7 +2,7 @@ from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
 from PySide6.QtCore import Qt, QRect, QSize, QRectF
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
-from ZenUI.core import ZGlobal, ZButtonStyleData
+from ZenUI.core import ZButtonStyleData
 from .abcbutton import ZABCButton
 
 class ZButton(ZABCButton):
@@ -28,14 +28,9 @@ class ZButton(ZABCButton):
         self._icon_cc = ColorController(self)
         self._radius_ctrl = FloatController(self)
         self._opacity_ctrl = OpacityController(self)
-
-        # self._style_data: ZButtonStyleData = None
-        # self.styleData = ZGlobal.styleDataManager.getStyleData("ZButton")
-        # ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
-        self._style_data = StyleData(self, 'ZButton')
-        self._initStyleHandler()
+        self._style_data = StyleData[ZButtonStyleData](self, 'ZButton')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
-
+        self._initStyle()
 
     # region Property
     @property
@@ -92,7 +87,7 @@ class ZButton(ZABCButton):
         self.update()
 
     # region Slot
-    def _initStyleHandler(self):
+    def _initStyle(self):
         data = self._style_data.data
         self._body_cc.color = data.Body
         self._text_cc.color = data.Text

@@ -1,7 +1,7 @@
 from PySide6.QtGui import QPainter, QIcon, QPixmap, QColor
 from PySide6.QtCore import Qt, QSize, QRectF
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.base import ColorController,FloatController,OpacityController
+from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
 from ZenUI.core import ZGlobal, ZNavBarToggleButtonStyleData
 from .abcnavbartogglebutton import ZABCNavBarToggleButton
 import logging
@@ -23,16 +23,13 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         self._body_cc = ColorController(self)
         self._icon_cc = ColorController(self)
         self._radius_ctrl = FloatController(self)
-        # 动画属性
         self._opacity_ctrl = OpacityController(self)
         self._indicator_oc = OpacityController(self)
         self._indicator_oc.setOpacity(0)
-        # 样式数据
-        self._style_data: ZNavBarToggleButtonStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData('ZNavBarToggleButton')
 
-        # 设置默认大小
-        ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
+        self._style_data = StyleData[ZNavBarToggleButtonStyleData](self, 'ZNavBarToggleButton')
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
+        self._initStyle()
 
 
     # region Property
@@ -44,6 +41,9 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
 
     @property
     def radiusCtrl(self): return self._radius_ctrl
+
+    @property
+    def styleData(self): return self._style_data
 
     @property
     def icon(self) -> QIcon: return self._icon
@@ -59,25 +59,19 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         self._icon_size = size
         self.update()
 
-    @property
-    def styleData(self) -> ZNavBarToggleButtonStyleData: return self._style_data
-    @styleData.setter
-    def styleData(self, style_data: ZNavBarToggleButtonStyleData) -> None:
-        self._style_data = style_data
-        self._radius_ctrl.value = style_data.Radius
+    def _initStyle(self):
+        data = self._style_data.data
+        self._radius_ctrl.value = data.Radius
         if self._checked:
-            self._body_cc.color = style_data.BodyToggled
-            self._icon_cc.color = style_data.IconToggled
+            self._body_cc.color = data.BodyToggled
+            self._icon_cc.color = data.IconToggled
         else:
-            self._body_cc.color = style_data.Body
-            self._icon_cc.color = style_data.Icon
+            self._body_cc.color = data.Body
+            self._icon_cc.color = data.Icon
         self.update()
 
-    # region Slot
-    def themeChangeHandler(self, theme):
-        """主题改变事件处理"""
-        data = ZGlobal.styleDataManager.getStyleData('ZNavBarToggleButton',theme.name)
-        self._style_data = data
+    def _styleChangeHandler(self):
+        data = self._style_data.data
         self._radius_ctrl.value = data.Radius
         if self._checked:
             self._body_cc.setColorTo(data.BodyToggled)
@@ -88,35 +82,33 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
 
     def hoverHandler(self):
         if self._checked:
-            self._body_cc.setColorTo(self._style_data.BodyToggledHover)
+            self._body_cc.setColorTo(self._style_data.data.BodyToggledHover)
         else:
-            self._body_cc.setColorTo(self._style_data.BodyHover)
+            self._body_cc.setColorTo(self._style_data.data.BodyHover)
 
     def leaveHandler(self):
         if self._checked:
-            self._body_cc.setColorTo(self._style_data.BodyToggled)
+            self._body_cc.setColorTo(self._style_data.data.BodyToggled)
         else:
-            self._body_cc.setColorTo(self._style_data.Body)
+            self._body_cc.setColorTo(self._style_data.data.Body)
 
     def pressHandler(self):
         if self._checked:
-            self._body_cc.setColorTo(self._style_data.BodyToggledPressed)
+            self._body_cc.setColorTo(self._style_data.data.BodyToggledPressed)
         else:
-            self._body_cc.setColorTo(self._style_data.BodyPressed)
+            self._body_cc.setColorTo(self._style_data.data.BodyPressed)
 
 
     def toggleHandler(self, checked):
+        data = self._style_data.data
         if checked:
-            if ZGlobal.themeManager.getTheme().name == "Dark":
-                self._icon_cc.color = QColor('#202020')
-            else:
-                self._icon_cc.color = QColor('#f3f3f3')
-            self._body_cc.setColorTo(self._style_data.BodyToggledHover)
-            self._icon_cc.setColorTo(self._style_data.IconToggled)
+            self._icon_cc.color = data.Body
+            self._body_cc.setColorTo(data.BodyToggledHover)
+            self._icon_cc.setColorTo(data.IconToggled)
             self._indicator_oc.fadeIn()
         else:
-            self._body_cc.setColorTo(self._style_data.BodyHover)
-            self._icon_cc.setColorTo(self._style_data.Icon)
+            self._body_cc.setColorTo(data.BodyHover)
+            self._icon_cc.setColorTo(data.Icon)
             self._indicator_oc.fadeOut()
 
     # region Override

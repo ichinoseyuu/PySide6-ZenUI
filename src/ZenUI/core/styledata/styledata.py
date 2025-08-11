@@ -1,4 +1,4 @@
-from typing import Union, overload, Dict, Any,TYPE_CHECKING
+from typing import overload, Dict, Any
 from dataclasses import fields, is_dataclass
 from enum import Enum
 from PySide6.QtGui import QColor
@@ -16,24 +16,24 @@ class ZStyleDataFactory:
         'ZSlider': ZSliderStyleData,
         'ZButton': ZButtonStyleData,
         'ZToggleButton': ZToggleButtonStyleData,
-        'ZThemeButton': ZTitleBarButtonData,
+        'ZThemeButton': ZTitleBarButtonStyleData,
         'ZNavBarButton': ZNavBarButtonStyleData,
         'ZNavBarToggleButton': ZNavBarToggleButtonStyleData,
-        'ZMinimizeButton': ZTitleBarButtonData,
-        'ZMaximizeButton': ZTitleBarButtonData,
-        'ZCloseButton': ZTitleBarButtonData,
+        'ZMinimizeButton': ZTitleBarButtonStyleData,
+        'ZMaximizeButton': ZTitleBarButtonStyleData,
+        'ZCloseButton': ZTitleBarButtonStyleData,
         'ZFramelessWindow': ZFramelessWindowStyleData,
         'ZToolTip': ZToolTipStyleData,
         }
-    @staticmethod
-    def create(name: str, data: Dict[str, Any]) -> StyleDataType:
+
+    @classmethod
+    def create(cls, name: str, data: Dict[str, Any]) -> StyleDataUnion:
         cls = ZStyleDataFactory.dataclass_map.get(name)
         if cls is None:
             raise ValueError(f"Unknown style data class for component: {name}")
         return ZStyleDataFactory.dict_to_dataclass(cls, data)
 
-
-    def dict_to_dataclass(cls, data: dict) -> StyleDataType:
+    def dict_to_dataclass(cls, data: dict) -> StyleDataUnion:
         if not is_dataclass(cls):
             raise TypeError(f"{cls} is not a dataclass")
         field_map = {f.name: f.type for f in fields(cls)}
@@ -59,20 +59,18 @@ class ZStyleDataManager:
     def __init__(self):
         super().__init__()
         self._factory = ZStyleDataFactory()
-        self._cache: Dict[str, StyleDataType] = {}  # 添加缓存字典
+        self._cache: Dict[str, StyleDataUnion] = {}  # 添加缓存字典
 
     def _get_cache_key(self, name: str, theme: str) -> str:
         return f"{theme}:{name}"
 
     @overload
-    def getStyleData(self, name: str) -> StyleDataType:
-        ...
+    def getStyleData(self, name: str) -> StyleDataUnion: ...
 
     @overload
-    def getStyleData(self, name: str, theme: str) -> StyleDataType:
-        ...
+    def getStyleData(self, name: str, theme: str) -> StyleDataUnion: ...
 
-    def getStyleData(self, *args) -> StyleDataType:
+    def getStyleData(self, *args) -> StyleDataUnion:
         if len(args) == 1:
             name = args[0]
             theme = ZThemeManager().getTheme().name

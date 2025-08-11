@@ -1,12 +1,49 @@
 from PySide6.QtCore import Qt, QLineF
 from PySide6.QtGui import QPainter, QPen
-from ZenUI.core import ZGlobal
+from ZenUI.component.base import StyleData
+from ZenUI.core import ZTitleBarButtonStyleData
 from .abctitlebarbutton import ZABCTitleBarButton
 
 class ZCloseButton(ZABCTitleBarButton):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.styleData = ZGlobal.styleDataManager.getStyleData('ZCloseButton')
+        self._style_data = StyleData[ZTitleBarButtonStyleData](self, 'ZCloseButton')
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
+        self._initStyle()
+
+    @property
+    def styleData(self): return self._style_data
+
+    def _initStyle(self):
+        data = self._style_data.data
+        self._body_cc.color = data.Body
+        self._icon_cc.color = data.Icon
+        self.update()
+
+    def _styleChangeHandler(self):
+        data = self._style_data.data
+        self._body_cc.setColorTo(data.Body)
+        self._icon_cc.setColorTo(data.Icon)
+
+    def hoverHandler(self):
+        data = self._style_data.data
+        self._body_cc.setColorTo(data.BodyHover)
+        self._icon_cc.setColorTo(data.IconHover)
+
+    def leaveHandler(self):
+        data = self._style_data.data
+        self._body_cc.setColorTo(data.Body)
+        self._icon_cc.setColorTo(data.Icon)
+
+    def pressHandler(self):
+        data = self._style_data.data
+        self._body_cc.setColorTo(data.BodyPressed)
+        self._icon_cc.setColorTo(data.IconPressed)
+
+    def releaseHandler(self):
+        data = self._style_data.data
+        self._body_cc.setColorTo(data.Body)
+        self._icon_cc.setColorTo(data.Icon)
 
     def paintEvent(self, e):
         painter = QPainter(self)

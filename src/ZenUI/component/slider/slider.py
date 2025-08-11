@@ -3,6 +3,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from enum import IntEnum
 from typing import overload
+from ZenUI.component.base import StyleData
 from ZenUI.core import ZGlobal, ZSliderStyleData,TipPos
 from .fill import SliderFill
 from .track import SliderTrack
@@ -58,14 +59,11 @@ class ZSlider(QWidget):
         self._fill = SliderFill(self)
         self._handle = SliderHandle(self,10)
 
-        self._style_data: ZSliderStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData('ZSlider')
-
-        ZGlobal.themeManager.themeChanged.connect(self._theme_changed_handler)
+        self._style_data = StyleData[ZSliderStyleData](self, 'ZSlider')
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
 
         self._handle.locationCtrl.animation.valueChanged.connect(self._update_fill)
-        self._init_style(value)
-
+        self._initStyle(value)
         # self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
         # self.setStyleSheet('background:transparent;border:1px solid red;')
 
@@ -89,6 +87,9 @@ class ZSlider(QWidget):
 
     @property
     def handle(self): return self._handle
+
+    @property
+    def styleData(self): return self._style_data
 
     @property
     def weight(self): return self._weight
@@ -170,31 +171,38 @@ class ZSlider(QWidget):
                 s = s.rstrip('0').rstrip('.') if '.' in s else s
         return s
 
-    @property
-    def styleData(self): return self._style_data
-    @styleData.setter
-    def styleData(self, style_data: ZSliderStyleData):
-        self._style_data = style_data
-        self._track.bodyColorCtrl.color = style_data.Track
-        self._track.borderColorCtrl.color = style_data.TrackBorder
-        self._fill.bodyColorCtrl.colorStart = style_data.FillAreaStart
-        self._fill.bodyColorCtrl.colorEnd = style_data.FillAreaEnd
-        self._fill.borderColorCtrl.color = style_data.FillAreaBorder
-        self._handle.innerColorCtrl.color = style_data.HandleInner
-        self._handle.outerColorCtrl.color = style_data.HandleOuter
-        self._handle.borderColorCtrl.color = style_data.HandleBorder
+    def _initStyle(self, value):
+        if self.isHorizontal:
+            self._fill.bodyColorCtrl.direction = 0
+            self.setFixedHeight(2 * self._handle_radius)
+            self.setMinimumWidth(self._min_length + self._handle_radius * 2)
+        else:
+            self._fill.bodyColorCtrl.reverse = True
+            self._fill.bodyColorCtrl.direction = 1
+            self.setFixedWidth(2 * self._handle_radius)
+            self.setMinimumHeight(self._min_length + self._handle_radius * 2)
+        self._update_track_radius()
+        self.setValue(value)
+        data = self._style_data.data
+        self._track.bodyColorCtrl.color = data.Track
+        self._track.borderColorCtrl.color = data.TrackBorder
+        self._fill.bodyColorCtrl.colorStart = data.FillAreaStart
+        self._fill.bodyColorCtrl.colorEnd = data.FillAreaEnd
+        self._fill.borderColorCtrl.color = data.FillAreaBorder
+        self._handle.innerColorCtrl.color = data.HandleInner
+        self._handle.outerColorCtrl.color = data.HandleOuter
+        self._handle.borderColorCtrl.color = data.HandleBorder
         self.update()
 
-
-    def _theme_changed_handler(self, theme):
-        style_data = self._style_data = ZGlobal.styleDataManager.getStyleData('ZSlider', theme.name)
-        self._track.bodyColorCtrl.setColorTo(style_data.Track)
-        self._track.borderColorCtrl.setColorTo(style_data.TrackBorder)
-        self._fill.bodyColorCtrl.setColorTo(style_data.FillAreaStart,style_data.FillAreaEnd)
-        self._fill.borderColorCtrl.setColorTo(style_data.FillAreaBorder)
-        self._handle.innerColorCtrl.setColorTo(style_data.HandleInner)
-        self._handle.outerColorCtrl.setColorTo(style_data.HandleOuter)
-        self._handle.borderColorCtrl.setColorTo(style_data.HandleBorder)
+    def _styleChangeHandler(self):
+        data = self._style_data.data
+        self._track.bodyColorCtrl.setColorTo(data.Track)
+        self._track.borderColorCtrl.setColorTo(data.TrackBorder)
+        self._fill.bodyColorCtrl.setColorTo(data.FillAreaStart, data.FillAreaEnd)
+        self._fill.borderColorCtrl.setColorTo(data.FillAreaBorder)
+        self._handle.innerColorCtrl.setColorTo(data.HandleInner)
+        self._handle.outerColorCtrl.setColorTo(data.HandleOuter)
+        self._handle.borderColorCtrl.setColorTo(data.HandleBorder)
 
     @overload
     def stepValue(self, step: int, multiplier: int = 1) -> None:
@@ -319,20 +327,6 @@ class ZSlider(QWidget):
         else:
             h = max(self._fixed_track_length or self._min_length, self._min_length)
             return QSize(self._track_width, h + self._handle_radius * 2)
-
-
-    def _init_style(self, value):
-        if self.isHorizontal:
-            self._fill.bodyColorCtrl.direction = 0
-            self.setFixedHeight(2 * self._handle_radius)
-            self.setMinimumWidth(self._min_length + self._handle_radius * 2)
-        else:
-            self._fill.bodyColorCtrl.reverse = True
-            self._fill.bodyColorCtrl.direction = 1
-            self.setFixedWidth(2 * self._handle_radius)
-            self.setMinimumHeight(self._min_length + self._handle_radius * 2)
-        self._update_track_radius()
-        self.setValue(value)
 
 
     def _calc_track_length(self):

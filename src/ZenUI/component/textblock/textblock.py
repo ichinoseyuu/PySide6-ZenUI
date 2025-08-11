@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QSize, QMargins,QRectF
 from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen
-from ZenUI.component.base import ColorController,FloatController
+from ZenUI.component.base import ColorController,FloatController,StyleData
 from ZenUI.core import ZGlobal,ZTextBlockStyleData
 class ZTextBlock(QWidget):
     def __init__(self,
@@ -24,12 +24,9 @@ class ZTextBlock(QWidget):
         self._body_cc = ColorController(self)
         self._border_cc = ColorController(self)
         self._radius_ctrl = FloatController(self)
-
-        self._style_data: ZTextBlockStyleData = None
-        self._custom_style: ZTextBlockStyleData = None
-
-        self.styleData = ZGlobal.styleDataManager.getStyleData('ZTextBlock')
-        ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
+        self._style_data = StyleData[ZTextBlockStyleData](self, 'ZTextBlock')
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
+        self._initStyle()
 
     # region Property
     @property
@@ -44,6 +41,8 @@ class ZTextBlock(QWidget):
     @property
     def radiusCtrl(self) -> FloatController: return self._radius_ctrl
 
+    @property
+    def styleData(self): return self._style_data
 
     @property
     def text(self) -> str: return self._text
@@ -74,7 +73,6 @@ class ZTextBlock(QWidget):
         self._margins = margins
         self.update()
 
-
     @property
     def alignment(self) -> Qt.AlignmentFlag: return self._alignment
     @alignment.setter
@@ -83,21 +81,16 @@ class ZTextBlock(QWidget):
         self.update()
 
 
-    @property
-    def styleData(self) -> ZTextBlockStyleData: return self._style_data
-    @styleData.setter
-    def styleData(self, style_data: ZTextBlockStyleData) -> None:
-        self._style_data = style_data
-        self._text_cc.color = style_data.Text
-        self._body_cc.color = style_data.Body
-        self._border_cc.color = style_data.Border
-        self._radius_ctrl.value = style_data.Radius
+    def _initStyle(self):
+        data = self._style_data.data
+        self._text_cc.color = data.Text
+        self._body_cc.color = data.Body
+        self._border_cc.color = data.Border
+        self._radius_ctrl.value = data.Radius
         self.update()
 
-    # region Slot
-    def themeChangeHandler(self, theme):
-        data = ZGlobal.styleDataManager.getStyleData('ZTextBlock', theme.name)
-        self._style_data = data
+    def _styleChangeHandler(self):
+        data = self._style_data.data
         self._radius_ctrl.value = data.Radius
         self._body_cc.setColorTo(data.Body)
         self._border_cc.setColorTo(data.Border)

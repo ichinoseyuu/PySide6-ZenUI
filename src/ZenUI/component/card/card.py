@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QRectF,Signal
 from PySide6.QtGui import QPainter,QPen,QPainterPath
-from ZenUI.component.base import ColorController,FloatController, LocationController
+from ZenUI.component.base import ColorController,FloatController, LocationController,StyleData
 from ZenUI.core import ZGlobal,ZCardStyleData
 
 class ZCard(QWidget):
@@ -18,15 +18,10 @@ class ZCard(QWidget):
         self._body_cc = ColorController(self)
         self._border_cc = ColorController(self)
         self._radius_ctrl = FloatController(self)
-
-        # animation property
         self._location_ctrl = LocationController(self)
-
-        # style data
-        self._style_data: ZCardStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData('ZCard')
-
-        ZGlobal.themeManager.themeChanged.connect(self.themeChangHandler)
+        self._style_data = StyleData[ZCardStyleData](self, 'ZCard')
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
+        self._initStyle()
 
     @property
     def bodyColorCtrl(self): return self._body_cc
@@ -42,16 +37,16 @@ class ZCard(QWidget):
 
     @property
     def styleData(self): return self._style_data
-    @styleData.setter
-    def styleData(self, style_data: ZCardStyleData):
-        self._style_data = style_data
-        self._body_cc.color = style_data.Body
-        self._border_cc.color = style_data.Border
-        self._radius_ctrl.value = style_data.Radius
+
+    def _initStyle(self):
+        data = self._style_data.data
+        self._body_cc.color = data.Body
+        self._border_cc.color = data.Border
+        self._radius_ctrl.value = data.Radius
         self.update()
 
-    def themeChangHandler(self, theme):
-        data = ZGlobal.styleDataManager.getStyleData('ZCard', theme.name)
+    def _styleChangeHandler(self):
+        data = self._style_data.data
         self._radius_ctrl.value = data.Radius
         self._body_cc.setColorTo(data.Body)
         self._border_cc.setColorTo(data.Border)

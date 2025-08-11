@@ -113,7 +113,7 @@ class ZToolTipContent(QWidget):
             text_flags |= Qt.TextFlag.TextWrapAnywhere
         text_rect = rect.adjusted(
             self._margins.left() + 1,
-            self._margins.top() + 1,
+            self._margins.top(),
             -self._margins.right(),
             -self._margins.bottom()
         )
@@ -132,7 +132,7 @@ class ZToolTipContent(QWidget):
         content_width = width - margin
         # 计算高度，自动换行
         rect = fm.boundingRect(0, 0, content_width, 1000, self._word_wrap, self._text)
-        height = rect.height() + self._margins.top() + self._margins.bottom() + 2 # 上下边距
+        height = rect.height() + self._margins.top() + self._margins.bottom() # 上下边距
         height = max(height, self.minimumHeight()) # 最小高度
 
         return QSize(width, height)

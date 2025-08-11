@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from PySide6.QtGui import QColor
-from typing import Union
+from typing import Union,TypeVar
 
-__all__ = ['ZFramelessWindowStyleData','ZButtonStyleData','ZTitleBarButtonData',
+__all__ = ['ZFramelessWindowStyleData','ZButtonStyleData','ZTitleBarButtonStyleData',
             'ZTextBlockStyleData','ZToolTipStyleData','ZToggleButtonStyleData',
             'ZNavBarButtonStyleData','ZNavBarToggleButtonStyleData','ZPageStyleData',
-            'ZScrollPageStyleData','ZSliderStyleData','ZCardStyleData','StyleDataType']
-
+            'ZScrollPageStyleData','ZSliderStyleData','ZCardStyleData','StyleDataT',
+            'StyleDataUnion']
 
 
 @dataclass
@@ -14,7 +14,7 @@ class ZFramelessWindowStyleData:
     Body: QColor
 
 @dataclass
-class ZTitleBarButtonData:
+class ZTitleBarButtonStyleData:
     Icon: QColor
     IconHover: QColor
     IconPressed: QColor
@@ -115,7 +115,10 @@ class ZCardStyleData:
     Radius: float
 
 
-StyleDataType = Union[ZButtonStyleData, ZTitleBarButtonData,ZFramelessWindowStyleData,
+StyleDataUnion = Union[ZButtonStyleData, ZTitleBarButtonStyleData,ZFramelessWindowStyleData,
                       ZTextBlockStyleData,ZToolTipStyleData, ZToggleButtonStyleData,
                       ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData,ZPageStyleData,
                       ZScrollPageStyleData,ZSliderStyleData,ZCardStyleData]
+
+# 定义类型变量，用于StyleData的泛型
+StyleDataT = TypeVar('StyleDataT', bound='StyleDataUnion')

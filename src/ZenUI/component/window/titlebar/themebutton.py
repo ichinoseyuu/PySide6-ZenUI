@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPainter, QIcon, QPixmap
-from ZenUI.core import ZGlobal,ZTheme
+from ZenUI.component.base import StyleData
+from ZenUI.core import ZGlobal,ZTheme,ZTitleBarButtonStyleData
 from .abctitlebarbutton import ZABCTitleBarButton
 
 class ZThemeButton(ZABCTitleBarButton):
@@ -13,13 +14,35 @@ class ZThemeButton(ZABCTitleBarButton):
                     QSize(), QIcon.Mode.Normal, QIcon.State.On)
         self._icon: QIcon = icon
         self._theme: ZTheme = ZGlobal.themeManager.getTheme()
-        self.styleData = ZGlobal.styleDataManager.getStyleData('ZThemeButton')
+        self._style_data = StyleData[ZTitleBarButtonStyleData](self, 'ZThemeButton')
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
+        self._initStyle()
 
-    def themeChangeHandler(self, theme):
-        self._theme = theme
-        self._style_data = ZGlobal.styleDataManager.getStyleData('ZThemeButton', theme.name)
-        self._body_cc.setColorTo(self._style_data.Body)
-        self._icon_cc.setColorTo(self._style_data.Icon)
+    @property
+    def styleData(self): return self._style_data
+
+    def _initStyle(self):
+        data = self._style_data.data
+        self._body_cc.color = data.Body
+        self._icon_cc.color = data.Icon
+        self.update()
+
+    def _styleChangeHandler(self):
+        data = self._style_data.data
+        self._body_cc.setColorTo(data.Body)
+        self._icon_cc.setColorTo(data.Icon)
+
+    def hoverHandler(self):
+        self._body_cc.setColorTo(self._style_data.data.BodyHover)
+
+    def leaveHandler(self):
+        self._body_cc.setColorTo(self._style_data.data.Body)
+
+    def pressHandler(self):
+        self._body_cc.setColorTo(self._style_data.data.BodyPressed)
+
+    def releaseHandler(self):
+        self._body_cc.setColorTo(self._style_data.data.Body)
 
     def paintEvent(self, e):
         painter = QPainter(self)

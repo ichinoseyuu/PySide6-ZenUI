@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout
 from PySide6.QtCore import Qt, QMargins
-from PySide6.QtGui import QFont, QIcon
+from PySide6.QtGui import QFont, QIcon, QColor
 from ZenUI import *
 
 class PageWidget(ZScrollPage):
@@ -13,11 +13,9 @@ class PageWidget(ZScrollPage):
         self._setup_ui()
 
     def _setup_ui(self):
-        self.text = ZTextBlock(parent=self,
-                                 name='text',
-                                 text='控件')
+        self.text = ZTextBlock(self, 'text', '控件')
         self.text.setFont(QFont('Microsoft YaHei', 24, QFont.Bold))
-        #self.text.setFixedSize(800,800)
+        self.text.margins = QMargins(12, 0, 6, 0)
         self.content.layout().addWidget(self.text)
 
         # region Button

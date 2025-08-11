@@ -17,12 +17,6 @@ class ZFramelessWindow(QWidget):
     BORDER_WIDTH = 6
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        # create tooltip
-        tooltip = ZToolTip()
-        tooltip.show()
-        tooltip.setWindowOpacity(0)
-        ZGlobal.tooltip = tooltip
-
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setStyleSheet('background-color: transparent;')
         self._titlebar = ZTitleBar(self)
@@ -42,6 +36,12 @@ class ZFramelessWindow(QWidget):
         self.styleData = ZGlobal.styleDataManager.getStyleData("ZFramelessWindow")
 
         ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
+
+        # create tooltip
+        tooltip = ZToolTip()
+        tooltip.show()
+        tooltip.setWindowOpacity(0)
+        ZGlobal.tooltip = tooltip
 
     # region Property
     @property

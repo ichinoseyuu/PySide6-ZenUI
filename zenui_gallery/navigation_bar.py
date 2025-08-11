@@ -27,4 +27,11 @@ class NavigationBar(ZNavigationBar):
         icon3.addFile(u":/icons/fluent/filled/ic_fluent_info_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
         self.btnAbout = ZNavBarToggleButton(self, "btnAbout", icon3)
         self.btnAbout.setToolTip("关于")
-        self.addToggleButton(self.footerPanel, self.btnAbout)
+        self.addToggleButton(self.panel, self.btnAbout)
+
+        icon4 = QIcon()
+        icon4.addFile(u":/icons/fluent/regular/ic_fluent_settings_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
+        icon4.addFile(u":/icons/fluent/filled/ic_fluent_settings_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
+        self.btnSettings = ZNavBarToggleButton(self, "btnSettings", icon4)
+        self.btnSettings.setToolTip("设置")
+        self.addToggleButton(self.footerPanel, self.btnSettings)

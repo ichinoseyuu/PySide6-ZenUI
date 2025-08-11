@@ -1,5 +1,5 @@
 from enum import Enum
-class StyleKey(Enum):
+class ZStyleKey(Enum):
     Text = 'Text'
     TextHover = 'TextHover'
     TextPressed = 'TextPressed'

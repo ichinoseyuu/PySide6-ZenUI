@@ -61,19 +61,22 @@ class ZCard(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         rect = self.rect()
         radius = self._radius_ctrl.value
-        # draw background
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(self._body_cc.color)
-        painter.drawRoundedRect(rect, radius, radius)
+        if self._body_cc.color.alpha() > 0:
+            # draw background
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._body_cc.color)
+            painter.drawRoundedRect(rect, radius, radius)
+        if self._border_cc.color.alpha() > 0:
         # draw border
-        painter.setPen(QPen(self._border_cc.color, 1))
-        painter.setBrush(Qt.NoBrush)
-        # adjust border width
-        painter.drawRoundedRect(
-            QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
-            radius,
-            radius
-        )
+            painter.setPen(QPen(self._border_cc.color, 1))
+            painter.setBrush(Qt.NoBrush)
+            # adjust border width
+            painter.drawRoundedRect(
+                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
+                radius,
+                radius
+            )
+        painter.end()
     # def paintEvent(self, event):
     #     painter = QPainter(self)
     #     painter.setRenderHint(QPainter.RenderHint.Antialiasing)

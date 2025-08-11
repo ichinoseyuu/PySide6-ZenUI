@@ -5,7 +5,6 @@ if TYPE_CHECKING:
     from ZenUI.component.tooltip import ZToolTip
 from ..theme import ZThemeManager
 from ..styledata import ZStyleDataManager
-
 def configureLogging():
     """
     同时将日志输出到终端和文件。

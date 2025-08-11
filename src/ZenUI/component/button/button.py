@@ -1,7 +1,7 @@
 from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
 from PySide6.QtCore import Qt, QRect, QSize, QRectF
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.base import ColorController,FloatController,OpacityController
+from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
 from ZenUI.core import ZGlobal, ZButtonStyleData
 from .abcbutton import ZABCButton
 
@@ -29,10 +29,12 @@ class ZButton(ZABCButton):
         self._radius_ctrl = FloatController(self)
         self._opacity_ctrl = OpacityController(self)
 
-        self._style_data: ZButtonStyleData = None
-        self.styleData = ZGlobal.styleDataManager.getStyleData("ZButton")
-
-        ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
+        # self._style_data: ZButtonStyleData = None
+        # self.styleData = ZGlobal.styleDataManager.getStyleData("ZButton")
+        # ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
+        self._style_data = StyleData(self, 'ZButton')
+        self._initStyleHandler()
+        self._style_data.styleChanged.connect(self._styleChangeHandler)
 
 
     # region Property
@@ -50,6 +52,9 @@ class ZButton(ZABCButton):
 
     @property
     def radiusCtrl(self): return self._radius_ctrl
+
+    @property
+    def styleData(self): return self._style_data
 
     @property
     def text(self) -> str: return self._text
@@ -86,24 +91,18 @@ class ZButton(ZABCButton):
         self._font = font
         self.update()
 
-    @property
-    def styleData(self) -> ZButtonStyleData: return self._style_data
-    @styleData.setter
-    def styleData(self, style_data: ZButtonStyleData) -> None:
-        self._style_data = style_data
-        self._body_cc.color = style_data.Body
-        self._text_cc.color = style_data.Text
-        self._icon_cc.color = style_data.Icon
-        self._border_cc.color = style_data.Border
-        self._radius_ctrl.value = style_data.Radius
+    # region Slot
+    def _initStyleHandler(self):
+        data = self._style_data.data
+        self._body_cc.color = data.Body
+        self._text_cc.color = data.Text
+        self._icon_cc.color = data.Icon
+        self._border_cc.color = data.Border
+        self._radius_ctrl.value = data.Radius
         self.update()
 
-
-
-    # region Slot
-    def themeChangeHandler(self, theme):
-        data = ZGlobal.styleDataManager.getStyleData('ZButton',theme.name)
-        self._style_data = data
+    def _styleChangeHandler(self):
+        data = self._style_data.data
         self._radius_ctrl.value = data.Radius
         self._body_cc.setColorTo(data.Body)
         self._border_cc.setColorTo(data.Border)
@@ -111,16 +110,16 @@ class ZButton(ZABCButton):
         self._text_cc.setColorTo(data.Text)
 
     def hoverHandler(self):
-        self._body_cc.setColorTo(self.styleData.BodyHover)
+        self._body_cc.setColorTo(self._style_data.data.BodyHover)
 
     def leaveHandler(self):
-        self._body_cc.setColorTo(self.styleData.Body)
+        self._body_cc.setColorTo(self._style_data.data.Body)
 
     def pressHandler(self):
-        self._body_cc.setColorTo(self.styleData.BodyPressed)
+        self._body_cc.setColorTo(self._style_data.data.BodyPressed)
 
     def releaseHandler(self):
-        self._body_cc.setColorTo(self.styleData.BodyHover)
+        self._body_cc.setColorTo(self._style_data.data.BodyHover)
 
     # region Override
     # Method
@@ -129,6 +128,7 @@ class ZButton(ZABCButton):
         if enable: self._opacity_ctrl.fadeTo(1.0)
         else: self._opacity_ctrl.fadeTo(0.3)
         super().setEnabled(enable)
+
 
     # Event
     def paintEvent(self, event):
@@ -140,18 +140,20 @@ class ZButton(ZABCButton):
         # 绘制背景
         rect = self.rect()
         radius = self._radius_ctrl.value
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(self._body_cc.color)
-        painter.drawRoundedRect(rect, radius, radius)
-        # 绘制边框
-        painter.setPen(QPen(self._border_cc.color, 1))
-        painter.setBrush(Qt.NoBrush)
-        # 调整矩形以避免边框模糊
-        painter.drawRoundedRect(
-            QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
-            radius,
-            radius
-        )
+        if self._body_cc.color.alpha() > 0:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._body_cc.color)
+            painter.drawRoundedRect(rect, radius, radius)
+        if self._border_cc.color.alpha() > 0:
+            # 绘制边框
+            painter.setPen(QPen(self._border_cc.color, 1))
+            painter.setBrush(Qt.NoBrush)
+            # 调整矩形以避免边框模糊
+            painter.drawRoundedRect(
+                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
+                radius,
+                radius
+            )
         # 计算内容区域
         # 如果同时有图标和文本，绘制在一起
         if self._icon and self._text:
@@ -212,6 +214,7 @@ class ZButton(ZABCButton):
             painter.setFont(self._font)
             painter.setPen(self._text_cc.color)
             painter.drawText(rect, Qt.AlignCenter, self._text)
+        painter.end()
 
 
     def sizeHint(self):

@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from types import MappingProxyType
-from .stylekey import StyleKey as K
+from .stylekey import ZStyleKey as K
 from ..color import ZColorTool
 
 __all__ = ['ACCENT_COLOR_LIGHT', 'ACCENT_COLOR_DARK', 'THEME_DATA', 'DARK_THEME', 'LIGHT_THEME']
@@ -16,7 +16,10 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Radius: 5.0
                 },
             'ZTextBlock':{
-                K.Text: '#dcdcdc'
+                K.Body: '#00000000',
+                K.Border: '#00000000',
+                K.Text: '#dcdcdc',
+                K.Radius: 5.0
                 },
             'ZPage': {
                 K.Body: '#272727',
@@ -32,7 +35,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 },
             'ZSlider': {
                 K.Track: '#464646',
-                K.TrackBorder: '#505050',
+                K.TrackBorder: '#585858',
                 K.FillAreaStart: ACCENT_COLOR_DARK,
                 K.FillAreaEnd: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.2),
                 K.FillAreaBorder: ACCENT_COLOR_DARK,
@@ -133,7 +136,10 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Radius: 5.0
                 },
             'ZTextBlock':{
-                K.Text: '#333333'
+                K.Body: '#00ffffff',
+                K.Border: '#00ffffff',
+                K.Text: '#333333',
+                K.Radius: 5.0
                 },
             'ZPage': {
                 K.Body: '#ffffff',
@@ -149,13 +155,13 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 },
             'ZSlider': {
                 K.Track: '#e5e5e5',
-                K.TrackBorder: '#e0e0e0',
+                K.TrackBorder: '#d8d8d8',
                 K.FillAreaStart: ACCENT_COLOR_LIGHT,
                 K.FillAreaEnd: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.2),
                 K.FillAreaBorder: ACCENT_COLOR_LIGHT,
                 K.HandleInner: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.2),
                 K.HandleOuter: '#ffffff',
-                K.HandleBorder: '#bfbfbf'
+                K.HandleBorder: '#e6e6e6'
                 },
             'ZButton': {
                 K.Text: '#333333',

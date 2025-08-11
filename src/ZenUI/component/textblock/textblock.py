@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, QSize, QMargins
-from PySide6.QtGui import QPainter, QFont, QFontMetrics
-from ZenUI.component.base import ColorController
+from PySide6.QtCore import Qt, QSize, QMargins,QRectF
+from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen
+from ZenUI.component.base import ColorController,FloatController
 from ZenUI.core import ZGlobal,ZTextBlockStyleData
 class ZTextBlock(QWidget):
     def __init__(self,
@@ -21,6 +21,9 @@ class ZTextBlock(QWidget):
         self._alignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
 
         self._text_cc = ColorController(self)
+        self._body_cc = ColorController(self)
+        self._border_cc = ColorController(self)
+        self._radius_ctrl = FloatController(self)
 
         self._style_data: ZTextBlockStyleData = None
         self._custom_style: ZTextBlockStyleData = None
@@ -31,6 +34,16 @@ class ZTextBlock(QWidget):
     # region Property
     @property
     def textColorCtrl(self) -> ColorController: return self._text_cc
+
+    @property
+    def bodyColorCtrl(self) -> ColorController: return self._body_cc
+
+    @property
+    def borderColorCtrl(self) -> ColorController: return self._border_cc
+
+    @property
+    def radiusCtrl(self) -> FloatController: return self._radius_ctrl
+
 
     @property
     def text(self) -> str: return self._text
@@ -76,12 +89,19 @@ class ZTextBlock(QWidget):
     def styleData(self, style_data: ZTextBlockStyleData) -> None:
         self._style_data = style_data
         self._text_cc.color = style_data.Text
+        self._body_cc.color = style_data.Body
+        self._border_cc.color = style_data.Border
+        self._radius_ctrl.value = style_data.Radius
         self.update()
 
     # region Slot
     def themeChangeHandler(self, theme):
-        self._style_data = ZGlobal.styleDataManager.getStyleData('ZTextBlock', theme.name)
-        self._text_cc.setColorTo(self._style_data.Text)
+        data = ZGlobal.styleDataManager.getStyleData('ZTextBlock', theme.name)
+        self._style_data = data
+        self._radius_ctrl.value = data.Radius
+        self._body_cc.setColorTo(data.Body)
+        self._border_cc.setColorTo(data.Border)
+        self._text_cc.setColorTo(data.Text)
 
     # region Override
     def setFont(self, font: QFont) -> None:
@@ -91,9 +111,26 @@ class ZTextBlock(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+        rect = self.rect()
+        radius = self._radius_ctrl.value
+        if self._body_cc.color.alpha() > 0:
+            # draw background
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._body_cc.color)
+            painter.drawRoundedRect(rect, radius, radius)
+        if self._border_cc.color.alpha() > 0:
+            # draw border
+            painter.setPen(QPen(self._border_cc.color, 1))
+            painter.setBrush(Qt.NoBrush)
+            # adjust border width
+            painter.drawRoundedRect(
+                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
+                radius,
+                radius
+            )
         painter.setFont(self._font)
         painter.setPen(self._text_cc.color)
-        rect = self.rect().adjusted(
+        text_rect = rect.adjusted(
             self._margins.left(),
             self._margins.top(),
             -self._margins.right(),
@@ -101,7 +138,7 @@ class ZTextBlock(QWidget):
         )
         alignment = self._alignment
         if self._word_wrap: alignment |= Qt.TextWordWrap
-        painter.drawText(rect, alignment, self._text)
+        painter.drawText(text_rect, alignment, self._text)
         painter.end()
 
     def sizeHint(self):

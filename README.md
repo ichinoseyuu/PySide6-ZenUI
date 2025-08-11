@@ -29,13 +29,3 @@ uv build
 uv add ./dist/zenui-0.1.0-py3-none-any.whl #or
 uv add ./dist/zenui-0.1.0.tar.gz
 ```
-
-## pack zenui_gallery
-
-```powershell
-nuitka --mingw64 --show-progress --standalone --disable-console --remove-output  ./zenui_gallery/main.py
-```
-
-```powershell
-pyinstaller -D -w ./zenui_gallery/main.py
-```

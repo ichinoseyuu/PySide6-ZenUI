@@ -136,9 +136,10 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         # 绘制背景
         rect = self.rect()
         radius = self._radius_ctrl.value
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(self._body_cc.color)
-        painter.drawRoundedRect(rect, radius, radius)
+        if self._body_cc.color.alpha() > 0:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._body_cc.color)
+            painter.drawRoundedRect(rect, radius, radius)
 
         # 1. 获取原始 QPixmap
         if self._checked:
@@ -174,6 +175,8 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         )
         painter.setBrush(self._icon_cc.color)
         painter.drawRoundedRect(indicator_rect, indicator_radius, indicator_radius)
+        painter.end()
+
 
     def sizeHint(self):
         return QSize(40, 40)

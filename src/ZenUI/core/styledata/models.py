@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from PySide6.QtGui import QColor
+from typing import Union
 
 __all__ = ['ZFramelessWindowStyleData','ZButtonStyleData','ZTitleBarButtonData',
             'ZTextBlockStyleData','ZToolTipStyleData','ZToggleButtonStyleData',
             'ZNavBarButtonStyleData','ZNavBarToggleButtonStyleData','ZPageStyleData',
-            'ZScrollPageStyleData','ZSliderStyleData','ZCardStyleData']
+            'ZScrollPageStyleData','ZSliderStyleData','ZCardStyleData','StyleDataType']
 
 
 
@@ -101,7 +102,10 @@ class ZToolTipStyleData:
 
 @dataclass
 class ZTextBlockStyleData:
+    Body: QColor
+    Border: QColor
     Text: QColor
+    Radius: float
 
 
 @dataclass
@@ -109,3 +113,9 @@ class ZCardStyleData:
     Body: QColor
     Border: QColor
     Radius: float
+
+
+StyleDataType = Union[ZButtonStyleData, ZTitleBarButtonData,ZFramelessWindowStyleData,
+                      ZTextBlockStyleData,ZToolTipStyleData, ZToggleButtonStyleData,
+                      ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData,ZPageStyleData,
+                      ZScrollPageStyleData,ZSliderStyleData,ZCardStyleData]

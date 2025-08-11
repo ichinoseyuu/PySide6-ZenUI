@@ -101,9 +101,10 @@ class ZNavBarButton(ZABCNavBarButton):
         painter.setOpacity(self._opacity_ctrl.opacity)
         rect = self.rect()
         radius = self._radius_ctrl.radius
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(self._body_cc.color)
-        painter.drawRoundedRect(rect, radius, radius)
+        if self._body_cc.color.alpha() > 0:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._body_cc.color)
+            painter.drawRoundedRect(rect, radius, radius)
 
         pixmap = self._icon.pixmap(self._icon_size)
         colored_pixmap = QPixmap(pixmap.size())
@@ -117,6 +118,7 @@ class ZNavBarButton(ZABCNavBarButton):
         icon_x = (self.width() - self._icon_size.width()) // 2
         icon_y = (self.height() - self._icon_size.height()) // 2
         painter.drawPixmap(icon_x, icon_y, colored_pixmap)
+        painter.end()
 
 
     def sizeHint(self):

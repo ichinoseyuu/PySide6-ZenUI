@@ -56,20 +56,23 @@ class SliderHandle(QWidget):
         # 计算中心点和基础半径
         center = QPointF(self.width()/2, self.height()/2)
         base_radius = min(self.width(), self.height())/2 - 1
-        # 绘制外边框
-        painter.setPen(QPen(self._border_cc.color, 1))
-        border_radius = base_radius * self._inner_scale_ctrl.value
-        painter.setBrush(Qt.NoBrush)  # 不填充
-        painter.drawEllipse(center, border_radius, border_radius)
-        # 绘制外圈(大小可变)
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(self._outer_cc.color)
-        outer_radius = base_radius * self._outer_scale_ctrl.value
-        painter.drawEllipse(center, outer_radius, outer_radius)
-        # 绘制内圈(大小可变)
-        inner_radius = base_radius * self._inner_scale_ctrl.value
-        painter.setBrush(self._inner_cc.color)
-        painter.drawEllipse(center, inner_radius, inner_radius)
+        if self._inner_cc.color.alpha() > 0:
+            # 绘制外圈(大小可变)
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._outer_cc.color)
+            outer_radius = base_radius * self._outer_scale_ctrl.value
+            painter.drawEllipse(center, outer_radius, outer_radius)
+        if self._inner_cc.color.alpha() > 0:
+            # 绘制内圈(大小可变)
+            inner_radius = base_radius * self._inner_scale_ctrl.value
+            painter.setBrush(self._inner_cc.color)
+            painter.drawEllipse(center, inner_radius, inner_radius)
+        if self._border_cc.color.alpha() > 0:
+            # 绘制外边框
+            painter.setPen(QPen(self._border_cc.color, 1))
+            border_radius = base_radius * self._outer_scale_ctrl.value
+            painter.setBrush(Qt.NoBrush)  # 不填充
+            painter.drawEllipse(center, border_radius, border_radius)
         painter.end()
 
     def enterEvent(self, event):

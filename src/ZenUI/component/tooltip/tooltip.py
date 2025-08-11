@@ -4,7 +4,7 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.base import LocationController,SizeController,WindowOpacityController
-from ZenUI.core import ZGlobal,ZToolTipStyleData,ZQuickEffect,TipPos
+from ZenUI.core import ZGlobal,ZToolTipStyleData,TipPos,ZQuickEffect
 from .tooltipcontent import ZToolTipContent
 
 class ZToolTip(QWidget):
@@ -30,8 +30,8 @@ class ZToolTip(QWidget):
         self._position = TipPos.Top
         self._offset = QPoint(0, 0)
 
-        self._margin = 8 # content margin for tooltip
-
+        self._margin = 8 # 边距，用于绘制content的阴影
+        self.setMinimumHeight(44) # 最小高度
         self._content = ZToolTipContent(self)
 
         self._location_ctrl = LocationController(self)
@@ -63,7 +63,8 @@ class ZToolTip(QWidget):
 
         ZGlobal.themeManager.themeChanged.connect(self.themeChangeHandler)
 
-        ZQuickEffect.applyDropShadowOn(widget=self,color=(0, 0, 0, 40),blur_radius=12)
+        ZQuickEffect.applyDropShadowOn(widget=self._content,color=(0, 0, 0, 40),blur_radius=12)
+        #阴影设置在content上，在切换window主题时才不会产生阴影绘制错误
 
 
     @property
@@ -76,7 +77,7 @@ class ZToolTip(QWidget):
     @mode.setter
     def mode(self, mode: Mode):
         self._mode = mode
-        if mode in [self.Mode.TrackMouse, self.Mode.TrackTarget]:
+        if mode in [self.Mode.TrackMouse, self.Mode.TrackTarget, self.Mode.AlignTarget]:
             self._tracker_timer.start()
         else:
             self._tracker_timer.stop()
@@ -149,22 +150,6 @@ class ZToolTip(QWidget):
         self.position = position
         self.mode = mode
 
-        # region 
-        # tooltip 透明度为0时，直接设置大小和位置(leagcy)
-        # # 计算新的大小和位置
-        # new_size = self._get_size_should_be_resize()
-        # new_pos = self._get_pos_should_be_move()
-
-        # # 如果tooltip是隐藏状态，直接设置大小和位置
-        # if self.windowOpacity() == 0:
-        #     self.resize(new_size)
-        #     self.move(new_pos)
-        # else:
-        #     # 如果tooltip已经显示，使用动画过渡
-        #     self._resize_anim.resizeTo(new_size)
-        #     self._move_anim.moveTo(new_pos)
-        # 计算新的大小和位置
-        # endregion
         new_pos = self._get_pos_should_be_move()
         distance = new_pos - self.pos()
         if self.windowOpacity() == 0 or distance.manhattanLength() > 150:
@@ -201,19 +186,9 @@ class ZToolTip(QWidget):
         else:
             self._location_ctrl.moveTo(pos)
 
-
-    def _update_size(self):
-        size = self._get_size_should_be_resize()
-        if self.windowOpacity() == 0:
-            self.resize(size)
-        else:
-            self._size_ctrl.resizeTo(size)
-
-
     def _completely_hid_signal_handler(self):
         if self._opacity_ctrl.opacity == 0:
             self.target = None
-
 
     def _get_initial_pos(self) -> QPoint:
         if self._mode == self.Mode.TrackMouse:

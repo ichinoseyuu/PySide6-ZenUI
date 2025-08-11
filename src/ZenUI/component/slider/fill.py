@@ -65,3 +65,4 @@ class SliderFill(QWidget):
         ))
         painter.setBrush(Qt.NoBrush)
         painter.drawRoundedRect(inner_rect, radius, radius)
+        painter.end()

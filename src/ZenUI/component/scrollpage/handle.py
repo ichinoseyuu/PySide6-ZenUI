@@ -108,6 +108,7 @@ class ScrollHandle(QWidget):
             painter.setPen(QPen(self._border_cc.color, 1))
             painter.setBrush(self._body_cc.color)
             painter.drawRoundedRect(rect, radius, radius)
+        painter.end()
 
 
     def mousePressEvent(self, event: QMouseEvent):

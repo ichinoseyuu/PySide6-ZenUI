@@ -174,12 +174,14 @@ class ZToggleButton(ZABCToggleButton):
         # draw background
         rect = self.rect()
         radius = self._radius_ctrl.radius
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(self._body_cc.color)
-        painter.drawRoundedRect(rect, radius, radius)
-        # draw border
-        painter.setPen(QPen(self._border_cc.color, 1))
-        painter.setBrush(Qt.NoBrush)
+        if self._body_cc.color.alpha() > 0:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._body_cc.color)
+            painter.drawRoundedRect(rect, radius, radius)
+        if self._border_cc.color.alpha() > 0:
+            # draw border
+            painter.setPen(QPen(self._border_cc.color, 1))
+            painter.setBrush(Qt.NoBrush)
         # adjust border width
         painter.drawRoundedRect(
             QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # use QRectF to get more accurate result
@@ -241,6 +243,7 @@ class ZToggleButton(ZABCToggleButton):
             painter.setFont(self._font)
             painter.setPen(self._text_cc.color)
             painter.drawText(rect, Qt.AlignCenter, self._text)
+        painter.end()
 
     def sizeHint(self):
         if self._icon and not self._text:

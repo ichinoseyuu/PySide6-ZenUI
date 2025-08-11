@@ -26,7 +26,7 @@ class ZTitleBarBase(QWidget):
         # self.setStyleSheet("background-color: transparent;border: 1px solid red;")
 
         # connect signal to slot
-        self.themeBtn.clicked.connect(ZGlobal.themeManager.toggleTheme)
+        self.themeBtn.clicked.connect(ZGlobal.themeManager.toggleThemeForce)
         self.minBtn.clicked.connect(self.window().showMinimized)
         self.maxBtn.clicked.connect(self.__toggleMaxState)
         self.closeBtn.clicked.connect(self.window().close)

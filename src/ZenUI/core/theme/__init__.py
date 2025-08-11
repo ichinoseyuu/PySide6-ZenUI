@@ -1,1 +1,1 @@
-from .theme import ZThemeManager, ZTheme
+from .theme import ZThemeManager, ZTheme, ZThemeMode

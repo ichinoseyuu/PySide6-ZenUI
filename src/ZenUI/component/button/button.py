@@ -214,8 +214,14 @@ class ZButton(ZABCButton):
 
     def sizeHint(self):
         if self._icon and not self._text:
-            return QSize(30, 30)
+            size = QSize(30, 30)
+            self.setMinimumSize(size)
+            return size
         elif not self._icon and self._text:
-            return QSize(self.fontMetrics().boundingRect(self._text).width() + 40, 30)
+            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 40, 30)
+            self.setMinimumSize(size)
+            return size
         else:
-            return QSize(self.fontMetrics().boundingRect(self._text).width() + 60, 30)
+            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 60, 30)
+            self.setMinimumSize(size)
+            return size

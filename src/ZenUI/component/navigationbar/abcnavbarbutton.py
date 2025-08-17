@@ -18,6 +18,7 @@ class ZABCNavBarButton(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self._state = self.State.Idle
         self._tool_tip: str = ""
         self.entered.connect(self.hoverHandler)

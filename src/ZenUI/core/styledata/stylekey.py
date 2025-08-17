@@ -1,8 +1,11 @@
 from enum import Enum
-class ZStyleKey(Enum):
+
+class ZStyleDataKey(Enum):
     Text = 'Text'
     TextHover = 'TextHover'
     TextPressed = 'TextPressed'
+
+    TextBackSectcted = 'TextBackSectcted'
 
     TextToggled = 'TextToggled'
     TextToggledHover = 'TextToggledHover'
@@ -21,6 +24,7 @@ class ZStyleKey(Enum):
     BodyPressed = 'BodyPressed'
     BodySatrt = 'BodyStart'
     BodyEnd = 'BodyEnd'
+    BodyFocused = 'BodyFocused'
 
     BodyToggled = 'BodyToggled'
     BodyToggledHover = 'BodyToggledHover'
@@ -52,3 +56,8 @@ class ZStyleKey(Enum):
     FillAreaStart = 'FillAreaStart'
     FillAreaEnd = 'FillAreaEnd'
     FillAreaBorder = 'FillAreaBorder'
+
+    Underline = 'Underline'
+    UnderlineFocused = 'UnderlineFocused'
+    Cursor = 'Cursor'
+    Mask = 'Mask'

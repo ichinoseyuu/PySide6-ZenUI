@@ -4,7 +4,7 @@ from PySide6.QtGui import QFont
 from ZenUI import *
 
 class PageSettings(ZPage):
-    def __init__(self,parent = None,name ='pageSettings'):
+    def __init__(self,parent = None,name ='PageSettings'):
         super().__init__(parent = parent,
                         name=name,
                         layout=self.Layout.Column,
@@ -15,8 +15,8 @@ class PageSettings(ZPage):
 
     def _setup_ui(self):
         self.text = ZTextBlock(self, 'text', '设置')
-        self.text.setFont(QFont('Microsoft YaHei', 24, QFont.Bold))
-        self.text.margins = QMargins(12, 0, 6, 0)
+        self.text.setFont(QFont('Microsoft YaHei', 20, QFont.Bold))
+        self.text.margins = QMargins(6, 0, 6, 0)
         self.layout().addWidget(self.text)
 
         # region Button

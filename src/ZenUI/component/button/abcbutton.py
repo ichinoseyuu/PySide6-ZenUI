@@ -2,7 +2,7 @@ from enum import IntEnum
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal, Slot, QEvent, QTimer,QSize,QPoint
 from PySide6.QtGui import QMouseEvent, QEnterEvent
-from ZenUI.core import ZGlobal
+from ZenUI.core import ZGlobal,TipPos
 
 class ZABCButton(QWidget):
     entered = Signal()
@@ -18,13 +18,15 @@ class ZABCButton(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self._state = self.State.Idle
         self._tool_tip: str = ""
         self._repeat_click = False
+        self._repeat_click_count = 1
 
         self._repeat_click_timer = QTimer(self) # 重复点击计时器
         self._repeat_click_timer.setInterval(50)
-        self._repeat_click_timer.timeout.connect(self.clicked.emit)
+        self._repeat_click_timer.timeout.connect(self.repeatClickHandler)
 
         self._repeat_click_trigger = QTimer(self) # 重复点击触发器
         self._repeat_click_trigger.setSingleShot(True)
@@ -47,6 +49,8 @@ class ZABCButton(QWidget):
     def repeatClick(self, enabled: bool) -> None:
         self._repeat_click = enabled
 
+    @property
+    def repeatClickCount(self) -> int: return self._repeat_click_count
 
     # region Func
     def toolTip(self): return self._tool_tip
@@ -77,19 +81,27 @@ class ZABCButton(QWidget):
     def clickHandler(self):
         pass
 
+    @Slot()
+    def repeatClickHandler(self):
+        self._repeat_click_count += 1
+        self.clicked.emit()
+
     # endregion
 
     # region Event
     def enterEvent(self, event: QEnterEvent):
         super().enterEvent(event)
         if self._tool_tip != "":
-            ZGlobal.tooltip.showTip(text=self._tool_tip, target=self)
+                        ZGlobal.tooltip.showTip(text=self._tool_tip,
+                                    target=self,
+                                    position=TipPos.TopRight,
+                                    offset=QPoint(6, 6))
         self._state = self.State.Hover
         self.entered.emit()
 
     def leaveEvent(self, event: QEvent):
         super().leaveEvent(event)
-        if self._tool_tip != "": ZGlobal.tooltip.hideTip()
+        if self._tool_tip != "" or ZGlobal.tooltip.isShowing: ZGlobal.tooltip.hideTip()
         self._state = self.State.Idle
         self.leaved.emit()
 
@@ -111,6 +123,7 @@ class ZABCButton(QWidget):
                 self.clicked.emit()
             self._repeat_click_trigger.stop()
             self._repeat_click_timer.stop()
+            self._repeat_click_count = 1
 
 
     def event(self, event: QEvent):

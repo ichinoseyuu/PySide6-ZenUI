@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import QObject, Property
+from PySide6.QtCore import QObject, Property, Signal
 from typing import overload
 from ZenUI.core import ZExpAnimationRefactor
 

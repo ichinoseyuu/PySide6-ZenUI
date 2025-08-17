@@ -4,7 +4,7 @@ import win32gui
 from ctypes import cast
 from ctypes.wintypes import LPRECT, MSG
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve
+from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve,QTimer
 from PySide6.QtGui import QResizeEvent,QColor
 from ZenUI.core import ZGlobal,ZFramelessWindowStyleData
 from ZenUI.component.tooltip import ZToolTip
@@ -18,6 +18,10 @@ class ZFramelessWindow(QWidget):
     BORDER_WIDTH = 6
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        # create tooltip
+        tooltip = ZToolTip()
+        ZGlobal.tooltip = tooltip
+
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setStyleSheet('background-color: transparent;')
         self._titlebar = ZTitleBar(self)
@@ -37,11 +41,6 @@ class ZFramelessWindow(QWidget):
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
 
-        # create tooltip
-        tooltip = ZToolTip()
-        tooltip.show()
-        tooltip.setWindowOpacity(0)
-        ZGlobal.tooltip = tooltip
 
     # region Property
     @property
@@ -52,6 +51,8 @@ class ZFramelessWindow(QWidget):
     @property
     def centerWidget(self): return self._centerWidget
 
+    @property
+    def titleBar(self): return self._titlebar
 
     def getBodyColor(self) -> QColor: return self._color_body
 
@@ -83,7 +84,6 @@ class ZFramelessWindow(QWidget):
             self.move(rect.center().x() - self.width() / 2, rect.center().y() - self.height() / 2)
         else:
             self.move(self.x() + self.width() / 2, self.y() + self.height() / 2)
-
 
 
     def __onScreenChanged(self):

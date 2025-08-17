@@ -7,7 +7,7 @@ from .win32_func import (getSystemAccentColor,isSystemBorderAccentEnabled,isMaxi
                          isCompositionEnabled,getMonitorInfo,getResizeBorderThickness,getSystemMetrics,
                          getDpiForWindow,findWindow,isGreaterEqualVersion,isGreaterEqualWin8_1,isGreaterEqualWin10,
                          isGreaterEqualWin11,isWin7,releaseMouseLeftButton,startSystemMove,starSystemResize,
-                         toggleWindowState)
+                         toggleWindowState,isWindowTopLevel,setWindowTopLevel)
 
 from .window_effect import WindowsWindowEffect
 

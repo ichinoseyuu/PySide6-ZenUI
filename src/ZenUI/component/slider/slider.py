@@ -52,7 +52,7 @@ class ZSlider(QWidget):
         self._track_start: int = 0
         self._track_end: int = 0
         self._handle_radius: int = 10
-        self._min_length: int = 200
+        self._min_length: int = 150
         self._fixed_track_length = None
 
         self._track = SliderTrack(self)

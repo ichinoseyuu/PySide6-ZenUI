@@ -128,17 +128,24 @@ class ZScrollPage(QWidget):
 
 
     def wheelEvent(self, event: QWheelEvent):
+        current_x = -self._content.x()
+        current_y = -self._content.y()
+
         if event.modifiers() & Qt.ShiftModifier:
+            # 水平滚动
             delta = event.angleDelta().x() if event.angleDelta().x() != 0 else event.angleDelta().y()
-            current_x = -self._content.x()
             step = delta / 120 * 50
-            self.scrollTo(x=current_x - step)
+            new_x = current_x - step
+            self.scrollTo(x=new_x, y=current_y)
         else:
+            # 垂直滚动
             delta = event.angleDelta().y()
-            current_y = -self._content.y()
             step = delta / 120 * 50
-            self.scrollTo(y=current_y - step)
+            new_y = current_y - step
+            self.scrollTo(x=current_x, y=new_y)
+
         event.accept()
+
 
 
     def scrollTo(self, x: int = None, y: int = None):
@@ -147,7 +154,8 @@ class ZScrollPage(QWidget):
             x: 水平滚动位置,None表示不改变
             y: 垂直滚动位置,None表示不改变
         """
-        current_x, current_y = self._content.pos().x(), self._content.pos().y()
+        current_pos = self._content.pos()
+        current_x, current_y = current_pos.x(), current_pos.y()
 
         if y is not None:
             max_scroll_y = self._content.height() - self.height()
@@ -161,8 +169,12 @@ class ZScrollPage(QWidget):
                 x = max(0, min(x, max_scroll_x))
                 current_x = -x
 
-        self._content.locationCtrl.moveTo(current_x, current_y)
-        self._sync_scroll_handles(current_x, current_y)
+        # 确保坐标值是有效的整数
+        final_x = int(current_x)
+        final_y = int(current_y)
+        
+        self._content.locationCtrl.moveTo(final_x, final_y)
+        self._sync_scroll_handles(final_x, final_y)
 
 
     def _sync_scroll_handles(self, current_x:int, current_y:int):

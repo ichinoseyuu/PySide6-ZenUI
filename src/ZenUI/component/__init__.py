@@ -9,4 +9,6 @@ from .slider import *
 from .stackpanel import *
 from .tooltip import *
 from .textblock import *
+from .textbox import *
+from .richtextblock import *
 from .window import *

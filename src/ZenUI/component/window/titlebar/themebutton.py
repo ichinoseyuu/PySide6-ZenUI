@@ -13,7 +13,6 @@ class ZThemeButton(ZABCTitleBarButton):
         icon.addFile(u":/icons/fluent/filled/ic_fluent_weather_sunny_filled.svg",
                     QSize(), QIcon.Mode.Normal, QIcon.State.On)
         self._icon: QIcon = icon
-        self._theme: ZTheme = ZGlobal.themeManager.getTheme()
         self._style_data = StyleData[ZTitleBarButtonStyleData](self, 'ZThemeButton')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
@@ -55,7 +54,7 @@ class ZThemeButton(ZABCTitleBarButton):
         # draw icon
         # 1. 获取原始 QPixmap
 
-        if self._theme is ZTheme.Dark:
+        if ZGlobal.themeManager.theme is ZTheme.Dark:
             pixmap = self._icon.pixmap(QSize(16, 16), QIcon.Normal, QIcon.On)
         else:
             pixmap = self._icon.pixmap(QSize(16, 16), QIcon.Normal, QIcon.Off)

@@ -15,16 +15,19 @@ class ZenUIGallery(ZFramelessWindow):
         self.setupUi()
 
     def setupUi(self):
+        self.setMinimumSize(400, 300)
         screen_size = QGuiApplication.primaryScreen().size()
         self.resize(screen_size.width()*0.5,screen_size.height()*0.6)
         self.moveCenter()
+        self.setWindowTitle("ZenUI Gallery")
+        self.setWindowIcon(QIcon(":/image/icon.svg"))
         self.contentLayout = QHBoxLayout(self.centerWidget)
         self.contentLayout.setContentsMargins(6, 6, 6, 6)
         self.contentLayout.setSpacing(6)
         self.navigationBar = NavigationBar(self.centerWidget)
         self.contentLayout.addWidget(self.navigationBar)
 
-        self.stackPanel = ZStackPanel(self.centerWidget,name="stackPanel")
+        self.stackPanel = ZStackPanel(self.centerWidget,name="StackPanel")
         self.contentLayout.addWidget(self.stackPanel)
 
         self.pageHome = PageHome(self.stackPanel)

@@ -10,6 +10,8 @@ from ZenUI.core.styledata.theme_data import *
 class ZStyleDataFactory:
     dataclass_map = {
         'ZCard': ZCardStyleData,
+        'ZTextBox': ZTextBoxStyleData,
+        'ZRichTextBlock':ZRichTextBlockStyleData,
         'ZTextBlock': ZTextBlockStyleData,
         'ZPage': ZPageStyleData,
         'ZScrollPage': ZScrollPageStyleData,

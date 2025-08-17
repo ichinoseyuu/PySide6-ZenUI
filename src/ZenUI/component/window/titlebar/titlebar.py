@@ -1,7 +1,8 @@
 # coding:utf-8
-from PySide6.QtCore import QEvent, Qt, QPoint, Signal
-from PySide6.QtGui import QIcon, QMouseEvent
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget,QSpacerItem,QSizePolicy
+from PySide6.QtCore import QEvent, Qt, QPoint,QMargins
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
+from ZenUI.component.textblock import ZTextBlock
 from ZenUI.core import ZGlobal
 from ..win32utils import startSystemMove, toggleWindowState
 from .abctitlebarbutton import ZABCTitleBarButton
@@ -88,51 +89,41 @@ class ZTitleBarBase(QWidget):
         self._isDoubleClickEnabled = isEnabled
 
 class ZTitleBar(ZTitleBarBase):
-    """ Title bar with minimize, maximum and close button """
-
     def __init__(self, parent):
         super().__init__(parent)
         self.hBoxLayout = QHBoxLayout(self)
-        # add buttons to layout
         self.hBoxLayout.setSpacing(0)
         self.hBoxLayout.setContentsMargins(0, 0, 0, 0)
         self.hBoxLayout.setAlignment(Qt.AlignmentFlag.AlignLeft|
                                     Qt.AlignmentFlag.AlignVCenter)
         self.hBoxLayout.addStretch(1)
-        self.hBoxLayout.addWidget(self.themeBtn, 0, Qt.AlignRight)
-        self.hBoxLayout.addWidget(self.minBtn, 0, Qt.AlignRight)
-        self.hBoxLayout.addWidget(self.maxBtn, 0, Qt.AlignRight)
-        self.hBoxLayout.addWidget(self.closeBtn, 0, Qt.AlignRight)
+        self.hBoxLayout.addWidget(self.themeBtn, 0, Qt.AlignRight|Qt.AlignVCenter)
+        self.hBoxLayout.addWidget(self.minBtn, 0, Qt.AlignRight|Qt.AlignVCenter)
+        self.hBoxLayout.addWidget(self.maxBtn, 0, Qt.AlignRight|Qt.AlignVCenter)
+        self.hBoxLayout.addWidget(self.closeBtn, 0, Qt.AlignRight|Qt.AlignVCenter)
 
-
-
-class ZStandardTitleBar(ZTitleBar):
-    """ Title bar with icon and title """
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        # add window icon
         self.iconLabel = QLabel(self)
         self.iconLabel.setFixedSize(20, 20)
         self.hBoxLayout.insertSpacing(0, 10)
-        self.hBoxLayout.insertWidget(1, self.iconLabel, 0, Qt.AlignLeft)
+        self.hBoxLayout.insertWidget(1, self.iconLabel, 0, Qt.AlignLeft|Qt.AlignVCenter)
         self.window().windowIconChanged.connect(self.setIcon)
 
-        # add title label
-        self.titleLabel = QLabel(self)
-        self.hBoxLayout.insertWidget(2, self.titleLabel, 0, Qt.AlignLeft)
-        self.titleLabel.setStyleSheet("""
-            QLabel{
-                background: transparent;
-                font: 13px 'Segoe UI', 'Microsoft YaHei', 'PingFang SC';
-                padding: 0 4px
-            }
-        """)
+        self.title = ZTextBlock(self)
+        self.title.margins = QMargins(6, 0, 0, 0)
+        self.hBoxLayout.insertWidget(2, self.title, 0, Qt.AlignLeft|Qt.AlignVCenter)
         self.window().windowTitleChanged.connect(self.setTitle)
 
     def setTitle(self, title):
-        self.titleLabel.setText(title)
-        self.titleLabel.adjustSize()
+        self.title.text = title
 
     def setIcon(self, icon):
         self.iconLabel.setPixmap(QIcon(icon).pixmap(20, 20))
+
+    def setIconVisible(self, isVisible: bool):
+        self.iconLabel.setVisible(isVisible)
+
+    def setThemeBtnVisible(self, isVisible: bool):
+        self.themeBtn.setVisible(isVisible)
+
+    def setMaxBtnVisible(self, isVisible: bool):
+        self.maxBtn.setVisible(isVisible)

@@ -3,7 +3,6 @@ from PySide6.QtCore import Qt, Signal, QEvent
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.base import ColorController
-from ZenUI.core import ZTitleBarButtonStyleData
 
 class ZABCTitleBarButton(QWidget):
     entered = Signal()

@@ -232,3 +232,24 @@ def toggleWindowState(window):
         win32gui.ShowWindow(hWnd, win32con.SW_RESTORE)
     else:
         win32gui.ShowWindow(hWnd, win32con.SW_MAXIMIZE)
+
+
+def isWindowTopLevel(window):
+    """获取窗口层级状态"""
+    hwnd = int(window.winId())
+    ex_style = win32api.GetWindowLong(hwnd, win32con.GWL_EXSTYLE)
+    return bool(ex_style & win32con.WS_EX_TOPMOST)
+
+
+def setWindowTopLevel(window, topmost=False):
+    """设置窗口层级状态
+    Args:
+        topmost (bool): 是否设置为顶层窗口
+    """
+    hwnd = int(window.winId())
+    windll.user32.SetWindowPos(
+        hwnd,
+        win32con.HWND_TOPMOST if topmost else win32con.HWND_TOP,
+        0, 0, 0, 0,
+        win32con.SWP_NOMOVE | win32con.SWP_NOSIZE
+    )

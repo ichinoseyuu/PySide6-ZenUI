@@ -19,7 +19,7 @@ class NavigationBar(ZNavigationBar):
         icon2.addFile(u":/icons/fluent/regular/ic_fluent_cube_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
         icon2.addFile(u":/icons/fluent/filled/ic_fluent_cube_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
         self.btnWidget = ZNavBarToggleButton(self, "btnWidget", icon2)
-        self.btnWidget.setToolTip("控件演示")
+        self.btnWidget.setToolTip("组件演示")
         self.addToggleButton(self.panel, self.btnWidget)
 
         icon3 = QIcon()

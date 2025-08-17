@@ -10,8 +10,8 @@ class ColorController(QObject):
         super().__init__(parent)
         self._color: QColor = QColor('#dcdcdc')
         self._anim = QPropertyAnimation(self, b'color')
-        self._anim.setDuration(150)
-        self._anim.setEasingCurve(QEasingCurve.Type.InOutQuad)
+        self._anim.setDuration(500)
+        self._anim.setEasingCurve(QEasingCurve.Type.OutExpo)
 
     @property
     def animation(self) -> QPropertyAnimation: return self._anim
@@ -62,6 +62,8 @@ class ColorController(QObject):
         target.setAlpha(alpha)
         self.setColorTo(target)
 
+    def stopAnimation(self) -> None:
+        self._anim.stop()
 
     def parent(self) -> QWidget:
         return super().parent()
@@ -169,6 +171,11 @@ class LinearGradientController(QObject):
         self._anim1.start()
         self._anim2.start()
 
+    def stopAnimSatrt(self) -> None:
+        self._anim1.stop()
+
+    def stopAnimEnd(self) -> None:
+        self._anim2.stop()
 
     def parent(self) -> QWidget:
         return super().parent()

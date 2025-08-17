@@ -21,10 +21,11 @@ class ZToolTip(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint|
-                            Qt.WindowType.WindowStaysOnTopHint|
-                            Qt.WindowType.Tool |
-                            Qt.WindowType.WindowTransparentForInput)
+                            Qt.WindowType.ToolTip|
+                            Qt.WindowType.WindowTransparentForInput|
+                            Qt.WindowType.WindowDoesNotAcceptFocus)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
         self._target: QWidget = None
         self._mode = self.Mode.TrackMouse
         self._position = TipPos.Top
@@ -61,7 +62,7 @@ class ZToolTip(QWidget):
         self._style_data = StyleData[ZToolTipStyleData](self, 'ZToolTip')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
-
+        self.resize(self.sizeHint())
         ZQuickEffect.applyDropShadowOn(widget=self._content,color=(0, 0, 0, 40),blur_radius=12)
         #阴影设置在content上，在切换window主题时才不会产生阴影绘制错误
 
@@ -70,6 +71,16 @@ class ZToolTip(QWidget):
     def state(self) -> State:
         if self.windowOpacity() == 0: return self.State.Hidden
         else: return self.State.Showing
+
+    @property
+    def isHidden(self) ->bool:
+        if self.windowOpacity() == 0: return True
+        else: return False
+
+    @property
+    def isShowing(self) ->bool:
+        if self.windowOpacity() == 0: return False
+        else: return True
 
     @property
     def styleData(self): return self._style_data
@@ -134,8 +145,8 @@ class ZToolTip(QWidget):
                 text: str,
                 target: QWidget,
                 mode: Mode = Mode.TrackMouse,
-                position: TipPos = TipPos.TopLeft,
-                offset: QPoint = QPoint(0, 0),
+                position: TipPos = TipPos.TopRight,
+                offset: QPoint = QPoint(6, 6),
                 hide_delay: int = 0,
                 ) -> None:
         if self._repeat_timer.isActive(): return
@@ -145,7 +156,7 @@ class ZToolTip(QWidget):
         self._content.text = text  # 直接设置content的text
         self.position = position
         self.mode = mode
-
+        self.raise_()
         new_pos = self._get_pos_should_be_move()
         distance = new_pos - self.pos()
         if self.windowOpacity() == 0 or distance.manhattanLength() > 150:
@@ -181,6 +192,7 @@ class ZToolTip(QWidget):
             self.move(pos)
         else:
             self._location_ctrl.moveTo(pos)
+        self.show()
 
     def _completely_hid_signal_handler(self):
         if self._opacity_ctrl.opacity == 0:

@@ -5,8 +5,8 @@ from typing import Union,TypeVar
 __all__ = ['ZFramelessWindowStyleData','ZButtonStyleData','ZTitleBarButtonStyleData',
             'ZTextBlockStyleData','ZToolTipStyleData','ZToggleButtonStyleData',
             'ZNavBarButtonStyleData','ZNavBarToggleButtonStyleData','ZPageStyleData',
-            'ZScrollPageStyleData','ZSliderStyleData','ZCardStyleData','StyleDataT',
-            'StyleDataUnion']
+            'ZScrollPageStyleData','ZSliderStyleData','ZCardStyleData','ZTextBoxStyleData',
+            'ZRichTextBlockStyleData','StyleDataT','StyleDataUnion']
 
 
 @dataclass
@@ -102,11 +102,33 @@ class ZToolTipStyleData:
 
 @dataclass
 class ZTextBlockStyleData:
+    Text: QColor
+    TextBackSectcted: QColor
     Body: QColor
     Border: QColor
-    Text: QColor
     Radius: float
 
+@dataclass
+class ZRichTextBlockStyleData:
+    Text: QColor
+    TextBackSectcted: QColor
+    Body: QColor
+    Border: QColor
+    Radius: float
+
+@dataclass
+class ZTextBoxStyleData:
+    Text: QColor
+    TextBackSectcted: QColor
+    Cursor: QColor
+    Mask: QColor
+    Underline: QColor
+    UnderlineFocused: QColor
+    Body: QColor
+    BodyHover: QColor
+    BodyFocused: QColor
+    Border: QColor
+    Radius: float
 
 @dataclass
 class ZCardStyleData:
@@ -118,7 +140,8 @@ class ZCardStyleData:
 StyleDataUnion = Union[ZButtonStyleData, ZTitleBarButtonStyleData,ZFramelessWindowStyleData,
                       ZTextBlockStyleData,ZToolTipStyleData, ZToggleButtonStyleData,
                       ZNavBarButtonStyleData,ZNavBarToggleButtonStyleData,ZPageStyleData,
-                      ZScrollPageStyleData,ZSliderStyleData,ZCardStyleData]
+                      ZScrollPageStyleData,ZSliderStyleData,ZCardStyleData,ZTextBoxStyleData,
+                      ZRichTextBlockStyleData]
 
 # 定义类型变量，用于StyleData的泛型
 StyleDataT = TypeVar('StyleDataT', bound='StyleDataUnion')

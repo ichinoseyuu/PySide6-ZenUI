@@ -2,7 +2,7 @@ from enum import IntEnum
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent, QSize
 from PySide6.QtGui import QMouseEvent, QEnterEvent
-from ZenUI.core import ZGlobal
+from ZenUI.core import ZGlobal,TipPos
 class ZABCToggleButton(QWidget):
     entered = Signal()
     leaved = Signal()
@@ -18,6 +18,7 @@ class ZABCToggleButton(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         #self.setMouseTracking(True)
         self._state = self.State.Idle
         self._tool_tip: str = ""
@@ -34,10 +35,8 @@ class ZABCToggleButton(QWidget):
     @property
     def state(self) -> State: return self._state
 
-
     @property
-    def checked(self) -> bool: return self._checked
-
+    def isChecked(self) -> bool: return self._checked
 
     # region Func
     def toolTip(self): return self._tool_tip
@@ -78,13 +77,16 @@ class ZABCToggleButton(QWidget):
     def enterEvent(self, event: QEnterEvent):
         super().enterEvent(event)
         if self._tool_tip != "":
-            ZGlobal.tooltip.showTip(text=self._tool_tip, target=self)
+            ZGlobal.tooltip.showTip(text=self._tool_tip,
+                                    target=self,
+                                    position=TipPos.TopRight,
+                                    offset=QPoint(6, 6))
         self._state = self.State.Hover
         self.entered.emit()
 
     def leaveEvent(self, event: QEvent):
         super().leaveEvent(event)
-        if self._tool_tip != "": ZGlobal.tooltip.hideTip()
+        if self._tool_tip != "" or ZGlobal.tooltip.isShowing: ZGlobal.tooltip.hideTip()
         self._state = self.State.Idle
         self.leaved.emit()
 

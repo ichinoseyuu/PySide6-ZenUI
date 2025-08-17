@@ -1,6 +1,6 @@
 
 from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
-from PySide6.QtCore import Qt, QRect, QSize, QRectF
+from PySide6.QtCore import Qt, QRect, QSize, QRectF,QEasingCurve
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
 from ZenUI.core import ZGlobal, ZToggleButtonStyleData

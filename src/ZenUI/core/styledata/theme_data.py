@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from types import MappingProxyType
-from .stylekey import ZStyleKey as K
+from .stylekey import ZStyleDataKey as K
 from ..color import ZColorTool
 
 __all__ = ['ACCENT_COLOR_LIGHT', 'ACCENT_COLOR_DARK', 'THEME_DATA', 'DARK_THEME', 'LIGHT_THEME']
@@ -11,14 +11,35 @@ ACCENT_COLOR_DARK: str = '#955595'
 
 DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZCard': {
-                K.Body: '#2f2f2f',
-                K.Border: '#383838',
+                K.Body: '#202020',
+                K.Border: '#1d1d1d',
+                K.Radius: 5.0
+                },
+            'ZTextBox': {
+                K.Text: '#dcdcdc',
+                K.TextBackSectcted: '#50955595',
+                K.Cursor: ACCENT_COLOR_DARK,
+                K.Mask: '#909090',
+                K.Underline: '#808080',
+                K.UnderlineFocused: ACCENT_COLOR_DARK,
+                K.Body: '#2d2d2d',
+                K.BodyHover: '#323232',
+                K.BodyFocused: '#1f1f1f',
+                K.Border: '#323232',
                 K.Radius: 5.0
                 },
             'ZTextBlock':{
+                K.Text: '#dcdcdc',
+                K.TextBackSectcted: '#50955595',
                 K.Body: '#00000000',
                 K.Border: '#00000000',
+                K.Radius: 5.0
+                },
+            'ZRichTextBlock':{
                 K.Text: '#dcdcdc',
+                K.TextBackSectcted: '#50955595',
+                K.Body: '#00000000',
+                K.Border: '#00000000',
                 K.Radius: 5.0
                 },
             'ZPage': {
@@ -123,7 +144,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZToolTip': {
                 K.Text: '#bfbfbf',
                 K.Body: '#2e2e2e',
-                K.Border: '#252525',
+                K.Border: '#323232',
                 K.Radius: 5.0
                 },
             })
@@ -131,14 +152,35 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
 
 LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZCard': {
-                K.Body: '#fcfcfc',
+                K.Body: '#f3f3f3',
                 K.Border: '#e5e5e5',
                 K.Radius: 5.0
                 },
+            'ZTextBox': {
+                K.Text: '#333333',
+                K.TextBackSectcted: '#5038b9f2',
+                K.Cursor: ACCENT_COLOR_LIGHT,
+                K.Mask: '#808080',
+                K.Underline: '#a8a8a8',
+                K.UnderlineFocused: ACCENT_COLOR_LIGHT,
+                K.Body: '#f9f9f9',
+                K.BodyHover: '#f5f5f5',
+                K.BodyFocused: '#ffffff',
+                K.Border: '#dee2e6',
+                K.Radius: 5.0
+                },
             'ZTextBlock':{
+                K.Text: '#333333',
+                K.TextBackSectcted: '#5038b9f2',
                 K.Body: '#00ffffff',
                 K.Border: '#00ffffff',
+                K.Radius: 5.0
+                },
+            'ZRichTextBlock':{
                 K.Text: '#333333',
+                K.TextBackSectcted: '#5038b9f2',
+                K.Body: '#00ffffff',
+                K.Border: '#00ffffff',
                 K.Radius: 5.0
                 },
             'ZPage': {

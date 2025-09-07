@@ -72,52 +72,6 @@ class ZCard(QWidget):
                 radius
             )
         painter.end()
-    # def paintEvent(self, event):
-    #     painter = QPainter(self)
-    #     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-    #     rect = self.rect()
-    #     # 获取四个角的半径
-    #     r_tl = self._corner_style.radius.topLeft
-    #     r_tr = self._corner_style.radius.topRight
-    #     r_bl = self._corner_style.radius.bottomLeft
-    #     r_br = self._corner_style.radius.bottomRight
-    #     # 创建路径并添加圆角矩形
-    #     path = QPainterPath()
-    #     # 从左上角开始
-    #     path.moveTo(rect.left(), rect.top() + r_tl)
-    #     # 绘制左上角圆弧
-    #     path.arcTo(rect.left(), rect.top(), 
-    #             r_tl * 2, r_tl * 2, 
-    #             180, -90)
-    #     # 绘制上边线到右上角
-    #     path.lineTo(rect.right() - r_tr, rect.top())
-    #     # 绘制右上角圆弧
-    #     path.arcTo(rect.right() - r_tr * 2, rect.top(), 
-    #             r_tr * 2, r_tr * 2, 
-    #             90, -90)
-    #     # 绘制右边线到右下角
-    #     path.lineTo(rect.right(), rect.bottom() - r_br)
-    #     # 绘制右下角圆弧
-    #     path.arcTo(rect.right() - r_br * 2, rect.bottom() - r_br * 2, 
-    #             r_br * 2, r_br * 2, 
-    #             0, -90)
-    #     # 绘制下边线到左下角
-    #     path.lineTo(rect.left() + r_bl, rect.bottom())
-    #     # 绘制左下角圆弧
-    #     path.arcTo(rect.left(), rect.bottom() - r_bl * 2, 
-    #             r_bl * 2, r_bl * 2, 
-    #             270, -90)
-    #     # 闭合路径（回到起点）
-    #     path.closeSubpath()
-    #     # draw background
-    #     painter.setPen(Qt.NoPen)
-    #     painter.setBrush(self._background_style.color)
-    #     painter.drawPath(path)
-    #     # draw border
-    #     painter.setPen(QPen(self._border_style.color, self._border_style.width))
-    #     painter.setBrush(Qt.NoBrush)
-    #     painter.drawPath(path)
-
 
     def resizeEvent(self, event):
         super().resizeEvent(event)

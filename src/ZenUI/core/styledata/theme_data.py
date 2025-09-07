@@ -18,9 +18,9 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZTextBox': {
                 K.Text: '#dcdcdc',
                 K.TextBackSectcted: '#50955595',
-                K.Cursor: ACCENT_COLOR_DARK,
+                K.Cursor: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.2),
                 K.Mask: '#909090',
-                K.Underline: '#808080',
+                K.Underline: '#505050',
                 K.UnderlineFocused: ACCENT_COLOR_DARK,
                 K.Body: '#2d2d2d',
                 K.BodyHover: '#323232',
@@ -161,13 +161,13 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.TextBackSectcted: '#5038b9f2',
                 K.Cursor: ACCENT_COLOR_LIGHT,
                 K.Mask: '#808080',
-                K.Underline: '#a8a8a8',
+                K.Underline: '#cdcdcd',
                 K.UnderlineFocused: ACCENT_COLOR_LIGHT,
                 K.Body: '#f9f9f9',
                 K.BodyHover: '#f5f5f5',
                 K.BodyFocused: '#ffffff',
                 K.Border: '#dee2e6',
-                K.Radius: 5.0
+                K.Radius: 3.0
                 },
             'ZTextBlock':{
                 K.Text: '#333333',

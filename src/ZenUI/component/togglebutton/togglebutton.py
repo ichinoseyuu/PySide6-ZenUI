@@ -90,35 +90,7 @@ class ZToggleButton(ZABCToggleButton):
         self._font = font
         self.update()
 
-    def _initStyle(self):
-        data = self._style_data.data
-        self._radius_ctrl.radius = data.Radius
-        if self._checked:
-            self._body_cc.color = data.BodyToggled
-            self._text_cc.color = data.TextToggled
-            self._icon_cc.color = data.IconToggled
-            self._border_cc.color = data.BorderToggled
-        else:
-            self._body_cc.color = data.Body
-            self._text_cc.color = data.Text
-            self._icon_cc.color = data.Icon
-            self._border_cc.color = data.Border
-        self.update()
-
-    def _styleChangeHandler(self):
-        data = self._style_data.data
-        self._radius_ctrl.radius = data.Radius
-        if self._checked:
-            self._body_cc.setColorTo(data.BodyToggled)
-            self._border_cc.setColorTo(data.BorderToggled)
-            self._icon_cc.setColorTo(data.IconToggled)
-            self._text_cc.setColorTo(data.TextToggled)
-        else:
-            self._body_cc.setColorTo(data.Body)
-            self._border_cc.setColorTo(data.Border)
-            self._icon_cc.setColorTo(data.Icon)
-            self._text_cc.setColorTo(data.Text)
-
+    # region slot
     def hoverHandler(self):
         if self._checked:
             self._body_cc.setColorTo(self._style_data.data.BodyToggledHover)
@@ -151,15 +123,50 @@ class ZToggleButton(ZABCToggleButton):
             self._icon_cc.setColorTo(data.Icon)
             self._text_cc.setColorTo(data.Text)
 
-    # region Override
-    # Method
+    # region public
     def setEnabled(self, enable: bool) -> None:
         if enable == self.isEnabled(): return
         if enable: self._opacity_ctrl.fadeTo(1.0)
         else: self._opacity_ctrl.fadeTo(0.3)
         super().setEnabled(enable)
 
-    # Event
+    def sizeHint(self):
+        if self._icon and not self._text:
+            return QSize(30, 30)
+        else:
+            return QSize(100, 30)
+
+    # region private
+    def _initStyle(self):
+        data = self._style_data.data
+        self._radius_ctrl.radius = data.Radius
+        if self._checked:
+            self._body_cc.color = data.BodyToggled
+            self._text_cc.color = data.TextToggled
+            self._icon_cc.color = data.IconToggled
+            self._border_cc.color = data.BorderToggled
+        else:
+            self._body_cc.color = data.Body
+            self._text_cc.color = data.Text
+            self._icon_cc.color = data.Icon
+            self._border_cc.color = data.Border
+        self.update()
+
+    def _styleChangeHandler(self):
+        data = self._style_data.data
+        self._radius_ctrl.radius = data.Radius
+        if self._checked:
+            self._body_cc.setColorTo(data.BodyToggled)
+            self._border_cc.setColorTo(data.BorderToggled)
+            self._icon_cc.setColorTo(data.IconToggled)
+            self._text_cc.setColorTo(data.TextToggled)
+        else:
+            self._body_cc.setColorTo(data.Body)
+            self._border_cc.setColorTo(data.Border)
+            self._icon_cc.setColorTo(data.Icon)
+            self._text_cc.setColorTo(data.Text)
+
+    # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing|
@@ -240,8 +247,3 @@ class ZToggleButton(ZABCToggleButton):
             painter.drawText(rect, Qt.AlignCenter, self._text)
         painter.end()
 
-    def sizeHint(self):
-        if self._icon and not self._text:
-            return QSize(30, 30)
-        else:
-            return QSize(100, 30)

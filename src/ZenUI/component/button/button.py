@@ -86,7 +86,28 @@ class ZButton(ZABCButton):
         self._font = font
         self.update()
 
-    # region Slot
+    # region public
+    def setEnabled(self, enable: bool) -> None:
+        if enable == self.isEnabled(): return
+        if enable: self._opacity_ctrl.fadeTo(1.0)
+        else: self._opacity_ctrl.fadeTo(0.3)
+        super().setEnabled(enable)
+
+    def sizeHint(self):
+        if self._icon and not self._text:
+            size = QSize(30, 30)
+            self.setMinimumSize(size)
+            return size
+        elif not self._icon and self._text:
+            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 40, 30)
+            self.setMinimumSize(size)
+            return size
+        else:
+            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 60, 30)
+            self.setMinimumSize(size)
+            return size
+
+    # region private
     def _initStyle(self):
         data = self._style_data.data
         self._body_cc.color = data.Body
@@ -104,6 +125,7 @@ class ZButton(ZABCButton):
         self._icon_cc.setColorTo(data.Icon)
         self._text_cc.setColorTo(data.Text)
 
+    # region slot
     def hoverHandler(self):
         self._body_cc.setColorTo(self._style_data.data.BodyHover)
 
@@ -116,16 +138,9 @@ class ZButton(ZABCButton):
     def releaseHandler(self):
         self._body_cc.setColorTo(self._style_data.data.BodyHover)
 
-    # region Override
-    # Method
-    def setEnabled(self, enable: bool) -> None:
-        if enable == self.isEnabled(): return
-        if enable: self._opacity_ctrl.fadeTo(1.0)
-        else: self._opacity_ctrl.fadeTo(0.3)
-        super().setEnabled(enable)
 
 
-    # Event
+    # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing|
@@ -211,17 +226,3 @@ class ZButton(ZABCButton):
             painter.drawText(rect, Qt.AlignCenter, self._text)
         painter.end()
 
-
-    def sizeHint(self):
-        if self._icon and not self._text:
-            size = QSize(30, 30)
-            self.setMinimumSize(size)
-            return size
-        elif not self._icon and self._text:
-            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 40, 30)
-            self.setMinimumSize(size)
-            return size
-        else:
-            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 60, 30)
-            self.setMinimumSize(size)
-            return size

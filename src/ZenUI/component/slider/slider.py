@@ -67,6 +67,7 @@ class ZSlider(QWidget):
         # self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
         # self.setStyleSheet('background:transparent;border:1px solid red;')
 
+    # region property
     @property
     def percentage(self): return self._percentage
 
@@ -171,39 +172,7 @@ class ZSlider(QWidget):
                 s = s.rstrip('0').rstrip('.') if '.' in s else s
         return s
 
-    def _initStyle(self, value):
-        if self.isHorizontal:
-            self._fill.bodyColorCtrl.direction = 0
-            self.setFixedHeight(2 * self._handle_radius)
-            self.setMinimumWidth(self._min_length + self._handle_radius * 2)
-        else:
-            self._fill.bodyColorCtrl.reverse = True
-            self._fill.bodyColorCtrl.direction = 1
-            self.setFixedWidth(2 * self._handle_radius)
-            self.setMinimumHeight(self._min_length + self._handle_radius * 2)
-        self._update_track_radius()
-        self.setValue(value)
-        data = self._style_data.data
-        self._track.bodyColorCtrl.color = data.Track
-        self._track.borderColorCtrl.color = data.TrackBorder
-        self._fill.bodyColorCtrl.colorStart = data.FillAreaStart
-        self._fill.bodyColorCtrl.colorEnd = data.FillAreaEnd
-        self._fill.borderColorCtrl.color = data.FillAreaBorder
-        self._handle.innerColorCtrl.color = data.HandleInner
-        self._handle.outerColorCtrl.color = data.HandleOuter
-        self._handle.borderColorCtrl.color = data.HandleBorder
-        self.update()
-
-    def _styleChangeHandler(self):
-        data = self._style_data.data
-        self._track.bodyColorCtrl.setColorTo(data.Track)
-        self._track.borderColorCtrl.setColorTo(data.TrackBorder)
-        self._fill.bodyColorCtrl.setColorTo(data.FillAreaStart, data.FillAreaEnd)
-        self._fill.borderColorCtrl.setColorTo(data.FillAreaBorder)
-        self._handle.innerColorCtrl.setColorTo(data.HandleInner)
-        self._handle.outerColorCtrl.setColorTo(data.HandleOuter)
-        self._handle.borderColorCtrl.setColorTo(data.HandleBorder)
-
+    # region public
     @overload
     def stepValue(self, step: int, multiplier: int = 1) -> None:
         "根据步长调整值，使用自定义步进倍数"
@@ -238,88 +207,6 @@ class ZSlider(QWidget):
         self._update_track()
 
 
-    def keyPressEvent(self, event: QKeyEvent):
-        if self.isHorizontal and (event.key() == Qt.Key_Left or event.key() == Qt.Key_Right):
-            step = -1 if event.key() == Qt.Key_Left else 1
-            self.stepValue(step)
-            ZGlobal.tooltip.showTip(
-                text=self.displayValue,
-                target=self._handle,
-                mode=ZGlobal.tooltip.Mode.TrackTarget,
-                position=TipPos.Top,
-                hide_delay=1000)
-        elif self.isVertical and (event.key() == Qt.Key_Up or event.key() == Qt.Key_Down):
-            step = 1 if event.key() == Qt.Key_Up else -1
-            self.stepValue(step)
-            ZGlobal.tooltip.showTip(
-                text=self.displayValue,
-                target=self._handle,
-                mode=ZGlobal.tooltip.Mode.TrackTarget,
-                position=TipPos.Left,
-                hide_delay=1000)
-        event.accept()
-
-    def mousePressEvent(self, event: QMouseEvent):
-        super().mousePressEvent(event)
-        if event.button() == Qt.LeftButton:
-            start = self._track_start
-            end = self._track_end
-            length = self._track_length
-            if self.isHorizontal:
-                # 限制点击范围
-                x = min(max(event.x(), start), end)
-                percent = (x - start) / length
-                value = self._min + percent * (self._max - self._min)
-            else:
-                y = min(max(event.y(), start), end)
-                # 垂直方向是反向
-                percent = 1 - (y - start) / length
-                value = self._min + percent * (self._max - self._min)
-            self.setValue(value)
-            self._handle.enterEvent(None)
-
-
-    def wheelEvent(self, event: QWheelEvent):
-        """处理鼠标滚轮事件"""
-        steps = event.angleDelta().y() / 120
-        self.stepValue(steps)
-        if self.isHorizontal:
-            ZGlobal.tooltip.showTip(
-                text = self.displayValue,
-                target = self._handle,
-                mode = ZGlobal.tooltip.Mode.TrackTarget,
-                position = TipPos.Top,
-                hide_delay= 1000)
-        else:
-            ZGlobal.tooltip.showTip(
-                text = self.displayValue,
-                target = self._handle,
-                mode = ZGlobal.tooltip.Mode.TrackTarget,
-                position = TipPos.Left,
-                hide_delay= 1000)
-        event.accept()
-
-    def enterEvent(self, event):
-        """鼠标进入事件"""
-        super().enterEvent(event)
-        # 开启鼠标追踪
-        self.setMouseTracking(True)
-        # 设置焦点以接收滚轮事件
-        self.setFocus()
-
-    def leaveEvent(self, event):
-        """鼠标离开事件"""
-        super().leaveEvent(event)
-        self._handle.leaveEvent(None)
-        # 关闭鼠标追踪
-        self.setMouseTracking(False)
-        self.clearFocus()
-
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        self._update_track()
-
-
     def sizeHint(self):
         if self.isHorizontal:
             w = max(self._fixed_track_length or self._min_length, self._min_length)
@@ -328,6 +215,39 @@ class ZSlider(QWidget):
             h = max(self._fixed_track_length or self._min_length, self._min_length)
             return QSize(self._track_width, h + self._handle_radius * 2)
 
+    # region private
+    def _initStyle(self, value):
+        if self.isHorizontal:
+            self._fill.bodyColorCtrl.direction = 0
+            self.setFixedHeight(2 * self._handle_radius)
+            self.setMinimumWidth(self._min_length + self._handle_radius * 2)
+        else:
+            self._fill.bodyColorCtrl.reverse = True
+            self._fill.bodyColorCtrl.direction = 1
+            self.setFixedWidth(2 * self._handle_radius)
+            self.setMinimumHeight(self._min_length + self._handle_radius * 2)
+        self._update_track_radius()
+        self.setValue(value)
+        data = self._style_data.data
+        self._track.bodyColorCtrl.color = data.Track
+        self._track.borderColorCtrl.color = data.TrackBorder
+        self._fill.bodyColorCtrl.colorStart = data.FillAreaStart
+        self._fill.bodyColorCtrl.colorEnd = data.FillAreaEnd
+        self._fill.borderColorCtrl.color = data.FillAreaBorder
+        self._handle.innerColorCtrl.color = data.HandleInner
+        self._handle.outerColorCtrl.color = data.HandleOuter
+        self._handle.borderColorCtrl.color = data.HandleBorder
+        self.update()
+
+    def _styleChangeHandler(self):
+        data = self._style_data.data
+        self._track.bodyColorCtrl.setColorTo(data.Track)
+        self._track.borderColorCtrl.setColorTo(data.TrackBorder)
+        self._fill.bodyColorCtrl.setColorTo(data.FillAreaStart, data.FillAreaEnd)
+        self._fill.borderColorCtrl.setColorTo(data.FillAreaBorder)
+        self._handle.innerColorCtrl.setColorTo(data.HandleInner)
+        self._handle.outerColorCtrl.setColorTo(data.HandleOuter)
+        self._handle.borderColorCtrl.setColorTo(data.HandleBorder)
 
     def _calc_track_length(self):
         if self._fixed_track_length is not None:
@@ -387,3 +307,85 @@ class ZSlider(QWidget):
                              self._track_width, self._track_length - self._handle.y())
             self._fill.setGeometry(geo_fill)
 
+    # region resizeEvent
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._update_track()
+
+    # region keyPressEvent
+    def keyPressEvent(self, event: QKeyEvent):
+        if self.isHorizontal and (event.key() == Qt.Key_Left or event.key() == Qt.Key_Right):
+            step = -1 if event.key() == Qt.Key_Left else 1
+            self.stepValue(step)
+            ZGlobal.tooltip.showTip(
+                text=self.displayValue,
+                target=self._handle,
+                mode=ZGlobal.tooltip.Mode.TrackTarget,
+                position=TipPos.Top,
+                hide_delay=1000)
+        elif self.isVertical and (event.key() == Qt.Key_Up or event.key() == Qt.Key_Down):
+            step = 1 if event.key() == Qt.Key_Up else -1
+            self.stepValue(step)
+            ZGlobal.tooltip.showTip(
+                text=self.displayValue,
+                target=self._handle,
+                mode=ZGlobal.tooltip.Mode.TrackTarget,
+                position=TipPos.Left,
+                hide_delay=1000)
+        event.accept()
+
+    # region mouseEvent
+    def mousePressEvent(self, event: QMouseEvent):
+        super().mousePressEvent(event)
+        if event.button() == Qt.LeftButton:
+            start = self._track_start
+            end = self._track_end
+            length = self._track_length
+            if self.isHorizontal:
+                # 限制点击范围
+                x = min(max(event.x(), start), end)
+                percent = (x - start) / length
+                value = self._min + percent * (self._max - self._min)
+            else:
+                y = min(max(event.y(), start), end)
+                # 垂直方向是反向
+                percent = 1 - (y - start) / length
+                value = self._min + percent * (self._max - self._min)
+            self.setValue(value)
+            self._handle.enterEvent(None)
+
+    def wheelEvent(self, event: QWheelEvent):
+        """处理鼠标滚轮事件"""
+        steps = event.angleDelta().y() / 120
+        self.stepValue(steps)
+        if self.isHorizontal:
+            ZGlobal.tooltip.showTip(
+                text = self.displayValue,
+                target = self._handle,
+                mode = ZGlobal.tooltip.Mode.TrackTarget,
+                position = TipPos.Top,
+                hide_delay= 1000)
+        else:
+            ZGlobal.tooltip.showTip(
+                text = self.displayValue,
+                target = self._handle,
+                mode = ZGlobal.tooltip.Mode.TrackTarget,
+                position = TipPos.Left,
+                hide_delay= 1000)
+        event.accept()
+
+    def enterEvent(self, event):
+        """鼠标进入事件"""
+        super().enterEvent(event)
+        # 开启鼠标追踪
+        self.setMouseTracking(True)
+        # 设置焦点以接收滚轮事件
+        self.setFocus()
+
+    def leaveEvent(self, event):
+        """鼠标离开事件"""
+        super().leaveEvent(event)
+        self._handle.leaveEvent(None)
+        # 关闭鼠标追踪
+        self.setMouseTracking(False)
+        self.clearFocus()

@@ -67,87 +67,7 @@ class ZScrollPage(QWidget):
     @property
     def styleData(self): return self._style_data
 
-    def _initStyle(self):
-        data = self._style_data.data
-        self._body_cc.color = data.Body
-        self._border_cc.color = data.Border
-        self._radius_ctrl.value = data.Radius
-        self._handle_h.bodyColorCtrl.color = data.Handle
-        self._handle_v.bodyColorCtrl.color = data.Handle
-        self._handle_h.borderColorCtrl.color = data.HandleBorder
-        self._handle_v.borderColorCtrl.color = data.HandleBorder
-        self._handle_h.update()
-        self._handle_v.update()
-        self.update()
-
-    def _styleChangeHandler(self):
-        data = self._style_data.data
-        self._radius_ctrl.value = data.Radius
-        self._body_cc.setColorTo(data.Body)
-        self._border_cc.setColorTo(data.Border)
-        self._handle_h.bodyColorCtrl.setColorTo(data.Handle)
-        self._handle_v.bodyColorCtrl.setColorTo(data.Handle)
-        self._handle_h.borderColorCtrl.setColorTo(data.HandleBorder)
-        self._handle_v.borderColorCtrl.setColorTo(data.HandleBorder)
-        self._handle_h._trans_timer.start(1200)
-        self._handle_v._trans_timer.start(1200)
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        rect = self.rect()
-        radius = self._radius_ctrl.value
-        if self._body_cc.color.alpha() > 0:
-            # draw background
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self._body_cc.color)
-            painter.drawRoundedRect(rect, radius, radius)
-        if self._border_cc.color.alpha() > 0:
-            # draw border
-            painter.setPen(QPen(self._border_cc.color, 1))
-            painter.setBrush(Qt.NoBrush)
-            # adjust border width
-            painter.drawRoundedRect(
-                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
-                radius,
-                radius
-            )
-        painter.end()
-
-
-
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        w, h = event.size().width(), event.size().height()
-        size_hint = self._content.sizeHint()
-        content_w = max(size_hint.width(), w)
-        content_h = max(size_hint.height(), h)
-        # 更新内容区域大小
-        self._content.resize(content_w, content_h)
-        self._update_handles_and_content()
-
-
-    def wheelEvent(self, event: QWheelEvent):
-        current_x = -self._content.x()
-        current_y = -self._content.y()
-
-        if event.modifiers() & Qt.ShiftModifier:
-            # 水平滚动
-            delta = event.angleDelta().x() if event.angleDelta().x() != 0 else event.angleDelta().y()
-            step = delta / 120 * 50
-            new_x = current_x - step
-            self.scrollTo(x=new_x, y=current_y)
-        else:
-            # 垂直滚动
-            delta = event.angleDelta().y()
-            step = delta / 120 * 50
-            new_y = current_y - step
-            self.scrollTo(x=current_x, y=new_y)
-
-        event.accept()
-
-
-
+    # region public
     def scrollTo(self, x: int = None, y: int = None):
         """滚动到指定位置
         Args:
@@ -172,10 +92,91 @@ class ZScrollPage(QWidget):
         # 确保坐标值是有效的整数
         final_x = int(current_x)
         final_y = int(current_y)
-        
+
         self._content.locationCtrl.moveTo(final_x, final_y)
         self._sync_scroll_handles(final_x, final_y)
 
+
+    # region paintEvent
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        rect = self.rect()
+        radius = self._radius_ctrl.value
+        if self._body_cc.color.alpha() > 0:
+            # draw background
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._body_cc.color)
+            painter.drawRoundedRect(rect, radius, radius)
+        if self._border_cc.color.alpha() > 0:
+            # draw border
+            painter.setPen(QPen(self._border_cc.color, 1))
+            painter.setBrush(Qt.NoBrush)
+            # adjust border width
+            painter.drawRoundedRect(
+                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
+                radius,
+                radius
+            )
+        painter.end()
+
+    # region resizeEvent
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        w, h = event.size().width(), event.size().height()
+        size_hint = self._content.sizeHint()
+        content_w = max(size_hint.width(), w)
+        content_h = max(size_hint.height(), h)
+        # 更新内容区域大小
+        self._content.resize(content_w, content_h)
+        self._update_handles_and_content()
+
+    # region mouseEvent
+    def wheelEvent(self, event: QWheelEvent):
+        current_x = -self._content.x()
+        current_y = -self._content.y()
+
+        if event.modifiers() & Qt.ShiftModifier:
+            # 水平滚动
+            delta = event.angleDelta().x() if event.angleDelta().x() != 0 else event.angleDelta().y()
+            step = delta / 120 * 50
+            new_x = current_x - step
+            self.scrollTo(x=new_x, y=current_y)
+        else:
+            # 垂直滚动
+            delta = event.angleDelta().y()
+            step = delta / 120 * 50
+            new_y = current_y - step
+            self.scrollTo(x=current_x, y=new_y)
+
+        event.accept()
+
+
+    # region private
+    def _initStyle(self):
+        data = self._style_data.data
+        self._body_cc.color = data.Body
+        self._border_cc.color = data.Border
+        self._radius_ctrl.value = data.Radius
+        self._handle_h.bodyColorCtrl.color = data.Handle
+        self._handle_v.bodyColorCtrl.color = data.Handle
+        self._handle_h.borderColorCtrl.color = data.HandleBorder
+        self._handle_v.borderColorCtrl.color = data.HandleBorder
+        self._handle_h.update()
+        self._handle_v.update()
+        self.update()
+
+    def _styleChangeHandler(self):
+        data = self._style_data.data
+        self._radius_ctrl.value = data.Radius
+        self._body_cc.setColorTo(data.Body)
+        self._border_cc.setColorTo(data.Border)
+        self._handle_h.bodyColorCtrl.setColorTo(data.Handle)
+        self._handle_v.bodyColorCtrl.setColorTo(data.Handle)
+        self._handle_h.borderColorCtrl.setColorTo(data.HandleBorder)
+        self._handle_v.borderColorCtrl.setColorTo(data.HandleBorder)
+        self._handle_h._trans_timer.start(1200)
+        self._handle_v._trans_timer.start(1200)
 
     def _sync_scroll_handles(self, current_x:int, current_y:int):
         """根据内容区位置同步滑块位置"""

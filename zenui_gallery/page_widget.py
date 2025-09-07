@@ -23,19 +23,19 @@ class PageWidget(ZScrollPage):
         # region Text
         self.text_block_card = DemoCard(self, 'text_block_card')
         self.text_block_card.title.text = 'ZTextBlock'
-        self.text_block_card.setFixedHeight(130)
+        self.text_block_card.setFixedHeight(150)
         self.content.layout().addWidget(self.text_block_card)
 
         self.text_block_1 = ZTextBlock(self.text_block_card, name='text_block_1')
         self.text_block_1.margins = QMargins(6, 0, 6, 0)
         self.text_block_1.wrapMode = ZTextBlock.WrapMode.NoWrap
-        self.text_block_1.text = 'Hello ZenUI!（不可选中的文本块）'
+        self.text_block_1.text = 'Hello ZenUI!'
         self.text_block_1.move(16, 50)
 
         self.text_block_2 = ZTextBlock(self.text_block_card, name='text_block_2',selectable=True)
-        self.text_block_2.setMaximumWidth(300)
+        self.text_block_2.setMaximumWidth(600)
         self.text_block_2.margins = QMargins(6, 6, 6, 6)
-        self.text_block_2.text = 'Hello ZenUI!（可选中的文本块）'
+        self.text_block_2.text = 'PySide6 是 Qt for Python 项目的官方 Python 模块，提供了完整的 Qt 6.0+ 框架支持。它允许开发者使用 Python 编写跨平台 GUI 应用程序，并支持多线程、信号与槽等核心功能。'
         self.text_block_2.wrapMode = ZTextBlock.WrapMode.WrapAnywhere
         self.text_block_2.move(16, 90)
 
@@ -56,38 +56,45 @@ class PageWidget(ZScrollPage):
         self.rich_text_2.html = '''
         <p>
         欢迎使用
-        <span style="color: #ff6b6b; font-weight: bold; font-size: 18px;">ZenUI</span> 
-        组件库！这里有
-        <span style="color: #4ecdc4; font-style: italic;">精美的</span>
-        界面和
-        <span style="color: #45b7d1; text-decoration: underline;">强大的</span>
-        功能。
+        <span style="color: #ff6b6b; font-weight: bold;">ZenUI</span> 
+        组件库！这个组件库基于
+        <span style="color: #4ecdc4; font-style: bold;">PySide6</span>
+        开发，PySide6 是 Qt 公司提供的 Python 模块，它允许开发者使用 Python 编写跨平台 QT GUI 应用程序。
         </p>
         '''
         self.rich_text_2.move(16, 90)
 
         self.text_box_card = DemoCard(self, 'text_box_card')
         self.text_box_card.title.text = 'ZTextBox'
-        self.text_box_card.setFixedHeight(400)
+        self.text_box_card.setFixedHeight(240)
         self.content.layout().addWidget(self.text_box_card)
 
-        self.text_box_1 = ZTextBox(self.text_box_card, name='text_box_1')
+        self.text_box_1 = ZTextBox(self.text_box_card, name='text_box_1',read_only=True)
+        #self.text_box_1.setMaximumWidth(500)
+        self.text_box_1.setText('Hello ZenUI!')
         #self.text_box_1.setFixedSize(300, 30)
         self.text_box_1.move(16, 50)
 
-        self.text_box_2 = ZTextBox(self.text_box_card, name='text_box_2',mask='请输入内容')
+        self.text_box_2 = ZTextBox(self.text_box_card, name='text_box_2')
         #self.text_box_2.setFixedSize(300, 30)
-        self.text_box_2.setMaximumWidth(500)
         self.text_box_2.move(16, 100)
 
-        self.text_box_3 = ZTextBox(self.text_box_card, name='text_box_3',read_only=True)
-        self.text_box_3.setText('Hello ZenUI!')
+        self.text_box_3 = ZTextBox(self.text_box_card, name='text_box_3',mask='请输入内容')
+        self.text_box_3.wrapMode = ZTextBox.WrapMode.WrapAnywhere
+        self.text_box_3.setMaximumWidth(300)
         #self.text_box_3.setFixedSize(300, 30)
-        self.text_box_3.move(16, 300)
+        self.text_box_3.move(16, 150)
+
+        self.text_box_4 = ZTextBox(self, name='text_box_4',mask='请输入内容')
+        self.text_box_4.wrapMode = ZTextBox.WrapMode.WrapAnywhere
+        self.text_box_4.setMaximumWidth(300)
+        #self.text_box_4.setFixedSize(300, 30)
+        self.content.layout().addWidget(self.text_box_4)
 
         # region Button
         self.btn_card = DemoCard(self, 'btn_card')
         self.btn_card.title.text = 'ZButton'
+        self.btn_card.setFixedHeight(100)
         self.content.layout().addWidget(self.btn_card)
 
         btn_icon  = QIcon(u":/icons/fluent/regular/ic_fluent_save_regular.svg")
@@ -112,8 +119,9 @@ class PageWidget(ZScrollPage):
         self.btn_2.move(56, 50)
         self.btn_2.clicked.connect(lambda: ZGlobal.tooltip.showTip(text='保存成功',
                                                                    target=self.btn_2,
-                                                                   position=TipPos.TopRight,
-                                                                   offset=QPoint(6, 6),
+                                                                   mode=ZToolTip.Mode.TrackTarget,
+                                                                   position=TipPos.Top,
+                                                                   offset=QPoint(0, 6),
                                                                    hide_delay=800
                                                                    ))
         self.btn_3 = ZButton(
@@ -123,8 +131,9 @@ class PageWidget(ZScrollPage):
         self.btn_3.move(150, 50)
         self.btn_3.clicked.connect(lambda: ZGlobal.tooltip.showTip(text='保存成功',
                                                                    target=self.btn_3,
-                                                                   position=TipPos.TopRight,
-                                                                   offset=QPoint(6, 6),
+                                                                   mode=ZToolTip.Mode.TrackTarget,
+                                                                   position=TipPos.Top,
+                                                                   offset=QPoint(0, 6),
                                                                    hide_delay=800
                                                                    ))
 
@@ -136,13 +145,15 @@ class PageWidget(ZScrollPage):
         self.btn_4.move(222, 50)
         self.btn_4.clicked.connect(lambda: ZGlobal.tooltip.showTip(text=f'你连续点击了{self.btn_4.repeatClickCount}次',
                                                                    target=self.btn_4,
-                                                                   position=TipPos.TopRight,
-                                                                   offset=QPoint(6, 6),
+                                                                   position=TipPos.Top,
+                                                                   mode=ZToolTip.Mode.TrackTarget,
+                                                                   offset=QPoint(0, 6),
                                                                    hide_delay=800
                                                                    ))
 
         self.toggle_btn_card = DemoCard(self, 'toggle_btn_card')
         self.toggle_btn_card.title.text = 'ZToggleButton'
+        self.toggle_btn_card.setFixedHeight(100)
         self.content.layout().addWidget(self.toggle_btn_card)
 
         self.toggle_btn = ZToggleButton(

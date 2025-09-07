@@ -14,7 +14,7 @@ class ZTextBlock(QWidget):
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
-                 text: str = '',
+                 text: str = "",
                  selectable: bool = False):
         super().__init__(parent=parent)
         if name: self.setObjectName(name)
@@ -129,30 +129,29 @@ class ZTextBlock(QWidget):
         self.update()
 
     def sizeHint(self):
-        margins = self._margins
-        margin_w = margins.left() + margins.right()
-        margin_h = margins.top() + margins.bottom()
+        m = self._margins
+        mw = m.left() + m.right()
+        mh = m.top() + m.bottom()
         # 如果没有文本，返回最小尺寸
-        if not self._text: return QSize(margin_w, self.minimumHeight())
+        if not self._text: return QSize(mw, self.minimumHeight())
         # 文本实际宽度
         fm = QFontMetrics(self._font)
-        text_w = fm.horizontalAdvance(self._text)
+        text_width = fm.horizontalAdvance(self._text) + mw + 1
 
         if self._wrap_mode == self.WrapMode.NoWrap:
-            # 不换行时的宽度
-            width = text_w + margin_w
-            height = max(fm.height() + margin_h, self.minimumHeight())
-            return QSize(width, height)
-        # 换行，返回最大宽度和总高度
+            height = max(fm.height() + mh, self.minimumHeight())
+            return QSize(text_width, height)
+
+        # 对于自动换行模式
+        if text_width <= self.minimumWidth():
+            width = self.minimumWidth()
+        elif text_width <= self.maximumWidth():
+            width = text_width
         else:
-            # 计算文本尺寸
-            rect = fm.boundingRect(0, 0,
-                                   text_w + 1,
-                                   0,
-                                   self._get_text_flag(),
-                                   self._text)
-            width = rect.width() + margin_w
-            return QSize(width, self.minimumHeight())
+            width = self.maximumWidth()
+
+        height = self.heightForWidth(width)
+        return QSize(width, height)
 
     def resizeEvent(self, event):
         if self.hasHeightForWidth():
@@ -169,23 +168,14 @@ class ZTextBlock(QWidget):
         return True
 
     def heightForWidth(self, width: int) -> int:
-        margins = self._margins
-        margin_w = margins.left() + margins.right()
-        margin_h = margins.top() + margins.bottom()
+        m = self._margins
         fm = QFontMetrics(self._font)
-        if self.maximumWidth() == 16777215:
-            rect = fm.boundingRect(0, 0,
-                                    width - margin_w,
-                                    self.maximumHeight() - margin_h,
-                                    self._get_text_flag(),
-                                    self._text)
-        else:
-            rect = fm.boundingRect(0, 0,
-                                    self.maximumWidth() - margin_w,
-                                    self.maximumHeight() - margin_h,
-                                    self._get_text_flag(),
-                                    self._text)
-        height = max(rect.height() + margin_h, self.minimumHeight())
+        rect = fm.boundingRect(0, 0,
+                                width,
+                                0,
+                                self._get_text_flag(),
+                                self._text)
+        height = max(rect.height() + m.top() + m.bottom(), self.minimumHeight())
         return height
 
     # region private
@@ -325,7 +315,7 @@ class ZTextBlock(QWidget):
             if click_y >= line_y and click_y <= line_y + line_height:
                 line_index = i
                 break
-        
+
         # 如果没有找到精确匹配的行，选择最接近的行
         if line_index == -1:
             if click_y < lines_info[0][2]:  # 在第一行之上
@@ -357,7 +347,7 @@ class ZTextBlock(QWidget):
 
         # 使用统一的文本布局计算，获取精确的行位置
         lines_info = self._get_text_layout(text_rect, fm)
-        line_height = fm.height()
+        line_height = fm.height() + 2 # 加上一些额外的空间
 
         # 为每行绘制选中区域
         painter.setPen(Qt.NoPen)
@@ -386,7 +376,7 @@ class ZTextBlock(QWidget):
                 painter.drawRoundedRect(selection_rect, 2, 2)
 
 
-    # region Event
+    # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing|
@@ -435,6 +425,32 @@ class ZTextBlock(QWidget):
         painter.end()
 
 
+    # region keyPressEvent
+    def keyPressEvent(self, event):
+        """处理键盘事件"""
+        if not self._selectable:
+            super().keyPressEvent(event)
+            return
+
+        # 处理复制操作 (Ctrl+C)
+        if event.key() == Qt.Key_C and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            if self._is_selection() and self._selected_text:
+                from PySide6.QtWidgets import QApplication
+                clipboard = QApplication.clipboard()
+                clipboard.setText(self._selected_text)
+            return
+
+        # Ctrl+A 全选
+        elif event.key() == Qt.Key_A and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            if self._text:
+                self._selection_start = 0
+                self._selection_end = len(self._text)
+                self.update()
+            return
+
+        super().keyPressEvent(event)
+
+    # region mouseEvent
     def mousePressEvent(self, event):
         """处理鼠标点击事件"""
         if not self._selectable or not self._text:
@@ -476,30 +492,6 @@ class ZTextBlock(QWidget):
         if event.button() == Qt.LeftButton:
             self._is_selecting = False
         super().mouseReleaseEvent(event)
-
-    def keyPressEvent(self, event):
-        """处理键盘事件"""
-        if not self._selectable:
-            super().keyPressEvent(event)
-            return
-
-        # 处理复制操作 (Ctrl+C)
-        if event.key() == Qt.Key_C and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-            if self._is_selection() and self._selected_text:
-                from PySide6.QtWidgets import QApplication
-                clipboard = QApplication.clipboard()
-                clipboard.setText(self._selected_text)
-            return
-
-        # Ctrl+A 全选
-        elif event.key() == Qt.Key_A and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-            if self._text:
-                self._selection_start = 0
-                self._selection_end = len(self._text)
-                self.update()
-            return
-
-        super().keyPressEvent(event)
 
     def focusOutEvent(self, event):
         if self._selectable:

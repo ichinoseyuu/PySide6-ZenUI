@@ -44,7 +44,7 @@ class ZRichTextBlock(QWidget):
         self._initStyle()
         self._setup_document()
 
-    # region Properties
+    # region property
     @property
     def textColorCtrl(self) -> ColorController: 
         return self._text_cc
@@ -107,7 +107,7 @@ class ZRichTextBlock(QWidget):
         self.adjustSize()
         self.update()
 
-    # region Public Methods
+    # region public
     def setHtml(self, html: str) -> None:
         self.html = html
 
@@ -176,7 +176,7 @@ class ZRichTextBlock(QWidget):
         self.resize(size)
 
 
-    # region Private Methods
+    # region private
     def _initStyle(self):
         data = self._style_data.data
         self._text_cc.color = data.Text
@@ -312,7 +312,7 @@ class ZRichTextBlock(QWidget):
                 current_block = current_block.next()
 
 
-    # region Event
+    # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing |
@@ -369,6 +369,37 @@ class ZRichTextBlock(QWidget):
         painter.restore()
         painter.end()
 
+    # region keyPressEvent
+    def keyPressEvent(self, event):
+        """处理键盘事件"""
+        if not self._selectable:
+            super().keyPressEvent(event)
+            return
+
+        # 处理复制操作 (Ctrl+C)
+        if event.key() == Qt.Key_C and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            if self.selectedText:
+                clipboard = QApplication.clipboard()
+                clipboard.setText(self.selectedText)
+            return
+
+        # Ctrl+A 全选
+        elif event.key() == Qt.Key_A and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            if self._html or self._text_document.toPlainText():
+                if not self._text_cursor:
+                    self._text_cursor = QTextCursor(self._text_document)
+                self._text_cursor.select(QTextCursor.SelectionType.Document)
+                self.update()
+            return
+
+        # 处理 Esc 键清除选择
+        elif event.key() == Qt.Key_Escape:
+            self._clear_selection()
+            return
+
+        super().keyPressEvent(event)
+
+    # region mouseEvent
     def mousePressEvent(self, event):
         """处理鼠标点击事件"""
         if not self._selectable:
@@ -416,35 +447,6 @@ class ZRichTextBlock(QWidget):
         if event.button() == Qt.LeftButton:
             self._is_selecting = False
         super().mouseReleaseEvent(event)
-
-    def keyPressEvent(self, event):
-        """处理键盘事件"""
-        if not self._selectable:
-            super().keyPressEvent(event)
-            return
-
-        # 处理复制操作 (Ctrl+C)
-        if event.key() == Qt.Key_C and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-            if self.selectedText:
-                clipboard = QApplication.clipboard()
-                clipboard.setText(self.selectedText)
-            return
-
-        # Ctrl+A 全选
-        elif event.key() == Qt.Key_A and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-            if self._html or self._text_document.toPlainText():
-                if not self._text_cursor:
-                    self._text_cursor = QTextCursor(self._text_document)
-                self._text_cursor.select(QTextCursor.SelectionType.Document)
-                self.update()
-            return
-
-        # 处理 Esc 键清除选择
-        elif event.key() == Qt.Key_Escape:
-            self._clear_selection()
-            return
-
-        super().keyPressEvent(event)
 
     def focusOutEvent(self, event):
         if self._selectable:

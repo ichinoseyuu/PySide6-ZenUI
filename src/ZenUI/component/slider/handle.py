@@ -49,7 +49,10 @@ class SliderHandle(QWidget):
     @property
     def locationCtrl(self): return self._location_ctrl
 
+    def parent(self) -> 'ZSlider':
+        return super().parent()
 
+    # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -75,6 +78,39 @@ class SliderHandle(QWidget):
             painter.drawEllipse(center, border_radius, border_radius)
         painter.end()
 
+
+    # region mouseEvent
+    def mousePressEvent(self, event):
+        self._inner_scale_ctrl.setValueTo(self._inner_scale_pressed)
+        self._outer_cc.setAlphaTo(150)
+        self._border_cc.setAlphaTo(150)
+
+    def mouseMoveEvent(self, event):
+        slider = self.parent()
+        pos = event.globalPos() - slider.mapToGlobal(QPoint(self._radius, self._radius))
+        if slider.isHorizontal:
+            delta = max(0, min(pos.x(), slider._track_length))
+            slider.setValue(delta / slider._track_length * slider._max)
+            ZGlobal.tooltip.showTip(
+                text = self.parent().displayValue,
+                target = self,
+                mode = ZGlobal.tooltip.Mode.TrackTarget,
+                position =TipPos.Top)
+        else:
+            delta = max(0, min(pos.y(), slider._track_length))
+            slider.setValue(slider._max - delta / slider._track_length * slider._max)
+            ZGlobal.tooltip.showTip(
+                text = self.parent().displayValue,
+                target = self,
+                mode = ZGlobal.tooltip.Mode.TrackTarget,
+                position = TipPos.Left)
+
+    def mouseReleaseEvent(self, event):
+        self._inner_scale_ctrl.setValueTo(self._inner_scale_released)
+        self._outer_cc.setAlphaTo(255)
+        self._border_cc.setAlphaTo(255)
+
+
     def enterEvent(self, event):
         super().enterEvent(event)
         self._inner_scale_ctrl.setValueTo(self._inner_scale_hover)
@@ -97,39 +133,3 @@ class SliderHandle(QWidget):
         self._inner_scale_ctrl.setValueTo(self._inner_scale_normal)
         self._outer_scale_ctrl.setValueTo(self._outer_scale_normal)
         ZGlobal.tooltip.hideTipDelayed(500)
-
-    def mousePressEvent(self, event):
-        self._inner_scale_ctrl.setValueTo(self._inner_scale_pressed)
-        self._outer_cc.setAlphaTo(150)
-        self._border_cc.setAlphaTo(150)
-
-
-    def mouseReleaseEvent(self, event):
-        self._inner_scale_ctrl.setValueTo(self._inner_scale_released)
-        self._outer_cc.setAlphaTo(255)
-        self._border_cc.setAlphaTo(255)
-
-
-    def mouseMoveEvent(self, event):
-        slider = self.parent()
-        pos = event.globalPos() - slider.mapToGlobal(QPoint(self._radius, self._radius))
-        if slider.isHorizontal:
-            delta = max(0, min(pos.x(), slider._track_length))
-            slider.setValue(delta / slider._track_length * slider._max)
-            ZGlobal.tooltip.showTip(
-                text = self.parent().displayValue,
-                target = self,
-                mode = ZGlobal.tooltip.Mode.TrackTarget,
-                position =TipPos.Top)
-        else:
-            delta = max(0, min(pos.y(), slider._track_length))
-            slider.setValue(slider._max - delta / slider._track_length * slider._max)
-            ZGlobal.tooltip.showTip(
-                text = self.parent().displayValue,
-                target = self,
-                mode = ZGlobal.tooltip.Mode.TrackTarget,
-                position = TipPos.Left)
-
-
-    def parent(self) -> 'ZSlider':
-        return super().parent()

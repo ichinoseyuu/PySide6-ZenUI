@@ -38,7 +38,7 @@ class ZStackPanel(QWidget):
                 self._current_page.raise_()
             else:
                 # 对于非第一个页面，先显示再根据条件隐藏
-                page.show()  # 强制完成渲染
+                #page.show()  # 强制完成渲染
                 self._current_page.raise_()
                 if self._hide_last_page:
                     page.hide()

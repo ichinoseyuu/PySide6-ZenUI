@@ -51,6 +51,7 @@ class ScrollHandle(QWidget):
         self._body_cc.transparent()
         self._border_cc.transparent()
 
+    # region property
     @property
     def bodyColorCtrl(self): return self._body_cc
 
@@ -65,23 +66,26 @@ class ScrollHandle(QWidget):
 
     @Property(int)
     def handleLength(self): return self.height() if self._orientation == self.Orientation.Vertical else self.width()
+
     @handleLength.setter
     def handleLength(self, value):
         self.setFixedHeight(value) if self._orientation == self.Orientation.Vertical else self.setFixedWidth(value)
 
-    def setHandleLengthTo(self, value):
-        self._length_anim.stop()
-        self._length_anim.setStartValue(self.handleLength)
-        self._length_anim.setEndValue(value)
-        self._length_anim.start()
-
     @Property(int)
     def handleWidth(self): return self._handle_width
+
     @handleWidth.setter
     def handleWidth(self, value):
         self._handle_width = value
         self._radius_ctrl.value = value / 2
         self.update()
+
+    # region public
+    def setHandleLengthTo(self, value):
+        self._length_anim.stop()
+        self._length_anim.setStartValue(self.handleLength)
+        self._length_anim.setEndValue(value)
+        self._length_anim.start()
 
     def setHandleWidthTo(self, value):
         self._width_anim.stop()
@@ -89,6 +93,30 @@ class ScrollHandle(QWidget):
         self._width_anim.setEndValue(value)
         self._width_anim.start()
 
+    def toTransparent(self):
+        self.bodyColorCtrl.toTransparent()
+        self.borderColorCtrl.toTransparent()
+        self._trans_timer.stop()
+
+    def transparent(self):
+        self.bodyColorCtrl.transparent()
+        self.borderColorCtrl.transparent()
+        self._trans_timer.stop()
+
+    def toOpaque(self):
+        self.bodyColorCtrl.toOpaque()
+        self.borderColorCtrl.toOpaque()
+        self._trans_timer.start(1200)
+
+    def opaque(self):
+        self.bodyColorCtrl.opaque()
+        self.borderColorCtrl.opaque()
+        self._trans_timer.start(1200)
+
+    def parent(self) -> 'ZScrollPage':
+        return super().parent()
+
+    # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -110,7 +138,7 @@ class ScrollHandle(QWidget):
             painter.drawRoundedRect(rect, radius, radius)
         painter.end()
 
-
+    # region mouseEvent
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
             self._dragging = True
@@ -143,7 +171,6 @@ class ScrollHandle(QWidget):
             self._dragging = False
             self.setCursor(Qt.ArrowCursor)
 
-
     def enterEvent(self, event):
         self._state = self.State.Hover
         self._trans_timer.stop()
@@ -156,26 +183,3 @@ class ScrollHandle(QWidget):
         self.setHandleWidthTo(self._handle_width_min)
         self._trans_timer.start(1200)
 
-
-    def toTransparent(self):
-        self.bodyColorCtrl.toTransparent()
-        self.borderColorCtrl.toTransparent()
-        self._trans_timer.stop()
-
-    def transparent(self):
-        self.bodyColorCtrl.transparent()
-        self.borderColorCtrl.transparent()
-        self._trans_timer.stop()
-
-    def toOpaque(self):
-        self.bodyColorCtrl.toOpaque()
-        self.borderColorCtrl.toOpaque()
-        self._trans_timer.start(1200)
-
-    def opaque(self):
-        self.bodyColorCtrl.opaque()
-        self.borderColorCtrl.opaque()
-        self._trans_timer.start(1200)
-
-    def parent(self) -> 'ZScrollPage':
-        return super().parent()

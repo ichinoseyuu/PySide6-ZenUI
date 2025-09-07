@@ -66,7 +66,7 @@ class ZToolTip(QWidget):
         ZQuickEffect.applyDropShadowOn(widget=self._content,color=(0, 0, 0, 40),blur_radius=12)
         #阴影设置在content上，在切换window主题时才不会产生阴影绘制错误
 
-
+    # region property
     @property
     def state(self) -> State:
         if self.windowOpacity() == 0: return self.State.Hidden
@@ -124,23 +124,7 @@ class ZToolTip(QWidget):
         self._target = widget
         if self._target is None: self._tracker_timer.stop()
 
-
-    def _initStyle(self):
-        data = self._style_data.data
-        self._content.textColorCtrl.color = data.Text
-        self._content.bodyColorCtrl.color = data.Body
-        self._content.borderColorCtrl.color = data.Border
-        self._content.radiusCtrl.value = data.Radius
-        self._content.update()
-
-    def _styleChangeHandler(self):
-        data = self._style_data.data
-        self._content.radiusCtrl.value = data.Radius
-        self._content.textColorCtrl.setColorTo(data.Text)
-        self._content.bodyColorCtrl.setColorTo(data.Body)
-        self._content.borderColorCtrl.setColorTo(data.Border)
-        self._content.update()
-
+    # region public
     def showTip(self,
                 text: str,
                 target: QWidget,
@@ -179,12 +163,31 @@ class ZToolTip(QWidget):
         if self._hide_timer.isActive(): self._hide_timer.stop()
         self._hide_timer.start(delay)
 
+    def sizeHint(self):
+        return self._content.sizeHint() + QSize(2*self._margin, 2*self._margin)
+
+
+    # region event
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self._content.move(self._margin, self._margin)
 
-    def sizeHint(self):
-        return self._content.sizeHint() + QSize(2*self._margin, 2*self._margin)
+    # region private
+    def _initStyle(self):
+        data = self._style_data.data
+        self._content.textColorCtrl.color = data.Text
+        self._content.bodyColorCtrl.color = data.Body
+        self._content.borderColorCtrl.color = data.Border
+        self._content.radiusCtrl.value = data.Radius
+        self._content.update()
+
+    def _styleChangeHandler(self):
+        data = self._style_data.data
+        self._content.radiusCtrl.value = data.Radius
+        self._content.textColorCtrl.setColorTo(data.Text)
+        self._content.bodyColorCtrl.setColorTo(data.Body)
+        self._content.borderColorCtrl.setColorTo(data.Border)
+        self._content.update()
 
     def _update_pos_for_tracker(self):
         pos = self._get_pos_should_be_move()

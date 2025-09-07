@@ -55,6 +55,12 @@ class ZPage(QWidget):
     @property
     def styleData(self): return self._style_data
 
+    def sizeHint(self):
+        return self._layout.sizeHint()
+
+    def layout(self) -> QVBoxLayout|QHBoxLayout:
+        return super().layout()
+
     def _initStyle(self):
         data = self._style_data.data
         self._body_cc.color = data.Body
@@ -67,6 +73,10 @@ class ZPage(QWidget):
         self._radius_ctrl.value = data.Radius
         self._body_cc.setColorTo(data.Body)
         self._border_cc.setColorTo(data.Border)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.resized.emit()
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -89,13 +99,3 @@ class ZPage(QWidget):
                 radius
             )
         painter.end()
-
-    def sizeHint(self):
-        return self._layout.sizeHint()
-
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        self.resized.emit()
-
-    def layout(self) -> QVBoxLayout|QHBoxLayout:
-        return super().layout()

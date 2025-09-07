@@ -1,17 +1,21 @@
+import logging
+from enum import IntEnum
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QRectF, QSize, QRect, QMargins
 from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen
 from ZenUI.component.base import ColorController,FloatController
 
 class ZToolTipContent(QWidget):
+    class WrapMode(IntEnum):
+        NoWrap = 0
+        WordWrap = 1
+        WrapAnywhere = 2
+
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMinimumHeight(28)
-        self.setMaximumWidth(300)
-
         self._text: str = None
         self._font = QFont("Microsoft YaHei", 9)
-        self._word_wrap = Qt.TextFlag.TextWordWrap
+        self._wrap_mode = self.WrapMode.WrapAnywhere
         self._margins: QMargins = QMargins(10, 8, 10, 8)
         self._alignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
 
@@ -20,6 +24,8 @@ class ZToolTipContent(QWidget):
         self._border_cc = ColorController(self)
         self._radius_ctrl = FloatController(self)
 
+        self.setMinimumHeight(28)
+        self.setMaximumWidth(300)
 
     # region Property
     @property
@@ -44,11 +50,11 @@ class ZToolTipContent(QWidget):
         self.update()
 
     @property
-    def wordWrap(self) -> Qt.TextFlag: return self._word_wrap
+    def wrapMode(self) -> WrapMode: return self._wrap_mode
 
-    @wordWrap.setter
-    def wordWrap(self, mode: Qt.TextFlag) -> None:
-        self._word_wrap = mode
+    @wrapMode.setter
+    def wrapMode(self, mode: WrapMode) -> None:
+        self._wrap_mode = mode
         self.adjustSize()
         self.update()
 
@@ -80,59 +86,67 @@ class ZToolTipContent(QWidget):
 
     def font(self): return self._font
 
-    def setFont(self, font: QFont) -> None:
-        self._font = font
+    def setFont(self, font: QFont | str) -> None:
+        if isinstance(font, str):
+            self._font.setFamily(font)
+        else:
+            self._font = font
         self.adjustSize()
         self.update()
-
-    def setFontFamily(self, family: str) -> None:
-        self._font.setFamily(family)
-        self.adjustSize()
-        self.update()
-
-    def setFontSize(self, size: int) -> None:
-        self._font.setPointSize(size)
-        self.adjustSize()
-        self.update()
-
-    def setFontWeight(self, weight: QFont.Weight) -> None:
-        self._font.setWeight(weight)
-        self.adjustSize()
-        self.update()
-
 
     def sizeHint(self):
-        margins = self._margins
-        margin_w = margins.left() + margins.right()
-        margin_h = margins.top() + margins.bottom()
-
-        if not self._text: return QSize(margin_w, self.minimumHeight())
-
+        m = self._margins
+        mw = m.left() + m.right()
+        mh = m.top() + m.bottom()
+        # 如果没有文本，返回最小尺寸
+        if not self._text: return QSize(mw, self.minimumHeight())
+        # 文本实际宽度
         fm = QFontMetrics(self._font)
-        width = fm.horizontalAdvance(self._text) + margin_w
-        if width < self.maximumWidth():
-            height = max(fm.height() + margin_h, self.minimumHeight())
-            return QSize(width, height)
+        text_width = fm.horizontalAdvance(self._text) + mw + 1
 
-        if self._word_wrap == Qt.TextFlag.TextSingleLine:
-            width = min(fm.horizontalAdvance(self._text) + margin_w, self.maximumWidth())
-            height = max(fm.height() + margin_h, self.minimumHeight())
-            return QSize(width, height)
+        if self._wrap_mode == self.WrapMode.NoWrap:
+            height = max(fm.height() + mh, self.minimumHeight())
+            return QSize(text_width, height)
 
-        elif self._word_wrap in [Qt.TextFlag.TextWrapAnywhere,Qt.TextFlag.TextWordWrap]:
-            rect = fm.boundingRect(margins.left(),
-                                    margins.top(),
-                                    self.maximumWidth()-margin_w,
-                                    self.maximumHeight()-margin_h,
-                                    self._word_wrap,
-                                    self._text)
-            height = max(rect.height() + margin_h, self.minimumHeight())
-            return QSize(self.maximumWidth(), height)
+        # 对于自动换行模式
+        if text_width <= self.minimumWidth():
+            width = self.minimumWidth()
+        elif text_width <= self.maximumWidth():
+            width = text_width
+        else:
+            width = self.maximumWidth()
+
+        height = self.heightForWidth(width)
+        return QSize(width, height)
 
     def adjustSize(self):
-        size = self.sizeHint()
-        self.setBaseSize(size)
-        self.resize(size)
+        self.resize(self.sizeHint())
+
+
+    def hasHeightForWidth(self):
+        if self._wrap_mode == self.WrapMode.NoWrap: return False
+        return True
+
+    def heightForWidth(self, width: int) -> int:
+        m = self._margins
+        fm = QFontMetrics(self._font)
+        rect = fm.boundingRect(0, 0,
+                                width,
+                                0,
+                                self._get_text_flag(),
+                                self._text)
+        height = max(rect.height() + m.top() + m.bottom(), self.minimumHeight())
+        return height
+
+    # region Private
+    def _get_text_flag(self) -> Qt.TextFlag:
+        """获取文本显示模式"""
+        if self._wrap_mode == self.WrapMode.NoWrap:
+            return Qt.TextFlag.TextSingleLine | self._alignment
+        elif self._wrap_mode == self.WrapMode.WordWrap:
+            return Qt.TextFlag.TextWordWrap | self._alignment
+        else:
+            return Qt.TextFlag.TextWrapAnywhere | self._alignment
 
     # region Event
     def paintEvent(self, event):
@@ -156,7 +170,7 @@ class ZToolTipContent(QWidget):
         painter.setFont(self._font)
         painter.setPen(self._text_cc.color)
         # 设置文本对齐方式
-        text_flags = self._alignment | self._word_wrap
+        text_flags = self._get_text_flag()
         # 计算文本绘制区域
         m = self._margins
         text_rect = rect.adjusted(m.left(), m.top(), -m.right(), -m.bottom())

@@ -613,7 +613,7 @@ class ZTextBox(QWidget):
         self._undo_stack.append(command)
         if len(self._undo_stack) > self._max_undo:
             self._undo_stack.pop(0)
-        logging.info(f"Push undo{command.__dict__}")
+        logging.info(f"Push undo")
 
     def _push_undo_delay(self, old_text: str, new_text: str, old_pos: int, new_pos: int):
         if self._undo_timer.isActive():
@@ -622,7 +622,7 @@ class ZTextBox(QWidget):
         else:
             self._pending_undo = [old_text, new_text, old_pos, new_pos]
             self._redo_stack.clear()  # 只在开始新的撤销操作时清除重做栈
-        logging.info(f"Push undo delay{self._pending_undo}")
+        logging.info(f"Push undo delay")
         self._undo_timer.start(500)  # 500ms 内的连续操作会被合并
 
 
@@ -634,7 +634,7 @@ class ZTextBox(QWidget):
             self._undo_stack.append(command)
             if len(self._undo_stack) > self._max_undo:
                 self._undo_stack.pop(0)
-            logging.info(f"Commit undo{self._pending_undo}")
+            logging.info(f"Commit undo")
             self._pending_undo = None
 
     def _delete(self, event: QKeyEvent):
@@ -678,7 +678,6 @@ class ZTextBox(QWidget):
             self._text = self._text[:start] + self._text[end:]
             self._cursor_pos = start
             self._clear_selection()
-            #self._push_undo(old_text, self._text, old_pos, self._cursor_pos)
             if not event.isAutoRepeat():
                 self._push_undo_delay(old_text, self._text, old_pos, self._cursor_pos)
             self._update_size()
@@ -686,7 +685,6 @@ class ZTextBox(QWidget):
         if self._cursor_pos > 0:
             self._text = self._text[:self._cursor_pos - 1] + self._text[self._cursor_pos:]
             self._cursor_pos -= 1
-            #self._push_undo(old_text, self._text, old_pos, self._cursor_pos)
             if not event.isAutoRepeat():
                 self._push_undo_delay(old_text, self._text, old_pos, self._cursor_pos)
             self._update_size()

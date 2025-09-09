@@ -70,16 +70,19 @@ class PageWidget(ZScrollPage):
         self.content.layout().addWidget(self.text_box_card)
 
         self.text_box_1 = ZTextBox(self.text_box_card, name='text_box_1',read_only=True)
+        self.text_box_1.setMinimumWidth(300)
         #self.text_box_1.setMaximumWidth(500)
         self.text_box_1.setText('Hello ZenUI!')
         #self.text_box_1.setFixedSize(300, 30)
         self.text_box_1.move(16, 50)
 
         self.text_box_2 = ZTextBox(self.text_box_card, name='text_box_2')
+        self.text_box_2.setMinimumWidth(300)
         #self.text_box_2.setFixedSize(300, 30)
         self.text_box_2.move(16, 100)
 
         self.text_box_3 = ZTextBox(self.text_box_card, name='text_box_3',mask='请输入内容')
+        self.text_box_3.setMinimumWidth(300)
         self.text_box_3.wrapMode = ZTextBox.WrapMode.WrapAnywhere
         self.text_box_3.setMaximumWidth(300)
         #self.text_box_3.setFixedSize(300, 30)

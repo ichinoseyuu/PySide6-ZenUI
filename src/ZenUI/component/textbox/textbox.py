@@ -561,7 +561,7 @@ class ZTextBox(QWidget):
         self._selection_start = 0
         self._selection_end = len(self._text)
         self.update()
-        logging.info("Select all: %d - %d", self._selection_start, self._selection_end)
+        logging.info("Select all")
 
     def _redo(self):
         """重做操作"""

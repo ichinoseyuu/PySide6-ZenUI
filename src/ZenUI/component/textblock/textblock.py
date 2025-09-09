@@ -143,12 +143,10 @@ class ZTextBlock(QWidget):
             return QSize(text_width, height)
 
         # 对于自动换行模式
-        if text_width <= self.minimumWidth():
-            width = self.minimumWidth()
-        elif text_width <= self.maximumWidth():
-            width = text_width
-        else:
+        if self.maximumWidth() < 16777215:
             width = self.maximumWidth()
+        else:
+            width = text_width
 
         height = self.heightForWidth(width)
         return QSize(width, height)
@@ -170,13 +168,31 @@ class ZTextBlock(QWidget):
     def heightForWidth(self, width: int) -> int:
         m = self._margins
         fm = QFontMetrics(self._font)
-        rect = fm.boundingRect(0, 0,
-                                width,
-                                0,
-                                self._get_text_flag(),
-                                self._text)
-        height = max(rect.height() + m.top() + m.bottom(), self.minimumHeight())
-        return height
+        mh = m.top() + m.bottom()
+        mw = m.left() + m.right()
+        available_width = width - mw
+        if self._wrap_mode == self.WrapMode.NoWrap:
+            return max(fm.height() + mh, self.minimumHeight())
+        # 使用 QTextLayout 计算实际需要的高度
+        layout = QTextLayout(self._text, self._font)
+        option = QTextOption()
+        if self._wrap_mode == self.WrapMode.WordWrap:
+            option.setWrapMode(QTextOption.WrapMode.WordWrap)
+        else:
+            option.setWrapMode(QTextOption.WrapMode.WrapAnywhere)
+        layout.setTextOption(option)
+
+        layout.beginLayout()
+        total_height = 0
+        while True:
+            line = layout.createLine()
+            if not line.isValid():
+                break
+            line.setLineWidth(available_width)
+            total_height += line.height()
+        layout.endLayout()
+
+        return max(total_height + mh, self.minimumHeight())
 
     # region private
     def _initStyle(self):

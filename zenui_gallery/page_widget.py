@@ -23,21 +23,34 @@ class PageWidget(ZScrollPage):
         # region Text
         self.text_block_card = DemoCard(self, 'text_block_card')
         self.text_block_card.title.text = 'ZTextBlock'
-        self.text_block_card.setFixedHeight(150)
+        self.text_block_card.setFixedHeight(260)
         self.content.layout().addWidget(self.text_block_card)
 
         self.text_block_1 = ZTextBlock(self.text_block_card, name='text_block_1')
         self.text_block_1.margins = QMargins(6, 0, 6, 0)
         self.text_block_1.wrapMode = ZTextBlock.WrapMode.NoWrap
-        self.text_block_1.text = 'Hello ZenUI!'
+        self.text_block_1.text = 'PySide6 是 Qt 官方提供的 Python 模块，它允许开发者使用 Python 编写跨平台 GUI 应用程序，并提供了完整的 Qt 6.0+ 框架支持。'
         self.text_block_1.move(16, 50)
 
         self.text_block_2 = ZTextBlock(self.text_block_card, name='text_block_2',selectable=True)
-        self.text_block_2.setMaximumWidth(600)
         self.text_block_2.margins = QMargins(6, 6, 6, 6)
-        self.text_block_2.text = 'PySide6 是 Qt for Python 项目的官方 Python 模块，提供了完整的 Qt 6.0+ 框架支持。它允许开发者使用 Python 编写跨平台 GUI 应用程序，并支持多线程、信号与槽等核心功能。'
-        self.text_block_2.wrapMode = ZTextBlock.WrapMode.WrapAnywhere
+        self.text_block_2.wrapMode = ZTextBlock.WrapMode.NoWrap
+        self.text_block_2.text = 'PySide6 是 Qt 官方提供的 Python 模块，它允许开发者使用 Python 编写跨平台 GUI 应用程序，并提供了完整的 Qt 6.0+ 框架支持。'
         self.text_block_2.move(16, 90)
+
+        self.text_block_3 = ZTextBlock(self.text_block_card, name='text_block_3',selectable=True)
+        self.text_block_3.setMaximumWidth(400)
+        self.text_block_3.margins = QMargins(6, 6, 6, 6)
+        self.text_block_3.wrapMode = ZTextBlock.WrapMode.WordWrap
+        self.text_block_3.text = 'PySide6 是 Qt 官方提供的 Python 模块，它允许开发者使用 Python 编写跨平台 GUI 应用程序，并提供了完整的 Qt 6.0+ 框架支持。'
+        self.text_block_3.move(16, 130)
+
+        self.text_block_4 = ZTextBlock(self.text_block_card, name='text_block_4',selectable=True)
+        self.text_block_4.setMaximumWidth(400)
+        self.text_block_4.margins = QMargins(6, 6, 6, 6)
+        self.text_block_4.wrapMode = ZTextBlock.WrapMode.WrapAnywhere
+        self.text_block_4.text = 'PySide6 是 Qt 官方提供的 Python 模块，它允许开发者使用 Python 编写跨平台 GUI 应用程序，并提供了完整的 Qt 6.0+ 框架支持。'
+        self.text_block_4.move(16, 190)
 
         self.rich_text_card = DemoCard(self, 'rich_text_card')
         self.rich_text_card.title.text = 'ZRichTextBlock'
@@ -46,9 +59,13 @@ class PageWidget(ZScrollPage):
 
         self.rich_text_1 = ZRichTextBlock(self.rich_text_card, name='rich_text_1')
         self.rich_text_1.html = '''
-        <p>这是<span style="color: #ff0000;">红色文字</span>，
-        这是<span style="color: #00ff00;">绿色文字</span>，
-        这是<span style="color: #0000ff;">蓝色文字</span>。</p>
+        <p>
+        欢迎使用
+        <span style="color: #ff6b6b; font-weight: bold;">ZenUI</span> 
+        组件库！这个组件库基于
+        <span style="color: #4ecdc4; font-style: bold;">PySide6</span>
+        开发。
+        </p>
         '''
         self.rich_text_1.move(16, 50)
 
@@ -59,7 +76,7 @@ class PageWidget(ZScrollPage):
         <span style="color: #ff6b6b; font-weight: bold;">ZenUI</span> 
         组件库！这个组件库基于
         <span style="color: #4ecdc4; font-style: bold;">PySide6</span>
-        开发，PySide6 是 Qt 公司提供的 Python 模块，它允许开发者使用 Python 编写跨平台 QT GUI 应用程序。
+        开发。
         </p>
         '''
         self.rich_text_2.move(16, 90)

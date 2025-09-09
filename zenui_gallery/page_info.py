@@ -15,6 +15,11 @@ class PageInfo(ZScrollPage):
         self._setup_ui()
 
     def _setup_ui(self):
-        pass
+        self.title = ZTextBlock(self, 'title', '状态与信息')
+        self.title.setFont(QFont('Microsoft YaHei', 20, QFont.Weight.Bold))
+        self.title.margins = QMargins(6, 0, 6, 0)
+        self.content.layout().addWidget(self.title)
 
-
+        # region ToolTip
+        self.tooltipdemo = ZToolTipDemo(self)
+        self.content.layout().addWidget(self.tooltipdemo)

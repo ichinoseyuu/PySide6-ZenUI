@@ -77,7 +77,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Text: '#dcdcdc',
                 K.TextToggled: '#dcdcdc',
                 K.Icon: '#dcdcdc',
-                K.IconToggled: ACCENT_COLOR_DARK,
+                K.IconToggled: '#dcdcdc',
                 K.Body: '#2d2d2d',
                 K.BodyHover: '#323232',
                 K.BodyPressed: '#272727',

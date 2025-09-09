@@ -1,9 +1,11 @@
+import logging
 from enum import IntEnum
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.base import ColorController, FloatController, StyleData, SizeController
 from ZenUI.core import ZTextBoxStyleData
+from .textcommand import TextCommand
 
 class ZTextBox(QWidget):
     class WrapMode(IntEnum):
@@ -42,7 +44,13 @@ class ZTextBox(QWidget):
         self._drag_start_pos = None # 拖动开始位置
         self._read_only = read_only  # 是否只读
         self._text_offset = 0  # 文本水平偏移量
-
+        self._undo_stack: list[TextCommand] = []  # 撤销栈
+        self._redo_stack: list[TextCommand] = []  # 重做栈
+        self._max_undo = 100   # 最大撤销次数
+        self._undo_timer = QTimer()
+        self._undo_timer.setSingleShot(True)
+        self._undo_timer.timeout.connect(self._commit_undo)
+        self._pending_undo: list[str, str, int, int] = None
 
         self._text_cc = ColorController(self)
         self._text_back_cc = ColorController(self)
@@ -266,6 +274,7 @@ class ZTextBox(QWidget):
         self._underline_ctrl.value = 1.3
         self.update()
 
+
     def _styleChangeHandler(self):
         data = self._style_data.data
         self._radius_ctrl.value = data.Radius
@@ -281,6 +290,7 @@ class ZTextBox(QWidget):
         else:
             self._underline_cc.setColorTo(data.Underline)
             self._body_cc.setColorTo(data.Body)
+
 
     def _update_size(self):
         """更新控件尺寸，确保不超过父控件范围"""
@@ -311,6 +321,7 @@ class ZTextBox(QWidget):
         else:
             self._cursor_cc.toOpaque()
 
+
     def _should_show_cursor(self) -> bool:
         """判断是否应该显示光标"""
         return (self.hasFocus() and
@@ -318,17 +329,21 @@ class ZTextBox(QWidget):
                 self._cursor_cc.color.alpha() > 0 and
                 not self._selected_text)
 
+
     def _should_show_mask(self) -> bool:
         """判断是否应该显示掩码"""
         return not self._text and self._mask_text and not self.hasFocus()
 
+
     def _is_selection(self) -> bool:
         """判断是否有选中"""
-        return self._selection_start != -1 and self._selection_end != -1
+        return self._selection_start != -1 and self._selection_end != -1 and self._selection_start != self._selection_end
+
 
     def _get_selection(self) -> tuple:
         """获取选中范围，返回(start, end)"""
         return min(self._selection_start, self._selection_end), max(self._selection_start, self._selection_end)
+
 
     def _get_text_flag(self) -> Qt.TextFlag:
         """获取文本显示模式"""
@@ -338,6 +353,7 @@ class ZTextBox(QWidget):
             return Qt.TextFlag.TextWordWrap | self._alignment
         else:
             return Qt.TextFlag.TextWrapAnywhere | self._alignment
+
 
     def _update_selected_text(self):
         """更新选中的文字"""
@@ -350,12 +366,14 @@ class ZTextBox(QWidget):
         else:
             self._selected_text = ""
 
+
     def _clear_selection(self):
         """清除选中"""
         self._selection_start = -1
         self._selection_end = -1
         self._is_selecting = False
         self.update()
+
 
     def _get_text_layout(self, text_rect: QRectF, fm: QFontMetrics):
         """获取文本的行布局信息，返回每行的文本内容、在原文本中的位置和精确的Y坐标"""
@@ -499,6 +517,196 @@ class ZTextBox(QWidget):
                 selection_rect = QRectF(x1, line_y + 1, x2 - x1, line_height - 2)
                 painter.drawRoundedRect(selection_rect, 2, 2)
 
+    def _cut(self):
+        """剪切操作"""
+        if self._is_selection() and self._selected_text:
+            QApplication.clipboard().setText(self._selected_text)
+            start, end = self._get_selection()
+            old_text = self._text
+            old_pos = self._cursor_pos
+            self._text = self._text[:start] + self._text[end:]
+            self._cursor_pos = start
+            self._clear_selection()
+            self._push_undo(old_text, self._text, old_pos, self._cursor_pos)
+            self._update_size()
+
+    def _copy(self):
+        """复制操作"""
+        if self._is_selection() and self._selected_text:
+            QApplication.clipboard().setText(self._selected_text)
+            logging.info("Copy done")
+
+    def _paste(self, event: QKeyEvent):
+        """粘贴操作"""
+        clipboard_text = QApplication.clipboard().text()
+        if clipboard_text:
+            old_text = self._text
+            old_pos = self._cursor_pos
+
+            if self._is_selection():
+                start, end = self._get_selection()
+                self._text = self._text[:start] + clipboard_text + self._text[end:]
+                self._cursor_pos = start + len(clipboard_text)
+                self._clear_selection()
+            else:
+                self._text = self._text[:self._cursor_pos] + clipboard_text + self._text[self._cursor_pos:]
+                self._cursor_pos += len(clipboard_text)
+            if not event.isAutoRepeat():
+                self._push_undo_delay(old_text, self._text, old_pos, self._cursor_pos)
+            self._update_size()
+            logging.info("Paste done")
+
+    def _select_all(self):
+        """全选操作"""
+        self._selection_start = 0
+        self._selection_end = len(self._text)
+        self.update()
+        logging.info("Select all: %d - %d", self._selection_start, self._selection_end)
+
+    def _redo(self):
+        """重做操作"""
+        # 提交可能存在的未完成undo记录
+        if self._undo_timer.isActive():
+            self._undo_timer.stop()
+            self._commit_undo()
+        if not self._redo_stack:
+            return
+        # 获取下一次操作
+        command = self._redo_stack.pop()
+        # 保存当前状态到撤销栈
+        undo_command = TextCommand(self._text, command.new_text, 
+                                self._cursor_pos, command.new_pos)
+        self._undo_stack.append(undo_command)
+        # 执行重做
+        self._text = command.new_text
+        self._cursor_pos = command.new_pos
+        self._clear_selection()
+        self._update_size()
+        logging.info("Redo done")
+
+
+    def _undo(self):
+        """撤销操作"""
+        # 提交可能存在的未完成undo记录
+        if self._undo_timer.isActive():
+            self._undo_timer.stop()
+            self._commit_undo()
+        if not self._undo_stack:
+            return
+        # 获取上一次操作
+        command = self._undo_stack.pop()
+        # 保存当前状态用于重做
+        redo_command = TextCommand(command.old_text, self._text, 
+                                command.old_pos, self._cursor_pos)
+        self._redo_stack.append(redo_command)
+        # 恢复到上一次状态
+        self._text = command.old_text
+        self._cursor_pos = command.old_pos
+        self._clear_selection()
+        self._update_size()
+        logging.info("Undo done")
+
+
+    def _push_undo(self, old_text: str, new_text: str, old_pos: int, new_pos: int):
+        """立即记录撤销操作，不使用计时器"""
+        command = TextCommand(old_text, new_text, old_pos, new_pos)
+        self._undo_stack.append(command)
+        if len(self._undo_stack) > self._max_undo:
+            self._undo_stack.pop(0)
+        logging.info(f"Push undo{command.__dict__}")
+
+    def _push_undo_delay(self, old_text: str, new_text: str, old_pos: int, new_pos: int):
+        if self._undo_timer.isActive():
+            self._pending_undo[1] = new_text
+            self._pending_undo[3] = new_pos
+        else:
+            self._pending_undo = [old_text, new_text, old_pos, new_pos]
+            self._redo_stack.clear()  # 只在开始新的撤销操作时清除重做栈
+        logging.info(f"Push undo delay{self._pending_undo}")
+        self._undo_timer.start(500)  # 500ms 内的连续操作会被合并
+
+
+    def _commit_undo(self):
+        """实际提交撤销操作"""
+        if self._pending_undo:
+            old_text, new_text, old_pos, new_pos = self._pending_undo
+            command = TextCommand(old_text, new_text, old_pos, new_pos)
+            self._undo_stack.append(command)
+            if len(self._undo_stack) > self._max_undo:
+                self._undo_stack.pop(0)
+            logging.info(f"Commit undo{self._pending_undo}")
+            self._pending_undo = None
+
+    def _delete(self, event: QKeyEvent):
+        """删除文本（选中区域或光标后字符）"""
+        old_text = self._text
+        old_pos = self._cursor_pos
+        if self._is_selection():
+            # 有选中区域时删除选中内容
+            start, end = self._get_selection()
+            self._text = self._text[:start] + self._text[end:]
+            self._cursor_pos = start
+            self._clear_selection()
+        elif self._cursor_pos < len(self._text):
+            # 无选中区域时删除光标后字符
+            self._text = self._text[:self._cursor_pos] + self._text[self._cursor_pos + 1:]
+        if not event.isAutoRepeat():
+            self._push_undo_delay(old_text, self._text, old_pos, self._cursor_pos)
+        self._update_size()
+
+    def _insert_text(self, event: QKeyEvent):
+        """插入文本"""
+        old_text = self._text
+        old_pos = self._cursor_pos
+        if self._is_selection():
+            start, end = self._get_selection()
+            self._text = self._text[:start] + self._text[end:]
+            self._cursor_pos = start
+            self._clear_selection()
+        self._text = self._text[:self._cursor_pos] + event.text() + self._text[self._cursor_pos:]
+        self._cursor_pos += len(event.text())
+        if not event.isAutoRepeat():
+            self._push_undo_delay(old_text, self._text, old_pos, self._cursor_pos)
+        self._update_size()
+
+    def _backspace(self, event: QKeyEvent):
+        """处理退格键"""
+        old_text = self._text
+        old_pos = self._cursor_pos
+        if self._is_selection():
+            start, end = self._get_selection()
+            self._text = self._text[:start] + self._text[end:]
+            self._cursor_pos = start
+            self._clear_selection()
+            #self._push_undo(old_text, self._text, old_pos, self._cursor_pos)
+            if not event.isAutoRepeat():
+                self._push_undo_delay(old_text, self._text, old_pos, self._cursor_pos)
+            self._update_size()
+            return
+        if self._cursor_pos > 0:
+            self._text = self._text[:self._cursor_pos - 1] + self._text[self._cursor_pos:]
+            self._cursor_pos -= 1
+            #self._push_undo(old_text, self._text, old_pos, self._cursor_pos)
+            if not event.isAutoRepeat():
+                self._push_undo_delay(old_text, self._text, old_pos, self._cursor_pos)
+            self._update_size()
+            return
+
+    def _move_cursor_left(self):
+        """向左移动光标"""
+        if self._is_selection():
+            self._clear_selection()
+        if self._cursor_pos > 0:
+            self._cursor_pos -= 1
+
+    def _move_cursor_right(self):
+        """向右移动光标"""
+        if self._is_selection():
+            self._clear_selection()
+        if self._cursor_pos < len(self._text):
+            self._cursor_pos += 1
+
+
     # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -600,122 +808,58 @@ class ZTextBox(QWidget):
 
     # region keyPressEvent
     def keyPressEvent(self, event: QKeyEvent):
-        self._cursor_cc.toOpaque() # 重置光标的显示
-        # 只读模式下，只允许复制和选择操作
-        if self._read_only:
-            # 处理复制操作 (Ctrl+C)
-            if event.key() == Qt.Key_C and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-                if self._is_selection() and self._selected_text:
-                    clipboard = QApplication.clipboard()
-                    clipboard.setText(self._selected_text)
-                return
-            # Ctrl+A 全选
-            elif event.key() == Qt.Key_A and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-                self._selection_start = 0
-                self._selection_end = len(self._text)
-                self.update()
-                return
-            # 其他按键在只读模式下被忽略
-            return
-        # 处理复制操作 (Ctrl+C)
-        if event.key() == Qt.Key_C and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-            if self._is_selection() and self._selected_text:
-                clipboard = QApplication.clipboard()
-                clipboard.setText(self._selected_text)
-            return
-        # 处理剪切操作 (Ctrl+X)
-        if event.key() == Qt.Key_X and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-            if self._is_selection() and self._selected_text:
-                # 复制到剪贴板
-                clipboard = QApplication.clipboard()
-                clipboard.setText(self._selected_text)
-                # 删除选中的文本
-                start, end = self._get_selection()
-                if start < end:
-                    self._text = self._text[:start] + self._text[end:]
-                    self._cursor_pos = start
-                    self._clear_selection()
-                    self.update()
-            return
-        # 处理粘贴操作 (Ctrl+V)
-        if event.key() == Qt.Key_V and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-            clipboard = QApplication.clipboard()
-            clipboard_text = clipboard.text()
-            if clipboard_text:
-                if self._is_selection():
-                    # 如果有选中文本，替换选中的文本
-                    start, end = self._get_selection()
-                    if start < end:
-                        self._text = self._text[:start] + clipboard_text + self._text[end:]
-                        self._cursor_pos = start + len(clipboard_text)
-                        self._clear_selection()
-                    else:
-                        # 没有选中文本，在光标位置插入
-                        self._text = self._text[:self._cursor_pos] + clipboard_text + self._text[self._cursor_pos:]
-                        self._cursor_pos += len(clipboard_text)
-                else:
-                    # 没有选中文本，在光标位置插入
-                    self._text = self._text[:self._cursor_pos] + clipboard_text + self._text[self._cursor_pos:]
-                    self._cursor_pos += len(clipboard_text)
-                self._update_size()
-            return
-        # 删除选中文本
-        if self._is_selection():
-            start, end = self._get_selection()
-            if start < end:
-                if event.key() in (Qt.Key_Backspace, Qt.Key_Delete):
-                    self._text = self._text[:start] + self._text[end:]
-                    self._cursor_pos = start
-                    self._clear_selection()
-                    self._update_size()
-                    return
+        """处理键盘事件"""
+        # 重置光标显示
+        self._cursor_cc.toOpaque()
 
-        # 退格删除键
-        if event.key() == Qt.Key_Backspace:
-            if self._cursor_pos > 0:
-                self._text = self._text[:self._cursor_pos - 1] + self._text[self._cursor_pos:]
-                self._cursor_pos -= 1
-                self._update_size()
-        # 左移光标
-        elif event.key() == Qt.Key_Left:
-            if self._is_selection():
-                self._clear_selection()
-            if self._cursor_pos > 0:
-                self._cursor_pos -= 1
-        # 右移光标
+        # 处理任何时候都可用的快捷键
+        if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            if event.key() == Qt.Key_C and self._is_selection():  # 复制
+                self._copy()
+                return
+            elif event.key() == Qt.Key_A:  # 全选
+                self._select_all()
+                return
+
+        # 只读模式下忽略其他键盘事件
+        if self._read_only: return
+
+        # 处理编辑模式下的通用操作
+        if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            if event.key() == Qt.Key_V:  # 粘贴
+                self._paste(event)
+                return
+            elif event.key() == Qt.Key_Z:  # 撤销
+                self._undo()
+                return
+            elif event.key() == Qt.Key_Y:  # 重做
+                self._redo()
+                return
+            elif event.key() == Qt.Key_X:  # 剪切
+                self._cut()
+                return
+            event.ignore()  # 其他 Ctrl 组合键不处理
+            return
+
+        # 处理基本编辑操作
+        if event.key() == Qt.Key_Left:
+            self._move_cursor_left()
+            return
         elif event.key() == Qt.Key_Right:
-            if self._is_selection():
-                self._clear_selection()
-            if self._cursor_pos < len(self._text):
-                self._cursor_pos += 1
-        # 回车键
+            self._move_cursor_right()
+            return
+        elif event.key() == Qt.Key_Backspace:
+            self._backspace(event)
+            return
+        elif event.key() == Qt.Key_Delete:
+            self._delete(event)
+            return
         elif event.key() in (Qt.Key_Enter, Qt.Key_Return):
             self.editingFinished.emit()
-        # Ctrl+A 全选
-        elif event.key() == Qt.Key_A and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-            self._selection_start = 0
-            self._selection_end = len(self._text)
-            self.update()
-        # 处理普通字符输入
-        else:
-            char = event.text()
-            if len(char) == 1:
-                if self._is_selection():
-                    start, end = self._get_selection()
-                    if start < end:
-                        # 替换选中的文本
-                        self._text = self._text[:start] + char + self._text[end:]
-                        self._update_size()
-                        self._cursor_pos = start + 1
-                        self._clear_selection()
-                    else:
-                        self._text = self._text[:self._cursor_pos] + char + self._text[self._cursor_pos:]
-                        self._update_size()
-                        self._cursor_pos += 1
-                else:
-                    self._text = self._text[:self._cursor_pos] + char + self._text[self._cursor_pos:]
-                    self._update_size()
-                    self._cursor_pos += 1
+            return
+        elif event.text():
+            self._insert_text(event)
+            return
         self.update()
 
 
@@ -725,38 +869,29 @@ class ZTextBox(QWidget):
         # 只读模式下不处理输入法事件
         if self._read_only:
             return
-        old_text = self._text
-        old_preedit = self._preedit_text
+
         if event.commitString():
             # 提交文本（完成中文输入）
+            old_text = self._text
+            old_pos = self._cursor_pos
             commit_text = event.commitString()
             # 检查是否有选中的文本
             if self._is_selection():
                 start, end = self._get_selection()
-                if start < end:
-                    # 替换选中的文本
-                    self._text = self._text[:start] + commit_text + self._text[end:]
-                    self._cursor_pos = start + len(commit_text)
-                    self._clear_selection()
-                else:
-                    # 没有选中文本，正常插入
-                    self._text = self._text[:self._cursor_pos] + commit_text + self._text[self._cursor_pos:]
-                    self._cursor_pos += len(commit_text)
+                self._text = self._text[:start] + commit_text + self._text[end:]
+                self._cursor_pos = start + len(commit_text)
+                self._clear_selection()
             else:
-                # 没有选中文本，正常插入
                 self._text = self._text[:self._cursor_pos] + commit_text + self._text[self._cursor_pos:]
                 self._cursor_pos += len(commit_text)
 
+            self._push_undo(old_text, self._text, old_pos, self._cursor_pos)
             self._preedit_text = ""
-            self.update()  # 添加更新显示
         else:
-            # 更新预编辑文本（拼音输入）
+            # 预编辑文本
             self._preedit_text = event.preeditString()
-            # 更新显示
-            self.update()
-        # 只要文本内容或预编辑文本发生变化，就更新尺寸
-        if old_text != self._text or old_preedit != self._preedit_text:
-            self._update_size()
+
+        self._update_size()
 
 
     def inputMethodQuery(self, query: Qt.InputMethodQuery):
@@ -776,14 +911,18 @@ class ZTextBox(QWidget):
         return None
 
     # region mouseEvent
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent):
         """处理鼠标点击事件"""
-        if not self._selectable or not self._text:
+        if not self._selectable:
             super().mousePressEvent(event)
             return
 
         if event.button() == Qt.LeftButton:
             char_pos = self._get_char_position_at_point(event.pos())
+
+            # 更新光标位置
+            self._cursor_cc.toOpaque()
+            self._cursor_pos = char_pos
 
             # 如果按住Shift键，则是扩展选择
             if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:

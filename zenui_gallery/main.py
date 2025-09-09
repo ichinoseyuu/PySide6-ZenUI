@@ -6,6 +6,7 @@ from ZenUI import *
 from navigation_bar import NavigationBar
 from page_home import PageHome
 from page_widget import PageWidget
+from page_info import PageInfo
 from page_about import PageAbout
 from page_settings import PageSettings
 
@@ -36,6 +37,9 @@ class ZenUIGallery(ZFramelessWindow):
         self.pageWidget = PageWidget(self.stackPanel)
         self.stackPanel.addPage(self.pageWidget)
 
+        self.pageInfo = PageInfo(self.stackPanel)
+        self.stackPanel.addPage(self.pageInfo)
+
         self.pageAbout = PageAbout(self.stackPanel)
         self.stackPanel.addPage(self.pageAbout)
 
@@ -44,6 +48,7 @@ class ZenUIGallery(ZFramelessWindow):
 
         self.navigationBar.btnHome.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageHome))
         self.navigationBar.btnWidget.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageWidget))
+        self.navigationBar.btnInfo.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageInfo))
         self.navigationBar.btnAbout.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageAbout))
         self.navigationBar.btnSettings.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageSettings))
 

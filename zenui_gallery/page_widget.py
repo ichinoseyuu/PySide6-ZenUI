@@ -15,7 +15,7 @@ class PageWidget(ZScrollPage):
         self._setup_ui()
 
     def _setup_ui(self):
-        self.title = ZTextBlock(self, 'title', '组件')
+        self.title = ZTextBlock(self, 'title', '基础组件')
         self.title.setFont(QFont('Microsoft YaHei', 20, QFont.Weight.Bold))
         self.title.margins = QMargins(6, 0, 6, 0)
         self.content.layout().addWidget(self.title)
@@ -85,12 +85,6 @@ class PageWidget(ZScrollPage):
         #self.text_box_3.setFixedSize(300, 30)
         self.text_box_3.move(16, 150)
 
-        self.text_box_4 = ZTextBox(self, name='text_box_4',mask='请输入内容')
-        self.text_box_4.wrapMode = ZTextBox.WrapMode.WrapAnywhere
-        self.text_box_4.setMaximumWidth(300)
-        #self.text_box_4.setFixedSize(300, 30)
-        self.content.layout().addWidget(self.text_box_4)
-
         # region Button
         self.btn_card = DemoCard(self, 'btn_card')
         self.btn_card.title.text = 'ZButton'
@@ -156,11 +150,25 @@ class PageWidget(ZScrollPage):
         self.toggle_btn_card.setFixedHeight(100)
         self.content.layout().addWidget(self.toggle_btn_card)
 
-        self.toggle_btn = ZToggleButton(
+        self.toggle_btn_1 = ZToggleButton(
             parent=self.toggle_btn_card,
-            name='toggle_btn',
-            text='切换按钮')
-        self.toggle_btn.move(16, 50)
+            name='toggle_btn_1',
+            icon=btn_icon)
+        self.toggle_btn_1.setToolTip('自动保存')
+        self.toggle_btn_1.move(16, 50)
+
+        self.toggle_btn_2 = ZToggleButton(
+            parent=self.toggle_btn_card,
+            name='toggle_btn_2',
+            text='自动保存')
+        self.toggle_btn_2.move(56, 50)
+
+        self.toggle_btn_3 = ZToggleButton(
+            parent=self.toggle_btn_card,
+            name='toggle_btn_3',
+            icon=btn_icon,
+            text='自动保存')
+        self.toggle_btn_3.move(166, 50)
 
         # region Slider
         self.slider_card = DemoCard(self, 'slider_card')

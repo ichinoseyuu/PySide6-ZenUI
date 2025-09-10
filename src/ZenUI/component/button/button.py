@@ -31,6 +31,7 @@ class ZButton(ZABCButton):
         self._style_data = StyleData[ZButtonStyleData](self, 'ZButton')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
+        self.resize(self.sizeHint())
 
     # region Property
     @property
@@ -106,6 +107,7 @@ class ZButton(ZABCButton):
             size = QSize(self.fontMetrics().boundingRect(self._text).width() + 60, 30)
             self.setMinimumSize(size)
             return size
+
 
     # region private
     def _initStyle(self):

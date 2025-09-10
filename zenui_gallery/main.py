@@ -16,7 +16,7 @@ class ZenUIGallery(ZFramelessWindow):
         self.setupUi()
 
     def setupUi(self):
-        self.setMinimumSize(400, 300)
+        #self.setMinimumSize(400, 300)
         screen_size = QGuiApplication.primaryScreen().size()
         self.resize(screen_size.width()*0.5,screen_size.height()*0.6)
         self.moveCenter()

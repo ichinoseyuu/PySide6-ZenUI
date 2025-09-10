@@ -32,7 +32,7 @@ class ZToggleButton(ZABCToggleButton):
         self._style_data = StyleData[ZToggleButtonStyleData](self, 'ZToggleButton')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
-
+        self.resize(self.sizeHint())
     # region Property
     @property
     def bodyColorCtrl(self) -> ColorController: return self._body_cc

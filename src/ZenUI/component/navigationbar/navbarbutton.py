@@ -27,7 +27,7 @@ class ZNavBarButton(ZABCNavBarButton):
         self._style_data = StyleData[ZNavBarButtonStyleData](self, 'ZNavBarButton')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
-
+        self.resize(self.sizeHint())
 
     # region Property
     @property

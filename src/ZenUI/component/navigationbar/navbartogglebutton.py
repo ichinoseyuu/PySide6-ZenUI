@@ -30,7 +30,7 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         self._style_data = StyleData[ZNavBarToggleButtonStyleData](self, 'ZNavBarToggleButton')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
-
+        self.resize(self.sizeHint())
 
     # region Property
     @property

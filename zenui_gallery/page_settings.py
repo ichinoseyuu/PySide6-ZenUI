@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout
 from PySide6.QtCore import Qt,QMargins
 from PySide6.QtGui import QFont
 from ZenUI import *
+from demo_card import DemoCard
 
 class PageSettings(ZPage):
     def __init__(self,parent = None,name ='PageSettings'):
@@ -19,35 +20,75 @@ class PageSettings(ZPage):
         self.text.margins = QMargins(6, 0, 6, 0)
         self.layout().addWidget(self.text)
 
-        # region Button
-        self.theme_set_box = QHBoxLayout()
-        self.theme_set_box.setContentsMargins(6, 6, 6, 6)
-        self.theme_set_box.setSpacing(12)
-        self.theme_set_box.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.layout().addLayout(self.theme_set_box)
+        self.theme_set_card = DemoCard(self, 'theme_set_card')
+        self.theme_set_card.title.text = 'ZTextBlock'
+        self.theme_set_card.setFixedHeight(260)
+        self.layout().addWidget(self.theme_set_card)
 
-        self.text_theme_set = ZTextBlock(self, 'theme_setting_label', '主题颜色')
+        self.hcontainer = ZHContainer(self.theme_set_card)
+        self.hcontainer.margins = QMargins(10, 10, 10, 10)
+        self.hcontainer.alignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+        self.hcontainer.move(0, 50)
+        #self.layout().addWidget(self.hcontainer)
+        self.text_theme_set = ZTextBlock(self.hcontainer, 'theme_setting_label', '主题颜色')
         self.text_theme_set.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Normal))
-        self.theme_set_box.addWidget(self.text_theme_set)
+        self.hcontainer.addWidget(self.text_theme_set)
 
         self.btn_theme_set_1 = ZButton(
-            parent=self,
+            parent=self.hcontainer,
             name='btn_theme_set_1',
             text='浅色')
         self.btn_theme_set_1.clicked.connect(lambda: ZGlobal.themeManager.setThemeForce(ZTheme.Light))
-        self.theme_set_box.addWidget(self.btn_theme_set_1)
+        self.hcontainer.addWidget(self.btn_theme_set_1)
 
         self.btn_theme_set_2 = ZButton(
-            parent=self,
-            name='btn_theme_set_1',
+            parent=self.hcontainer,
+            name='btn_theme_set_2',
             text='深色')
         self.btn_theme_set_2.clicked.connect(lambda: ZGlobal.themeManager.setThemeForce(ZTheme.Dark))
-        self.theme_set_box.addWidget(self.btn_theme_set_2)
+        self.hcontainer.addWidget(self.btn_theme_set_2)
 
         self.btn_theme_set_3 = ZButton(
-            parent=self,
+            parent=self.hcontainer,
             name='btn_theme_set_3',
             text='跟随系统')
         self.btn_theme_set_3.clicked.connect(lambda: ZGlobal.themeManager.setThemeMode(ZThemeMode.FollowSystem))
-        self.theme_set_box.addWidget(self.btn_theme_set_3)
+        self.hcontainer.addWidget(self.btn_theme_set_3)
+
+        # region Button
+        # self.theme_set_box = QHBoxLayout()
+        # self.theme_set_box.setContentsMargins(6, 6, 6, 6)
+        # self.theme_set_box.setSpacing(12)
+        # self.theme_set_box.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        # self.layout().addLayout(self.theme_set_box)
+
+        # self.text_theme_set = ZTextBlock(self, 'theme_setting_label', '主题颜色')
+        # self.text_theme_set.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Normal))
+        # self.theme_set_box.addWidget(self.text_theme_set)
+
+        # self.btn_theme_set_1 = ZButton(
+        #     parent=self,
+        #     name='btn_theme_set_1',
+        #     text='浅色')
+        # self.btn_theme_set_1.clicked.connect(lambda: ZGlobal.themeManager.setThemeForce(ZTheme.Light))
+        # self.theme_set_box.addWidget(self.btn_theme_set_1)
+
+        # self.btn_theme_set_2 = ZButton(
+        #     parent=self,
+        #     name='btn_theme_set_1',
+        #     text='深色')
+        # self.btn_theme_set_2.clicked.connect(lambda: ZGlobal.themeManager.setThemeForce(ZTheme.Dark))
+        # self.theme_set_box.addWidget(self.btn_theme_set_2)
+
+        # self.btn_theme_set_3 = ZButton(
+        #     parent=self,
+        #     name='btn_theme_set_3',
+        #     text='跟随系统')
+        # self.btn_theme_set_3.clicked.connect(lambda: ZGlobal.themeManager.setThemeMode(ZThemeMode.FollowSystem))
+        # self.theme_set_box.addWidget(self.btn_theme_set_3)
+
+
+
+
+
 

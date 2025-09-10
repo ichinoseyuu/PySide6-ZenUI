@@ -70,7 +70,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Body: '#2d2d2d',
                 K.BodyHover: '#323232',
                 K.BodyPressed: '#272727',
-                K.Border: '#323232',
+                K.Border: '#363636',
                 K.Radius: 5.0
                 },
             'ZToggleButton': {

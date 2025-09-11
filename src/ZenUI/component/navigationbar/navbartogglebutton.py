@@ -1,8 +1,8 @@
-from PySide6.QtGui import QPainter, QIcon, QPixmap, QColor
+from PySide6.QtGui import QPainter, QIcon, QPixmap, QPen
 from PySide6.QtCore import Qt, QSize, QRectF
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
-from ZenUI.core import ZGlobal, ZNavBarToggleButtonStyleData
+from ZenUI.core import ZNavBarToggleButtonStyleData,ZDebug
 from .abcnavbartogglebutton import ZABCNavBarToggleButton
 import logging
 class ZNavBarToggleButton(ZABCNavBarToggleButton):
@@ -31,6 +31,7 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
         self.resize(self.sizeHint())
+
 
     # region Property
     @property
@@ -167,6 +168,7 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         )
         painter.setBrush(self._icon_cc.color)
         painter.drawRoundedRect(indicator_rect, indicator_radius, indicator_radius)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 
 

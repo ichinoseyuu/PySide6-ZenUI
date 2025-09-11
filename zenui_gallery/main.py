@@ -4,11 +4,11 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI import *
 from navigation_bar import NavigationBar
-from page_home import PageHome
-from page_widget import PageWidget
-from page_info import PageInfo
-from page_about import PageAbout
-from page_settings import PageSettings
+from panel_home import PanelHome
+from panel_widget import PanelWidget
+from panel_info import PanelInfo
+from panel_about import PanelAbout
+from panel_settings import PanelSettings
 
 class ZenUIGallery(ZFramelessWindow):
     def __init__(self):
@@ -22,35 +22,34 @@ class ZenUIGallery(ZFramelessWindow):
         self.moveCenter()
         self.setWindowTitle("ZenUI Gallery")
         self.setWindowIcon(QIcon(":/image/icon.svg"))
-        self.contentLayout = QHBoxLayout(self.centerWidget)
-        self.contentLayout.setContentsMargins(6, 6, 6, 6)
-        self.contentLayout.setSpacing(6)
+        self.contentLayout = ZHBoxLayout(self.centerWidget)
+
         self.navigationBar = NavigationBar(self.centerWidget)
-        self.contentLayout.addWidget(self.navigationBar)
+        self.contentLayout.addWidget(self.navigationBar, stretch=0)
 
-        self.stackPanel = ZStackPanel(self.centerWidget,name="StackPanel")
-        self.contentLayout.addWidget(self.stackPanel)
+        self.stackContainer = ZStackContainer(self.centerWidget,name="ZStackContainer")
+        self.contentLayout.addWidget(self.stackContainer, stretch=1)
 
-        self.pageHome = PageHome(self.stackPanel)
-        self.stackPanel.addPage(self.pageHome)
+        self.panelHome = PanelHome(self.stackContainer)
+        self.stackContainer.addPanel(self.panelHome)
 
-        self.pageWidget = PageWidget(self.stackPanel)
-        self.stackPanel.addPage(self.pageWidget)
+        self.panelWidget = PanelWidget(self.stackContainer)
+        self.stackContainer.addPanel(self.panelWidget)
 
-        self.pageInfo = PageInfo(self.stackPanel)
-        self.stackPanel.addPage(self.pageInfo)
+        self.panelInfo = PanelInfo(self.stackContainer)
+        self.stackContainer.addPanel(self.panelInfo)
 
-        self.pageAbout = PageAbout(self.stackPanel)
-        self.stackPanel.addPage(self.pageAbout)
+        self.panelAbout = PanelAbout(self.stackContainer)
+        self.stackContainer.addPanel(self.panelAbout)
 
-        self.pageSettings = PageSettings(self.stackPanel)
-        self.stackPanel.addPage(self.pageSettings)
+        self.pagelSettings = PanelSettings(self.stackContainer)
+        self.stackContainer.addPanel(self.pagelSettings)
 
-        self.navigationBar.btnHome.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageHome))
-        self.navigationBar.btnWidget.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageWidget))
-        self.navigationBar.btnInfo.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageInfo))
-        self.navigationBar.btnAbout.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageAbout))
-        self.navigationBar.btnSettings.clicked.connect(lambda: self.stackPanel.setCurrentPage(self.pageSettings))
+        self.navigationBar.btnHome.clicked.connect(lambda: self.stackContainer.setCurrentPanel(self.panelHome))
+        self.navigationBar.btnWidget.clicked.connect(lambda: self.stackContainer.setCurrentPanel(self.panelWidget))
+        self.navigationBar.btnInfo.clicked.connect(lambda: self.stackContainer.setCurrentPanel(self.panelInfo))
+        self.navigationBar.btnAbout.clicked.connect(lambda: self.stackContainer.setCurrentPanel(self.panelAbout))
+        self.navigationBar.btnSettings.clicked.connect(lambda: self.stackContainer.setCurrentPanel(self.pagelSettings))
 
 
 

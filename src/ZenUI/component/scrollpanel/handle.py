@@ -5,7 +5,7 @@ from enum import Enum
 from ZenUI.component.base import ColorController,FloatController,LocationController
 from ZenUI.core import ZExpAnimationRefactor
 from typing import TYPE_CHECKING
-if TYPE_CHECKING: from .scrollpage import ZScrollPage
+if TYPE_CHECKING: from .scrollpanel import ZScrollPage
 
 class ScrollHandle(QWidget):
     class State(Enum):

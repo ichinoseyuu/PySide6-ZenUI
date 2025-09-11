@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, QSize, QMargins, QRectF
 from PySide6.QtGui import (QPainter, QFont, QFontMetrics, QPen, QTextDocument, 
                           QAbstractTextDocumentLayout, QTextCursor)
 from ZenUI.component.base import ColorController, FloatController, StyleData
-from ZenUI.core import ZRichTextBlockStyleData
+from ZenUI.core import ZRichTextBlockStyleData, ZDebug
 
 class ZRichTextBlock(QWidget):
     def __init__(self,
@@ -14,7 +14,7 @@ class ZRichTextBlock(QWidget):
         super().__init__(parent)
         if name: 
             self.setObjectName(name)
-        
+
         self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self.setMinimumHeight(24)
 
@@ -43,6 +43,7 @@ class ZRichTextBlock(QWidget):
 
         self._initStyle()
         self._setup_document()
+
 
     # region property
     @property
@@ -367,6 +368,7 @@ class ZRichTextBlock(QWidget):
         # 绘制文档
         self._text_document.documentLayout().draw(painter, context)
         painter.restore()
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
         painter.end()
 
     # region keyPressEvent

@@ -3,34 +3,22 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.base import LocationController,ColorController,FloatController,StyleData
-from ZenUI.core import ZScrollPageStyleData,ZGlobal
+from ZenUI.core import ZScrollPanelStyleData, ZDebug
 from .handle import ScrollHandle
 from .content import ZScrollContent
 
-class ZScrollPage(QWidget):
-    class Layout(Enum):
-        Row = 0
-        Column = 1
+class ZScrollPanel(QWidget):
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
-                 layout: Layout = Layout.Column,
-                 margins: QMargins = QMargins(0, 0, 0, 0),
-                 spacing: int = 0,
-                 alignment: Qt.AlignmentFlag = None):
+                 style_data_light: ZScrollPanelStyleData = None,
+                 style_data_dark: ZScrollPanelStyleData = None
+                 ):
         super().__init__(parent)
         if name: self.setObjectName(name)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self._content = ZScrollContent(self)
-        if layout == self.Layout.Row:
-            self._layout = QHBoxLayout(self._content)
-        elif layout == self.Layout.Column:
-            self._layout = QVBoxLayout(self._content)
-        self._layout.setContentsMargins(margins)
-        self._layout.setSpacing(spacing)
-        self._layout.setAlignment(Qt.AlignmentFlag.AlignTop|Qt.AlignmentFlag.AlignLeft)
-        if alignment: self._layout.setAlignment(alignment)
 
         self._last_v_handle_pos: float = 0.0
         self._last_v_handle_len: float = 0.0
@@ -43,11 +31,14 @@ class ZScrollPage(QWidget):
         self._border_cc = ColorController(self)
         self._radius_ctrl = FloatController(self)
         self._location_ctrl = LocationController(self)
-        self._style_data = StyleData[ZScrollPageStyleData](self, 'ZScrollPage')
+        self._style_data = StyleData[ZScrollPanelStyleData](self, 'ZScrollPanel')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
 
         self._content.resized.connect(self._update_handles_and_content)
+        if style_data_light: self._style_data.setData('Light',style_data_light)
+        if style_data_dark: self._style_data.setData('Dark',style_data_dark)
         self._initStyle()
+
 
     @property
     def bodyColorCtrl(self): return self._body_cc
@@ -97,6 +88,12 @@ class ZScrollPage(QWidget):
         self._sync_scroll_handles(final_x, final_y)
 
 
+    def layout(self):
+        return self._content.layout()
+
+    def setLayout(self, arg__1:QLayout):
+        return self._content.setLayout(arg__1)
+
     # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -118,6 +115,7 @@ class ZScrollPage(QWidget):
                 radius,
                 radius
             )
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 
     # region resizeEvent

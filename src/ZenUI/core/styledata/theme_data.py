@@ -10,11 +10,6 @@ ACCENT_COLOR_LIGHT: str = '#38b9f2'
 ACCENT_COLOR_DARK: str = '#955595'
 
 DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
-            'ZCard': {
-                K.Body: '#202020',
-                K.Border: '#1d1d1d',
-                K.Radius: 5.0
-                },
             'ZTextBox': {
                 K.Text: '#dcdcdc',
                 K.TextBackSectcted: '#50955595',
@@ -42,12 +37,12 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Border: '#00000000',
                 K.Radius: 5.0
                 },
-            'ZPage': {
+            'ZPanel': {
                 K.Body: '#272727',
                 K.Border: '#1d1d1d',
                 K.Radius: 5.0
                 },
-            'ZScrollPage': {
+            'ZScrollPanel': {
                 K.Body: '#272727',
                 K.Border: '#1d1d1d',
                 K.Handle: "#454545",
@@ -84,7 +79,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.BodyToggled: ACCENT_COLOR_DARK,
                 K.BodyToggledHover: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.05,0.05),
                 K.BodyToggledPressed: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.1,0.1),
-                K.Border: '#323232',
+                K.Border: '#363636',
                 K.BorderToggled:ACCENT_COLOR_DARK,
                 K.Radius: 5.0
                 },
@@ -151,11 +146,6 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
 
 
 LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
-            'ZCard': {
-                K.Body: '#f3f3f3',
-                K.Border: '#e5e5e5',
-                K.Radius: 5.0
-                },
             'ZTextBox': {
                 K.Text: '#333333',
                 K.TextBackSectcted: '#5038b9f2',
@@ -183,12 +173,12 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 K.Border: '#00ffffff',
                 K.Radius: 5.0
                 },
-            'ZPage': {
+            'ZPanel': {
                 K.Body: '#ffffff',
                 K.Border: '#e5e5e5',
                 K.Radius: 5.0
                 },
-            'ZScrollPage': {
+            'ZScrollPanel': {
                 K.Body: '#f9f9f9',
                 K.Border: '#e5e5e5',
                 K.Handle: "#cfcfcf",

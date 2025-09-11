@@ -1,5 +1,8 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QSizePolicy
+from PySide6.QtCore import Qt, QSize, QMargins
+from PySide6.QtGui import QMouseEvent, QPainter
+from ZenUI.component.layout import ZVBoxLayout
+from ZenUI.core import ZDebug
 from .buttonmanager import ZNavBtnManager
 from .navbarbutton import ZNavBarButton
 from .navbartogglebutton import ZNavBarToggleButton
@@ -7,31 +10,25 @@ class Panel(QWidget):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self._content = QWidget(self)
-        self._content_layout = QVBoxLayout(self._content)
-        self._content_layout.setContentsMargins(0, 0, 0, 0)
-        self._content_layout.setSpacing(6)
-        self._content_layout.setAlignment(Qt.AlignmentFlag.AlignTop|
-                                          Qt.AlignmentFlag.AlignHCenter)
-        self._content.setLayout(self._content_layout)
+        self._content.setLayout(ZVBoxLayout(self._content,margins=QMargins(0, 0, 0, 0),spacing=6,alignment=Qt.AlignTop|Qt.AlignHCenter))
         self._offset = 0  # 垂直滚动偏移
-
-    @property
-    def zlayout(self):
-        return self._content_layout
 
     def _updateContentGeometry(self):
         # 内容区宽度与Panel一致，高度由内容决定
-        content_height = self._content_layout.sizeHint().height()
+        content_height = self._content.layout().sizeHint().height()
         self._content.resize(self.width(), content_height)
         self._content.move(0, -self._offset)
+
+    def layout(self):
+        return self._content.layout()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self._updateContentGeometry()
 
-    def wheelEvent(self, event):
+    def wheelEvent(self, event: QMouseEvent):
         # 计算内容总高度和可视高度
-        content_height = self._content_layout.sizeHint().height()
+        content_height = self._content.layout().sizeHint().height()
         visible_height = self.height()
         max_offset = max(0, content_height - visible_height)
         # 滚轮方向
@@ -43,25 +40,25 @@ class Panel(QWidget):
             self._offset = max(self._offset - step, 0)
         self._updateContentGeometry()
 
-    def sizeHint(self):
-        return self._content_layout.sizeHint()
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()
 
 class FooterPanel(QWidget):
     def __init__(self,parent: QWidget = None):
         super().__init__(parent)
-        self._layout = QVBoxLayout(self)
-        self._layout.setContentsMargins(0, 0, 0, 0)
-        self._layout.setSpacing(6)
-        self._layout.setAlignment(Qt.AlignmentFlag.AlignBottom|
-                                  Qt.AlignmentFlag.AlignHCenter)
-        self.setLayout(self._layout)
+        self.setLayout(ZVBoxLayout(self,margins=QMargins(0, 0, 0, 0),spacing=6,alignment=Qt.AlignBottom|Qt.AlignHCenter))
 
-    @property
-    def zlayout(self):
-        return self._layout
+    def layout(self) -> ZVBoxLayout:
+        return super().layout()
 
-    def sizeHint(self):
-        return self._layout.sizeHint()
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()
 
 class ZNavigationBar(QWidget):
     def __init__(self,
@@ -71,15 +68,11 @@ class ZNavigationBar(QWidget):
         if name: self.setObjectName(name)
         self._panel = Panel(self)
         self._footer_panel = FooterPanel(self)
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-        layout.addWidget(self._panel)
-        layout.addWidget(self._footer_panel)
-        layout.setStretch(0, 1)  # 主体区占据剩余空间
-        layout.setStretch(1, 0)  # 页脚自适应
-        self.setLayout(layout)
+        self.setLayout(ZVBoxLayout(self, margins=QMargins(0, 0, 0, 0), spacing=0))
+        self.layout().addWidget(self._panel, stretch=1)
+        self.layout().addWidget(self._footer_panel, stretch=0)
         self._btn_manager = ZNavBtnManager()
+
 
     @property
     def panel(self):
@@ -89,23 +82,18 @@ class ZNavigationBar(QWidget):
     def footerPanel(self):
         return self._footer_panel
 
-    def sizeHint(self):
-        return self._panel.zlayout.sizeHint()+QSize(self._footer_panel.zlayout.sizeHint().height(),0)
-
     def addButton(self, panel:QWidget, btn: ZNavBarButton):
         if panel is self._panel:
-            self._panel.zlayout.addWidget(btn)
+            self._panel.layout().addWidget(btn)
         elif panel is self._footer_panel:
-            self._footer_panel.zlayout.addWidget(btn)
-        self.adjustSize()
+            self._footer_panel.layout().addWidget(btn)
 
     def addToggleButton(self, panel:QWidget, btn: ZNavBarToggleButton):
         if panel is self._panel:
-            self._panel.zlayout.addWidget(btn)
+            self._panel.layout().addWidget(btn)
         elif panel is self._footer_panel:
-            self._footer_panel.zlayout.addWidget(btn)
+            self._footer_panel.layout().addWidget(btn)
         self._btn_manager.addButton(btn)
-        self.adjustSize()
 
     def toggleToNextButton(self):
         self._btn_manager.toggleToNextButton()
@@ -113,6 +101,8 @@ class ZNavigationBar(QWidget):
     def toggleToLastButton(self):
         self._btn_manager.toggleToLastButton()
 
-    def adjustSize(self):
-        width = max(self._panel.zlayout.sizeHint().width(), self._footer_panel.zlayout.sizeHint().width())
-        self.setFixedWidth(width)
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()

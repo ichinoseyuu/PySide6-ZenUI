@@ -6,7 +6,7 @@ class NavigationBar(ZNavigationBar):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self._setup_ui()
-
+        self.resize(self.sizeHint())
     def _setup_ui(self):
         icon1 = QIcon()
         icon1.addFile(u":/icons/fluent/regular/ic_fluent_home_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)

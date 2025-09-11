@@ -1,9 +1,9 @@
 # coding:utf-8
 from PySide6.QtCore import QEvent, Qt, QPoint,QMargins
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon,QPainter
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
 from ZenUI.component.textblock import ZTextBlock
-from ZenUI.core import ZGlobal
+from ZenUI.core import ZGlobal,ZDebug
 from ..win32utils import startSystemMove, toggleWindowState
 from .abctitlebarbutton import ZABCTitleBarButton
 from .closebutton import ZCloseButton
@@ -39,7 +39,6 @@ class ZTitleBarBase(QWidget):
             if event.type() == QEvent.WindowStateChange:
                 self.maxBtn.toggleMaxState()
                 return False
-
         return super().eventFilter(obj, event)
 
     def mouseDoubleClickEvent(self, event):
@@ -87,6 +86,13 @@ class ZTitleBarBase(QWidget):
 
     def setDoubleClickEnabled(self, isEnabled):
         self._isDoubleClickEnabled = isEnabled
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()
+
 
 class ZTitleBar(ZTitleBarBase):
     def __init__(self, parent):

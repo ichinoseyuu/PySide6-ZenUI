@@ -1,19 +1,15 @@
 from PySide6.QtWidgets import QWidget,QSizePolicy
 from PySide6.QtCore import Qt,QMargins
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont,QColor
 from ZenUI import *
 
-class DemoCard(ZCard):
+class DemoCard(ZPanel):
     def __init__(self,parent = None,name ='DemoCard'):
-        super().__init__(parent, name)
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        self.setMinimumHeight(100)
-        self._setup_ui()
+        light_data = ZPanelStyleData(Body=QColor('#f3f3f3'), Border=QColor('#e5e5e5'), Radius=5.0)
+        dark_data = ZPanelStyleData(Body=QColor('#202020'), Border=QColor('#1d1d1d'), Radius=5.0)
+        super().__init__(parent, name, light_data, dark_data)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.setLayout(ZVBoxLayout(self,margins=QMargins(16,16,16,16),spacing=16))
 
-    def _setup_ui(self):
-        self.title = ZTextBlock(parent=self,
-                                 name='title',
-                                 text='title')
-        self.title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
-        self.title.margins = QMargins(6, 0, 6, 0)
-        self.title.move(10, 10)
+    def layout(self)-> ZVBoxLayout | ZHBoxLayout:
+        return super().layout()

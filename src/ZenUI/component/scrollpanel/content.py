@@ -17,6 +17,3 @@ class ZScrollContent(QWidget):
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         self.resized.emit()
-
-    def layout(self) -> QVBoxLayout|QHBoxLayout:
-        return super().layout()

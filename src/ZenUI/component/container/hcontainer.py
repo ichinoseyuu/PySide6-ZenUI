@@ -1,5 +1,7 @@
-from PySide6.QtCore import Qt, QSize, QMargins, QTimer, QEvent
-from PySide6.QtWidgets import QWidget, QPushButton, QApplication
+from PySide6.QtGui import QPainter, QPen
+from PySide6.QtCore import QMargins, QSize, Qt
+from PySide6.QtWidgets import QWidget
+from ZenUI.core import ZDebug
 
 class ZHContainer(QWidget):
     """水平方向对齐的容器控件，支持不同间距设置和子控件同高功能"""
@@ -8,12 +10,13 @@ class ZHContainer(QWidget):
         self._widgets: list[QWidget] = []  # 存储所有子控件的列表
         self._alignment: Qt.AlignmentFlag = Qt.AlignLeft | Qt.AlignTop  # 默认为左上对齐
         self._spacings: list[int] = []  # 存储控件间的间距，n个控件有n-1个间距
-        self._default_spacing = 16  # 默认间距
+        self._default_spacing = 10  # 默认间距
         self._batch_updating = False  # 批量更新锁
         self._layout_pending = False  # 布局更新 pending 标志
         self._height_expand = False  # 是否让所有控件与最高控件同高
         self._shrinking = False  # 是否启用收缩功能
         self._margins = QMargins(0, 0, 0, 0)  # 边距（左、上、右、下）
+
 
         # # 初始化时自动开启批量更新
         # self.startBatchUpdate()
@@ -23,7 +26,7 @@ class ZHContainer(QWidget):
         # self.resizeEvent(None)
         #QTimer.singleShot(0, lambda: self.resizeEvent(None))
 
-    # 边距属性
+    # region property
     @property
     def margins(self):
         return self._margins
@@ -74,6 +77,8 @@ class ZHContainer(QWidget):
             self._height_expand = value
             self.arrangeWidgets()
 
+
+    # region public
     def addWidget(self, widget: QWidget, index: int = -1, spacing: int = None):
         """
         添加控件到容器
@@ -137,11 +142,11 @@ class ZHContainer(QWidget):
         for obj in self._widgets:
             width_used += obj.width()
         width_used += sum(self._spacings)
-        
+
         # 上下边距 + 最高控件高度
         max_height = max([0] + [widget.height() for widget in self._widgets])
         max_height += self._margins.top() + self._margins.bottom()
-        
+
         return QSize(width_used, max_height)
 
     def getUsedSpace(self):
@@ -218,6 +223,14 @@ class ZHContainer(QWidget):
             if i < widget_count - 1:  # 只有前面的n-1个控件需要加间距
                 left_used += self._spacings[i] if i < len(self._spacings) else self._default_spacing
 
+
+    # region event
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.arrangeWidgets()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()

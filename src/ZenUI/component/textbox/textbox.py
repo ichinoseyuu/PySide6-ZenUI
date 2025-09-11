@@ -4,7 +4,7 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.base import ColorController, FloatController, StyleData, SizeController
-from ZenUI.core import ZTextBoxStyleData
+from ZenUI.core import ZTextBoxStyleData, ZDebug
 from .textcommand import TextCommand
 
 class ZTextBox(QWidget):
@@ -21,8 +21,7 @@ class ZTextBox(QWidget):
                  mask: str = "",
                  read_only: bool = False,
                  selectable: bool = True):
-        super().__init__(parent=parent,
-                         minimumSize=QSize(200, 30))
+        super().__init__(parent=parent, minimumSize=QSize(200, 30))
         if name: self.setObjectName(name)
         if read_only: self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         else: self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
@@ -67,6 +66,7 @@ class ZTextBox(QWidget):
         self._style_data = StyleData[ZTextBoxStyleData](self, 'ZTextBox')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
+
 
     # region Property
     @property
@@ -801,7 +801,7 @@ class ZTextBox(QWidget):
                     QPointF(cursor_x, cursor_y),
                     QPointF(cursor_x, cursor_y + cursor_height)
                 )
-
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 
     # region keyPressEvent

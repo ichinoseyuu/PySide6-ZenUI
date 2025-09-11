@@ -1,5 +1,7 @@
-from PySide6.QtCore import Qt, QSize, QMargins, QTimer, QEvent
-from PySide6.QtWidgets import QWidget, QPushButton, QApplication
+from PySide6.QtGui import QPainter, QPen
+from PySide6.QtCore import QMargins, QSize, Qt
+from PySide6.QtWidgets import QWidget
+from ZenUI.core import ZDebug
 
 class ZVContainer(QWidget):
     """垂直方向对齐的容器控件，支持不同间距设置和子控件同宽功能"""
@@ -8,7 +10,7 @@ class ZVContainer(QWidget):
         self._widgets: list[QWidget] = []  # 存储所有子控件的列表
         self._alignment: Qt.AlignmentFlag = Qt.AlignLeft | Qt.AlignTop  # 默认为左上对齐
         self._spacings: list[int] = []  # 存储控件间的间距，n个控件有n-1个间距
-        self._default_spacing = 16  # 默认间距
+        self._default_spacing = 10  # 默认间距
         self._batch_updating = False  # 批量更新锁
         self._layout_pending = False  # 布局更新 pending 标志
         self._width_expand = False  # 是否让所有控件与最宽控件同宽
@@ -19,9 +21,8 @@ class ZVContainer(QWidget):
         # self.startBatchUpdate()
         # # 确保所有初始化代码执行完成后再结束批量更新
         # QTimer.singleShot(0, self.endBatchUpdate)
-        self.adjustSize()
 
-    # 新增：边距属性
+    # region property
     @property
     def margins(self):
         return self._margins
@@ -73,7 +74,7 @@ class ZVContainer(QWidget):
             self._width_expand = value
             self.arrangeWidgets()
 
-    # 公共方法保持不变...
+    # region public
     def addWidget(self, widget: QWidget, index: int = -1, spacing: int = None):
         """
         添加控件到容器
@@ -132,7 +133,7 @@ class ZVContainer(QWidget):
 
         self.resize(preferred_w, preferred_h)
 
-    # 修改：sizeHint 计算时加入边距
+
     def sizeHint(self):
         height_used = self._margins.top() + self._margins.bottom()  # 上下边距
         for obj in self._widgets:
@@ -221,7 +222,13 @@ class ZVContainer(QWidget):
             if i < widget_count - 1:  # 只有前面的n-1个控件需要加间距
                 top_used += self._spacings[i] if i < len(self._spacings) else self._default_spacing
 
-    # 事件处理保持不变
+    # region event
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.arrangeWidgets()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()

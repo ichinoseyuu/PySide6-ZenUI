@@ -4,7 +4,7 @@ from PySide6.QtGui import *
 from enum import IntEnum
 from typing import overload
 from ZenUI.component.base import StyleData
-from ZenUI.core import ZGlobal, ZSliderStyleData,TipPos
+from ZenUI.core import ZGlobal, ZSliderStyleData, TipPos, ZDebug
 from .fill import SliderFill
 from .track import SliderTrack
 from .handle import SliderHandle
@@ -64,8 +64,7 @@ class ZSlider(QWidget):
 
         self._handle.locationCtrl.animation.valueChanged.connect(self._update_fill)
         self._initStyle(value)
-        # self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
-        # self.setStyleSheet('background:transparent;border:1px solid red;')
+        self.resize(self.sizeHint())
 
     # region property
     @property
@@ -307,10 +306,16 @@ class ZSlider(QWidget):
                              self._track_width, self._track_length - self._handle.y())
             self._fill.setGeometry(geo_fill)
 
-    # region resizeEvent
+    # region event
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self._update_track()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()
 
     # region keyPressEvent
     def keyPressEvent(self, event: QKeyEvent):

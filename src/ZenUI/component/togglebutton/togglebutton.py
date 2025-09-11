@@ -3,7 +3,7 @@ from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
 from PySide6.QtCore import Qt, QRect, QSize, QRectF,QEasingCurve
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
-from ZenUI.core import ZGlobal, ZToggleButtonStyleData
+from ZenUI.core import ZDebug, ZToggleButtonStyleData
 from .abctogglebutton import ZABCToggleButton
 import logging
 class ZToggleButton(ZABCToggleButton):
@@ -33,6 +33,8 @@ class ZToggleButton(ZABCToggleButton):
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
         self.resize(self.sizeHint())
+
+
     # region Property
     @property
     def bodyColorCtrl(self) -> ColorController: return self._body_cc
@@ -245,5 +247,7 @@ class ZToggleButton(ZABCToggleButton):
             painter.setFont(self._font)
             painter.setPen(self._text_cc.color)
             painter.drawText(rect, Qt.AlignCenter, self._text)
+
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 

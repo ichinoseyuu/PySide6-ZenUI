@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QWidget,QSizePolicy
 from PySide6.QtCore import Qt, QSize, QMargins,QRectF,Signal
 from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen, QTextLayout, QTextOption
 from ZenUI.component.base import ColorController,FloatController,StyleData
-from ZenUI.core import ZTextBlockStyleData
+from ZenUI.core import ZTextBlockStyleData,ZDebug
 class ZTextBlock(QWidget):
     class WrapMode(IntEnum):
         NoWrap = 0
@@ -18,8 +18,6 @@ class ZTextBlock(QWidget):
                  selectable: bool = False):
         super().__init__(parent=parent)
         if name: self.setObjectName(name)
-        # self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
-        # self.setStyleSheet('background-color:transparent;border: 1px solid red;')
         self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self._text = text
         self._font = QFont("Microsoft YaHei", 10)
@@ -437,7 +435,7 @@ class ZTextBlock(QWidget):
         # 根据word_wrap设置不同的文本标志
         text_flags = self._get_text_flag()
         painter.drawText(text_rect, text_flags, self._text)
-
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 
 

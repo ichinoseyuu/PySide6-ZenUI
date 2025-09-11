@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt, QPointF
 from PySide6.QtGui import QPainter, QPen, QPainterPath
 from ZenUI.component.base import StyleData
-from ZenUI.core import ZTitleBarButtonStyleData
+from ZenUI.core import ZTitleBarButtonStyleData,ZDebug
 from .abctitlebarbutton import ZABCTitleBarButton
 
 class ZMaximizeButton(ZABCTitleBarButton):
@@ -75,3 +75,5 @@ class ZMaximizeButton(ZABCTitleBarButton):
             path.lineTo(x0+8*r, y0-dw+8*r)
             path.lineTo(x0+8*r-dw, y0-dw+8*r)
             painter.drawPath(path)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()

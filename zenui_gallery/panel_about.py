@@ -2,15 +2,11 @@ from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout,QSizePolicy
 from PySide6.QtCore import Qt, QMargins,QPoint
 from PySide6.QtGui import QFont, QIcon, QColor
 from ZenUI import *
-from demo_card import DemoCard
-class PageAbout(ZPage):
-    def __init__(self,parent = None,name ='PageAbout'):
-        super().__init__(parent = parent,
-                         name=name,
-                         layout=self.Layout.Column,
-                         margins=QMargins(6, 6, 6, 6),
-                         spacing=12,
-                         alignment=Qt.AlignmentFlag.AlignTop|Qt.AlignmentFlag.AlignLeft)
+
+class PanelAbout(ZPanel):
+    def __init__(self,parent = None,name ='PanelAbout'):
+        super().__init__(parent = parent, name=name)
+        self.setLayout(ZVBoxLayout(self))
         self._setup_ui()
 
     def _setup_ui(self):

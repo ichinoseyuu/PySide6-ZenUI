@@ -4,7 +4,7 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.base import LocationController,SizeController,WindowOpacityController,StyleData
-from ZenUI.core import ZGlobal,ZToolTipStyleData,TipPos,ZQuickEffect
+from ZenUI.core import ZDebug,ZToolTipStyleData,TipPos,ZQuickEffect
 from .tooltipcontent import ZToolTipContent
 
 class ZToolTip(QWidget):
@@ -171,6 +171,12 @@ class ZToolTip(QWidget):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self._content.move(self._margin, self._margin)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()
 
     # region private
     def _initStyle(self):

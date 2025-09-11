@@ -1,8 +1,9 @@
 import os
 from enum import Enum
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt,QRect
-from PySide6.QtGui import QPainter, QPixmap, QPainterPath
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPainter, QPixmap, QPainterPath, QPen
+from ZenUI.core import ZDebug
 
 class ZImage(QWidget):
     class ScaleType(Enum):
@@ -138,3 +139,5 @@ class ZImage(QWidget):
             painter.setClipPath(path)
         # 直接绘制图片,不需要额外的圆角处理
         painter.drawPixmap(x, y, self._scaled_pixmap)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()

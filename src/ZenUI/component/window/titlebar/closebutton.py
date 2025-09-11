@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt, QLineF
 from PySide6.QtGui import QPainter, QPen
 from ZenUI.component.base import StyleData
-from ZenUI.core import ZTitleBarButtonStyleData
+from ZenUI.core import ZTitleBarButtonStyleData,ZDebug
 from .abctitlebarbutton import ZABCTitleBarButton
 
 class ZCloseButton(ZABCTitleBarButton):
@@ -68,3 +68,5 @@ class ZCloseButton(ZABCTitleBarButton):
             QLineF(x + iw, y, x, y + ih)         # 右上到左下
         ]
         painter.drawLines(lines)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()

@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPainter, QIcon, QPixmap
 from ZenUI.component.base import StyleData
-from ZenUI.core import ZGlobal,ZTheme,ZTitleBarButtonStyleData
+from ZenUI.core import ZGlobal,ZTheme,ZTitleBarButtonStyleData,ZDebug
 from .abctitlebarbutton import ZABCTitleBarButton
 
 class ZThemeButton(ZABCTitleBarButton):
@@ -74,3 +74,5 @@ class ZThemeButton(ZABCTitleBarButton):
             (32 - 16) // 2,
             colored_pixmap
         )
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()

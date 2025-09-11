@@ -3,6 +3,9 @@ from enum import Enum,IntEnum,Flag,IntFlag,auto
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ZenUI.component.tooltip import ZToolTip
+from PySide6.QtGui import QPainter, QPen, QResizeEvent,QColor
+from PySide6.QtCore import Qt, QRect 
+from PySide6.QtWidgets import QWidget
 from ..theme import ZThemeManager
 from ..styledata import ZStyleDataManager
 def configureLogging():
@@ -42,3 +45,13 @@ class ZGlobal:
     tooltip: 'ZToolTip' = None
     themeManager = ZThemeManager()
     styleDataManager = ZStyleDataManager()
+
+class ZDebug:
+    draw_rect = False
+
+    @staticmethod
+    def drawRect(painter:QPainter, rect: QRect):
+        painter.setOpacity(0.8)
+        painter.setPen(QPen(Qt.GlobalColor.red, 1, Qt.PenStyle.SolidLine))
+        painter.setBrush(Qt.NoBrush)
+        painter.drawRect(rect)

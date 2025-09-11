@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter, QPen
 from ZenUI.component.base import StyleData
-from ZenUI.core import ZTitleBarButtonStyleData
+from ZenUI.core import ZTitleBarButtonStyleData,ZDebug
 from .abctitlebarbutton import ZABCTitleBarButton
 
 
@@ -50,3 +50,5 @@ class ZMinimizeButton(ZABCTitleBarButton):
         pen.setCosmetic(True)
         painter.setPen(pen)
         painter.drawLine(18, 16, 28, 16)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()

@@ -1,9 +1,9 @@
 
-from PySide6.QtGui import QPainter, QIcon, QPixmap
+from PySide6.QtGui import QPainter, QIcon, QPixmap, QPen
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
-from ZenUI.core import ZGlobal, ZNavBarButtonStyleData
+from ZenUI.core import ZNavBarButtonStyleData,ZDebug
 from .abcnavbarbutton import ZABCNavBarButton
 
 class ZNavBarButton(ZABCNavBarButton):
@@ -28,6 +28,7 @@ class ZNavBarButton(ZABCNavBarButton):
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
         self.resize(self.sizeHint())
+
 
     # region Property
     @property
@@ -115,6 +116,7 @@ class ZNavBarButton(ZABCNavBarButton):
         icon_x = (self.width() - self._icon_size.width()) // 2
         icon_y = (self.height() - self._icon_size.height()) // 2
         painter.drawPixmap(icon_x, icon_y, colored_pixmap)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 
 

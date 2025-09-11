@@ -4,15 +4,12 @@ from PySide6.QtGui import QFont, QIcon, QColor
 from ZenUI import *
 from demo_card import DemoCard
 
-class PageInfo(ZScrollPage):
-    def __init__(self,parent = None,name ='PageInfo'):
-        super().__init__(parent = parent,
-                         name=name,
-                         margins=QMargins(9, 9, 9, 9),
-                         spacing=12,
-                         alignment=Qt.AlignmentFlag.AlignTop|Qt.AlignmentFlag.AlignLeft)
-        #self.setMaximumWidth(600)
+class PanelInfo(ZScrollPanel):
+    def __init__(self, parent = None, name ='PanelInfo'):
+        super().__init__(parent = parent, name=name)
+        self.setLayout(ZVBoxLayout(self,alignment=Qt.AlignmentFlag.AlignTop))
         self._setup_ui()
+
 
     def _setup_ui(self):
         self.title = ZTextBlock(self, 'title', '状态与信息')

@@ -2,7 +2,7 @@ from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
 from PySide6.QtCore import Qt, QRect, QSize, QRectF
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
-from ZenUI.core import ZButtonStyleData
+from ZenUI.core import ZButtonStyleData,ZDebug
 from .abcbutton import ZABCButton
 
 class ZButton(ZABCButton):
@@ -127,6 +127,10 @@ class ZButton(ZABCButton):
         self._icon_cc.setColorTo(data.Icon)
         self._text_cc.setColorTo(data.Text)
 
+    def _draw_rect(self, painter: QPainter):
+        painter.setPen(Qt.NoPen)
+        
+
     # region slot
     def hoverHandler(self):
         self._body_cc.setColorTo(self._style_data.data.BodyHover)
@@ -226,5 +230,6 @@ class ZButton(ZABCButton):
             painter.setFont(self._font)
             painter.setPen(self._text_cc.color)
             painter.drawText(rect, Qt.AlignCenter, self._text)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 

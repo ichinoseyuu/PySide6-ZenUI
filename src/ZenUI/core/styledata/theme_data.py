@@ -13,7 +13,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZSwitch':{
                 K.Body: ACCENT_COLOR_DARK,
                 K.Border: '#909090',
-                K.Handle: ACCENT_COLOR_DARK,
+                K.Handle: '#bfbfbf',
                 K.HandleToggled: '#272727'
                 },
             'ZTextBox': {
@@ -155,7 +155,7 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZSwitch':{
                 K.Body: ACCENT_COLOR_LIGHT,
                 K.Border: '#bfbfbf',
-                K.Handle: ACCENT_COLOR_LIGHT,
+                K.Handle: '#909090',
                 K.HandleToggled: '#f9f9f9'
                 },
             'ZTextBox': {

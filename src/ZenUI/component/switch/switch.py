@@ -1,4 +1,5 @@
-from enum import IntEnum
+from enum import Enum
+from dataclasses import dataclass
 from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap, QLinearGradient, QPainterPath
 from PySide6.QtCore import Qt, QRect, QSize, QRectF
 from PySide6.QtWidgets import QWidget
@@ -7,22 +8,28 @@ from ZenUI.core import ZSwitchStyleData,ZDebug
 from .abcswitch import ZABCSwitch
 from .handle import SwitchHandle
 
+@dataclass
+class SwitchStyle:
+    Height: int
+    Width: int
+    HandleDiameter: int
+    Margin: int
+
 class ZSwitch(ZABCSwitch):
-    class Weight(IntEnum):
-        Samll = 0
-        Normal = 1
-        Large = 2
+    class Style(Enum):
+        Compact = SwitchStyle(Height=20, Width=40, HandleDiameter=16, Margin=2)
+        Standard = SwitchStyle(Height=24, Width=48, HandleDiameter=18, Margin=3)
+        Comfortable = SwitchStyle(Height=28, Width=56, HandleDiameter=20 , Margin=4)
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
-                 weight: Weight = Weight.Normal):
+                 weight: Style = Style.Standard):
         super().__init__(parent)
         self.setObjectName(name)
-        self._weight = weight
+        self._style = weight
         self._handle = SwitchHandle(self)
         self._body_cc = ColorController(self)
         self._border_cc = ColorController(self)
-        self._radius_ctrl = FloatController(self)
         self._opacity_ctrl = OpacityController(self)
         self._style_data = StyleData[ZSwitchStyleData](self, 'ZSwitch')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
@@ -36,21 +43,18 @@ class ZSwitch(ZABCSwitch):
     def borderColorCtrl(self): return self._border_cc
 
     @property
-    def radiusCtrl(self): return self._radius_ctrl
-
-    @property
     def styleData(self): return self._style_data
 
     @property
     def handle(self): return self._handle
 
     @property
-    def weight(self): return self._weight
+    def switchStyle(self): return self._style
 
-    @weight.setter
-    def weight(self, value: Weight):
-        if value == self._weight: return
-        self._weight = value
+    @switchStyle.setter
+    def switchStyle(self, value: Style):
+        if value == self._style: return
+        self._style = value
         self.update()
 
     # region public
@@ -62,21 +66,11 @@ class ZSwitch(ZABCSwitch):
 
     # region private
     def _initStyle(self):
-        if self._weight == self.Weight.Samll:
-            self.setFixedSize(QSize(40, 20))
-            self._handle.setFixedSize(QSize(12, 12))
-            self._handle.move(4, 4)
-            self._radius_ctrl.value = 10
-        elif self._weight == self.Weight.Normal:
-            self.setFixedSize(QSize(48, 24))
-            self._handle.setFixedSize(QSize(16, 16))
-            self._handle.move(4, 4)
-            self._radius_ctrl.value = 12
-        elif self._weight == self.Weight.Large:
-            self.setFixedSize(QSize(56, 28))
-            self._handle.setFixedSize(QSize(18, 18))
-            self._handle.move(5, 5)
-            self._radius_ctrl.value = 14
+        style = self._style.value
+        self.setFixedSize(QSize(style.Width, style.Height))
+        self._handle.setFixedSize(QSize(style.HandleDiameter, style.HandleDiameter))
+        self._handle.move(style.Margin, style.Margin)
+
         data = self._style_data.data
         self._body_cc.setColor(data.Body)
         self._handle.bodyColorCtrl.color = data.HandleToggled
@@ -100,10 +94,10 @@ class ZSwitch(ZABCSwitch):
 
     # region slot
     def hoverHandler(self):
-        pass
+        self._handle.scaleCtrl.setValueTo(self._handle.scale_hover)
 
     def leaveHandler(self):
-        pass
+        self._handle.scaleCtrl.setValueTo(self._handle.scale_nomal)
 
     def pressHandler(self):
         pass
@@ -120,20 +114,11 @@ class ZSwitch(ZABCSwitch):
             self._body_cc.toTransparent()
             self._handle.bodyColorCtrl.setColorTo(data.Handle)
         # 根据不同权重计算手柄目标位置
+        style = self._style.value
         handle_width = self._handle.width()
-        if self._weight == self.Weight.Samll:
-            # 小型开关：右侧位置 = 总宽度 - 手柄宽度 - 左侧边距(4)
-            target_x = self.width() - handle_width - 4 if checked else 4
-            target_y = 4  # 固定Y坐标
-        elif self._weight == self.Weight.Normal:
-            # 普通开关：右侧位置 = 总宽度 - 手柄宽度 - 左侧边距(4)
-            target_x = self.width() - handle_width - 4 if checked else 4
-            target_y = 4  # 固定Y坐标
-        else:  # Large
-            # 大型开关：右侧位置 = 总宽度 - 手柄宽度 - 左侧边距(5)
-            target_x = self.width() - handle_width - 5 if checked else 5
-            target_y = 5  # 固定Y坐标
-
+        margin = style.Margin
+        target_x = self.width() - handle_width - margin if checked else margin
+        target_y = margin
         # 移动手柄到目标位置
         self._handle.locationCtrl.moveTo(target_x, target_y)
 
@@ -144,7 +129,7 @@ class ZSwitch(ZABCSwitch):
         painter.setOpacity(self._opacity_ctrl.opacity)
         # 绘制背景
         rect = self.rect()
-        radius = self._radius_ctrl.value
+        radius = self.height() / 2
         if self._border_cc.color.alpha() > 0:
             # 绘制边框
             painter.setPen(QPen(self._border_cc.color, 1))

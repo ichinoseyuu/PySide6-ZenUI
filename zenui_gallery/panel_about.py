@@ -6,7 +6,7 @@ from ZenUI import *
 class PanelAbout(ZPanel):
     def __init__(self,parent = None,name ='PanelAbout'):
         super().__init__(parent = parent, name=name)
-        self.setLayout(ZVBoxLayout(self, margins = QMargins(10, 10, 10, 10),spacing=10))
+        self.setLayout(ZVBoxLayout(self, margins = QMargins(40, 30, 40, 30),spacing=30))
         self._setup_ui()
 
     def _setup_ui(self):
@@ -14,5 +14,5 @@ class PanelAbout(ZPanel):
                                  name='text',
                                  text='关于')
         self.text.setFont(QFont('Microsoft YaHei', 20, QFont.Bold))
-        self.text.margins = QMargins(6, 0, 6, 0)
+        self.text.margins = QMargins(6, 0, 6, 6)
         self.layout().addWidget(self.text)

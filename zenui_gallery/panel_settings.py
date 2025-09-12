@@ -7,7 +7,7 @@ from demo_card import DemoCard
 class PanelSettings(ZPanel):
     def __init__(self, parent = None, name ='PanelSettings'):
         super().__init__(parent = parent, name=name)
-        self.setLayout(ZVBoxLayout(self, margins = QMargins(10, 10, 10, 10),spacing=10, alignment=Qt.AlignmentFlag.AlignTop))
+        self.setLayout(ZVBoxLayout(self, margins = QMargins(40, 30, 40, 30),spacing=30, alignment=Qt.AlignmentFlag.AlignTop))
         self._setup_ui()
 
     def layout(self) -> ZVBoxLayout:
@@ -16,7 +16,7 @@ class PanelSettings(ZPanel):
     def _setup_ui(self):
         self.text = ZTextBlock(self, 'text', '设置')
         self.text.setFont(QFont('Microsoft YaHei', 20, QFont.Bold))
-        self.text.margins = QMargins(6, 0, 6, 0)
+        self.text.margins = QMargins(6, 0, 6, 6)
         self.layout().addWidget(self.text)
 
         self.hcontainer = ZHContainer(self)

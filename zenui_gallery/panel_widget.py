@@ -7,19 +7,19 @@ from demo_card import DemoCard
 class PanelWidget(ZScrollPanel):
     def __init__(self,parent = None,name ='PanelWidget'):
         super().__init__(parent = parent, name=name)
-        self.setLayout(ZVBoxLayout(self, margins = QMargins(10, 10, 10, 10),spacing=10, alignment=Qt.AlignmentFlag.AlignTop))
+        self.setLayout(ZVBoxLayout(self, margins = QMargins(40, 30, 40, 30),spacing=30, alignment=Qt.AlignmentFlag.AlignTop))
         self._setup_ui()
 
     def _setup_ui(self):
         title = ZTextBlock(self, 'title', '基础组件')
         title.setFont(QFont('Microsoft YaHei', 20, QFont.Weight.Bold))
-        title.margins = QMargins(6, 6, 6, 6)
+        title.margins = QMargins(6, 0, 6, 6)
         self.layout().addWidget(title)
 
         # region Text
         title = ZTextBlock(self, text= '文本')
         title.setFont(QFont('Microsoft YaHei', 14, QFont.Weight.Bold))
-        title.margins = QMargins(12, 6, 12, 6)
+        title.margins = QMargins(6, 6, 6, 6)
         self.layout().addWidget(title)
 
         card = DemoCard(self)
@@ -92,7 +92,7 @@ class PanelWidget(ZScrollPanel):
         # region Input
         title = ZTextBlock(self, text= '输入')
         title.setFont(QFont('Microsoft YaHei', 14, QFont.Weight.Bold))
-        title.margins = QMargins(12, 6, 12, 6)
+        title.margins = QMargins(6, 6, 6, 6)
         self.layout().addWidget(title)
 
         card = DemoCard(self)
@@ -135,7 +135,7 @@ class PanelWidget(ZScrollPanel):
         # region Button
         title = ZTextBlock(self, text= '按钮')
         title.setFont(QFont('Microsoft YaHei', 14, QFont.Weight.Bold))
-        title.margins = QMargins(12, 6, 12, 6)
+        title.margins = QMargins(6, 6, 6, 6)
         self.layout().addWidget(title)
 
         card = DemoCard(self)
@@ -238,20 +238,20 @@ class PanelWidget(ZScrollPanel):
         container.alignment = Qt.AlignmentFlag.AlignBottom
         card.layout().addWidget(container)
 
-        self.switch_1 = ZSwitch(container, name='switch_1', weight= ZSwitch.Weight.Samll)
+        self.switch_1 = ZSwitch(container, name='switch_1', weight= ZSwitch.Style.Compact)
         container.addWidget(self.switch_1)
 
-        self.switch_2 = ZSwitch(container, name='switch_2', weight= ZSwitch.Weight.Normal)
+        self.switch_2 = ZSwitch(container, name='switch_2', weight= ZSwitch.Style.Standard)
         container.addWidget(self.switch_2)
 
-        self.switch_3 = ZSwitch(container, name='switch_3', weight= ZSwitch.Weight.Large)
+        self.switch_3 = ZSwitch(container, name='switch_3', weight= ZSwitch.Style.Comfortable)
         container.addWidget(self.switch_3)
 
 
         # region Slider
         title = ZTextBlock(self, text= '滑块')
         title.setFont(QFont('Microsoft YaHei', 14, QFont.Weight.Bold))
-        title.margins = QMargins(12, 6, 12, 6)
+        title.margins = QMargins(6, 6, 6, 6)
         self.layout().addWidget(title)
 
         card = DemoCard(self)

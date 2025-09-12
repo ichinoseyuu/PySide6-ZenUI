@@ -12,7 +12,7 @@ class ZTextBox(QWidget):
         NoWrap = 0
         WordWrap = 1
         WrapAnywhere = 2
-
+    heightChangedByWrapping = Signal(int)  # 携带新高度值
     editingFinished = Signal()
     def __init__(self,
                  parent: QWidget = None,
@@ -50,6 +50,8 @@ class ZTextBox(QWidget):
         self._undo_timer.setSingleShot(True)
         self._undo_timer.timeout.connect(self._commit_undo)
         self._pending_undo: list[str, str, int, int] = None
+        self._last_height = self.height()
+
 
         self._text_cc = ColorController(self)
         self._text_back_cc = ColorController(self)
@@ -294,6 +296,7 @@ class ZTextBox(QWidget):
 
     def _update_size(self):
         """更新控件尺寸，确保不超过父控件范围"""
+        old_height = self.height()
         size_hint = self.sizeHint()
 
         # 如果有父控件，限制大小不超过父控件
@@ -312,6 +315,13 @@ class ZTextBox(QWidget):
         else:
             # 没有父控件时使用原始的 sizeHint
             self._size_ctrl.resizeTo(size_hint)
+
+        # 检查高度是否变化且是因为换行引起的
+        new_height = self.height()
+        if (new_height != old_height and 
+            self._wrap_mode != self.WrapMode.NoWrap):
+            self.heightChangedByWrapping.emit(new_height)
+            self._last_height = new_height
 
 
     def _toggle_cursor(self):
@@ -436,7 +446,7 @@ class ZTextBox(QWidget):
         return lines_info
 
 
-    def _get_char_position_at_point(self, point):
+    def _get_char_position_at_point(self, point: QPoint):
         """根据坐标点获取字符位置"""
         if not self._text:
             return 0

@@ -19,7 +19,7 @@ class Panel(QWidget):
         self._content.resize(self.width(), content_height)
         self._content.move(0, -self._offset)
 
-    def layout(self):
+    def layout(self) -> ZVBoxLayout:
         return self._content.layout()
 
     def resizeEvent(self, event):
@@ -88,11 +88,24 @@ class ZNavigationBar(QWidget):
         elif panel is self._footer_panel:
             self._footer_panel.layout().addWidget(btn)
 
+    def insertButton(self, panel:QWidget, index:int, btn: ZNavBarButton):
+        if panel is self._panel:
+            self._panel.layout().insertWidget(index, btn)
+        elif panel is self._footer_panel:
+            self._footer_panel.layout().insertWidget(index, btn)
+
     def addToggleButton(self, panel:QWidget, btn: ZNavBarToggleButton):
         if panel is self._panel:
             self._panel.layout().addWidget(btn)
         elif panel is self._footer_panel:
             self._footer_panel.layout().addWidget(btn)
+        self._btn_manager.addButton(btn)
+
+    def insertToggleButton(self, panel:QWidget, index:int, btn: ZNavBarToggleButton):
+        if panel is self._panel:
+            self._panel.layout().insertWidget(index, btn)
+        elif panel is self._footer_panel:
+            self._footer_panel.layout().insertWidget(index, btn)
         self._btn_manager.addButton(btn)
 
     def toggleToNextButton(self):

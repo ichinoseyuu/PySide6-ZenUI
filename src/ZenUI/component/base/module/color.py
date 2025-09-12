@@ -161,6 +161,10 @@ class LinearGradientController(QObject):
         self._anim2.setEndValue(value)
         self._anim2.start()
 
+    def setColor(self, start: QColor, end: QColor) -> None:
+        self.setColorStart(start)
+        self.setColorEnd(end)
+
     def setColorTo(self, start: QColor, end: QColor) -> None:
         self._anim1.stop()
         self._anim2.stop()
@@ -170,6 +174,41 @@ class LinearGradientController(QObject):
         self._anim2.setEndValue(end)
         self._anim1.start()
         self._anim2.start()
+
+
+    def transparent(self):
+        target1 = QColor(self._color1)
+        target2 = QColor(self._color2)
+        target1.setAlpha(0)
+        target2.setAlpha(0)
+        self.setColorStart(target1)
+        self.setColorEnd(target2)
+
+    def toTransparent(self):
+        target1 = QColor(self._color1)
+        target2 = QColor(self._color2)
+        target1.setAlpha(0)
+        target2.setAlpha(0)
+        self.setColorStartTo(target1)
+        self.setColorEndTo(target2)
+
+
+    def opaque(self):
+        target1 = QColor(self._color1)
+        target2 = QColor(self._color2)
+        target1.setAlpha(255)
+        target2.setAlpha(255)
+        self.setColorStart(target1)
+        self.setColorEnd(target2)
+
+    def toOpaque(self):
+        target1 = QColor(self._color1)
+        target2 = QColor(self._color2)
+        target1.setAlpha(255)
+        target2.setAlpha(255)
+        self.setColorStartTo(target1)
+        self.setColorEndTo(target2)
+
 
     def stopAnimSatrt(self) -> None:
         self._anim1.stop()

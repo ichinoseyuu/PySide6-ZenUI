@@ -64,7 +64,7 @@ class ZSlider(QWidget):
 
         self._handle.locationCtrl.animation.valueChanged.connect(self._update_fill)
         self._initStyle(value)
-        self.resize(self.sizeHint())
+        #self.resize(self.sizeHint())
 
     # region property
     @property
@@ -204,6 +204,11 @@ class ZSlider(QWidget):
         """设置滑块长度为固定值"""
         self._fixed_track_length = length
         self._update_track()
+        self.adjustSize()
+
+
+    def adjustSize(self):
+        self.resize(self.sizeHint())
 
 
     def sizeHint(self):
@@ -310,6 +315,7 @@ class ZSlider(QWidget):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self._update_track()
+        self.adjustSize()
 
     def paintEvent(self, event):
         painter = QPainter(self)

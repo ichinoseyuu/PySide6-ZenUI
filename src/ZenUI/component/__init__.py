@@ -7,6 +7,7 @@ from .navigationbar import *
 from .panel import *
 from .scrollpanel import *
 from .slider import *
+from .switch import *
 from .tooltip import *
 from .textblock import *
 from .textbox import *

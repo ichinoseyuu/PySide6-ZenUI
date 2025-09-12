@@ -7,7 +7,7 @@ from demo_card import DemoCard
 class PanelWidget(ZScrollPanel):
     def __init__(self,parent = None,name ='PanelWidget'):
         super().__init__(parent = parent, name=name)
-        self.setLayout(ZVBoxLayout(self,alignment=Qt.AlignmentFlag.AlignTop))
+        self.setLayout(ZVBoxLayout(self, margins = QMargins(10, 10, 10, 10),spacing=10, alignment=Qt.AlignmentFlag.AlignTop))
         self._setup_ui()
 
     def _setup_ui(self):
@@ -58,11 +58,7 @@ class PanelWidget(ZScrollPanel):
         self.text_block_4.text = 'PySide6 是 Qt 官方提供的 Python 模块，它允许开发者使用 Python 编写跨平台 GUI 应用程序，并提供了完整的 Qt 6.0+ 框架支持。'
         container.addWidget(self.text_block_4)
 
-
-        card = DemoCard(self)
-        self.layout().addWidget(card)
-
-        title = ZTextBlock(self, text= 'ZTextBlock')
+        title = ZTextBlock(self, text= 'ZRichTextBlock')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
@@ -93,6 +89,11 @@ class PanelWidget(ZScrollPanel):
         '''
         container.addWidget(self.rich_text_2)
 
+        # region Input
+        title = ZTextBlock(self, text= '输入')
+        title.setFont(QFont('Microsoft YaHei', 14, QFont.Weight.Bold))
+        title.margins = QMargins(12, 6, 12, 6)
+        self.layout().addWidget(title)
 
         card = DemoCard(self)
         self.layout().addWidget(card)
@@ -118,7 +119,18 @@ class PanelWidget(ZScrollPanel):
         self.text_box_3.setMinimumWidth(300)
         self.text_box_3.wrapMode = ZTextBox.WrapMode.WrapAnywhere
         self.text_box_3.setMaximumWidth(300)
+        def test():
+            print('test')
+            container.adjustSize()
+            # 2. 触发card的布局重新计算
+            card.layout().update()
+            # 3. 强制card根据新布局调整自身大小
+            card.adjustSize()
+            # 4. 如果card所在的父布局也需要更新，可进一步触发
+            self.layout().update()
+        self.text_box_3.heightChangedByWrapping.connect(test)
         container.addWidget(self.text_box_3)
+
 
         # region Button
         title = ZTextBlock(self, text= '按钮')
@@ -190,8 +202,6 @@ class PanelWidget(ZScrollPanel):
                                                                    hide_delay=800
                                                                    ))
 
-        card = DemoCard(self)
-        self.layout().addWidget(card)
 
         title = ZTextBlock(self, text= 'ZToggleButton')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
@@ -220,6 +230,24 @@ class PanelWidget(ZScrollPanel):
             text='自动保存')
         container.addWidget(self.toggle_btn_3)
 
+        title = ZTextBlock(self, text= 'ZSwitch')
+        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
+        card.layout().addWidget(title)
+
+        container = ZHContainer(card)
+        container.alignment = Qt.AlignmentFlag.AlignBottom
+        card.layout().addWidget(container)
+
+        self.switch_1 = ZSwitch(container, name='switch_1', weight= ZSwitch.Weight.Samll)
+        container.addWidget(self.switch_1)
+
+        self.switch_2 = ZSwitch(container, name='switch_2', weight= ZSwitch.Weight.Normal)
+        container.addWidget(self.switch_2)
+
+        self.switch_3 = ZSwitch(container, name='switch_3', weight= ZSwitch.Weight.Large)
+        container.addWidget(self.switch_3)
+
+
         # region Slider
         title = ZTextBlock(self, text= '滑块')
         title.setFont(QFont('Microsoft YaHei', 14, QFont.Weight.Bold))
@@ -233,17 +261,13 @@ class PanelWidget(ZScrollPanel):
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
-        hlayout = ZHBoxLayout()
+        hlayout = ZHBoxLayout(margins=QMargins(0, 0, 0, 0),spacing=16,alignment=Qt.AlignLeft|Qt.AlignTop)
         card.layout().addLayout(hlayout)
 
         container1 = ZVContainer(card)
+        container1.alignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignCenter
         container1.defaultSpacing = 16
         hlayout.layout().addWidget(container1)
-
-        container2 = ZHContainer(card)
-        container2.defaultSpacing = 16
-        hlayout.layout().addWidget(container2)
-
 
         self.hslider_1 = ZSlider(
             parent=container1,
@@ -253,8 +277,8 @@ class PanelWidget(ZScrollPanel):
             scope=(0, 10),
             step=0.5,
             accuracy=0.1,
-            value=8)
-        self.hslider_1.setFixedLength(200)
+            value=5)
+        self.hslider_1.setFixedLength(230)
         container1.addWidget(self.hslider_1)
 
         self.hslider_2 = ZSlider(
@@ -265,7 +289,7 @@ class PanelWidget(ZScrollPanel):
             scope=(0, 100),
             step=1,
             accuracy=1,
-            value=30)
+            value=50)
         self.hslider_2.setFixedLength(250)
         container1.addWidget(self.hslider_2)
 
@@ -279,9 +303,14 @@ class PanelWidget(ZScrollPanel):
             accuracy=0.1,
             value=50,
             auto_strip_zero=True)
-        self.hslider_3.setFixedLength(300)
+        self.hslider_3.setFixedLength(200)
         container1.addWidget(self.hslider_3)
         container1.arrangeWidgets()
+
+        container2 = ZHContainer(card)
+        container2.alignment = Qt.AlignmentFlag.AlignBottom
+        container2.defaultSpacing = 16
+        hlayout.layout().addWidget(container2)
 
         self.vslider_1 = ZSlider(
             parent=container2,
@@ -291,7 +320,7 @@ class PanelWidget(ZScrollPanel):
             scope=(0, 10),
             step=0.5,
             accuracy=0.1,
-            value=8)
+            value=5)
         self.vslider_1.setFixedLength(150)
         container2.addWidget(self.vslider_1)
 
@@ -303,7 +332,7 @@ class PanelWidget(ZScrollPanel):
             scope=(0, 100),
             step=1,
             accuracy=1,
-            value=30)
+            value=50)
         self.vslider_2.setFixedLength(180)
         container2.addWidget(self.vslider_2)
 
@@ -316,7 +345,7 @@ class PanelWidget(ZScrollPanel):
             step=0.5,
             accuracy=0.1,
             value=50)
-        self.vslider_3.setFixedLength(200)
+        self.vslider_3.setFixedLength(170)
         container2.addWidget(self.vslider_3)
         container2.arrangeWidgets()
 

@@ -98,7 +98,7 @@ class ZNavBarButton(ZABCNavBarButton):
                             QPainter.RenderHint.SmoothPixmapTransform)
         painter.setOpacity(self._opacity_ctrl.opacity)
         rect = self.rect()
-        radius = self._radius_ctrl.radius
+        radius = self._radius_ctrl.value
         if self._body_cc.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
             painter.setBrush(self._body_cc.color)

@@ -45,6 +45,7 @@ class ZStyleDataKey(Enum):
     Handle = 'Handle'
     HandleHover = 'HandleHover'
     HandlePressed = 'HandlePressed'
+    HandleToggled = 'HandleToggled'
     HandleBorder = 'HandleBorder'
     HandleInner = 'HandleInner'
     HandleOuter = 'HandleOuter'

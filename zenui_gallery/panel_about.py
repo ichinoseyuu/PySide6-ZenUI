@@ -6,7 +6,7 @@ from ZenUI import *
 class PanelAbout(ZPanel):
     def __init__(self,parent = None,name ='PanelAbout'):
         super().__init__(parent = parent, name=name)
-        self.setLayout(ZVBoxLayout(self))
+        self.setLayout(ZVBoxLayout(self, margins = QMargins(10, 10, 10, 10),spacing=10))
         self._setup_ui()
 
     def _setup_ui(self):

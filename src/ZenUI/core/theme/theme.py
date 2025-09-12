@@ -17,14 +17,15 @@ class ZThemeMode(IntEnum):
 @singleton
 class ZThemeManager(QObject):
     themeChanged = Signal(ZTheme)
-    
+    updated = Signal(ZTheme)
+
     def __init__(self):
         super().__init__()
         self._theme = ZTheme.Dark
         self._mode = ZThemeMode.FollowSystem
         self._monitor_thread = None
         self._stop_event = threading.Event()
-        
+
         # 初始化时获取当前系统主题
         if self._mode == ZThemeMode.FollowSystem:
             self._theme = self.getSystemTheme()
@@ -35,7 +36,7 @@ class ZThemeManager(QObject):
         if self._monitor_thread is not None and self._monitor_thread.is_alive():
             self._stop_event.set()
             self._monitor_thread.join()
-            
+
         self._stop_event.clear()
         self._monitor_thread = threading.Thread(target=self._monitor_theme, daemon=True)
         self._monitor_thread.start()
@@ -72,10 +73,10 @@ class ZThemeManager(QObject):
         if self._mode == ZThemeMode.Preset:
             self._theme = value
             self.themeChanged.emit(value)
-            # 触发UI重绘
-            app = QApplication.instance()
-            if app:
-                app.processEvents()
+            # # 触发UI重绘
+            # app = QApplication.instance()
+            # if app:
+            #     app.processEvents()
         else:
             logging.info("Theme mode is FollowSystem, can't set theme.")
 
@@ -89,20 +90,21 @@ class ZThemeManager(QObject):
             self._stop_monitoring_internal()
         self._theme = value
         self.themeChanged.emit(value)
-        # 触发UI重绘
-        app = QApplication.instance()
-        if app:
-            app.processEvents()
+        # # 触发UI重绘
+        # app = QApplication.instance()
+        # if app:
+        #     app.processEvents()
 
     def toggleTheme(self) -> None:
-        current_theme = self.getTheme()
-        new_theme = ZTheme.Light if current_theme == ZTheme.Dark else ZTheme.Dark
+        new_theme = ZTheme.Light if self._theme == ZTheme.Dark else ZTheme.Dark
         self.setTheme(new_theme)
 
     def toggleThemeForce(self) -> None:
-        current_theme = self.getTheme()
-        new_theme = ZTheme.Light if current_theme == ZTheme.Dark else ZTheme.Dark
+        new_theme = ZTheme.Light if self._theme == ZTheme.Dark else ZTheme.Dark
         self.setThemeForce(new_theme)
+
+    def updateStyle(self):
+        self.themeChanged.emit(self._theme)
 
     def setThemeMode(self, value: ZThemeMode) -> None:
         if self._mode == value: 
@@ -116,10 +118,10 @@ class ZThemeManager(QObject):
             if current_system_theme != self._theme:
                 self._theme = current_system_theme
                 self.themeChanged.emit(self._theme)
-                # 触发UI重绘
-                app = QApplication.instance()
-                if app:
-                    app.processEvents()
+                # # 触发UI重绘
+                # app = QApplication.instance()
+                # if app:
+                #     app.processEvents()
         else:
             # 停止监控
             self._stop_monitoring_internal()

@@ -127,10 +127,6 @@ class ZButton(ZABCButton):
         self._icon_cc.setColorTo(data.Icon)
         self._text_cc.setColorTo(data.Text)
 
-    def _draw_rect(self, painter: QPainter):
-        painter.setPen(Qt.NoPen)
-        
-
     # region slot
     def hoverHandler(self):
         self._body_cc.setColorTo(self._style_data.data.BodyHover)

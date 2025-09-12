@@ -9,6 +9,7 @@ from ZenUI.core.styledata.theme_data import *
 
 class ZStyleDataFactory:
     dataclass_map = {
+        'ZSwitch': ZSwitchStyleData,
         'ZTextBox': ZTextBoxStyleData,
         'ZRichTextBlock':ZRichTextBlockStyleData,
         'ZTextBlock': ZTextBlockStyleData,

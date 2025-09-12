@@ -7,7 +7,7 @@ from demo_card import DemoCard
 class PanelInfo(ZScrollPanel):
     def __init__(self, parent = None, name ='PanelInfo'):
         super().__init__(parent = parent, name=name)
-        self.setLayout(ZVBoxLayout(self,alignment=Qt.AlignmentFlag.AlignTop))
+        self.setLayout(ZVBoxLayout(self, margins = QMargins(10, 10, 10, 10),spacing=10, alignment=Qt.AlignmentFlag.AlignTop))
         self._setup_ui()
 
 

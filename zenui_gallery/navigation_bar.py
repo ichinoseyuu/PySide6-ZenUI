@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt,QSize
+from PySide6.QtCore import Qt,QSize,QPoint
 from PySide6.QtGui import QIcon
 from ZenUI import *
 
@@ -42,3 +42,20 @@ class NavigationBar(ZNavigationBar):
         self.btnSettings = ZNavBarToggleButton(self, "btnSettings", icon5)
         self.btnSettings.setToolTip("设置")
         self.addToggleButton(self.footerPanel, self.btnSettings)
+
+        icon6 = QIcon()
+        #icon6.addFile(u":/icons/fluent/regular/ic_fluent_bug_regular.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.Off)
+        icon6.addFile(u":/icons/fluent/filled/ic_fluent_bug_filled.svg", QSize(26,26), QIcon.Mode.Normal, QIcon.State.On)
+        self.btnDebug = ZNavBarButton(self, "btnDebug", icon6)
+        self.btnDebug.setToolTip("调试模式")
+        self.insertButton(self.footerPanel, 0, self.btnDebug)
+        def _debug():
+            ZDebug.draw_rect = not ZDebug.draw_rect
+            ZGlobal.themeManager.updateStyle()
+            ZGlobal.tooltip.showTip(text=f"调试模式{'已打开'if ZDebug.draw_rect else '已关闭'}",
+                                    mode=ZToolTip.Mode.TrackTarget,
+                                    target=self.btnDebug,
+                                    position=TipPos.Right,
+                                    offset = QPoint(10, 0)
+                                    )
+        self.btnDebug.clicked.connect(_debug)

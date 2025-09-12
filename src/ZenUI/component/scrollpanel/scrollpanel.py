@@ -137,13 +137,13 @@ class ZScrollPanel(QWidget):
         if event.modifiers() & Qt.ShiftModifier:
             # 水平滚动
             delta = event.angleDelta().x() if event.angleDelta().x() != 0 else event.angleDelta().y()
-            step = delta / 120 * 50
+            step = delta / 120 * 100
             new_x = current_x - step
             self.scrollTo(x=new_x, y=current_y)
         else:
             # 垂直滚动
             delta = event.angleDelta().y()
-            step = delta / 120 * 50
+            step = delta / 120 * 100
             new_y = current_y - step
             self.scrollTo(x=current_x, y=new_y)
 

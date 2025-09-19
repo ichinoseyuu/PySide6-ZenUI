@@ -9,6 +9,11 @@ from .minimizebutton import ZMinimizeButton
 
 
 class TitleBarBase(QWidget):
+
+    """
+    自定义标题栏基类，继承自QWidget
+    实现了窗口的基本控制功能，包括最小化、最大化、关闭以及拖动
+    """
     moved = Signal(QPoint)
     def __init__(self, parent):
         super().__init__(parent)
@@ -56,7 +61,7 @@ class TitleBarBase(QWidget):
         event.accept()
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        if not self.dragPosition: return 
+        if not self.dragPosition: return
         window = self.window()._resize_grip
         newPos = event.globalPosition().toPoint() - self.dragPosition
         window.move(newPos)

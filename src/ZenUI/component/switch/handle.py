@@ -7,7 +7,7 @@ from ZenUI.component.base import ColorController,LocationController,FloatControl
 class SwitchHandle(QWidget):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
-        self.scale_nomal = 0.8
+        self.scale_nomal = 0.85
         self.scale_hover = 1.0
         self._body_cc = ColorController(self)
         self._location_ctrl = LocationController(self)

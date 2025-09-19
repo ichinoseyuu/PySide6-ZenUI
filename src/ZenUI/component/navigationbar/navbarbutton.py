@@ -15,7 +15,7 @@ class ZNavBarButton(ZABCNavBarButton):
         self.setMaximumSize(40, 40)
         if name : self.setObjectName(name)
 
-        self._icon: QIcon = None
+        self._icon: QIcon = QIcon()
         self._icon_size = QSize(20, 20)
         if icon : self.icon = icon
 

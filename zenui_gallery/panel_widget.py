@@ -6,8 +6,15 @@ from demo_card import DemoCard
 
 class PanelWidget(ZScrollPanel):
     def __init__(self,parent = None,name ='PanelWidget'):
-        super().__init__(parent = parent, name=name)
-        self.setLayout(ZVBoxLayout(self, margins = QMargins(40, 30, 40, 30),spacing=30, alignment=Qt.AlignmentFlag.AlignTop))
+        super().__init__(parent, name)
+        self.setLayout(
+            ZVBoxLayout(
+                self,
+                margins = QMargins(40, 30, 40, 30),
+                spacing=30,
+                alignment=Qt.AlignmentFlag.AlignTop
+                )
+            )
         self._setup_ui()
 
     def _setup_ui(self):
@@ -35,27 +42,43 @@ class PanelWidget(ZScrollPanel):
         self.text_block_1 = ZTextBlock(container, name='text_block_1')
         self.text_block_1.margins = QMargins(6, 0, 6, 0)
         self.text_block_1.wrapMode = ZTextBlock.WrapMode.NoWrap
-        self.text_block_1.text = 'PySide6 是 Qt 官方提供的 Python 模块，它允许开发者使用 Python 编写跨平台 GUI 应用程序，并提供了完整的 Qt 6.0+ 框架支持。'
+        self.text_block_1.text = (
+            "PySide6 是 Qt 官方提供的 Python 模块，"
+            "它允许开发者使用 Python 编写跨平台 GUI 应用程序，"
+            "并提供了完整的 Qt 6.0+ 框架支持。"
+        )
         container.addWidget(self.text_block_1)
 
         self.text_block_2 = ZTextBlock(container, name='text_block_2',selectable=True)
         self.text_block_2.margins = QMargins(6, 6, 6, 6)
         self.text_block_2.wrapMode = ZTextBlock.WrapMode.NoWrap
-        self.text_block_2.text = 'PySide6 是 Qt 官方提供的 Python 模块，它允许开发者使用 Python 编写跨平台 GUI 应用程序，并提供了完整的 Qt 6.0+ 框架支持。'
+        self.text_block_2.text = (
+            "PySide6 是 Qt 官方提供的 Python 模块，"
+            "它允许开发者使用 Python 编写跨平台 GUI 应用程序，"
+            "并提供了完整的 Qt 6.0+ 框架支持。"
+        )
         container.addWidget(self.text_block_2)
 
         self.text_block_3 = ZTextBlock(container, name='text_block_3',selectable=True)
         self.text_block_3.setMaximumWidth(400)
         self.text_block_3.margins = QMargins(6, 6, 6, 6)
         self.text_block_3.wrapMode = ZTextBlock.WrapMode.WordWrap
-        self.text_block_3.text = 'PySide6 是 Qt 官方提供的 Python 模块，它允许开发者使用 Python 编写跨平台 GUI 应用程序，并提供了完整的 Qt 6.0+ 框架支持。'
+        self.text_block_3.text = (
+            "PySide6 是 Qt 官方提供的 Python 模块，"
+            "它允许开发者使用 Python 编写跨平台 GUI 应用程序，"
+            "并提供了完整的 Qt 6.0+ 框架支持。"
+        )
         container.addWidget(self.text_block_3)
 
         self.text_block_4 = ZTextBlock(container, name='text_block_4',selectable=True)
         self.text_block_4.setMaximumWidth(400)
         self.text_block_4.margins = QMargins(6, 6, 6, 6)
         self.text_block_4.wrapMode = ZTextBlock.WrapMode.WrapAnywhere
-        self.text_block_4.text = 'PySide6 是 Qt 官方提供的 Python 模块，它允许开发者使用 Python 编写跨平台 GUI 应用程序，并提供了完整的 Qt 6.0+ 框架支持。'
+        self.text_block_4.text = (
+            "PySide6 是 Qt 官方提供的 Python 模块，"
+            "它允许开发者使用 Python 编写跨平台 GUI 应用程序，"
+            "并提供了完整的 Qt 6.0+ 框架支持。"
+        )
         container.addWidget(self.text_block_4)
 
         title = ZTextBlock(self, text= 'ZRichTextBlock')
@@ -68,11 +91,8 @@ class PanelWidget(ZScrollPanel):
         self.rich_text_1 = ZRichTextBlock(container, name='rich_text_1')
         self.rich_text_1.html = '''
         <p>
-        欢迎使用
-        <span style="color: #ff6b6b; font-weight: bold;">ZenUI</span> 
-        组件库！这个组件库基于
-        <span style="color: #4ecdc4; font-style: bold;">PySide6</span>
-        开发。
+            欢迎使用<span style="color: #ff6b6b; font-weight: bold;">ZenUI</span>组件库！
+            这个组件库基于<span style="color: #4ecdc4; font-style: bold;">PySide6</span>开发。
         </p>
         '''
         container.addWidget(self.rich_text_1)
@@ -80,11 +100,8 @@ class PanelWidget(ZScrollPanel):
         self.rich_text_2 = ZRichTextBlock(container, name='rich_text_2',selectable=True)
         self.rich_text_2.html = '''
         <p>
-        欢迎使用
-        <span style="color: #ff6b6b; font-weight: bold;">ZenUI</span> 
-        组件库！这个组件库基于
-        <span style="color: #4ecdc4; font-style: bold;">PySide6</span>
-        开发。
+            欢迎使用<span style="color: #ff6b6b; font-weight: bold;">ZenUI</span>组件库！
+            这个组件库基于<span style="color: #4ecdc4; font-style: bold;">PySide6</span>开发。
         </p>
         '''
         container.addWidget(self.rich_text_2)
@@ -153,54 +170,70 @@ class PanelWidget(ZScrollPanel):
         self.btn_1 = ZButton(
             parent=container,
             name='btn_1',
-            icon=btn_icon)
+            icon=btn_icon
+            )
         self.btn_1.setToolTip('保存')
         container.addWidget(self.btn_1)
-        self.btn_1.clicked.connect(lambda: ZGlobal.tooltip.showTip(text='保存成功',
-                                                                   target=self.btn_1,
-                                                                   position=TipPos.TopRight,
-                                                                   offset=QPoint(6, 6)
-                                                                   ))
+        self.btn_1.clicked.connect(
+            lambda: ZGlobal.tooltip.showTip(
+                text='保存成功',
+                target=self.btn_1,
+                position=TipPos.TopRight,
+                offset=QPoint(6, 6)
+                )
+            )
 
         self.btn_2 = ZButton(
             parent=container,
             name='btn_2',
             icon=btn_icon,
-            text='保存')
+            text='保存'
+            )
         container.addWidget(self.btn_2)
-        self.btn_2.clicked.connect(lambda: ZGlobal.tooltip.showTip(text='保存成功',
-                                                                   target=self.btn_2,
-                                                                   mode=ZToolTip.Mode.TrackTarget,
-                                                                   position=TipPos.Top,
-                                                                   offset=QPoint(0, 6),
-                                                                   hide_delay=800
-                                                                   ))
+        self.btn_2.clicked.connect(
+            lambda: ZGlobal.tooltip.showTip(
+                text='保存成功',
+                target=self.btn_2,
+                mode=ZToolTip.Mode.TrackTarget,
+                position=TipPos.Top,
+                offset=QPoint(0, 6),
+                hide_delay=800
+                )
+            )
         self.btn_3 = ZButton(
             parent=container,
             name='btn_3',
-            text='保存')
+            text='保存'
+            )
         container.addWidget(self.btn_3)
-        self.btn_3.clicked.connect(lambda: ZGlobal.tooltip.showTip(text='保存成功',
-                                                                   target=self.btn_3,
-                                                                   mode=ZToolTip.Mode.TrackTarget,
-                                                                   position=TipPos.Top,
-                                                                   offset=QPoint(0, 6),
-                                                                   hide_delay=800
-                                                                   ))
+        self.btn_3.clicked.connect(
+            lambda: ZGlobal.tooltip.showTip(
+                text='保存成功',
+                target=self.btn_3,
+                mode=ZToolTip.Mode.TrackTarget,
+                position=TipPos.Top,
+                offset=QPoint(0, 6),
+                hide_delay=800
+                )
+            )
 
         self.btn_4 = ZButton(
             parent=container,
             name='btn_4',
-            text='连点按钮')
+            text='连点按钮'
+            )
         self.btn_4.repeatClick = True
         container.addWidget(self.btn_4)
-        self.btn_4.clicked.connect(lambda: ZGlobal.tooltip.showTip(text=f'你连续点击了{self.btn_4.repeatClickCount}次',
-                                                                   target=self.btn_4,
-                                                                   position=TipPos.Top,
-                                                                   mode=ZToolTip.Mode.TrackTarget,
-                                                                   offset=QPoint(0, 6),
-                                                                   hide_delay=800
-                                                                   ))
+        self.btn_4.clicked.connect(
+            lambda: ZGlobal.tooltip.showTip(
+                text=f'你连续点击了{self.btn_4.repeatClickCount}次',
+                target=self.btn_4,
+                position=TipPos.Top,
+                mode=ZToolTip.Mode.TrackTarget,
+                offset=QPoint(0, 6),
+                hide_delay=800
+                )
+            )
 
 
         title = ZTextBlock(self, text= 'ZToggleButton')
@@ -213,21 +246,24 @@ class PanelWidget(ZScrollPanel):
         self.toggle_btn_1 = ZToggleButton(
             parent=container,
             name='toggle_btn_1',
-            icon=btn_icon)
+            icon=btn_icon
+            )
         self.toggle_btn_1.setToolTip('自动保存')
         container.addWidget(self.toggle_btn_1)
 
         self.toggle_btn_2 = ZToggleButton(
             parent=container,
             name='toggle_btn_2',
-            text='自动保存')
+            icon=btn_icon,
+            text='自动保存'
+            )
         container.addWidget(self.toggle_btn_2)
 
         self.toggle_btn_3 = ZToggleButton(
             parent=container,
             name='toggle_btn_3',
-            icon=btn_icon,
-            text='自动保存')
+            text='自动保存'
+            )
         container.addWidget(self.toggle_btn_3)
 
         title = ZTextBlock(self, text= 'ZSwitch')
@@ -261,7 +297,11 @@ class PanelWidget(ZScrollPanel):
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
-        hlayout = ZHBoxLayout(margins=QMargins(0, 0, 0, 0),spacing=16,alignment=Qt.AlignLeft|Qt.AlignTop)
+        hlayout = ZHBoxLayout(
+            margins=QMargins(0, 0, 0, 0),
+            spacing=16,
+            alignment=Qt.AlignLeft|Qt.AlignTop
+            )
         card.layout().addLayout(hlayout)
 
         container1 = ZVContainer(card)
@@ -277,7 +317,8 @@ class PanelWidget(ZScrollPanel):
             scope=(0, 10),
             step=0.5,
             accuracy=0.1,
-            value=5)
+            value=5
+            )
         self.hslider_1.setFixedLength(230)
         container1.addWidget(self.hslider_1)
 
@@ -289,7 +330,8 @@ class PanelWidget(ZScrollPanel):
             scope=(0, 100),
             step=1,
             accuracy=1,
-            value=50)
+            value=50
+            )
         self.hslider_2.setFixedLength(250)
         container1.addWidget(self.hslider_2)
 
@@ -302,7 +344,8 @@ class PanelWidget(ZScrollPanel):
             step=0.5,
             accuracy=0.1,
             value=50,
-            auto_strip_zero=True)
+            auto_strip_zero=True
+            )
         self.hslider_3.setFixedLength(200)
         container1.addWidget(self.hslider_3)
         container1.arrangeWidgets()
@@ -320,7 +363,8 @@ class PanelWidget(ZScrollPanel):
             scope=(0, 10),
             step=0.5,
             accuracy=0.1,
-            value=5)
+            value=5
+            )
         self.vslider_1.setFixedLength(150)
         container2.addWidget(self.vslider_1)
 
@@ -332,7 +376,8 @@ class PanelWidget(ZScrollPanel):
             scope=(0, 100),
             step=1,
             accuracy=1,
-            value=50)
+            value=50
+            )
         self.vslider_2.setFixedLength(180)
         container2.addWidget(self.vslider_2)
 
@@ -344,7 +389,8 @@ class PanelWidget(ZScrollPanel):
             scope=(0, 100),
             step=0.5,
             accuracy=0.1,
-            value=50)
+            value=50
+            )
         self.vslider_3.setFixedLength(170)
         container2.addWidget(self.vslider_3)
         container2.arrangeWidgets()

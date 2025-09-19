@@ -4,15 +4,22 @@ import win32gui
 from ctypes import cast
 from ctypes.wintypes import LPRECT, MSG
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve,QTimer
+from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve
 from PySide6.QtGui import QResizeEvent,QColor
 from ZenUI.core import ZGlobal,ZFramelessWindowStyleData
 from ZenUI.component.tooltip import ZToolTip
 from ZenUI.component.base import StyleData
-from .titlebar.titlebar import ZTitleBar
-from .win32utils import (WindowsWindowEffect,LPNCCALCSIZE_PARAMS,WinTaskbar,
-                    isSystemBorderAccentEnabled, getSystemAccentColor,
-                    isMaximized, isFullScreen, getResizeBorderThickness)
+from .titlebar import ZTitleBar
+from .win32utils import (
+    WindowsWindowEffect,
+    LPNCCALCSIZE_PARAMS,
+    WinTaskbar,
+    isSystemBorderAccentEnabled,
+    getSystemAccentColor,
+    isMaximized,
+    isFullScreen,
+    getResizeBorderThickness
+    )
 
 class ZFramelessWindow(QWidget):
     BORDER_WIDTH = 6
@@ -89,14 +96,21 @@ class ZFramelessWindow(QWidget):
     def __onScreenChanged(self):
         hWnd = int(self.windowHandle().winId())
         win32gui.SetWindowPos(
-            hWnd, None, 0, 0, 0, 0,
-            win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED)
+            hWnd, None,
+            0, 0, 0, 0,
+            win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED
+            )
 
 
     def resizeEvent(self, event: QResizeEvent):
         super().resizeEvent(event)
         self._titlebar.setGeometry(0,0,event.size().width(), self._titlebar.height())
-        self._centerWidget.setGeometry(0, self._titlebar.height(), event.size().width(), event.size().height() - self._titlebar.height())
+        self._centerWidget.setGeometry(
+            0,
+            self._titlebar.height(),
+            event.size().width(),
+            event.size().height() - self._titlebar.height()
+            )
 
 
     def nativeEvent(self, eventType, message):

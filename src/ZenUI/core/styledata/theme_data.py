@@ -13,8 +13,8 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZSwitch':{
                 K.Body: ACCENT_COLOR_DARK,
                 K.Border: '#909090',
-                K.Handle: '#bfbfbf',
-                K.HandleToggled: '#272727'
+                K.Handle: '#bcbcbc',
+                K.HandleToggled: '#bfbfbf'
                 },
             'ZTextBox': {
                 K.Text: '#dcdcdc',
@@ -153,7 +153,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
 
 LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
             'ZSwitch':{
-                K.Body: ACCENT_COLOR_LIGHT,
+                K.Body: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.05,0.05),
                 K.Border: '#bfbfbf',
                 K.Handle: '#909090',
                 K.HandleToggled: '#f9f9f9'
@@ -218,9 +218,9 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
                 },
             'ZToggleButton': {
                 K.Text: '#333333',
-                K.TextToggled: '#333333',
+                K.TextToggled: '#ffffff',
                 K.Icon: '#333333',
-                K.IconToggled: '#333333',
+                K.IconToggled: '#ffffff',
                 K.Body: '#ffffff',
                 K.BodyHover: '#f2f2f2',
                 K.BodyPressed: '#ebebeb',

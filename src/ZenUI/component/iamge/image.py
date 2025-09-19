@@ -19,8 +19,8 @@ class ZImage(QWidget):
                  opacity: float = 1.0):
         super().__init__(parent)
         if name: self.setObjectName(name)
-        self._image = None          # 原始图片
-        self._scaled_pixmap = None  # 缩放后的图片
+        self._image: QPixmap = QPixmap()       # 原始图片
+        self._scaled_pixmap: QPixmap = QPixmap()   # 缩放后的图片
         self._opacity = opacity      # 透明度
         self._scale_type =  scale_type # 缩放类型
         self._corner_radius = corner_radius     # 圆角半径

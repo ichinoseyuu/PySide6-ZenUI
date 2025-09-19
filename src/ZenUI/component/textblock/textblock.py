@@ -269,7 +269,11 @@ class ZTextBlock(QWidget):
             option.setWrapMode(QTextOption.WrapMode.WrapAnywhere)
 
         # 设置水平对齐，但不设置垂直对齐，因为我们需要手动处理
-        horizontal_alignment = self._alignment & (Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignHCenter)
+        horizontal_alignment = self._alignment & (
+            Qt.AlignmentFlag.AlignLeft |
+            Qt.AlignmentFlag.AlignRight |
+            Qt.AlignmentFlag.AlignHCenter
+            )
         option.setAlignment(horizontal_alignment)
         layout.setTextOption(option)
 
@@ -354,7 +358,14 @@ class ZTextBlock(QWidget):
         return min(line_start_pos + char_pos_in_line, len(self._text))
 
 
-    def _draw_selection_background(self, painter: QPainter, text_rect: QRectF, start: int, end: int, fm: QFontMetrics):
+    def _draw_selection_background(
+        self,
+        painter: QPainter,
+        text_rect: QRectF,
+        start: int,
+        end: int,
+        fm: QFontMetrics
+        ):
         """绘制选中区域背景（统一处理单行和多行）"""
         if start >= end:
             return
@@ -393,8 +404,10 @@ class ZTextBlock(QWidget):
     # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.TextAntialiasing|
-                              QPainter.RenderHint.Antialiasing)
+        painter.setRenderHint(
+            QPainter.RenderHint.TextAntialiasing|
+            QPainter.RenderHint.Antialiasing
+            )
         rect = self.rect()
         radius = self._radius_ctrl.value
 

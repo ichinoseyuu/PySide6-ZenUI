@@ -14,9 +14,9 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         self.setMaximumSize(40, 40)
         if name: self.setObjectName(name)
         # 基本属性
-        self._icon: QIcon = None
-        self._pixmap_off: QPixmap = None
-        self._pixmap_on: QPixmap = None
+        self._icon: QIcon = QIcon()
+        self._pixmap_off: QPixmap = QPixmap()
+        self._pixmap_on: QPixmap = QPixmap()
         self._icon_size = QSize(20, 20)
         if icon : self.icon = icon
         # 样式属性

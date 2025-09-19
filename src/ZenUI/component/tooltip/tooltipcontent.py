@@ -13,7 +13,7 @@ class ZToolTipContent(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._text: str = None
+        self._text: str = ""
         self._font = QFont("Microsoft YaHei", 9)
         self._wrap_mode = self.WrapMode.WrapAnywhere
         self._margins: QMargins = QMargins(10, 8, 10, 8)
@@ -151,7 +151,10 @@ class ZToolTipContent(QWidget):
     # region Event
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing|QPainter.RenderHint.TextAntialiasing)
+        painter.setRenderHint(
+            QPainter.RenderHint.Antialiasing|
+            QPainter.RenderHint.TextAntialiasing
+            )
         # 绘制背景
         rect = self.rect()
         radius = self._radius_ctrl.value

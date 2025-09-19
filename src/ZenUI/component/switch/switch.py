@@ -19,7 +19,7 @@ class ZSwitch(ZABCSwitch):
     class Style(Enum):
         Compact = SwitchStyle(Height=20, Width=40, HandleDiameter=16, Margin=2)
         Standard = SwitchStyle(Height=24, Width=48, HandleDiameter=18, Margin=3)
-        Comfortable = SwitchStyle(Height=28, Width=56, HandleDiameter=20 , Margin=4)
+        Comfortable = SwitchStyle(Height=28, Width=56, HandleDiameter=22 , Margin=3)
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
@@ -67,8 +67,8 @@ class ZSwitch(ZABCSwitch):
     # region private
     def _initStyle(self):
         style = self._style.value
-        self.setFixedSize(QSize(style.Width, style.Height))
-        self._handle.setFixedSize(QSize(style.HandleDiameter, style.HandleDiameter))
+        self.setFixedSize(style.Width, style.Height)
+        self._handle.setFixedSize(style.HandleDiameter, style.HandleDiameter)
         self._handle.move(style.Margin, style.Margin)
 
         data = self._style_data.data

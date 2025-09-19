@@ -14,13 +14,15 @@ class ZTextBox(QWidget):
         WrapAnywhere = 2
     heightChangedByWrapping = Signal(int)  # 携带新高度值
     editingFinished = Signal()
-    def __init__(self,
-                 parent: QWidget = None,
-                 name: str = None,
-                 text: str = "",
-                 mask: str = "",
-                 read_only: bool = False,
-                 selectable: bool = True):
+    def __init__(
+        self,
+        parent: QWidget = None,
+        name: str = None,
+        text: str = "",
+        mask: str = "",
+        read_only: bool = False,
+        selectable: bool = True
+        ):
         super().__init__(parent=parent, minimumSize=QSize(200, 30))
         if name: self.setObjectName(name)
         if read_only: self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
@@ -190,15 +192,15 @@ class ZTextBox(QWidget):
         # 计算完整文本宽度（包括预编辑文本）
         display_text = self._text
         if self._preedit_text:
-            display_text = (self._text[:self._cursor_pos] + 
-                        self._preedit_text + 
+            display_text = (self._text[:self._cursor_pos] +
+                        self._preedit_text +
                         self._text[self._cursor_pos:])
 
         text_width = fm.horizontalAdvance(display_text) + mw
 
         if self._wrap_mode == self.WrapMode.NoWrap:
             height = fm.height() + mh
-            return QSize(max(text_width, self.minimumWidth()), 
+            return QSize(max(text_width, self.minimumWidth()),
                         max(height, self.minimumHeight()))
 
         # 对于自动换行模式
@@ -232,8 +234,8 @@ class ZTextBox(QWidget):
         # 包含预编辑文本
         display_text = self._text
         if self._preedit_text:
-            display_text = (self._text[:self._cursor_pos] + 
-                        self._preedit_text + 
+            display_text = (self._text[:self._cursor_pos] +
+                        self._preedit_text +
                         self._text[self._cursor_pos:])
 
         available_width = width - mw
@@ -318,7 +320,7 @@ class ZTextBox(QWidget):
 
         # 检查高度是否变化且是因为换行引起的
         new_height = self.height()
-        if (new_height != old_height and 
+        if (new_height != old_height and
             self._wrap_mode != self.WrapMode.NoWrap):
             self.heightChangedByWrapping.emit(new_height)
             self._last_height = new_height
@@ -584,7 +586,7 @@ class ZTextBox(QWidget):
         # 获取下一次操作
         command = self._redo_stack.pop()
         # 保存当前状态到撤销栈
-        undo_command = TextCommand(self._text, command.new_text, 
+        undo_command = TextCommand(self._text, command.new_text,
                                 self._cursor_pos, command.new_pos)
         self._undo_stack.append(undo_command)
         # 执行重做
@@ -606,7 +608,7 @@ class ZTextBox(QWidget):
         # 获取上一次操作
         command = self._undo_stack.pop()
         # 保存当前状态用于重做
-        redo_command = TextCommand(command.old_text, self._text, 
+        redo_command = TextCommand(command.old_text, self._text,
                                 command.old_pos, self._cursor_pos)
         self._redo_stack.append(redo_command)
         # 恢复到上一次状态
@@ -907,7 +909,7 @@ class ZTextBox(QWidget):
         if query == Qt.ImCursorRectangle:
             # 返回光标位置
             font_metrics = self.fontMetrics()
-            text_rect = self.style().subElementRect(QStyle.SE_LineEditContents, 
+            text_rect = self.style().subElementRect(QStyle.SE_LineEditContents,
                                                   QStyleOptionFrame(), self)
             x = text_rect.left() + font_metrics.horizontalAdvance(self._text[:self._cursor_pos])
             y = text_rect.top()

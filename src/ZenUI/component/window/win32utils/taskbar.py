@@ -18,10 +18,15 @@ class WinTaskbar:
     @staticmethod
     def isAutoHide():
         """ 检测任务栏是否自动隐藏 """
-        appbarData = APPBARDATA(sizeof(APPBARDATA), 0,
-                                0, 0, RECT(0, 0, 0, 0), 0)
+        appbarData = APPBARDATA(
+            sizeof(APPBARDATA),
+            0, 0, 0,
+            RECT(0, 0, 0, 0), 0
+            )
         taskbarState = windll.shell32.SHAppBarMessage(
-            shellcon.ABM_GETSTATE, byref(appbarData))
+            shellcon.ABM_GETSTATE,
+            byref(appbarData)
+            )
 
         return taskbarState == shellcon.ABS_AUTOHIDE
 

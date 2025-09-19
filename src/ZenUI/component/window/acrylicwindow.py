@@ -7,11 +7,18 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QRect,Property,QPoint
 from PySide6.QtGui import QResizeEvent,QColor
 from ZenUI.core import ZGlobal,ZTheme
-from .titlebar.acrylictitlebar import AcrylicTitleBar
+from .titlebar import AcrylicTitleBar
 from .resizewidget import ResizeWindow
-from .win32utils import (WindowsWindowEffect,LPNCCALCSIZE_PARAMS,WinTaskbar,
-                    isSystemBorderAccentEnabled, getSystemAccentColor,
-                    isMaximized, isFullScreen, getResizeBorderThickness)
+from .win32utils import (
+    WindowsWindowEffect,
+    LPNCCALCSIZE_PARAMS,
+    WinTaskbar,
+    isSystemBorderAccentEnabled,
+    getSystemAccentColor,
+    isMaximized,
+    isFullScreen,
+    getResizeBorderThickness
+    )
 
 class AcrylicWindow(QWidget):
     """亚克力窗口"""
@@ -144,5 +151,9 @@ class AcrylicWindow(QWidget):
     # region Private Func
     def __onScreenChanged(self):
         hWnd = int(self.windowHandle().winId())
-        win32gui.SetWindowPos(hWnd, None, 0, 0, 0, 0, win32con.SWP_NOMOVE |
-                              win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED)
+        win32gui.SetWindowPos(
+            hWnd, None,
+            0, 0, 0, 0,
+            win32con.SWP_NOMOVE |
+            win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED
+            )

@@ -45,11 +45,21 @@ class ZenUIGallery(ZFramelessWindow):
         self.pagelSettings = PanelSettings(self.stackContainer)
         self.stackContainer.addPanel(self.pagelSettings)
 
-        self.navigationBar.btnHome.clicked.connect(lambda: self.stackContainer.setCurrentPanel(self.panelHome))
-        self.navigationBar.btnWidget.clicked.connect(lambda: self.stackContainer.setCurrentPanel(self.panelWidget))
-        self.navigationBar.btnInfo.clicked.connect(lambda: self.stackContainer.setCurrentPanel(self.panelInfo))
-        self.navigationBar.btnAbout.clicked.connect(lambda: self.stackContainer.setCurrentPanel(self.panelAbout))
-        self.navigationBar.btnSettings.clicked.connect(lambda: self.stackContainer.setCurrentPanel(self.pagelSettings))
+        self.navigationBar.btnHome.clicked.connect(
+            lambda: self.stackContainer.setCurrentPanel(self.panelHome)
+            )
+        self.navigationBar.btnWidget.clicked.connect(
+            lambda: self.stackContainer.setCurrentPanel(self.panelWidget)
+            )
+        self.navigationBar.btnInfo.clicked.connect(
+            lambda: self.stackContainer.setCurrentPanel(self.panelInfo)
+            )
+        self.navigationBar.btnAbout.clicked.connect(
+            lambda: self.stackContainer.setCurrentPanel(self.panelAbout)
+            )
+        self.navigationBar.btnSettings.clicked.connect(
+            lambda: self.stackContainer.setCurrentPanel(self.pagelSettings)
+            )
 
 
 
@@ -61,6 +71,6 @@ if __name__ == '__main__':
     #      Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     #app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings) #  设置应用程序属性，禁止创建原生小部件的兄弟组件，以提高性能和避免潜在的问题
     app = QApplication(sys.argv)
-    window = ZenUIGallery()
-    window.show()
+    mainwindow = ZenUIGallery()
+    mainwindow.show()
     app.exec()

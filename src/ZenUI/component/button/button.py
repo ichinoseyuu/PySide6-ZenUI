@@ -14,8 +14,8 @@ class ZButton(ZABCButton):
         super().__init__(parent)
         self.setObjectName(name)
         # 基本属性
-        self._text: str = None
-        self._icon: QIcon = None
+        self._text: str = ''
+        self._icon: QIcon = QIcon()
         self._icon_size = QSize(16, 16)
         self._font = QFont("Microsoft YaHei", 9)
         self._spacing = 4

@@ -20,10 +20,12 @@ class ZToolTip(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint|
-                            Qt.WindowType.ToolTip|
-                            Qt.WindowType.WindowTransparentForInput|
-                            Qt.WindowType.WindowDoesNotAcceptFocus)
+        self.setWindowFlags(
+            Qt.WindowType.FramelessWindowHint|
+            Qt.WindowType.ToolTip|
+            Qt.WindowType.WindowTransparentForInput|
+            Qt.WindowType.WindowDoesNotAcceptFocus
+            )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
         self._target: QWidget = None
@@ -229,7 +231,7 @@ class ZToolTip(QWidget):
         tw, th = self._target.width(), self._target.height()
         tt, tl, tb, tr = tc.y() - th//2, tc.x() - tw//2, tc.y() + th//2, tc.x() + tw//2
 
-        # region 
+        # region
         # 计算 target 的边缘(leagcy)
         # topleft = self._target.mapToGlobal(self._target.rect().topLeft())
         # bottomright = self._target.mapToGlobal(self._target.rect().bottomRight())
@@ -374,7 +376,7 @@ class ZToolTip(QWidget):
     # @timeit
     # def _get_pos_should_be_move(self) -> QPoint:
     #     m = QCursor.pos()
-    #     if self._target is None: 
+    #     if self._target is None:
     #         return m
 
     #     # 计算目标位置和尺寸

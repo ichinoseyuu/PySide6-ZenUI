@@ -15,8 +15,8 @@ class ZToggleButton(ZABCToggleButton):
         super().__init__(parent)
         if name: self.setObjectName(name)
 
-        self._text: str = None
-        self._icon: QIcon = None
+        self._text: str = ''
+        self._icon: QIcon = QIcon()
         self._icon_size = QSize(16, 16)
         self._font = QFont("Microsoft YaHei", 9)
         self._spacing = 4

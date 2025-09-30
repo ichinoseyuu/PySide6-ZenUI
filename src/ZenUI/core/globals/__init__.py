@@ -1,1 +1,1 @@
-from .globals import ZGlobal,TipPos,ZDebug
+from .globals import ZGlobal, ZDebug

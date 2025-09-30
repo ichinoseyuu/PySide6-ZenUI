@@ -62,3 +62,4 @@ class ZStyleDataKey(Enum):
     UnderlineFocused = 'UnderlineFocused'
     Cursor = 'Cursor'
     Mask = 'Mask'
+    Indicator = 'Indicator'

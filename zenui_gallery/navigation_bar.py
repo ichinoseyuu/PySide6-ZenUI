@@ -51,11 +51,12 @@ class NavigationBar(ZNavigationBar):
         self.insertButton(self.footerPanel, 0, self.btnDebug)
         def _debug():
             ZDebug.draw_rect = not ZDebug.draw_rect
+            self.window().repaint()
             ZGlobal.themeManager.updateStyle()
             ZGlobal.tooltip.showTip(text=f"调试模式{'已打开'if ZDebug.draw_rect else '已关闭'}",
                                     mode=ZToolTip.Mode.TrackTarget,
                                     target=self.btnDebug,
-                                    position=TipPos.Right,
+                                    position=ZPosition.Right,
                                     offset = QPoint(10, 0)
                                     )
         self.btnDebug.clicked.connect(_debug)

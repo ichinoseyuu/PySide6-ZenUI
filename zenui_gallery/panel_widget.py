@@ -41,7 +41,7 @@ class PanelWidget(ZScrollPanel):
 
         self.text_block_1 = ZTextBlock(container, name='text_block_1')
         self.text_block_1.margins = QMargins(6, 0, 6, 0)
-        self.text_block_1.wrapMode = ZTextBlock.WrapMode.NoWrap
+        self.text_block_1.wrapMode = ZWrapMode.NoWrap
         self.text_block_1.text = (
             "PySide6 是 Qt 官方提供的 Python 模块，"
             "它允许开发者使用 Python 编写跨平台 GUI 应用程序，"
@@ -51,7 +51,7 @@ class PanelWidget(ZScrollPanel):
 
         self.text_block_2 = ZTextBlock(container, name='text_block_2',selectable=True)
         self.text_block_2.margins = QMargins(6, 6, 6, 6)
-        self.text_block_2.wrapMode = ZTextBlock.WrapMode.NoWrap
+        self.text_block_2.wrapMode = ZWrapMode.NoWrap
         self.text_block_2.text = (
             "PySide6 是 Qt 官方提供的 Python 模块，"
             "它允许开发者使用 Python 编写跨平台 GUI 应用程序，"
@@ -62,7 +62,7 @@ class PanelWidget(ZScrollPanel):
         self.text_block_3 = ZTextBlock(container, name='text_block_3',selectable=True)
         self.text_block_3.setMaximumWidth(400)
         self.text_block_3.margins = QMargins(6, 6, 6, 6)
-        self.text_block_3.wrapMode = ZTextBlock.WrapMode.WordWrap
+        self.text_block_3.wrapMode = ZWrapMode.WordWrap
         self.text_block_3.text = (
             "PySide6 是 Qt 官方提供的 Python 模块，"
             "它允许开发者使用 Python 编写跨平台 GUI 应用程序，"
@@ -73,7 +73,7 @@ class PanelWidget(ZScrollPanel):
         self.text_block_4 = ZTextBlock(container, name='text_block_4',selectable=True)
         self.text_block_4.setMaximumWidth(400)
         self.text_block_4.margins = QMargins(6, 6, 6, 6)
-        self.text_block_4.wrapMode = ZTextBlock.WrapMode.WrapAnywhere
+        self.text_block_4.wrapMode = ZWrapMode.WrapAnywhere
         self.text_block_4.text = (
             "PySide6 是 Qt 官方提供的 Python 模块，"
             "它允许开发者使用 Python 编写跨平台 GUI 应用程序，"
@@ -134,7 +134,7 @@ class PanelWidget(ZScrollPanel):
 
         self.text_box_3 = ZTextBox(container, name='text_box_3',mask='请输入内容')
         self.text_box_3.setMinimumWidth(300)
-        self.text_box_3.wrapMode = ZTextBox.WrapMode.WrapAnywhere
+        self.text_box_3.wrapMode = ZWrapMode.WrapAnywhere
         self.text_box_3.setMaximumWidth(300)
         def test():
             print('test')
@@ -178,7 +178,7 @@ class PanelWidget(ZScrollPanel):
             lambda: ZGlobal.tooltip.showTip(
                 text='保存成功',
                 target=self.btn_1,
-                position=TipPos.TopRight,
+                position=ZPosition.TopRight,
                 offset=QPoint(6, 6)
                 )
             )
@@ -195,7 +195,7 @@ class PanelWidget(ZScrollPanel):
                 text='保存成功',
                 target=self.btn_2,
                 mode=ZToolTip.Mode.TrackTarget,
-                position=TipPos.Top,
+                position=ZPosition.Top,
                 offset=QPoint(0, 6),
                 hide_delay=800
                 )
@@ -211,13 +211,13 @@ class PanelWidget(ZScrollPanel):
                 text='保存成功',
                 target=self.btn_3,
                 mode=ZToolTip.Mode.TrackTarget,
-                position=TipPos.Top,
+                position=ZPosition.Top,
                 offset=QPoint(0, 6),
                 hide_delay=800
                 )
             )
 
-        self.btn_4 = ZButton(
+        self.btn_4 = ZRepeatButton(
             parent=container,
             name='btn_4',
             text='连点按钮'
@@ -226,9 +226,9 @@ class PanelWidget(ZScrollPanel):
         container.addWidget(self.btn_4)
         self.btn_4.clicked.connect(
             lambda: ZGlobal.tooltip.showTip(
-                text=f'你连续点击了{self.btn_4.repeatClickCount}次',
+                text=f'你连续点击了{self.btn_4.repeatCount}次',
                 target=self.btn_4,
-                position=TipPos.Top,
+                position=ZPosition.Top,
                 mode=ZToolTip.Mode.TrackTarget,
                 offset=QPoint(0, 6),
                 hide_delay=800

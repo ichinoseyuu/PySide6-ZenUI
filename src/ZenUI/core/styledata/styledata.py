@@ -9,6 +9,7 @@ from ZenUI.core.styledata.theme_data import *
 
 class ZStyleDataFactory:
     dataclass_map = {
+        'ZNavigationBar': ZNavigationBarStyleData,
         'ZSwitch': ZSwitchStyleData,
         'ZTextBox': ZTextBoxStyleData,
         'ZRichTextBlock':ZRichTextBlockStyleData,
@@ -26,7 +27,7 @@ class ZStyleDataFactory:
         'ZCloseButton': ZTitleBarButtonStyleData,
         'ZFramelessWindow': ZFramelessWindowStyleData,
         'ZToolTip': ZToolTipStyleData,
-        }
+    }
 
     @classmethod
     def create(cls, name: str, data: Dict[str, Any]) -> StyleDataUnion:

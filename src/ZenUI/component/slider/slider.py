@@ -3,8 +3,8 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from enum import IntEnum
 from typing import overload
-from ZenUI.component.base import StyleData
-from ZenUI.core import ZGlobal, ZSliderStyleData, TipPos, ZDebug
+from ZenUI.component.base import StyleData, ZPosition
+from ZenUI.core import ZGlobal, ZSliderStyleData, ZDebug
 from .fill import SliderFill
 from .track import SliderTrack
 from .handle import SliderHandle
@@ -118,7 +118,7 @@ class ZSlider(QWidget):
     def max(self): return self._max
     @max.setter
     def max(self, max: int | float):
-        self._max = max 
+        self._max = max
         self._scope = (self._min, self._max)
         self.setValue(self._value)
 
@@ -332,7 +332,7 @@ class ZSlider(QWidget):
                 text=self.displayValue,
                 target=self._handle,
                 mode=ZGlobal.tooltip.Mode.TrackTarget,
-                position=TipPos.Top,
+                position=ZPosition.Top,
                 hide_delay=1000)
         elif self.isVertical and (event.key() == Qt.Key_Up or event.key() == Qt.Key_Down):
             step = 1 if event.key() == Qt.Key_Up else -1
@@ -341,7 +341,7 @@ class ZSlider(QWidget):
                 text=self.displayValue,
                 target=self._handle,
                 mode=ZGlobal.tooltip.Mode.TrackTarget,
-                position=TipPos.Left,
+                position=ZPosition.Left,
                 hide_delay=1000)
         event.accept()
 
@@ -374,14 +374,14 @@ class ZSlider(QWidget):
                 text = self.displayValue,
                 target = self._handle,
                 mode = ZGlobal.tooltip.Mode.TrackTarget,
-                position = TipPos.Top,
+                position = ZPosition.Top,
                 hide_delay= 1000)
         else:
             ZGlobal.tooltip.showTip(
                 text = self.displayValue,
                 target = self._handle,
                 mode = ZGlobal.tooltip.Mode.TrackTarget,
-                position = TipPos.Left,
+                position = ZPosition.Left,
                 hide_delay= 1000)
         event.accept()
 

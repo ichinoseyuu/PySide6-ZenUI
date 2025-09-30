@@ -2,8 +2,8 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.base import ColorController,FloatController,LocationController
-from ZenUI.core import ZGlobal,TipPos
+from ZenUI.component.base import ColorController,FloatController,LocationController,ZPosition
+from ZenUI.core import ZGlobal
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ZenUI.component.slider.slider import ZSlider
@@ -95,7 +95,7 @@ class SliderHandle(QWidget):
                 text = self.parent().displayValue,
                 target = self,
                 mode = ZGlobal.tooltip.Mode.TrackTarget,
-                position =TipPos.Top)
+                position =ZPosition.Top)
         else:
             delta = max(0, min(pos.y(), slider._track_length))
             slider.setValue(slider._max - delta / slider._track_length * slider._max)
@@ -103,7 +103,7 @@ class SliderHandle(QWidget):
                 text = self.parent().displayValue,
                 target = self,
                 mode = ZGlobal.tooltip.Mode.TrackTarget,
-                position = TipPos.Left)
+                position = ZPosition.Left)
 
     def mouseReleaseEvent(self, event):
         self._inner_scale_ctrl.setValueTo(self._inner_scale_released)
@@ -120,13 +120,13 @@ class SliderHandle(QWidget):
                 text = self.parent().displayValue,
                 target = self,
                 mode = ZGlobal.tooltip.Mode.TrackTarget,
-                position = TipPos.Top)
+                position = ZPosition.Top)
         else:
             ZGlobal.tooltip.showTip(
                 text = self.parent().displayValue,
                 target = self,
                 mode = ZGlobal.tooltip.Mode.TrackTarget,
-                position = TipPos.Left)
+                position = ZPosition.Left)
 
 
     def leaveEvent(self, event):

@@ -156,7 +156,7 @@ class ZToggleButton(ABCToggleButton):
     # region private
     def _initStyle(self):
         data = self._style_data.data
-        self._radius_ctrl.radius = data.Radius
+        self._radius_ctrl.value = data.Radius
         if self._checked:
             self._body_cc.color = data.BodyToggled
             self._text_cc.color = data.TextToggled
@@ -171,7 +171,7 @@ class ZToggleButton(ABCToggleButton):
 
     def _styleChangeHandler(self):
         data = self._style_data.data
-        self._radius_ctrl.radius = data.Radius
+        self._radius_ctrl.value = data.Radius
         if self._checked:
             self._body_cc.setColorTo(data.BodyToggled)
             self._border_cc.setColorTo(data.BorderToggled)
@@ -192,7 +192,7 @@ class ZToggleButton(ABCToggleButton):
         painter.setOpacity(self._opacity_ctrl.opacity)
         # draw background
         rect = self.rect()
-        radius = self._radius_ctrl.radius
+        radius = self._radius_ctrl.value
         if self._body_cc.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
             painter.setBrush(self._body_cc.color)

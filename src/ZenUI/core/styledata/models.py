@@ -17,6 +17,7 @@ __all__ = [
     'ZRichTextBlockStyleData',
     'ZPanelStyleData',
     'ZSwitchStyleData',
+    'ZNavigationBarStyleData',
     'StyleDataT',
     'StyleDataUnion'
     ]
@@ -150,6 +151,9 @@ class ZSwitchStyleData:
     Handle: QColor = None
     HandleToggled: QColor = None
 
+@dataclass
+class ZNavigationBarStyleData:
+    Indicator: QColor = None
 
 StyleDataUnion = Union[
     ZButtonStyleData,
@@ -165,7 +169,8 @@ StyleDataUnion = Union[
     ZTextBoxStyleData,
     ZRichTextBlockStyleData,
     ZPanelStyleData,
-    ZSwitchStyleData
+    ZSwitchStyleData,
+    ZNavigationBarStyleData
     ]
 
 # 定义类型变量，用于StyleData的泛型

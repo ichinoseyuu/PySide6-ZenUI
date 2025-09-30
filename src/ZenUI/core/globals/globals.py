@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ZenUI.component.tooltip import ZToolTip
 from PySide6.QtGui import QPainter, QPen, QResizeEvent,QColor
-from PySide6.QtCore import Qt, QRect 
+from PySide6.QtCore import Qt, QRect
 from PySide6.QtWidgets import QWidget
 from ..theme import ZThemeManager
 from ..styledata import ZStyleDataManager
@@ -29,16 +29,6 @@ def configureLogging():
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
-
-class TipPos(IntEnum):
-    Top = 0
-    Bottom = 1
-    Left = 2
-    Right = 3
-    TopLeft = 4
-    TopRight = 5
-    BottomLeft = 6
-    BottomRight = 7
 
 class ZGlobal:
     configureLogging()

@@ -3,14 +3,9 @@ from enum import IntEnum
 from PySide6.QtWidgets import QWidget,QSizePolicy
 from PySide6.QtCore import Qt, QSize, QMargins,QRectF,Signal
 from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen, QTextLayout, QTextOption
-from ZenUI.component.base import ColorController,FloatController,StyleData
+from ZenUI.component.base import ColorController,FloatController,StyleData,ZWrapMode
 from ZenUI.core import ZTextBlockStyleData,ZDebug
 class ZTextBlock(QWidget):
-    class WrapMode(IntEnum):
-        NoWrap = 0
-        WordWrap = 1
-        WrapAnywhere = 2
-
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
@@ -23,7 +18,7 @@ class ZTextBlock(QWidget):
         self._font = QFont("Microsoft YaHei", 10)
         self._selected_text = ""  # 选中的文字
         self._margins = QMargins(0, 0, 0, 0)
-        self._wrap_mode = self.WrapMode.WordWrap
+        self._wrap_mode = ZWrapMode.WordWrap
         self._alignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
         self._selectable = selectable  # 是否可选择文本
         self._selection_start = -1  # 选中开始位置
@@ -82,10 +77,10 @@ class ZTextBlock(QWidget):
         self.update()
 
     @property
-    def wrapMode(self) -> WrapMode: return self._wrap_mode
+    def wrapMode(self) ->ZWrapMode: return self._wrap_mode
 
     @wrapMode.setter
-    def wrapMode(self, mode: WrapMode) -> None:
+    def wrapMode(self, mode: ZWrapMode) -> None:
         self._wrap_mode = mode
         self.adjustSize()
         self.update()
@@ -136,7 +131,7 @@ class ZTextBlock(QWidget):
         fm = QFontMetrics(self._font)
         text_width = fm.horizontalAdvance(self._text) + mw + 1
 
-        if self._wrap_mode == self.WrapMode.NoWrap:
+        if self._wrap_mode == ZWrapMode.NoWrap:
             height = max(fm.height() + mh, self.minimumHeight())
             return QSize(text_width, height)
 
@@ -160,7 +155,7 @@ class ZTextBlock(QWidget):
         self.resize(self.sizeHint())
 
     def hasHeightForWidth(self):
-        if self._wrap_mode == self.WrapMode.NoWrap: return False
+        if self._wrap_mode == ZWrapMode.NoWrap: return False
         return True
 
     def heightForWidth(self, width: int) -> int:
@@ -169,12 +164,12 @@ class ZTextBlock(QWidget):
         mh = m.top() + m.bottom()
         mw = m.left() + m.right()
         available_width = width - mw
-        if self._wrap_mode == self.WrapMode.NoWrap:
+        if self._wrap_mode == ZWrapMode.NoWrap:
             return max(fm.height() + mh, self.minimumHeight())
         # 使用 QTextLayout 计算实际需要的高度
         layout = QTextLayout(self._text, self._font)
         option = QTextOption()
-        if self._wrap_mode == self.WrapMode.WordWrap:
+        if self._wrap_mode == ZWrapMode.WordWrap:
             option.setWrapMode(QTextOption.WrapMode.WordWrap)
         else:
             option.setWrapMode(QTextOption.WrapMode.WrapAnywhere)
@@ -221,9 +216,9 @@ class ZTextBlock(QWidget):
 
     def _get_text_flag(self) -> Qt.TextFlag:
         """获取文本显示模式"""
-        if self._wrap_mode == self.WrapMode.NoWrap:
+        if self._wrap_mode == ZWrapMode.NoWrap:
             return Qt.TextFlag.TextSingleLine | self._alignment
-        elif self._wrap_mode == self.WrapMode.WordWrap:
+        elif self._wrap_mode == ZWrapMode.WordWrap:
             return Qt.TextFlag.TextWordWrap | self._alignment
         else:
             return Qt.TextFlag.TextWrapAnywhere | self._alignment
@@ -249,7 +244,7 @@ class ZTextBlock(QWidget):
 
     def _get_text_layout(self, text_rect: QRectF, fm: QFontMetrics):
         """获取文本的行布局信息，返回每行的文本内容、在原文本中的位置和精确的Y坐标"""
-        if self._wrap_mode == self.WrapMode.NoWrap:
+        if self._wrap_mode == ZWrapMode.NoWrap:
             # 单行文本也需要考虑垂直对齐
             line_height = fm.height()
             if self._alignment & Qt.AlignmentFlag.AlignVCenter:
@@ -263,9 +258,9 @@ class ZTextBlock(QWidget):
         layout = QTextLayout(self._text, self._font)
         option = QTextOption()
 
-        if self._wrap_mode == self.WrapMode.WordWrap:
+        if self._wrap_mode == ZWrapMode.WordWrap:
             option.setWrapMode(QTextOption.WrapMode.WordWrap)
-        elif self._wrap_mode == self.WrapMode.WrapAnywhere:
+        elif self._wrap_mode == ZWrapMode.WrapAnywhere:
             option.setWrapMode(QTextOption.WrapMode.WrapAnywhere)
 
         # 设置水平对齐，但不设置垂直对齐，因为我们需要手动处理

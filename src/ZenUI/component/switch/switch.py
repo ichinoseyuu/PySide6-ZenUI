@@ -1,11 +1,15 @@
 from enum import Enum
 from dataclasses import dataclass
-from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap, QLinearGradient, QPainterPath
-from PySide6.QtCore import Qt, QRect, QSize, QRectF
+from PySide6.QtGui import QPainter, QPen
+from PySide6.QtCore import Qt, QRectF
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
+from ZenUI.component.base import (
+    ColorController,
+    OpacityController,
+    StyleData,
+    ABCToggleButton
+)
 from ZenUI.core import ZSwitchStyleData,ZDebug
-from .abcswitch import ZABCSwitch
 from .handle import SwitchHandle
 
 @dataclass
@@ -15,7 +19,7 @@ class SwitchStyle:
     HandleDiameter: int
     Margin: int
 
-class ZSwitch(ZABCSwitch):
+class ZSwitch(ABCToggleButton):
     class Style(Enum):
         Compact = SwitchStyle(Height=20, Width=40, HandleDiameter=16, Margin=2)
         Standard = SwitchStyle(Height=24, Width=48, HandleDiameter=18, Margin=3)
@@ -47,6 +51,9 @@ class ZSwitch(ZABCSwitch):
 
     @property
     def handle(self): return self._handle
+
+    @property
+    def isOn(self) -> bool: return self._checked
 
     @property
     def switchStyle(self): return self._style
@@ -99,11 +106,6 @@ class ZSwitch(ZABCSwitch):
     def leaveHandler(self):
         self._handle.scaleCtrl.setValueTo(self._handle.scale_nomal)
 
-    def pressHandler(self):
-        pass
-
-    def releaseHandler(self):
-        pass
 
     def toggleHandler(self, checked):
         data = self._style_data.data

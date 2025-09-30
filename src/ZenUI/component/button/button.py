@@ -1,11 +1,20 @@
 from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
-from PySide6.QtCore import Qt, QRect, QSize, QRectF
+from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPoint
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
-from ZenUI.core import ZButtonStyleData,ZDebug
-from .abcbutton import ZABCButton
+from ZenUI.component.base import (
+    ColorController,
+    FloatController,
+    OpacityController,
+    StyleData,
+    ABCButton,
+    ZPosition)
+from ZenUI.core import (
+    ZButtonStyleData,
+    ZDebug,
+    ZGlobal
+)
 
-class ZButton(ZABCButton):
+class ZButton(ABCButton):
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
@@ -130,9 +139,14 @@ class ZButton(ZABCButton):
     # region slot
     def hoverHandler(self):
         self._body_cc.setColorTo(self._style_data.data.BodyHover)
-
+        if self._tool_tip != "":
+            ZGlobal.tooltip.showTip(text=self._tool_tip,
+                        target=self,
+                        position=ZPosition.TopRight,
+                        offset=QPoint(6, 6))
     def leaveHandler(self):
         self._body_cc.setColorTo(self._style_data.data.Body)
+        if self._tool_tip != "" or ZGlobal.tooltip.isShowing: ZGlobal.tooltip.hideTip()
 
     def pressHandler(self):
         self._body_cc.setColorTo(self._style_data.data.BodyPressed)

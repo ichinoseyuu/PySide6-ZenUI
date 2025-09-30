@@ -1,17 +1,13 @@
 import logging
-from enum import Enum, IntEnum
+from enum import IntEnum
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.base import LocationController,SizeController,WindowOpacityController,StyleData
-from ZenUI.core import ZDebug,ZToolTipStyleData,TipPos,ZQuickEffect
+from ZenUI.component.base import LocationController,SizeController,WindowOpacityController,StyleData,ZPosition,ZState
+from ZenUI.core import ZDebug,ZToolTipStyleData,ZQuickEffect
 from .tooltipcontent import ZToolTipContent
 
 class ZToolTip(QWidget):
-    class State(Enum):
-        Hidden = 0
-        Showing = 1
-
     class Mode(IntEnum):
         TrackMouse = 0
         TrackTarget = 1
@@ -30,7 +26,7 @@ class ZToolTip(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
         self._target: QWidget = None
         self._mode = self.Mode.TrackMouse
-        self._position = TipPos.Top
+        self._position = ZPosition.Top
         self._offset = QPoint(0, 0)
 
         self._margin = 8 # 边距，用于绘制content的阴影
@@ -70,9 +66,9 @@ class ZToolTip(QWidget):
 
     # region property
     @property
-    def state(self) -> State:
-        if self.windowOpacity() == 0: return self.State.Hidden
-        else: return self.State.Showing
+    def state(self) -> ZState:
+        if self.windowOpacity() == 0: return ZState.Hidden
+        else: return ZState.Showing
 
     @property
     def isHidden(self) ->bool:
@@ -99,9 +95,9 @@ class ZToolTip(QWidget):
 
 
     @property
-    def position(self) -> TipPos: return self._position
+    def position(self) -> ZPosition: return self._position
     @position.setter
-    def position(self, position: TipPos):
+    def position(self, position: ZPosition):
         self._position = position
 
 
@@ -131,7 +127,7 @@ class ZToolTip(QWidget):
                 text: str,
                 target: QWidget,
                 mode: Mode = Mode.TrackMouse,
-                position: TipPos = TipPos.TopRight,
+                position: ZPosition = ZPosition.TopRight,
                 offset: QPoint = QPoint(6, 6),
                 hide_delay: int = 0,
                 ) -> None:
@@ -245,83 +241,83 @@ class ZToolTip(QWidget):
         offset = self._offset
 
         if mode == self.Mode.TrackMouse:
-            if tip_pos == TipPos.Top:
+            if tip_pos == ZPosition.Top:
                 x = m.x() - w//2
                 y = m.y() - ch - margin - offset.y()
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.Bottom:
+            if tip_pos == ZPosition.Bottom:
                 x = m.x() - w//2
                 y = m.y() - margin + offset.y()
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.Left:
+            if tip_pos == ZPosition.Left:
                 x = m.x() - cw - margin - offset.x()
                 y = m.y() - h//2
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.Right:
+            if tip_pos == ZPosition.Right:
                 x = m.x() - margin + offset.x()
                 y = m.y() - h//2
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.TopLeft:
+            if tip_pos == ZPosition.TopLeft:
                 x = m.x() - cw - margin - offset.x()
                 y = m.y() - ch - margin - offset.y()
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.TopRight:
+            if tip_pos == ZPosition.TopRight:
                 x = m.x() - margin + offset.x()
                 y = m.y() - ch - margin - offset.y()
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.BottomLeft:
+            if tip_pos == ZPosition.BottomLeft:
                 x = m.x() - cw - margin - offset.x()
                 y = m.y() - margin + offset.y()
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.BottomRight:
+            if tip_pos == ZPosition.BottomRight:
                 x = m.x() - margin + offset.x()
                 y = m.y() - margin + offset.y()
                 return QPoint(x, y)
 
         if mode in [self.Mode.TrackTarget, self.Mode.AlignTarget]:
-            if tip_pos == TipPos.Top:
+            if tip_pos == ZPosition.Top:
                 x = tc.x() - w//2
                 y = tt - ch - margin - offset.y()
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.Bottom:
+            if tip_pos == ZPosition.Bottom:
                 x = tc.x() - w//2
                 y = tb + offset.y() - margin
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.Left:
+            if tip_pos == ZPosition.Left:
                 x = tl - cw - margin - offset.x()
                 y = tc.y() - h//2
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.Right:
+            if tip_pos == ZPosition.Right:
                 x = tr - margin + offset.x()
                 y = tc.y() - h//2
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.TopLeft:
+            if tip_pos == ZPosition.TopLeft:
                 x = tl - cw - margin - offset.x()
                 y = tt - ch - margin - offset.y()
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.TopRight:
+            if tip_pos == ZPosition.TopRight:
                 x = tr - margin + offset.x()
                 y = tt - ch - margin - offset.y()
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.BottomLeft:
+            if tip_pos == ZPosition.BottomLeft:
                 x = tl - cw - margin - offset.x()
                 y = tb - margin + offset.y()
                 return QPoint(x, y)
 
-            if tip_pos == TipPos.BottomRight:
+            if tip_pos == ZPosition.BottomRight:
                 x = tr - margin + offset.x()
                 y = tb - margin + offset.y()
                 return QPoint(x, y)

@@ -3,19 +3,14 @@ from enum import IntEnum
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QRectF, QSize, QRect, QMargins
 from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen
-from ZenUI.component.base import ColorController,FloatController
+from ZenUI.component.base import ColorController,FloatController,ZWrapMode
 
 class ZToolTipContent(QWidget):
-    class WrapMode(IntEnum):
-        NoWrap = 0
-        WordWrap = 1
-        WrapAnywhere = 2
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self._text: str = ""
         self._font = QFont("Microsoft YaHei", 9)
-        self._wrap_mode = self.WrapMode.WrapAnywhere
+        self._wrap_mode = ZWrapMode.WrapAnywhere
         self._margins: QMargins = QMargins(10, 8, 10, 8)
         self._alignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
 
@@ -50,10 +45,10 @@ class ZToolTipContent(QWidget):
         self.update()
 
     @property
-    def wrapMode(self) -> WrapMode: return self._wrap_mode
+    def wrapMode(self) -> ZWrapMode: return self._wrap_mode
 
     @wrapMode.setter
-    def wrapMode(self, mode: WrapMode) -> None:
+    def wrapMode(self, mode: ZWrapMode) -> None:
         self._wrap_mode = mode
         self.adjustSize()
         self.update()
@@ -104,7 +99,7 @@ class ZToolTipContent(QWidget):
         fm = QFontMetrics(self._font)
         text_width = fm.horizontalAdvance(self._text) + mw + 1
 
-        if self._wrap_mode == self.WrapMode.NoWrap:
+        if self._wrap_mode == ZWrapMode.NoWrap:
             height = max(fm.height() + mh, self.minimumHeight())
             return QSize(text_width, height)
 
@@ -124,7 +119,7 @@ class ZToolTipContent(QWidget):
 
 
     def hasHeightForWidth(self):
-        if self._wrap_mode == self.WrapMode.NoWrap: return False
+        if self._wrap_mode == ZWrapMode.NoWrap: return False
         return True
 
     def heightForWidth(self, width: int) -> int:
@@ -141,9 +136,9 @@ class ZToolTipContent(QWidget):
     # region Private
     def _get_text_flag(self) -> Qt.TextFlag:
         """获取文本显示模式"""
-        if self._wrap_mode == self.WrapMode.NoWrap:
+        if self._wrap_mode == ZWrapMode.NoWrap:
             return Qt.TextFlag.TextSingleLine | self._alignment
-        elif self._wrap_mode == self.WrapMode.WordWrap:
+        elif self._wrap_mode == ZWrapMode.WordWrap:
             return Qt.TextFlag.TextWordWrap | self._alignment
         else:
             return Qt.TextFlag.TextWrapAnywhere | self._alignment

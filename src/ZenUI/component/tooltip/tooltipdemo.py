@@ -1,13 +1,13 @@
 import sys
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QComboBox, 
-                               QCheckBox, QPushButton, QSpinBox, QLabel, 
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QComboBox,
+                               QCheckBox, QPushButton, QSpinBox, QLabel,
                                QApplication, QGroupBox, QGridLayout)
 from PySide6.QtCore import Qt, QPoint
 from PySide6.QtGui import QCursor
 
 # 假设 tooltip.py 和 tooldipdemo.py 在同一目录下
-from .tooltip import ZToolTip, TipPos
-from ZenUI.core import ZGlobal
+from .tooltip import ZToolTip
+from ZenUI.component.base import ZPosition
 
 class ZToolTipDemo(QWidget):
     def __init__(self, parent=None):
@@ -42,9 +42,9 @@ class ZToolTipDemo(QWidget):
         self.pos_label = QLabel("Position:")
         self.pos_combo = QComboBox()
         self.pos_combo.setStyleSheet("background-color: white; border: 1px solid gray;")
-        for pos in TipPos:
+        for pos in ZPosition:
             self.pos_combo.addItem(pos.name, pos)
-        self.pos_combo.setCurrentText(TipPos.TopRight.name)
+        self.pos_combo.setCurrentText(ZPosition.TopRight.name)
         self.control_layout.addWidget(self.pos_label, 0, 0)
         self.control_layout.addWidget(self.pos_combo, 0, 1)
 

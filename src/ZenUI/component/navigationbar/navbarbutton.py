@@ -1,12 +1,22 @@
 
 from PySide6.QtGui import QPainter, QIcon, QPixmap, QPen
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, QPoint
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
-from ZenUI.core import ZNavBarButtonStyleData,ZDebug
-from .abcnavbarbutton import ZABCNavBarButton
+from ZenUI.component.base import (
+    ColorController,
+    FloatController,
+    OpacityController,
+    StyleData,
+    ABCButton,
+    ZPosition
+)
+from ZenUI.core import (
+    ZNavBarButtonStyleData,
+    ZDebug,
+    ZGlobal
+)
 
-class ZNavBarButton(ZABCNavBarButton):
+class ZNavBarButton(ABCButton):
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
@@ -73,9 +83,17 @@ class ZNavBarButton(ZABCNavBarButton):
 
     def hoverHandler(self):
         self._body_cc.setColorTo(self._style_data.data.BodyHover)
-
+        if self._tool_tip != "":
+            ZGlobal.tooltip.showTip(
+                text = self._tool_tip,
+                target = self,
+                mode = ZGlobal.tooltip.Mode.AlignTarget,
+                position = ZPosition.Right,
+                offset = QPoint(10, 0)
+                )
     def leaveHandler(self):
         self._body_cc.setColorTo(self._style_data.data.Body)
+        if self._tool_tip != "": ZGlobal.tooltip.hideTip()
 
     def pressHandler(self):
         self._body_cc.setColorTo(self._style_data.data.BodyPressed)
@@ -83,15 +101,18 @@ class ZNavBarButton(ZABCNavBarButton):
     def releaseHandler(self):
         self._body_cc.setColorTo(self._style_data.data.BodyHover)
 
-    # region Override
-    # Method
+    # region public
     def setEnabled(self, enable: bool) -> None:
         if enable == self.isEnabled(): return
         if enable: self._opacity_ctrl.fadeTo(1.0)
         else: self._opacity_ctrl.fadeTo(0.3)
         super().setEnabled(enable)
 
-    # Event
+    def sizeHint(self):
+        return QSize(40, 40)
+
+
+    # region event
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing |
@@ -119,6 +140,3 @@ class ZNavBarButton(ZABCNavBarButton):
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 
-
-    def sizeHint(self):
-        return QSize(40, 40)

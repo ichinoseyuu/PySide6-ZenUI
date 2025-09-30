@@ -1,11 +1,21 @@
-from PySide6.QtGui import QPainter, QIcon, QPixmap, QPen
-from PySide6.QtCore import Qt, QSize, QRectF
+from PySide6.QtGui import QPainter, QIcon, QPixmap, QPen, QMouseEvent
+from PySide6.QtCore import Qt, QSize, QRectF, QPoint
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.base import ColorController,FloatController,OpacityController,StyleData
-from ZenUI.core import ZNavBarToggleButtonStyleData,ZDebug
-from .abcnavbartogglebutton import ZABCNavBarToggleButton
-import logging
-class ZNavBarToggleButton(ZABCNavBarToggleButton):
+from ZenUI.component.base import (
+    ColorController,
+    FloatController,
+    OpacityController,
+    StyleData,
+    ABCToggleButton,
+    ZPosition
+)
+from ZenUI.core import (
+    ZNavBarToggleButtonStyleData,
+    ZDebug,
+    ZGlobal
+)
+
+class ZNavBarToggleButton(ABCToggleButton):
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
@@ -13,6 +23,7 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         super().__init__(parent)
         self.setMaximumSize(40, 40)
         if name: self.setObjectName(name)
+        self.isGroupMember = True
         # 基本属性
         self._icon: QIcon = QIcon()
         self._pixmap_off: QPixmap = QPixmap()
@@ -86,13 +97,20 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
             self._body_cc.setColorTo(self._style_data.data.BodyToggledHover)
         else:
             self._body_cc.setColorTo(self._style_data.data.BodyHover)
-
+        if self._tool_tip != "":
+            ZGlobal.tooltip.showTip(
+                text = self._tool_tip,
+                target = self,
+                mode = ZGlobal.tooltip.Mode.AlignTarget,
+                position = ZPosition.Right,
+                offset = QPoint(10, 0)
+                )
     def leaveHandler(self):
         if self._checked:
             self._body_cc.setColorTo(self._style_data.data.BodyToggled)
         else:
             self._body_cc.setColorTo(self._style_data.data.Body)
-
+        if self._tool_tip != "": ZGlobal.tooltip.hideTip()
     def pressHandler(self):
         if self._checked:
             self._body_cc.setColorTo(self._style_data.data.BodyToggledPressed)
@@ -112,15 +130,17 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
             self._icon_cc.setColorTo(data.Icon)
             self._indicator_oc.fadeOut()
 
-    # region Override
-    # Method
+    # region public
     def setEnabled(self, enable: bool) -> None:
         if enable == self.isEnabled(): return
         if enable: self._opacity_ctrl.fadeTo(1.0)
         else: self._opacity_ctrl.fadeTo(0.3)
         super().setEnabled(enable)
 
-    # Event
+    def sizeHint(self):
+        return QSize(40, 40)
+
+    # region event
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing|
@@ -156,21 +176,18 @@ class ZNavBarToggleButton(ZABCNavBarToggleButton):
         painter.drawPixmap(icon_x, icon_y, colored_pixmap)
 
         # draw indicator
-        painter.setOpacity(self._indicator_oc.opacity)
-        indicator_width = 3
-        indicator_height = self._icon_size.height()
-        indicator_radius = indicator_width / 2  # 保证半径不超过宽/高一半
-        indicator_rect = QRectF(
-            0,
-            (rect.height() - indicator_height) / 2,
-            indicator_width,
-            indicator_height
-        )
-        painter.setBrush(self._icon_cc.color)
-        painter.drawRoundedRect(indicator_rect, indicator_radius, indicator_radius)
+        # painter.setOpacity(self._indicator_oc.opacity)
+        # indicator_width = 3
+        # indicator_height = self._icon_size.height()
+        # indicator_radius = indicator_width / 2  # 保证半径不超过宽/高一半
+        # indicator_rect = QRectF(
+        #     0,
+        #     (rect.height() - indicator_height) / 2,
+        #     indicator_width,
+        #     indicator_height
+        # )
+        # painter.setBrush(self._icon_cc.color)
+        # painter.drawRoundedRect(indicator_rect, indicator_radius, indicator_radius)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 
-
-    def sizeHint(self):
-        return QSize(40, 40)

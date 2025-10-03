@@ -19,10 +19,11 @@ class ZRepeatButton(ABCRepeatButton):
                  parent: QWidget = None,
                  name: str = None,
                  text: str = None,
-                 icon: QIcon = None):
+                 icon: QIcon = None
+                 ):
         super().__init__(parent)
-        self.setObjectName(name)
-        # 基本属性
+        if name: self.setObjectName(name)
+
         self._text: str = ''
         self._icon: QIcon = QIcon()
         self._icon_size = QSize(16, 16)
@@ -103,6 +104,7 @@ class ZRepeatButton(ABCRepeatButton):
         else: self._opacity_ctrl.fadeTo(0.3)
         super().setEnabled(enable)
 
+
     def sizeHint(self):
         if self._icon and not self._text:
             size = QSize(30, 30)
@@ -159,9 +161,11 @@ class ZRepeatButton(ABCRepeatButton):
     # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing|
-                             QPainter.RenderHint.TextAntialiasing|
-                             QPainter.RenderHint.SmoothPixmapTransform)
+        painter.setRenderHint(
+            QPainter.RenderHint.Antialiasing|
+            QPainter.RenderHint.TextAntialiasing|
+            QPainter.RenderHint.SmoothPixmapTransform
+            )
         painter.setOpacity(self._opacity_ctrl.opacity)
         # 绘制背景
         rect = self.rect()

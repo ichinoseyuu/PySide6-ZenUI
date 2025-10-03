@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget, QApplication
 from PySide6.QtCore import Qt, QSize, QMargins, QRectF
-from PySide6.QtGui import (QPainter, QFont, QFontMetrics, QPen, QTextDocument, 
+from PySide6.QtGui import (QPainter, QFont, QFontMetrics, QPen, QTextDocument,
                           QAbstractTextDocumentLayout, QTextCursor)
 from ZenUI.component.base import ColorController, FloatController, StyleData
 from ZenUI.core import ZRichTextBlockStyleData, ZDebug
@@ -10,9 +10,10 @@ class ZRichTextBlock(QWidget):
                  parent: QWidget = None,
                  name: str = None,
                  html: str = None,
-                 selectable: bool = False):
+                 selectable: bool = False
+                 ):
         super().__init__(parent)
-        if name: 
+        if name:
             self.setObjectName(name)
 
         self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
@@ -47,27 +48,27 @@ class ZRichTextBlock(QWidget):
 
     # region property
     @property
-    def textColorCtrl(self) -> ColorController: 
+    def textColorCtrl(self) -> ColorController:
         return self._text_cc
 
     @property
-    def bodyColorCtrl(self) -> ColorController: 
+    def bodyColorCtrl(self) -> ColorController:
         return self._body_cc
 
     @property
-    def borderColorCtrl(self) -> ColorController: 
+    def borderColorCtrl(self) -> ColorController:
         return self._border_cc
 
     @property
-    def radiusCtrl(self) -> FloatController: 
+    def radiusCtrl(self) -> FloatController:
         return self._radius_ctrl
 
     @property
-    def styleData(self): 
+    def styleData(self):
         return self._style_data
 
     @property
-    def html(self) -> str: 
+    def html(self) -> str:
         return self._html
 
     @html.setter
@@ -78,7 +79,7 @@ class ZRichTextBlock(QWidget):
         self.update()
 
     @property
-    def selectable(self) -> bool: 
+    def selectable(self) -> bool:
         return self._selectable
 
     @selectable.setter
@@ -98,7 +99,7 @@ class ZRichTextBlock(QWidget):
         return ""
 
     @property
-    def font(self) -> QFont: 
+    def font(self) -> QFont:
         return self._font
 
     @font.setter

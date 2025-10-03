@@ -34,7 +34,7 @@ class ABCButton(QWidget):
     @Slot()
     def releaseHandler(self): ...
 
-    @Slot(QPoint)
+    @Slot()
     def clickHandler(self): ...
 
 
@@ -50,11 +50,10 @@ class ABCButton(QWidget):
         self._tool_tip = tip
         self.update()
 
-    # region Public
+    # region public
     def setToolTip(self, tip: str):
         self._tool_tip = tip
         self.update()
-
 
     # region Event
     def enterEvent(self, event: QEnterEvent):

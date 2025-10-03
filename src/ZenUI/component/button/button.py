@@ -19,10 +19,11 @@ class ZButton(ABCButton):
                  parent: QWidget = None,
                  name: str = None,
                  text: str = None,
-                 icon: QIcon = None):
+                 icon: QIcon = None
+                 ):
         super().__init__(parent)
-        self.setObjectName(name)
-        # 基本属性
+        if name: self.setObjectName(name)
+
         self._text: str = ''
         self._icon: QIcon = QIcon()
         self._icon_size = QSize(16, 16)
@@ -159,9 +160,11 @@ class ZButton(ABCButton):
     # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing|
-                             QPainter.RenderHint.TextAntialiasing|
-                             QPainter.RenderHint.SmoothPixmapTransform)
+        painter.setRenderHint(
+            QPainter.RenderHint.Antialiasing|
+            QPainter.RenderHint.TextAntialiasing|
+            QPainter.RenderHint.SmoothPixmapTransform
+            )
         painter.setOpacity(self._opacity_ctrl.opacity)
         # 绘制背景
         rect = self.rect()

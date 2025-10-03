@@ -6,6 +6,7 @@ from ZenUI import *
 from navigation_bar import NavigationBar
 from panel_home import PanelHome
 from panel_widget import PanelWidget
+from panel_test import PanelTest
 from panel_info import PanelInfo
 from panel_about import PanelAbout
 from panel_settings import PanelSettings
@@ -36,6 +37,9 @@ class ZenUIGallery(ZFramelessWindow):
         self.panelWidget = PanelWidget(self.stackContainer)
         self.stackContainer.addPanel(self.panelWidget)
 
+        self.panelTest = PanelTest(self.stackContainer)
+        self.stackContainer.addPanel(self.panelTest)
+
         self.panelInfo = PanelInfo(self.stackContainer)
         self.stackContainer.addPanel(self.panelInfo)
 
@@ -50,6 +54,9 @@ class ZenUIGallery(ZFramelessWindow):
             )
         self.navigationBar.btnWidget.clicked.connect(
             lambda: self.stackContainer.setCurrentPanel(self.panelWidget)
+            )
+        self.navigationBar.btnTest.clicked.connect(
+            lambda: self.stackContainer.setCurrentPanel(self.panelTest)
             )
         self.navigationBar.btnInfo.clicked.connect(
             lambda: self.stackContainer.setCurrentPanel(self.panelInfo)

@@ -165,7 +165,7 @@ class PanelWidget(ZScrollPanel):
         container = ZHContainer(card)
         card.layout().addWidget(container)
 
-        btn_icon  = QIcon(u":/icons/fluent/regular/ic_fluent_save_regular.svg")
+        btn_icon = ZGlobal.iconPack.toIcon('ic_fluent_save_regular')
 
         self.btn_1 = ZButton(
             parent=container,
@@ -312,7 +312,7 @@ class PanelWidget(ZScrollPanel):
         self.hslider_1 = ZSlider(
             parent=container1,
             name='hslider_1',
-            orientation=ZSlider.Orientation.Horizontal,
+            direction=ZDirection.Horizontal,
             weight=ZSlider.Weight.Thin,
             scope=(0, 10),
             step=0.5,
@@ -325,7 +325,7 @@ class PanelWidget(ZScrollPanel):
         self.hslider_2 = ZSlider(
             parent=container1,
             name='hslider_2',
-            orientation=ZSlider.Orientation.Horizontal,
+            direction=ZDirection.Horizontal,
             weight=ZSlider.Weight.Normal,
             scope=(0, 100),
             step=1,
@@ -338,7 +338,7 @@ class PanelWidget(ZScrollPanel):
         self.hslider_3 = ZSlider(
             parent=container1,
             name='hslider_3',
-            orientation=ZSlider.Orientation.Horizontal,
+            direction=ZDirection.Horizontal,
             weight=ZSlider.Weight.Thick,
             scope=(0, 100),
             step=0.5,
@@ -358,7 +358,7 @@ class PanelWidget(ZScrollPanel):
         self.vslider_1 = ZSlider(
             parent=container2,
             name='vslider_1',
-            orientation=ZSlider.Orientation.Vertical,
+            direction=ZDirection.Vertical,
             weight=ZSlider.Weight.Thin,
             scope=(0, 10),
             step=0.5,
@@ -371,7 +371,7 @@ class PanelWidget(ZScrollPanel):
         self.vslider_2 = ZSlider(
             parent=container2,
             name='vslider_2',
-            orientation=ZSlider.Orientation.Vertical,
+            direction=ZDirection.Vertical,
             weight=ZSlider.Weight.Normal,
             scope=(0, 100),
             step=1,
@@ -384,7 +384,7 @@ class PanelWidget(ZScrollPanel):
         self.vslider_3 = ZSlider(
             parent=container2,
             name='vslider_3',
-            orientation=ZSlider.Orientation.Vertical,
+            direction=ZDirection.Vertical,
             weight=ZSlider.Weight.Thick,
             scope=(0, 100),
             step=0.5,

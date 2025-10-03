@@ -6,7 +6,8 @@ class ZHBoxLayout(QHBoxLayout):
                  parent: QWidget = None,
                  margins: QMargins = QMargins(6, 6, 6, 6),
                  spacing: int = 6,
-                 alignment: Qt.AlignmentFlag = None):
+                 alignment: Qt.AlignmentFlag = None
+                 ):
         super().__init__(parent)
         self.setContentsMargins(margins)
         self.setSpacing(spacing)
@@ -17,7 +18,8 @@ class ZVBoxLayout(QVBoxLayout):
                  parent: QWidget = None,
                  margins: QMargins = QMargins(6, 6, 6, 6),
                  spacing: int = 6,
-                 alignment: Qt.AlignmentFlag = None):
+                 alignment: Qt.AlignmentFlag = None
+                 ):
         super().__init__(parent)
         self.setContentsMargins(margins)
         self.setSpacing(spacing)
@@ -28,7 +30,8 @@ class ZGridLayout(QGridLayout):
                  parent: QWidget = None,
                  margins: QMargins = QMargins(6, 6, 6, 6),
                  spacing: int = 6,
-                 alignment: Qt.AlignmentFlag = None):
+                 alignment: Qt.AlignmentFlag = None
+                 ):
         super().__init__(parent)
         self.setContentsMargins(margins)
         self.setSpacing(spacing)

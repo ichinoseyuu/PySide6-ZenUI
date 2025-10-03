@@ -44,6 +44,21 @@ class LocationController(QObject):
         self._anim.setEndValue(pos)
         self._anim.start()
 
+    def moveBy(self, dx: int, dy: int) -> None:
+        """根据偏移量移动控件
+
+        参数:
+            dx: x方向偏移量
+            dy: y方向偏移量
+        """
+        self._anim.stop()
+        # 计算目标位置 = 当前位置 + 偏移量
+        current_pos = self.parent().pos()
+        target_pos = QPoint(current_pos.x() + dx, current_pos.y() + dy)
+        # 设置动画参数并启动
+        self._anim.setStartValue(current_pos)
+        self._anim.setEndValue(target_pos)
+        self._anim.start()
 
     def parent(self) -> QWidget:
         return super().parent()

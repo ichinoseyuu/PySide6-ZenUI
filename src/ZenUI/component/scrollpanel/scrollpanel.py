@@ -2,7 +2,7 @@ from enum import Enum
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.base import LocationController,ColorController,FloatController,StyleData
+from ZenUI.component.base import LocationController,ColorController,FloatController,StyleData,ZDirection
 from ZenUI.core import ZScrollPanelStyleData, ZDebug
 from .handle import ScrollHandle
 from .content import ZScrollContent
@@ -24,8 +24,8 @@ class ZScrollPanel(QWidget):
         self._last_v_handle_len: float = 0.0
         self._last_h_handle_pos: float = 0.0
         self._last_h_handle_len: float = 0.0
-        self._handle_v = ScrollHandle(self,ScrollHandle.Orientation.Vertical)
-        self._handle_h = ScrollHandle(self,ScrollHandle.Orientation.Horizontal)
+        self._handle_v = ScrollHandle(self,ZDirection.Vertical)
+        self._handle_h = ScrollHandle(self,ZDirection.Horizontal)
 
         self._body_cc = ColorController(self)
         self._border_cc = ColorController(self)

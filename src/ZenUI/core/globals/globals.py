@@ -1,13 +1,13 @@
 import logging
-from enum import Enum,IntEnum,Flag,IntFlag,auto
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ZenUI.component.tooltip import ZToolTip
-from PySide6.QtGui import QPainter, QPen, QResizeEvent,QColor
+from PySide6.QtGui import QPainter, QPen,QIcon
 from PySide6.QtCore import Qt, QRect
-from PySide6.QtWidgets import QWidget
 from ..theme import ZThemeManager
 from ..styledata import ZStyleDataManager
+from ..resource import *
+
 def configureLogging():
     """
     同时将日志输出到终端和文件。
@@ -35,6 +35,12 @@ class ZGlobal:
     tooltip: 'ZToolTip' = None
     themeManager = ZThemeManager()
     styleDataManager = ZStyleDataManager()
+    iconPack = GlobalIconPack()
+
+    @staticmethod
+    def getBuiltinIcon(icon_path: str) -> QIcon:
+        """获取内置资源中的图标"""
+        return QIcon(icon_path)
 
 class ZDebug:
     draw_rect = False

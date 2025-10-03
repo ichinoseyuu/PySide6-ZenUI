@@ -16,7 +16,8 @@ class ZImage(QWidget):
                  image_path: str = None,
                  scale_type: ScaleType = ScaleType.Fit,
                  corner_radius: int = 2,
-                 opacity: float = 1.0):
+                 opacity: float = 1.0
+                 ):
         super().__init__(parent)
         if name: self.setObjectName(name)
         self._image: QPixmap = QPixmap()       # 原始图片

@@ -27,7 +27,8 @@ class ZSwitch(ABCToggleButton):
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
-                 weight: Style = Style.Standard):
+                 weight: Style = Style.Standard
+                 ):
         super().__init__(parent)
         self.setObjectName(name)
         self._style = weight
@@ -38,6 +39,7 @@ class ZSwitch(ABCToggleButton):
         self._style_data = StyleData[ZSwitchStyleData](self, 'ZSwitch')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
+
 
     # region Property
     @property

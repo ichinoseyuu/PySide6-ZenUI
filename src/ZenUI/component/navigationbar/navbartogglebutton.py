@@ -19,7 +19,8 @@ class ZNavBarToggleButton(ABCToggleButton):
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
-                 icon: QIcon = None):
+                 icon: QIcon = None
+                 ):
         super().__init__(parent)
         self.setMaximumSize(40, 40)
         if name: self.setObjectName(name)
@@ -143,8 +144,10 @@ class ZNavBarToggleButton(ABCToggleButton):
     # region event
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing|
-                             QPainter.RenderHint.SmoothPixmapTransform)
+        painter.setRenderHint(
+            QPainter.RenderHint.Antialiasing|
+            QPainter.RenderHint.SmoothPixmapTransform
+            )
         painter.setOpacity(self._opacity_ctrl.opacity)
         # 绘制背景
         rect = self.rect()

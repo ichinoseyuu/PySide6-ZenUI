@@ -10,15 +10,14 @@ from .textcommand import TextCommand
 class ZTextBox(QWidget):
     heightChangedByWrapping = Signal(int)  # 携带新高度值
     editingFinished = Signal()
-    def __init__(
-        self,
-        parent: QWidget = None,
-        name: str = None,
-        text: str = "",
-        mask: str = "",
-        read_only: bool = False,
-        selectable: bool = True
-        ):
+    def __init__(self,
+                 parent: QWidget = None,
+                 name: str = None,
+                 text: str = "",
+                 mask: str = "",
+                 read_only: bool = False,
+                 selectable: bool = True
+                 ):
         super().__init__(parent=parent, minimumSize=QSize(200, 30))
         if name: self.setObjectName(name)
         if read_only: self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)

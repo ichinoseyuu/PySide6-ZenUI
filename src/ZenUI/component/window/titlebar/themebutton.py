@@ -8,10 +8,14 @@ class ZThemeButton(ZABCTitleBarButton):
     def __init__(self, parent=None):
         super().__init__(parent)
         icon = QIcon()
-        icon.addFile(u":/icons/fluent/filled/ic_fluent_weather_moon_filled.svg",
-                    QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        icon.addFile(u":/icons/fluent/filled/ic_fluent_weather_sunny_filled.svg",
-                    QSize(), QIcon.Mode.Normal, QIcon.State.On)
+        # icon.addFile(u":/icons/fluent/filled/ic_fluent_weather_moon_filled.svg",
+        #             QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        # icon.addFile(u":/icons/fluent/filled/ic_fluent_weather_sunny_filled.svg",
+        #             QSize(), QIcon.Mode.Normal, QIcon.State.On)
+        icon.addPixmap(ZGlobal.iconPack.toPixmap("ic_fluent_weather_moon_filled"),
+                       QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addPixmap(ZGlobal.iconPack.toPixmap("ic_fluent_weather_sunny_filled"),
+                       QIcon.Mode.Normal, QIcon.State.On)
         self._icon: QIcon = icon
         self._style_data = StyleData[ZTitleBarButtonStyleData](self, 'ZThemeButton')
         self._style_data.styleChanged.connect(self._styleChangeHandler)

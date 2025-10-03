@@ -5,6 +5,7 @@ from .base import (
     ZWrapMode
 )
 from .button import *
+from .combobox import *
 from .container import *
 from .iamge import *
 from .layout import *

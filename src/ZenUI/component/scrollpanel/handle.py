@@ -1,27 +1,21 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from enum import Enum
-from ZenUI.component.base import ColorController,FloatController,LocationController
+from ZenUI.component.base import ColorController,FloatController,LocationController,ZDirection,ZState
 from ZenUI.core import ZExpAnimationRefactor
 from typing import TYPE_CHECKING
-if TYPE_CHECKING: from .scrollpanel import ZScrollPage
+if TYPE_CHECKING: from .scrollpanel import ZScrollPanel
 
 class ScrollHandle(QWidget):
-    class State(Enum):
-        Normal = 0
-        Hover = 1
-
-    class Orientation(Enum):
-        Vertical = 0
-        Horizontal = 1
-
     def __init__(self,
                  parent: QWidget = None,
-                 direction: Orientation = Orientation.Vertical):
+                 direction: ZDirection = ZDirection.Vertical
+                 ):
         super().__init__(parent)
-        self._state: ScrollHandle.State = self.State.Normal
-        self._orientation: ScrollHandle.Orientation = direction
+        self._state: ZState = ZState.Idle
+        if direction not in (ZDirection.Horizontal, ZDirection.Vertical):
+            raise ValueError('Invalid direction')
+        self._dir: ZDirection = direction
         self._dragging: bool = False
         self._drag_start_pos: QPoint = QPoint()
         self._handle_width: int = 2
@@ -43,8 +37,8 @@ class ScrollHandle(QWidget):
         self._trans_timer.setSingleShot(True)
         self._trans_timer.timeout.connect(self.toTransparent)
 
-        if self._orientation == self.Orientation.Vertical: 
-            self.setFixedWidth(self._handle_width_max) 
+        if self._dir == ZDirection.Vertical:
+            self.setFixedWidth(self._handle_width_max)
         else:
             self.setFixedHeight(self._handle_width_max)
         # init style
@@ -65,11 +59,11 @@ class ScrollHandle(QWidget):
     def locationCtrl(self): return self._location_ctrl
 
     @Property(int)
-    def handleLength(self): return self.height() if self._orientation == self.Orientation.Vertical else self.width()
+    def handleLength(self): return self.height() if self._dir == ZDirection.Vertical else self.width()
 
     @handleLength.setter
     def handleLength(self, value):
-        self.setFixedHeight(value) if self._orientation == self.Orientation.Vertical else self.setFixedWidth(value)
+        self.setFixedHeight(value) if self._dir == ZDirection.Vertical else self.setFixedWidth(value)
 
     @Property(int)
     def handleWidth(self): return self._handle_width
@@ -113,7 +107,7 @@ class ScrollHandle(QWidget):
         self.borderColorCtrl.opaque()
         self._trans_timer.start(1200)
 
-    def parent(self) -> 'ZScrollPage':
+    def parent(self) -> 'ZScrollPanel':
         return super().parent()
 
     # region paintEvent
@@ -121,18 +115,18 @@ class ScrollHandle(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         rect = self.rect()
-        if self._orientation == self.Orientation.Vertical:
+        if self._dir == ZDirection.Vertical:
             rect = QRectF(self.width()-self._handle_width +.5, 3, self._handle_width-1, self.height()-3)
         else:
             rect = QRectF(3, self.height()-self._handle_width+.5, self.width()-3, self._handle_width-1)
         radius = self._radius_ctrl.value
         # normal 状态只绘制边框
-        if self._state == self.State.Normal:
+        if self._state == ZState.Idle:
             painter.setPen(QPen(self._border_cc.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(rect, radius, radius)
         # hover 状态绘制边框和内部填充
-        elif self._state == self.State.Hover:
+        elif self._state == ZState.Hover:
             painter.setPen(QPen(self._border_cc.color, 1))
             painter.setBrush(self._body_cc.color)
             painter.drawRoundedRect(rect, radius, radius)
@@ -140,7 +134,7 @@ class ScrollHandle(QWidget):
 
     # region mouseEvent
     def mousePressEvent(self, event: QMouseEvent):
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             self._dragging = True
             # 记录鼠标按下时的全局位置和滑块位置之差
             self._drag_start_pos = event.globalPos() - self.pos()
@@ -153,7 +147,7 @@ class ScrollHandle(QWidget):
 
         new_pos = event.globalPos() - self._drag_start_pos
 
-        if self._orientation == self.Orientation.Vertical:
+        if self._dir == ZDirection.Vertical:
             y = max(0, min(new_pos.y(), panel.height() - panel._handle_h.height() - self.height()))
             percentage = y / (panel.height() - panel._handle_h.height() - self.height())
             max_scroll = panel._content.height() - panel.height()
@@ -167,19 +161,19 @@ class ScrollHandle(QWidget):
             panel.scrollTo(x=scroll_pos)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             self._dragging = False
             self.setCursor(Qt.ArrowCursor)
 
     def enterEvent(self, event):
-        self._state = self.State.Hover
+        self._state = ZState.Hover
         self._trans_timer.stop()
         self.bodyColorCtrl.opaque()
         self.borderColorCtrl.opaque()
         self.setHandleWidthTo(self._handle_width_max)
 
     def leaveEvent(self, event):
-        self._state = self.State.Normal
+        self._state = ZState.Idle
         self.setHandleWidthTo(self._handle_width_min)
         self._trans_timer.start(1200)
 

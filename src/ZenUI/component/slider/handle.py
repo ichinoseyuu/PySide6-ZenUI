@@ -11,7 +11,8 @@ if TYPE_CHECKING:
 class SliderHandle(QWidget):
     def __init__(self,
                  parent: QWidget = None,
-                 radius: int = 6):
+                 radius: int = 6
+                 ):
         super().__init__(parent)
         self._radius = radius
         self.resize(2*radius, 2*radius)

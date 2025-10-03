@@ -1,0 +1,16 @@
+<RCC>
+  <qresource prefix="/">
+    <!-- ZenUI 组件基础图标 -->
+    <file>icons/dark.svg</file>
+    <file>icons/light.svg</file>
+    <file>icons/minimize.svg</file>
+    <file>icons/maximize.svg</file>
+    <file>icons/windowed.svg</file>
+    <file>icons/close.svg</file>
+    <file>icons/arrow_left.svg</file>
+    <file>icons/arrow_right.svg</file>
+    <file>icons/arrow_up.svg</file>
+    <file>icons/arrow_down.svg</file>
+    <file>icons/select.svg</file>
+  </qresource>
+</RCC>

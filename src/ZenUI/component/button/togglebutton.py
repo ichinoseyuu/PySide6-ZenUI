@@ -21,7 +21,8 @@ class ZToggleButton(ABCToggleButton):
                  parent: QWidget = None,
                  name: str = None,
                  text: str = None,
-                 icon: QIcon = None):
+                 icon: QIcon = None
+                 ):
         super().__init__(parent)
         if name: self.setObjectName(name)
 
@@ -147,6 +148,7 @@ class ZToggleButton(ABCToggleButton):
         else: self._opacity_ctrl.fadeTo(0.3)
         super().setEnabled(enable)
 
+
     def sizeHint(self):
         if self._icon and not self._text:
             return QSize(30, 30)
@@ -186,9 +188,11 @@ class ZToggleButton(ABCToggleButton):
     # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing|
-                             QPainter.RenderHint.TextAntialiasing|
-                             QPainter.RenderHint.SmoothPixmapTransform)
+        painter.setRenderHint(
+            QPainter.RenderHint.Antialiasing|
+            QPainter.RenderHint.TextAntialiasing|
+            QPainter.RenderHint.SmoothPixmapTransform
+            )
         painter.setOpacity(self._opacity_ctrl.opacity)
         # draw background
         rect = self.rect()

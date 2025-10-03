@@ -3,17 +3,13 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from enum import IntEnum
 from typing import overload
-from ZenUI.component.base import StyleData, ZPosition
+from ZenUI.component.base import StyleData, ZPosition, ZDirection
 from ZenUI.core import ZGlobal, ZSliderStyleData, ZDebug
 from .fill import SliderFill
 from .track import SliderTrack
 from .handle import SliderHandle
 
 class ZSlider(QWidget):
-    class Orientation(IntEnum):
-        Horizontal = 0
-        Vertical = 1
-
     class Weight(IntEnum):
         Thin = 4
         Normal = 5
@@ -25,17 +21,20 @@ class ZSlider(QWidget):
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
-                 orientation: Orientation = Orientation.Horizontal,
+                 direction: ZDirection = ZDirection.Horizontal,
                  weight: Weight = Weight.Normal,
                  scope: tuple[int, int] | tuple[float, float] = (0, 100),
                  step: int = 1,
                  step_multiplier: int = 1,
                  accuracy: float = 1,
                  value: int = 0,
-                 auto_strip_zero: bool = False):
+                 auto_strip_zero: bool = False
+                 ):
         super().__init__(parent)
         if name: self.setObjectName(name)
-        self._orientation = orientation
+        if direction not in (ZDirection.Horizontal, ZDirection.Vertical):
+            raise ValueError('Invalid direction')
+        self._dir = direction
         self._weight = weight
         self._scope = scope
         self._min, self._max = scope
@@ -71,13 +70,13 @@ class ZSlider(QWidget):
     def percentage(self): return self._percentage
 
     @property
-    def orientation(self): return self._orientation
+    def direction(self): return self._dir
 
     @property
-    def isHorizontal(self): return self._orientation == self.Orientation.Horizontal
+    def isHorizontal(self): return self._dir == ZDirection.Horizontal
 
     @property
-    def isVertical(self): return self._orientation == self.Orientation.Vertical
+    def isVertical(self): return self._dir == ZDirection.Vertical
 
     @property
     def track(self): return self._track

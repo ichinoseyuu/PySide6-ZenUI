@@ -20,7 +20,8 @@ class ZNavBarButton(ABCButton):
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
-                 icon: QIcon = None):
+                 icon: QIcon = None
+                 ):
         super().__init__(parent)
         self.setMaximumSize(40, 40)
         if name : self.setObjectName(name)
@@ -115,8 +116,10 @@ class ZNavBarButton(ABCButton):
     # region event
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing |
-                            QPainter.RenderHint.SmoothPixmapTransform)
+        painter.setRenderHint(
+            QPainter.RenderHint.Antialiasing|
+            QPainter.RenderHint.SmoothPixmapTransform
+            )
         painter.setOpacity(self._opacity_ctrl.opacity)
         rect = self.rect()
         radius = self._radius_ctrl.value

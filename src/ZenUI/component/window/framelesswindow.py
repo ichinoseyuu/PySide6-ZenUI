@@ -4,11 +4,11 @@ import win32gui
 from ctypes import cast
 from ctypes.wintypes import LPRECT, MSG
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve
-from PySide6.QtGui import QResizeEvent,QColor
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QResizeEvent
 from ZenUI.core import ZGlobal,ZFramelessWindowStyleData
 from ZenUI.component.tooltip import ZToolTip
-from ZenUI.component.base import StyleData
+from ZenUI.component.base import StyleController,WindowBackgroundController,ZWidget
 from .titlebar import ZTitleBar
 from .win32utils import (
     WindowsWindowEffect,
@@ -21,69 +21,41 @@ from .win32utils import (
     getResizeBorderThickness
     )
 
+# region ZFramelessWindow
 class ZFramelessWindow(QWidget):
     BORDER_WIDTH = 6
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        # create tooltip
-        tooltip = ZToolTip()
-        ZGlobal.tooltip = tooltip
-
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setStyleSheet('background-color: transparent;')
-        self._titlebar = ZTitleBar(self)
-        self._centerWidget = QWidget(self)
         self._resizable = True
         self._windowEffect = WindowsWindowEffect(self)
         self._windowEffect.addWindowAnimation(self.winId())
         self._windowEffect.addShadowEffect(self.winId())
         self.windowHandle().screenChanged.connect(self.__onScreenChanged)
 
-        self._color_body = QColor('#000000')
-        self._anim_bg_color = QPropertyAnimation(self, b'bodyColor')
-        self._anim_bg_color.setDuration(150)
-        self._anim_bg_color.setEasingCurve(QEasingCurve.Type.InOutQuad)
-
-        self._style_data = StyleData[ZFramelessWindowStyleData](self, 'ZFramelessWindow')
-        self._style_data.styleChanged.connect(self._styleChangeHandler)
-        self._initStyle()
-
+        self._backgroundColorCtrl = WindowBackgroundController(self)
+        self._styleDataCtrl = StyleController[ZFramelessWindowStyleData](self, 'ZFramelessWindow')
+        self._styleDataCtrl.styleChanged.connect(self._style_change_handler_)
+        self._init_style_()
 
     # region Property
     @property
+    def windowEffect(self): return self._windowEffect
+
+    @property
+    def backgroundColorCtrl(self): return self._backgroundColorCtrl
+
+    @property
+    def styleDataCtrl(self): return self._styleDataCtrl
+
+    @property
     def resizable(self) -> bool: return self._resizable
+
     @resizable.setter
     def resizable(self, enabled: bool) -> None: self._resizable = enabled
 
-    @property
-    def centerWidget(self): return self._centerWidget
-
-    @property
-    def titleBar(self): return self._titlebar
-
-    def getBodyColor(self) -> QColor: return self._color_body
-
-    def setBodyColor(self, color: QColor):
-        self._color_body = color
-        self._windowEffect.setBackgroundColor(self.winId(), color)
-
-    bodyColor: QColor = Property(QColor, getBodyColor, setBodyColor)
-
-
-    def setBodyColorTo(self, color: QColor):
-        self._anim_bg_color.setStartValue(self._color_body)
-        self._anim_bg_color.setEndValue(color)
-        self._anim_bg_color.start()
-
-    @property
-    def styleData(self): return self._style_data
-
-    def _initStyle(self):
-        self.bodyColor = self._style_data.data.Body
-
-    def _styleChangeHandler(self):
-        self.setBodyColorTo(self._style_data.data.Body)
-
+    # region Public Method
     def moveCenter(self):
         screen = self.windowHandle().screen()
         if screen:
@@ -93,6 +65,12 @@ class ZFramelessWindow(QWidget):
             self.move(self.x() + self.width() / 2, self.y() + self.height() / 2)
 
 
+    def _init_style_(self):
+        self._backgroundColorCtrl.color = self._styleDataCtrl.data.Body
+
+    def _style_change_handler_(self):
+        self._backgroundColorCtrl.setColorTo(self._styleDataCtrl.data.Body)
+
     def __onScreenChanged(self):
         hWnd = int(self.windowHandle().winId())
         win32gui.SetWindowPos(
@@ -100,18 +78,6 @@ class ZFramelessWindow(QWidget):
             0, 0, 0, 0,
             win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED
             )
-
-
-    def resizeEvent(self, event: QResizeEvent):
-        super().resizeEvent(event)
-        self._titlebar.setGeometry(0,0,event.size().width(), self._titlebar.height())
-        self._centerWidget.setGeometry(
-            0,
-            self._titlebar.height(),
-            event.size().width(),
-            event.size().height() - self._titlebar.height()
-            )
-
 
     def nativeEvent(self, eventType, message):
         """ Handle the Windows message """
@@ -191,3 +157,29 @@ class ZFramelessWindow(QWidget):
             return True, 0
 
         return super().nativeEvent(eventType, message)
+
+# region ZStandardFramelessWindow
+class ZStandardFramelessWindow(ZFramelessWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        ZGlobal.tooltip = ZToolTip()
+        self._titlebar = ZTitleBar(self)
+        self._centerWidget = QWidget(self)
+
+    @property
+    def centerWidget(self):
+        return self._centerWidget
+
+    @property
+    def titleBar(self):
+        return self._titlebar
+
+    def resizeEvent(self, event: QResizeEvent):
+        super().resizeEvent(event)
+        self._titlebar.setGeometry(0,0,event.size().width(), self._titlebar.height())
+        self._centerWidget.setGeometry(
+            0,
+            self._titlebar.height(),
+            event.size().width(),
+            event.size().height() - self._titlebar.height()
+            )

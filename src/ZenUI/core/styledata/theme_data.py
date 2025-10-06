@@ -49,7 +49,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.Border: '#00000000',
         K.Radius: 5.0
     },
-    'ZPanel': {
+    ('ZPanel', 'ZComboBoxItemView'): {
         K.Body: '#272727',
         K.Border: '#1d1d1d',
         K.Radius: 5.0
@@ -71,7 +71,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.HandleOuter: '#464646',
         K.HandleBorder: '#505050'
     },
-    'ZButton': {
+    ('ZButton', 'ZComboBox'): {
         K.Text: '#dcdcdc',
         K.Icon: '#dcdcdc',
         K.Body: '#2d2d2d',
@@ -124,15 +124,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.BodyHover: '#1affffff',
         K.BodyPressed: '#12ffffff'
     },
-    'ZMinimizeButton': {
-        K.Icon: '#dcdcdc',
-        K.IconHover: '#ffffff',
-        K.IconPressed: '#ffffff',
-        K.Body: '#00ffffff',
-        K.BodyHover: '#1affffff',
-        K.BodyPressed: '#12ffffff'
-    },
-    'ZMaximizeButton': {
+    ('ZMaximizeButton','ZMinimizeButton'): {
         K.Icon: '#dcdcdc',
         K.IconHover: '#ffffff',
         K.IconPressed: '#ffffff',
@@ -149,7 +141,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.BodyPressed: '#fff1707a'
     },
     'ZFramelessWindow': {
-        K.Body: '#202020'
+        K.Body: '#90202020'
     },
     'ZToolTip': {
         K.Text: '#bfbfbf',
@@ -194,7 +186,7 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.Border: '#00ffffff',
         K.Radius: 5.0
     },
-    'ZPanel': {
+    ('ZPanel', 'ZComboBoxItemView'): {
         K.Body: '#ffffff',
         K.Border: '#e5e5e5',
         K.Radius: 5.0
@@ -216,7 +208,7 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.HandleOuter: '#ffffff',
         K.HandleBorder: '#e6e6e6'
     },
-    'ZButton': {
+    ('ZButton', 'ZComboBox'): {
         K.Text: '#333333',
         K.Icon: '#333333',
         K.Body: '#ffffff',
@@ -269,15 +261,7 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.BodyHover: '#1a000000',
         K.BodyPressed: '#12000000'
     },
-    'ZMinimizeButton': {
-        K.Icon: '#333333',
-        K.IconHover: '#000000',
-        K.IconPressed: '#000000',
-        K.Body: '#00000000',
-        K.BodyHover: '#1a000000',
-        K.BodyPressed: '#12000000'
-    },
-    'ZMaximizeButton': {
+    ('ZMaximizeButton','ZMinimizeButton'): {
         K.Icon: '#333333',
         K.IconHover: '#000000',
         K.IconPressed: '#000000',

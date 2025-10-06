@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout,QSizePolicy
-from PySide6.QtCore import Qt, QMargins,QPoint
+from PySide6.QtCore import Qt, QMargins,QPoint,QMarginsF
 from PySide6.QtGui import QFont, QIcon, QColor
 from ZenUI import *
 from demo_card import DemoCard
@@ -29,4 +29,3 @@ class PanelTest(ZScrollPanel):
 
         self.combobox_1 = ZComboBox(container, 'combobox_1', '下拉框')
         container.addWidget(self.combobox_1)
-        print(self.combobox_1._drop_icon)

@@ -3,9 +3,9 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Signal
 from ZenUI.core import StyleDataT, ZGlobal
 
-class StyleData(QObject, Generic[StyleDataT]):
-    '''样式数据管理器
 
+class StyleController(QObject, Generic[StyleDataT]):
+    '''样式管理器
     - 决定控件的当前样式
     - 存储自定义样式数据
     '''

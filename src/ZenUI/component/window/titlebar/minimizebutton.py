@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter, QPen
-from ZenUI.component.base import StyleData
+from ZenUI.component.base import StyleController
 from ZenUI.core import ZTitleBarButtonStyleData,ZDebug
 from .abctitlebarbutton import ZABCTitleBarButton
 
@@ -8,7 +8,7 @@ from .abctitlebarbutton import ZABCTitleBarButton
 class ZMinimizeButton(ZABCTitleBarButton):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._style_data = StyleData[ZTitleBarButtonStyleData](self, 'ZMinimizeButton')
+        self._style_data = StyleController[ZTitleBarButtonStyleData](self, 'ZMinimizeButton')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
 

@@ -1,63 +1,49 @@
 from PySide6.QtGui import QPainter, QIcon, QPixmap, QPen, QMouseEvent
 from PySide6.QtCore import Qt, QSize, QRectF, QPoint
 from PySide6.QtWidgets import QWidget
+from ZenUI.component.abstract import ABCToggleButton
 from ZenUI.component.base import (
     ColorController,
     FloatController,
     OpacityController,
-    StyleData,
-    ABCToggleButton,
-    ZPosition
+    StyleController
 )
 from ZenUI.core import (
     ZNavBarToggleButtonStyleData,
     ZDebug,
-    ZGlobal
+    ZGlobal,
+    ZPosition
 )
 
 class ZNavBarToggleButton(ABCToggleButton):
+    bodyColorCtrl: ColorController
+    iconColorCtrl: ColorController
+    radiusCtrl: FloatController
+    opacityCtrl: OpacityController
+    styleDataCtrl: StyleController[ZNavBarToggleButtonStyleData]
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{
+            'key': 'ZNavBarToggleButton'
+        },
+    }
     def __init__(self,
+                 icon: QIcon,
                  parent: QWidget = None,
-                 name: str = None,
-                 icon: QIcon = None
+                 name: str = None
                  ):
         super().__init__(parent)
         self.setMaximumSize(40, 40)
         if name: self.setObjectName(name)
         self.isGroupMember = True
-        # 基本属性
-        self._icon: QIcon = QIcon()
-        self._pixmap_off: QPixmap = QPixmap()
-        self._pixmap_on: QPixmap = QPixmap()
-        self._icon_size = QSize(20, 20)
-        if icon : self.icon = icon
-        # 样式属性
-        self._body_cc = ColorController(self)
-        self._icon_cc = ColorController(self)
-        self._radius_ctrl = FloatController(self)
-        self._opacity_ctrl = OpacityController(self)
-        self._indicator_oc = OpacityController(self)
-        self._indicator_oc.setOpacity(0)
 
-        self._style_data = StyleData[ZNavBarToggleButtonStyleData](self, 'ZNavBarToggleButton')
-        self._style_data.styleChanged.connect(self._styleChangeHandler)
-        self._initStyle()
+        self._icon = icon
+        self._icon_size = QSize(20, 20)
+
+        self._init_style_()
         self.resize(self.sizeHint())
 
 
     # region Property
-    @property
-    def bodyColorCtrl(self): return self._body_cc
-
-    @property
-    def iconColorCtrl(self): return self._icon_cc
-
-    @property
-    def radiusCtrl(self): return self._radius_ctrl
-
-    @property
-    def styleData(self): return self._style_data
-
     @property
     def icon(self) -> QIcon: return self._icon
     @icon.setter
@@ -72,32 +58,32 @@ class ZNavBarToggleButton(ABCToggleButton):
         self._icon_size = size
         self.update()
 
-    def _initStyle(self):
-        data = self._style_data.data
-        self._radius_ctrl.value = data.Radius
+    def _init_style_(self):
+        data = self.styleDataCtrl.data
+        self.radiusCtrl.value = data.Radius
         if self._checked:
-            self._body_cc.color = data.BodyToggled
-            self._icon_cc.color = data.IconToggled
+            self.bodyColorCtrl.color = data.BodyToggled
+            self.iconColorCtrl.color = data.IconToggled
         else:
-            self._body_cc.color = data.Body
-            self._icon_cc.color = data.Icon
+            self.bodyColorCtrl.color = data.Body
+            self.iconColorCtrl.color = data.Icon
         self.update()
 
-    def _styleChangeHandler(self):
-        data = self._style_data.data
-        self._radius_ctrl.value = data.Radius
+    def _style_change_handler_(self):
+        data = self.styleDataCtrl.data
+        self.radiusCtrl.value = data.Radius
         if self._checked:
-            self._body_cc.setColorTo(data.BodyToggled)
-            self._icon_cc.setColorTo(data.IconToggled)
+            self.bodyColorCtrl.setColorTo(data.BodyToggled)
+            self.iconColorCtrl.setColorTo(data.IconToggled)
         else:
-            self._body_cc.setColorTo(data.Body)
-            self._icon_cc.setColorTo(data.Icon)
+            self.bodyColorCtrl.setColorTo(data.Body)
+            self.iconColorCtrl.setColorTo(data.Icon)
 
-    def hoverHandler(self):
+    def _hover_handler_(self):
         if self._checked:
-            self._body_cc.setColorTo(self._style_data.data.BodyToggledHover)
+            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggledHover)
         else:
-            self._body_cc.setColorTo(self._style_data.data.BodyHover)
+            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
         if self._tool_tip != "":
             ZGlobal.tooltip.showTip(
                 text = self._tool_tip,
@@ -106,36 +92,36 @@ class ZNavBarToggleButton(ABCToggleButton):
                 position = ZPosition.Right,
                 offset = QPoint(10, 0)
                 )
-    def leaveHandler(self):
+    def _leave_handler_(self):
         if self._checked:
-            self._body_cc.setColorTo(self._style_data.data.BodyToggled)
+            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggled)
         else:
-            self._body_cc.setColorTo(self._style_data.data.Body)
+            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
         if self._tool_tip != "": ZGlobal.tooltip.hideTip()
-    def pressHandler(self):
+    def _press_handler_(self):
         if self._checked:
-            self._body_cc.setColorTo(self._style_data.data.BodyToggledPressed)
+            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggledPressed)
         else:
-            self._body_cc.setColorTo(self._style_data.data.BodyPressed)
+            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyPressed)
 
 
-    def toggleHandler(self, checked):
-        data = self._style_data.data
+    def _toggle_handler_(self, checked):
+        data = self.styleDataCtrl.data
         if checked:
-            self._icon_cc.color = data.Body
-            self._body_cc.setColorTo(data.BodyToggledHover)
-            self._icon_cc.setColorTo(data.IconToggled)
-            self._indicator_oc.fadeIn()
+            self.iconColorCtrl.color = data.Body
+            self.bodyColorCtrl.setColorTo(data.BodyToggledHover)
+            self.iconColorCtrl.setColorTo(data.IconToggled)
+            #self._indicator_oc.fadeIn()
         else:
-            self._body_cc.setColorTo(data.BodyHover)
-            self._icon_cc.setColorTo(data.Icon)
-            self._indicator_oc.fadeOut()
+            self.bodyColorCtrl.setColorTo(data.BodyHover)
+            self.iconColorCtrl.setColorTo(data.Icon)
+            #self._indicator_oc.fadeOut()
 
     # region public
     def setEnabled(self, enable: bool) -> None:
         if enable == self.isEnabled(): return
-        if enable: self._opacity_ctrl.fadeTo(1.0)
-        else: self._opacity_ctrl.fadeTo(0.3)
+        if enable: self.opacityCtrl.fadeTo(1.0)
+        else: self.opacityCtrl.fadeTo(0.3)
         super().setEnabled(enable)
 
     def sizeHint(self):
@@ -148,13 +134,13 @@ class ZNavBarToggleButton(ABCToggleButton):
             QPainter.RenderHint.Antialiasing|
             QPainter.RenderHint.SmoothPixmapTransform
             )
-        painter.setOpacity(self._opacity_ctrl.opacity)
+        painter.setOpacity(self.opacityCtrl.opacity)
         # 绘制背景
         rect = self.rect()
-        radius = self._radius_ctrl.value
-        if self._body_cc.color.alpha() > 0:
+        radius = self.radiusCtrl.value
+        if self.bodyColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self._body_cc.color)
+            painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
 
         # 1. 获取原始 QPixmap
@@ -163,14 +149,13 @@ class ZNavBarToggleButton(ABCToggleButton):
         else:
             pixmap = self._icon.pixmap(self._icon_size, QIcon.Mode.Normal, QIcon.State.Off)
 
-        # 2. 创建一个新的 QPixmap 用于着色
         colored_pixmap = QPixmap(pixmap.size())
         colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
         colored_pixmap.fill(Qt.transparent)
         painter_pix = QPainter(colored_pixmap)
         painter_pix.drawPixmap(0, 0, pixmap)
         painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
-        painter_pix.fillRect(colored_pixmap.rect(), self._icon_cc.color)
+        painter_pix.fillRect(colored_pixmap.rect(), self.iconColorCtrl.color)
         painter_pix.end()
 
         # 3. 绘制到按钮中心

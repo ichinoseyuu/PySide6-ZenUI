@@ -1,16 +1,17 @@
 from enum import Enum
 from dataclasses import dataclass
 from PySide6.QtGui import QPainter, QPen
-from PySide6.QtCore import Qt, QRectF
+from PySide6.QtCore import Qt, QRectF, QPointF
 from PySide6.QtWidgets import QWidget
+from ZenUI.component.abstract import ABCToggleButton
 from ZenUI.component.base import (
     ColorController,
     OpacityController,
-    StyleData,
-    ABCToggleButton
+    PositionController,
+    FloatController,
+    StyleController
 )
 from ZenUI.core import ZSwitchStyleData,ZDebug
-from .handle import SwitchHandle
 
 @dataclass
 class SwitchStyle:
@@ -18,6 +19,40 @@ class SwitchStyle:
     Width: int
     HandleDiameter: int
     Margin: int
+
+
+class SwitchHandle(QWidget):
+    def __init__(self, parent: QWidget = None):
+        super().__init__(parent)
+        self.scale_nomal = 0.85
+        self.scale_hover = 1.0
+        self._body_cc = ColorController(self)
+        self._location_ctrl = PositionController(self)
+        self._scale_ctrl = FloatController(self)
+        self._scale_ctrl.setValue(self.scale_nomal)
+
+    @property
+    def bodyColorCtrl(self): return self._body_cc
+
+    @property
+    def locationCtrl(self): return self._location_ctrl
+
+    @property
+    def scaleCtrl(self): return self._scale_ctrl
+
+    # region paintEvent
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        center = QPointF(self.width()/2, self.height()/2)
+        radius = self.height()/2
+        if self._body_cc.color.alpha() > 0:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._body_cc.color)
+            scaled_radius = radius * self._scale_ctrl.value
+            painter.drawEllipse(center, scaled_radius, scaled_radius)
+        painter.end()
+
 
 class ZSwitch(ABCToggleButton):
     class Style(Enum):
@@ -36,7 +71,7 @@ class ZSwitch(ABCToggleButton):
         self._body_cc = ColorController(self)
         self._border_cc = ColorController(self)
         self._opacity_ctrl = OpacityController(self)
-        self._style_data = StyleData[ZSwitchStyleData](self, 'ZSwitch')
+        self._style_data = StyleController[ZSwitchStyleData](self, 'ZSwitch')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
 
@@ -102,14 +137,14 @@ class ZSwitch(ABCToggleButton):
 
 
     # region slot
-    def hoverHandler(self):
+    def _hover_handler_(self):
         self._handle.scaleCtrl.setValueTo(self._handle.scale_hover)
 
-    def leaveHandler(self):
+    def _leave_handler_(self):
         self._handle.scaleCtrl.setValueTo(self._handle.scale_nomal)
 
 
-    def toggleHandler(self, checked):
+    def _toggle_handler_(self, checked):
         data = self._style_data.data
         if checked:
             self._body_cc.toOpaque()

@@ -1,5 +1,5 @@
 from PySide6.QtGui import QPainter, QPen, QResizeEvent
-from PySide6.QtCore import Qt, QPoint 
+from PySide6.QtCore import Qt, QPoint
 from PySide6.QtWidgets import QWidget
 from typing import overload
 from ZenUI.component.panel import ZPanel
@@ -92,7 +92,7 @@ class ZStackContainer(QWidget):
                     self._current_panel.show()
                 else:
                     self._current_panel.raise_()
-                self._current_panel.locationCtrl.moveTo(0, 0)
+                self._current_panel.positionCtrl.moveTo(0, 0)
             else:
                 self._current_panel.move(0, 0)
                 if self._hide_last_panel and self._last_panel is not None:

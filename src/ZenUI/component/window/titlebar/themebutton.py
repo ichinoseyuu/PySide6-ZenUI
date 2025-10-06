@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPainter, QIcon, QPixmap
-from ZenUI.component.base import StyleData
+from ZenUI.component.base import StyleController
 from ZenUI.core import ZGlobal,ZTheme,ZTitleBarButtonStyleData,ZDebug
 from .abctitlebarbutton import ZABCTitleBarButton
 
@@ -17,7 +17,7 @@ class ZThemeButton(ZABCTitleBarButton):
         icon.addPixmap(ZGlobal.iconPack.toPixmap("ic_fluent_weather_sunny_filled"),
                        QIcon.Mode.Normal, QIcon.State.On)
         self._icon: QIcon = icon
-        self._style_data = StyleData[ZTitleBarButtonStyleData](self, 'ZThemeButton')
+        self._style_data = StyleController[ZTitleBarButtonStyleData](self, 'ZThemeButton')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
         self._initStyle()
 

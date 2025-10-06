@@ -5,9 +5,9 @@ from ZenUI.core import ZExpAnimationRefactor
 
 class OpacityController(QObject):
     '''透明度控制器，用于控制透明度变化'''
-    def __init__(self, parent: QWidget):
+    def __init__(self, parent: QWidget, opacity: float = 1.0):
         super().__init__(parent)
-        self._opacity: float = 1.0
+        self._opacity = opacity
         self._anim = ZExpAnimationRefactor(self, "opacity")
         self._anim.setBias(0.02)
         self._anim.setFactor(0.2)
@@ -16,6 +16,7 @@ class OpacityController(QObject):
     def animation(self) -> ZExpAnimationRefactor: return self._anim
 
     def getOpacity(self) -> float: return self._opacity
+
     def setOpacity(self, opacity: float) -> None:
         self._opacity = opacity
         #logging.info("setOpacity: %s", opacity)
@@ -72,6 +73,7 @@ class WindowOpacityController(QObject):
     def animation(self) -> ZExpAnimationRefactor: return self._anim
 
     def getOpacity(self) -> float: return self.parent().windowOpacity()
+
     def setOpacity(self, opacity: float) -> None:
         self.parent().setWindowOpacity(opacity)
 

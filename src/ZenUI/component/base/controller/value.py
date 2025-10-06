@@ -3,9 +3,9 @@ from PySide6.QtCore import QPropertyAnimation, QObject, Property, QEasingCurve
 
 class IntegerController(QObject):
     '''整数控制器，用于控制整数变化'''
-    def __init__(self, parent: QWidget):
+    def __init__(self, parent: QWidget, value: int = 0):
         super().__init__(parent)
-        self._value: int = 0
+        self._value: int = value
         self._anim = QPropertyAnimation(self, b'value')
         self._anim.setDuration(150)
         self._anim.setEasingCurve(QEasingCurve.Type.Linear)
@@ -35,9 +35,9 @@ class IntegerController(QObject):
 
 class FloatController(QObject):
     '''浮点数控制器，用于控制浮点数变化'''
-    def __init__(self, parent: QWidget):
+    def __init__(self, parent: QWidget, value: int|float = 0.0):
         super().__init__(parent)
-        self._value: float = 0.0
+        self._value: float = value
         self._anim = QPropertyAnimation(self, b'value')
         self._anim.setDuration(150)
         self._anim.setEasingCurve(QEasingCurve.Type.Linear)

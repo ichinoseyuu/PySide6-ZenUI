@@ -3,9 +3,9 @@ from PySide6.QtCore import Qt, QMargins, Slot, QPoint
 from PySide6.QtGui import QMouseEvent, QPainter
 from ZenUI.component.base import (
     ColorController,
-    LocationController,
-    SizeController,
-    StyleData,
+    PositionController,
+    WidgetSizeController,
+    StyleController,
     ButttonGroup
 )
 from ZenUI.component.layout import ZVBoxLayout
@@ -81,8 +81,8 @@ class Indicator(QWidget):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self._body_cc = ColorController(self)
-        self._location_ctrl = LocationController(self)
-        self._size_ctrl = SizeController(self)
+        self._position_ctrl = PositionController(self)
+        self._size_ctrl = WidgetSizeController(self)
 
 
 
@@ -90,7 +90,7 @@ class Indicator(QWidget):
     def bodyColorCtrl(self): return self._body_cc
 
     @property
-    def locationCtrl(self): return self._location_ctrl
+    def positionCtrl(self): return self._position_ctrl
 
     @property
     def sizeCtrl(self): return self._size_ctrl
@@ -122,36 +122,10 @@ class ZNavigationBar(QWidget):
         self.layout().addWidget(self._panel, stretch=1)
         self.layout().addWidget(self._footer_panel, stretch=0)
         self._btn_manager = ButttonGroup()
-        self._style_data = StyleData[ZNavigationBarStyleData](self,"ZNavigationBar")
-        self._btn_manager.toggled.connect(self.updateIndicator)
-        self._style_data.styleChanged.connect(self._styleChangeHandler)
-        self._initStyle()
-
-    @Slot()
-    def updateIndicator(self):
-        btn = self._btn_manager.checkedButton()
-        current_pos = self._indicator.pos()  # 获取指示器当前位置
-        target_pos = self.getButtonPositionInNavBar(btn)
-        # dx = abs(target_pos.x() - current_pos.x())
-        # dy = abs(target_pos.y() - current_pos.y())
-        # distance = (dx**2 + dy**2) **0.5
-        # dy = abs(target_pos.y() - current_pos.y())
-        distance = abs(target_pos.y() - current_pos.y())
-        if distance == 0:
-            self._indicator.resize(3, btn.height()-20)
-            self._indicator.move(
-            target_pos.x(),
-            target_pos.y() + (btn.height()-self._indicator.height())/2
-            )
-            return
-        factor = min(0.5, max(0.2, distance / self.height()))
-        self._indicator.locationCtrl.animation.setFactor(factor)
-        self._indicator.locationCtrl.moveTo(
-            target_pos.x(),
-            target_pos.y() + (btn.height()-self._indicator.height())/2
-            )
-
-
+        self._style_data = StyleController[ZNavigationBarStyleData](self,"ZNavigationBar")
+        self._btn_manager.toggled.connect(self._update_indicator_)
+        self._style_data.styleChanged.connect(self._style_change_handler_)
+        self._init_style_()
 
     @property
     def panel(self):
@@ -200,12 +174,36 @@ class ZNavigationBar(QWidget):
         painter.end()
 
     # region private
-    def _initStyle(self):
+    def _init_style_(self):
         self._indicator.bodyColorCtrl.color = self._style_data.data.Indicator
         self._indicator.update()
 
-    def _styleChangeHandler(self):
+    def _style_change_handler_(self):
         self._indicator.bodyColorCtrl.setColorTo(self._style_data.data.Indicator)
+
+    @Slot()
+    def _update_indicator_(self):
+        btn = self._btn_manager.checkedButton()
+        current_pos = self._indicator.pos()  # 获取指示器当前位置
+        target_pos = self.getButtonPositionInNavBar(btn)
+        # dx = abs(target_pos.x() - current_pos.x())
+        # dy = abs(target_pos.y() - current_pos.y())
+        # distance = (dx**2 + dy**2) **0.5
+        # dy = abs(target_pos.y() - current_pos.y())
+        distance = abs(target_pos.y() - current_pos.y())
+        if distance == 0:
+            self._indicator.resize(3, btn.height()-20)
+            self._indicator.move(
+            target_pos.x(),
+            target_pos.y() + (btn.height()-self._indicator.height())/2
+            )
+            return
+        factor = min(0.5, max(0.2, distance / self.height()))
+        self._indicator.positionCtrl.animation.setFactor(factor)
+        self._indicator.positionCtrl.moveTo(
+            target_pos.x(),
+            target_pos.y() + (btn.height()-self._indicator.height())/2
+            )
 
     def getButtonPositionInNavBar(self, btn: ZNavBarButton|ZNavBarToggleButton) -> QPoint:
         """获取按钮相对于ZNavigationBar的位置"""

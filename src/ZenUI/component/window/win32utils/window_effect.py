@@ -47,11 +47,13 @@ class WindowsWindowEffect:
         self.winCompAttrData.Attribute = WINDOWCOMPOSITIONATTRIB.WCA_ACCENT_POLICY.value
         self.winCompAttrData.SizeOfData = sizeof(self.accentPolicy)
         self.winCompAttrData.Data = pointer(self.accentPolicy)
+
     def setBackgroundColor(self, hWnd, color: QColor):
         """设置窗口背景颜色"""
         hWnd = int(hWnd)
         # 构造 COLORREF (包含 alpha 通道)
-        colorref = DWORD((color.alpha() << 24) | (color.red() | (color.green() << 8) | (color.blue() << 16)))
+        #colorref = DWORD((color.alpha() << 24) | (color.red() | (color.green() << 8) | (color.blue() << 16)))
+        colorref = DWORD((color.red() | (color.green() << 8) | (color.blue() << 16)))
 
         self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_GRADIENT.value
         self.accentPolicy.GradientColor = colorref
@@ -60,7 +62,7 @@ class WindowsWindowEffect:
 
         self.winCompAttrData.Attribute = WINDOWCOMPOSITIONATTRIB.WCA_ACCENT_POLICY.value
         self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
-        
+
     def setAcrylicEffect(self, hWnd, gradientColor="F2F2F299", enableShadow=True, animationId=0):
         """为窗口添加亚克力效果(Win10+)
 
@@ -188,7 +190,7 @@ class WindowsWindowEffect:
 
     def addClassicShadow(self, hWnd):
         """为窗口添加经典阴影效果
-        
+
         Args:
             hWnd: 窗口句柄
         """

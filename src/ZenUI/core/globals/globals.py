@@ -44,6 +44,7 @@ class ZGlobal:
 
 class ZDebug:
     draw_rect = False
+    is_logging = False
 
     @staticmethod
     def drawRect(painter:QPainter, rect: QRect):

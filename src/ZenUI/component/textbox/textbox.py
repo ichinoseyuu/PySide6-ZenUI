@@ -1,13 +1,36 @@
 import logging
-from enum import IntEnum
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.base import ColorController, FloatController, StyleData, SizeController, ZWrapMode
-from ZenUI.core import ZTextBoxStyleData, ZDebug
-from .textcommand import TextCommand
+from ZenUI.component.base import ColorController, FloatController, StyleController, WidgetSizeController,ZWidget
+from ZenUI.core import ZTextBoxStyleData, ZDebug, ZWrapMode
 
-class ZTextBox(QWidget):
+class TextCommand:
+    """文本操作命令"""
+    def __init__(self, old_text: str, new_text: str, old_pos: int, new_pos: int):
+        self.old_text = old_text
+        self.new_text = new_text
+        self.old_pos = old_pos
+        self.new_pos = new_pos
+
+
+class ZTextBox(ZWidget):
+    textColorCtrl: ColorController
+    textBackColorCtrl: ColorController
+    cursorColorCtrl: ColorController
+    maskColorCtrl: ColorController
+    underlineColorCtrl: ColorController
+    underlineWeightCtrl: FloatController
+    bodyColorCtrl: ColorController
+    borderColorCtrl: ColorController
+    radiusCtrl: FloatController
+    sizeCtrl: WidgetSizeController
+    styleDataCtrl: StyleController[ZTextBoxStyleData]
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{
+            'key': 'ZTextBox'
+        },
+    }
     heightChangedByWrapping = Signal(int)  # 携带新高度值
     editingFinished = Signal()
     def __init__(self,
@@ -42,48 +65,19 @@ class ZTextBox(QWidget):
         self._text_offset = 0  # 文本水平偏移量
         self._undo_stack: list[TextCommand] = []  # 撤销栈
         self._redo_stack: list[TextCommand] = []  # 重做栈
-        self._max_undo = 100   # 最大撤销次数
+        self._max_undo = 20   # 最大撤销次数
         self._undo_timer = QTimer()
         self._undo_timer.setSingleShot(True)
         self._undo_timer.timeout.connect(self._commit_undo)
         self._pending_undo: list[str, str, int, int] = None
         self._last_height = self.height()
 
-
-        self._text_cc = ColorController(self)
-        self._text_back_cc = ColorController(self)
-        self._cursor_cc = ColorController(self)
-        self._cursor_cc.animation.setDuration(500)
-        self._cursor_cc.animation.finished.connect(self._toggle_cursor)
-        self._mask_cc = ColorController(self)
-        self._underline_cc = ColorController(self)
-        self._underline_ctrl = FloatController(self)
-        self._body_cc = ColorController(self)
-        self._border_cc = ColorController(self)
-        self._radius_ctrl = FloatController(self)
-        self._size_ctrl = SizeController(self)
-        self._style_data = StyleData[ZTextBoxStyleData](self, 'ZTextBox')
-        self._style_data.styleChanged.connect(self._styleChangeHandler)
-        self._initStyle()
+        self.cursorColorCtrl.animation.setDuration(500)
+        self.cursorColorCtrl.animation.finished.connect(self._toggle_cursor)
+        self._init_style_()
 
 
     # region Property
-    @property
-    def textColorCtrl(self) -> ColorController: return self._text_cc
-
-    @property
-    def bodyColorCtrl(self) -> ColorController: return self._body_cc
-
-    @property
-    def borderColorCtrl(self) -> ColorController: return self._border_cc
-
-    @property
-    def radiusCtrl(self) -> FloatController: return self._radius_ctrl
-
-    @property
-    def styleData(self): return self._style_data
-
-
     @property
     def text(self) -> str: return self._text
 
@@ -260,35 +254,35 @@ class ZTextBox(QWidget):
         return max(total_height + mh, self.minimumHeight())
 
     # region private
-    def _initStyle(self):
-        data = self._style_data.data
-        self._text_cc.color = data.Text
-        self._text_back_cc.color = data.TextBackSectcted
-        self._cursor_cc.color = data.Cursor
-        self._mask_cc.color = data.Mask
-        self._underline_cc.color = data.Underline
-        self._body_cc.color = data.Body
-        self._border_cc.color = data.Border
-        self._radius_ctrl.value = data.Radius
-        self._underline_ctrl.value = 1.3
+    def _init_style_(self):
+        data = self.styleDataCtrl.data
+        self.textColorCtrl.color = data.Text
+        self.textBackColorCtrl.color = data.TextBackSectcted
+        self.cursorColorCtrl.color = data.Cursor
+        self.maskColorCtrl.color = data.Mask
+        self.underlineColorCtrl.color = data.Underline
+        self.bodyColorCtrl.color = data.Body
+        self.borderColorCtrl.color = data.Border
+        self.radiusCtrl.value = data.Radius
+        self.underlineWeightCtrl.value = 1.3
         self.update()
 
 
-    def _styleChangeHandler(self):
-        data = self._style_data.data
-        self._radius_ctrl.value = data.Radius
-        self._mask_cc.setColorTo(data.Mask)
-        self._cursor_cc.setColorTo(data.Cursor)
-        self._border_cc.setColorTo(data.Border)
-        self._text_cc.setColorTo(data.Text)
-        self._text_back_cc.setColorTo(data.TextBackSectcted)
+    def _style_change_handler_(self):
+        data = self.styleDataCtrl.data
+        self.radiusCtrl.value = data.Radius
+        self.maskColorCtrl.setColorTo(data.Mask)
+        self.cursorColorCtrl.setColorTo(data.Cursor)
+        self.borderColorCtrl.setColorTo(data.Border)
+        self.textColorCtrl.setColorTo(data.Text)
+        self.textBackColorCtrl.setColorTo(data.TextBackSectcted)
 
         if self.hasFocus():
-            self._underline_cc.setColorTo(data.UnderlineFocused)
-            self._body_cc.setColorTo(data.BodyFocused)
+            self.underlineColorCtrl.setColorTo(data.UnderlineFocused)
+            self.bodyColorCtrl.setColorTo(data.BodyFocused)
         else:
-            self._underline_cc.setColorTo(data.Underline)
-            self._body_cc.setColorTo(data.Body)
+            self.underlineColorCtrl.setColorTo(data.Underline)
+            self.bodyColorCtrl.setColorTo(data.Body)
 
 
     def _update_size(self):
@@ -308,10 +302,10 @@ class ZTextBox(QWidget):
             new_width = min(size_hint.width(), available_width)
             new_height = min(size_hint.height(), available_height)
             limited_size = QSize(new_width, new_height)
-            self._size_ctrl.resizeTo(limited_size)
+            self.sizeCtrl.resizeTo(limited_size)
         else:
             # 没有父控件时使用原始的 sizeHint
-            self._size_ctrl.resizeTo(size_hint)
+            self.sizeCtrl.resizeTo(size_hint)
 
         # 检查高度是否变化且是因为换行引起的
         new_height = self.height()
@@ -323,17 +317,17 @@ class ZTextBox(QWidget):
 
     def _toggle_cursor(self):
         """切换光标可见性"""
-        if self._cursor_cc.color.alpha() > 0:
-            self._cursor_cc.toTransparent()
+        if self.cursorColorCtrl.color.alpha() > 0:
+            self.cursorColorCtrl.toTransparent()
         else:
-            self._cursor_cc.toOpaque()
+            self.cursorColorCtrl.toOpaque()
 
 
     def _should_show_cursor(self) -> bool:
         """判断是否应该显示光标"""
         return (self.hasFocus() and
                 not self._read_only and
-                self._cursor_cc.color.alpha() > 0 and
+                self.cursorColorCtrl.color.alpha() > 0 and
                 not self._selected_text)
 
 
@@ -500,7 +494,7 @@ class ZTextBox(QWidget):
 
         # 为每行绘制选中区域
         painter.setPen(Qt.NoPen)
-        painter.setBrush(self._text_back_cc.color)
+        painter.setBrush(self.textBackColorCtrl.color)
 
         for line_text, line_start_pos, line_y in lines_info:
             line_end_pos = line_start_pos + len(line_text)
@@ -719,27 +713,27 @@ class ZTextBox(QWidget):
                             QPainter.RenderHint.Antialiasing)
         # 创建圆角矩形路径作为裁剪区域
         rect = self.rect()
-        radius = self._radius_ctrl.value
+        radius = self.radiusCtrl.value
         clip_path = QPainterPath()
         clip_path.addRoundedRect(rect, radius, radius)
         # 设置裁剪区域
         painter.setClipPath(clip_path)
         # 绘制背景
-        if self._body_cc.color.alpha() > 0:
+        if self.bodyColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.fillRect(rect, self._body_cc.color)
+            painter.fillRect(rect, self.bodyColorCtrl.color)
         # 绘制边框
-        if self._border_cc.color.alpha() > 0:
-            painter.setPen(QPen(self._border_cc.color, 1))
+        if self.borderColorCtrl.color.alpha() > 0:
+            painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(
                 QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),
                 radius,
                 radius)
         # 绘制下边缘线
-        if self._underline_cc.color.alpha() > 0:
+        if self.underlineColorCtrl.color.alpha() > 0:
             # 使用矩形替代线条
-            underline_height = self._underline_ctrl.value
+            underline_height = self.underlineWeightCtrl.value
             underline_rect = QRectF(
                 0,
                 rect.bottom() - underline_height + 1,
@@ -748,7 +742,7 @@ class ZTextBox(QWidget):
             )
             # painter.setBrush(self._underline_cc.color)
             # painter.drawRect(underline_rect)
-            painter.fillRect(underline_rect, self._underline_cc.color)
+            painter.fillRect(underline_rect, self.underlineColorCtrl.color)
         # 计算文本绘制区域
         m = self._margins
         text_rect = rect.adjusted(m.left(), m.top(), -m.right(), -m.bottom())
@@ -761,7 +755,7 @@ class ZTextBox(QWidget):
         # 绘制文本
         if self._should_show_mask():
             # 显示mask文本
-            painter.setPen(self._mask_cc.color)
+            painter.setPen(self.maskColorCtrl.color)
             painter.drawText(text_rect, text_flags, self._mask_text)
         else:
             # 绘制选中区域
@@ -778,7 +772,7 @@ class ZTextBox(QWidget):
             # 将预编辑文本插入到当前光标位置
             display_text = self._text[:self._cursor_pos] + self._preedit_text + self._text[self._cursor_pos:]
 
-        painter.setPen(self._text_cc.color)
+        painter.setPen(self.textColorCtrl.color)
         painter.drawText(text_rect, text_flags, display_text)
 
         # 光标绘制
@@ -803,7 +797,7 @@ class ZTextBox(QWidget):
                 # 使用行的精确 Y 坐标
                 cursor_y = line_y
                 cursor_height = fm.height()
-                painter.setPen(self._cursor_cc.color)
+                painter.setPen(self.cursorColorCtrl.color)
                 painter.drawLine(
                     QPointF(cursor_x, cursor_y),
                     QPointF(cursor_x, cursor_y + cursor_height)
@@ -815,7 +809,7 @@ class ZTextBox(QWidget):
     def keyPressEvent(self, event: QKeyEvent):
         """处理键盘事件"""
         # 重置光标显示
-        self._cursor_cc.toOpaque()
+        self.cursorColorCtrl.toOpaque()
 
         # 处理任何时候都可用的快捷键
         if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
@@ -926,7 +920,7 @@ class ZTextBox(QWidget):
             char_pos = self._get_char_position_at_point(event.pos())
 
             # 更新光标位置
-            self._cursor_cc.toOpaque()
+            self.cursorColorCtrl.toOpaque()
             self._cursor_pos = char_pos
 
             # 如果按住Shift键，则是扩展选择
@@ -960,29 +954,29 @@ class ZTextBox(QWidget):
 
     def focusInEvent(self, event):
         if not self._read_only:
-            self._cursor_cc.toOpaque()
-        self._body_cc.setColorTo(self._style_data.data.BodyFocused)
-        self._underline_cc.setColorTo(self._style_data.data.UnderlineFocused)
-        self._underline_ctrl.setValueTo(2.0)
+            self.cursorColorCtrl.toOpaque()
+        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyFocused)
+        self.underlineColorCtrl.setColorTo(self.styleDataCtrl.data.UnderlineFocused)
+        self.underlineWeightCtrl.setValueTo(2.0)
         super().focusInEvent(event)
 
     def focusOutEvent(self, event):
-        self._cursor_cc.transparent()
-        self._cursor_cc.stopAnimation()
-        self._body_cc.setColorTo(self._style_data.data.Body)
-        self._underline_cc.setColorTo(self._style_data.data.Underline)
-        self._underline_ctrl.setValueTo(1.3)
+        self.cursorColorCtrl.transparent()
+        self.cursorColorCtrl.stopAnimation()
+        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
+        self.underlineColorCtrl.setColorTo(self.styleDataCtrl.data.Underline)
+        self.underlineWeightCtrl.setValueTo(1.3)
         self._clear_selection()
         super().focusOutEvent(event)
 
     def enterEvent(self, event):
         if not self.hasFocus():
-            self._body_cc.setColorTo(self._style_data.data.BodyHover)
+            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
         super().enterEvent(event)
 
     def leaveEvent(self, event):
         if self.hasFocus():
-            self._body_cc.setColorTo(self._style_data.data.BodyFocused)
+            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyFocused)
         else:
-            self._body_cc.setColorTo(self._style_data.data.Body)
+            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
         super().leaveEvent(event)

@@ -4,9 +4,6 @@ __pycache__/
 test/
 src/ZenUI.egg-info
 src/ZenUI/_legacy/
-src/ZenUI/resource/icons
-src/ZenUI/resource/packge
-src/ZenUI/resource/icons.qrc
 zenui_gallery/image
 zenui_gallery/rc.qrc
 zenui.log

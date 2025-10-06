@@ -193,11 +193,10 @@ class ZExpAnimationRefactor(QAbstractAnimation):
 
 
     def updateCurrentTime(self, _) -> None:
-        # print(self.distance())
+        #print(self.distance())
         if (self.distance() == 0).all():
             self.stop()
             return
-
         distance = self._end_value - self._current_value
         flag = numpy.array(abs(distance) <= self.bias, dtype="int8")
         step = abs(distance) * self.factor + self.bias                   # 基本指数动画运算

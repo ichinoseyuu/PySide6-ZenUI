@@ -2,10 +2,21 @@ from PySide6.QtWidgets import QWidget, QApplication
 from PySide6.QtCore import Qt, QSize, QMargins, QRectF
 from PySide6.QtGui import (QPainter, QFont, QFontMetrics, QPen, QTextDocument,
                           QAbstractTextDocumentLayout, QTextCursor)
-from ZenUI.component.base import ColorController, FloatController, StyleData
+from ZenUI.component.base import ColorController, FloatController, StyleController,ZWidget
 from ZenUI.core import ZRichTextBlockStyleData, ZDebug
 
-class ZRichTextBlock(QWidget):
+class ZRichTextBlock(ZWidget):
+    bodyColorCtrl: ColorController
+    borderColorCtrl: ColorController
+    textColorCtrl: ColorController
+    textBackColorCtrl: ColorController
+    radiusCtrl: FloatController
+    styleDataCtrl: StyleController[ZRichTextBlockStyleData]
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{
+            'key': 'ZRichTextBlock'
+        },
+    }
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
@@ -33,40 +44,11 @@ class ZRichTextBlock(QWidget):
         self._is_selecting = False
         self._drag_start_pos = None
 
-        # 样式控制器
-        self._text_cc = ColorController(self)
-        self._text_back_cc = ColorController(self)
-        self._body_cc = ColorController(self)
-        self._border_cc = ColorController(self)
-        self._radius_ctrl = FloatController(self)
-        self._style_data = StyleData[ZRichTextBlockStyleData](self, 'ZRichTextBlock')
-        self._style_data.styleChanged.connect(self._styleChangeHandler)
-
-        self._initStyle()
+        self._init_style_()
         self._setup_document()
 
 
     # region property
-    @property
-    def textColorCtrl(self) -> ColorController:
-        return self._text_cc
-
-    @property
-    def bodyColorCtrl(self) -> ColorController:
-        return self._body_cc
-
-    @property
-    def borderColorCtrl(self) -> ColorController:
-        return self._border_cc
-
-    @property
-    def radiusCtrl(self) -> FloatController:
-        return self._radius_ctrl
-
-    @property
-    def styleData(self):
-        return self._style_data
-
     @property
     def html(self) -> str:
         return self._html
@@ -179,22 +161,22 @@ class ZRichTextBlock(QWidget):
 
 
     # region private
-    def _initStyle(self):
-        data = self._style_data.data
-        self._text_cc.color = data.Text
-        self._body_cc.color = data.Body
-        self._border_cc.color = data.Border
-        self._radius_ctrl.value = data.Radius
-        self._text_back_cc.color = data.TextBackSectcted
+    def _init_style_(self):
+        data = self.styleDataCtrl.data
+        self.textColorCtrl.color = data.Text
+        self.bodyColorCtrl.color = data.Body
+        self.borderColorCtrl.color = data.Border
+        self.radiusCtrl.value = data.Radius
+        self.textBackColorCtrl.color = data.TextBackSectcted
         self.update()
 
-    def _styleChangeHandler(self):
-        data = self._style_data.data
-        self._radius_ctrl.value = data.Radius
-        self._body_cc.setColorTo(data.Body)
-        self._border_cc.setColorTo(data.Border)
-        self._text_cc.setColorTo(data.Text)
-        self._text_back_cc.setColorTo(data.TextBackSectcted)
+    def _style_change_handler_(self):
+        data = self.styleDataCtrl.data
+        self.radiusCtrl.value = data.Radius
+        self.bodyColorCtrl.setColorTo(data.Body)
+        self.borderColorCtrl.setColorTo(data.Border)
+        self.textColorCtrl.setColorTo(data.Text)
+        self.textBackColorCtrl.setColorTo(data.TextBackSectcted)
 
     def _setup_document(self):
         """设置富文本文档"""
@@ -246,7 +228,7 @@ class ZRichTextBlock(QWidget):
         end_block = self._text_document.findBlock(selection_end)
 
         painter.setPen(Qt.NoPen)
-        painter.setBrush(self._text_back_cc.color)
+        painter.setBrush(self.textBackColorCtrl.color)
 
         # 处理单行选择
         if start_block.blockNumber() == end_block.blockNumber():
@@ -320,17 +302,17 @@ class ZRichTextBlock(QWidget):
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing |
                               QPainter.RenderHint.Antialiasing)
         rect = self.rect()
-        radius = self._radius_ctrl.value
+        radius = self.radiusCtrl.value
 
         # 绘制背景
-        if self._body_cc.color.alpha() > 0:
+        if self.bodyColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self._body_cc.color)
+            painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
 
         # 绘制边框
-        if self._border_cc.color.alpha() > 0:
-            painter.setPen(QPen(self._border_cc.color, 1))
+        if self.borderColorCtrl.color.alpha() > 0:
+            painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(
                 QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),
@@ -357,7 +339,7 @@ class ZRichTextBlock(QWidget):
 
         # 创建绘制上下文
         context = QAbstractTextDocumentLayout.PaintContext()
-        context.palette.setColor(context.palette.ColorRole.Text, self._text_cc.color)
+        context.palette.setColor(context.palette.ColorRole.Text, self.textColorCtrl.color)
 
         # # 如果有选择，设置选择区域
         # if self._selectable and self._text_cursor and self._text_cursor.hasSelection():

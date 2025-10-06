@@ -7,7 +7,7 @@ from PySide6.QtGui import QCursor
 
 # 假设 tooltip.py 和 tooldipdemo.py 在同一目录下
 from .tooltip import ZToolTip
-from ZenUI.component.base import ZPosition
+from ZenUI.core import ZPosition
 
 class ZToolTipDemo(QWidget):
     def __init__(self, parent=None):

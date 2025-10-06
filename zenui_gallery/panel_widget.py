@@ -222,7 +222,7 @@ class PanelWidget(ZScrollPanel):
             name='btn_4',
             text='连点按钮'
             )
-        self.btn_4.repeatClick = True
+        self.btn_4.repeatable = True
         container.addWidget(self.btn_4)
         self.btn_4.clicked.connect(
             lambda: ZGlobal.tooltip.showTip(

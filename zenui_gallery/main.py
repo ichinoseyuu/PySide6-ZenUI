@@ -11,7 +11,7 @@ from panel_info import PanelInfo
 from panel_about import PanelAbout
 from panel_settings import PanelSettings
 
-class ZenUIGallery(ZFramelessWindow):
+class ZenUIGallery(ZStandardFramelessWindow):
     def __init__(self):
         super().__init__()
         self.setupUi()

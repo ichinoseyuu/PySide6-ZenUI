@@ -1,3 +1,4 @@
+import logging
 from typing import overload, Dict, Any
 from dataclasses import fields, is_dataclass
 from enum import Enum
@@ -9,6 +10,9 @@ from ZenUI.core.styledata.theme_data import *
 
 class ZStyleDataFactory:
     dataclass_map = {
+        'ZComboBox': ZComboBoxStyleData,
+        'ZComboBoxItem': ZComboBoxItemStyleData,
+        'ZComboBoxItemView': ZComboBoxItemViewStyleData,
         'ZNavigationBar': ZNavigationBarStyleData,
         'ZSwitch': ZSwitchStyleData,
         'ZTextBox': ZTextBoxStyleData,
@@ -30,20 +34,25 @@ class ZStyleDataFactory:
     }
 
     @classmethod
-    def create(cls, name: str, data: Dict[str, Any]) -> StyleDataUnion:
-        cls = ZStyleDataFactory.dataclass_map.get(name)
-        if cls is None:
+    def create(cls, name: str, data: Dict[str, Any]) -> StyleDataT:
+        data_type = cls.dataclass_map.get(name)
+        if data_type is None:
             raise ValueError(f"Unknown style data class for component: {name}")
-        return ZStyleDataFactory.dict_to_dataclass(cls, data)
+        #logging.info(f"Creating style data for component: {name}")
+        return cls.dictToDataclass(data_type, data)
 
-    def dict_to_dataclass(cls, data: dict) -> StyleDataUnion:
-        if not is_dataclass(cls):
-            raise TypeError(f"{cls} is not a dataclass")
-        field_map = {f.name: f.type for f in fields(cls)}
+    @staticmethod
+    def dictToDataclass(data_type: StyleDataT, data: dict) -> StyleDataT:
+        if not is_dataclass(data_type):
+            raise TypeError(f"{data_type} is not a dataclass")
+        # 将 StyleDataT 转换为字段映射
+        field_map = {f.name: f.type for f in fields(data_type)}
+
         filtered = {}
         for k, v in data.items():
-            # 统一 key 为字符串
+            # 统一 data 字典中的键名统一为字符串
             key_str = k.value if isinstance(k, Enum) else str(k)
+            # 从字段映射中匹配 data 字典中的键名
             if key_str in field_map:
                 target_type = field_map[key_str]
                 # 自动类型转换
@@ -55,25 +64,25 @@ class ZStyleDataFactory:
                     filtered[key_str] = float(v)
                 else:
                     filtered[key_str] = v
-        return cls(**filtered)
+        return data_type(**filtered)
 
 @singleton
 class ZStyleDataManager:
     def __init__(self):
         super().__init__()
         self._factory = ZStyleDataFactory()
-        self._cache: Dict[str, StyleDataUnion] = {}  # 添加缓存字典
+        self._cache: Dict[str, StyleDataT] = {}  # 添加缓存字典
 
     def _get_cache_key(self, name: str, theme: str) -> str:
         return f"{theme}:{name}"
 
     @overload
-    def getStyleData(self, name: str) -> StyleDataUnion: ...
+    def getStyleData(self, name: str) -> StyleDataT: ...
 
     @overload
-    def getStyleData(self, name: str, theme: str) -> StyleDataUnion: ...
+    def getStyleData(self, name: str, theme: str) -> StyleDataT: ...
 
-    def getStyleData(self, *args) -> StyleDataUnion:
+    def getStyleData(self, *args) -> StyleDataT:
         if len(args) == 1:
             name = args[0]
             theme = ZThemeManager().getTheme().name
@@ -85,8 +94,24 @@ class ZStyleDataManager:
         if cache_key in self._cache:
             return self._cache[cache_key]
 
+
+        # 获取主题数据(251105)
+        # theme_data = THEME_DATA.get(theme, {})
+        # component_data = theme_data.get(name, {})
+
+
         theme_data = THEME_DATA.get(theme, {})
-        component_data = theme_data.get(name, {})
+        component_data = {}
+        # 新增：支持从元组键中匹配组件样式
+        for key, data in theme_data.items():
+            # 如果键是字符串且完全匹配，则合并样式数据（覆盖元组中可能存在的同名配置）
+            if isinstance(key, str) and name == key:
+                component_data.update(data)
+                break
+            # 如果键是元组且当前组件名在元组中，则合并样式数据
+            elif isinstance(key, tuple) and name in key:
+                component_data.update(data)
+                break
 
         # 创建样式数据并缓存
         style_data = ZStyleDataFactory.create(name, component_data)

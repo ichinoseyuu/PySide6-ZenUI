@@ -3,11 +3,259 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from enum import IntEnum
 from typing import overload
-from ZenUI.component.base import StyleData, ZPosition, ZDirection
-from ZenUI.core import ZGlobal, ZSliderStyleData, ZDebug
-from .fill import SliderFill
-from .track import SliderTrack
-from .handle import SliderHandle
+from ZenUI.component.base import (
+    ColorController,
+    LinearGradientController,
+    FloatController,
+    PositionController,
+    WidgetSizeController,
+    StyleController
+)
+from ZenUI.core import (
+    ZGlobal,
+    ZSliderStyleData,
+    ZDebug,
+    ZPosition,
+    ZDirection
+)
+class SliderFill(QWidget):
+    def __init__(self, parent:QWidget = None):
+        super().__init__(parent)
+        self._body_cc = LinearGradientController(self)
+        self._border_cc = ColorController(self)
+        self._radius_ctrl = FloatController(self)
+        self._location_ctrl = PositionController(self)
+        self._size_ctrl = WidgetSizeController(self)
+
+    @property
+    def bodyColorCtrl(self): return self._body_cc
+
+    @property
+    def borderColorCtrl(self): return self._border_cc
+
+    @property
+    def radiusCtrl(self): return self._radius_ctrl
+
+    @property
+    def locationCtrl(self): return self._location_ctrl
+
+    @property
+    def sizeCtrl(self): return self._size_ctrl
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        rect = self.rect()
+        radius = self._radius_ctrl.value
+
+        # 计算内部矩形（考虑边框宽度）
+        inner_rect = QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5)
+        # 创建圆角路径（基于inner_rect）
+        path = QPainterPath()
+        path.addRoundedRect(inner_rect, radius, radius)
+
+        # 绘制渐变背景
+        x1, y1, x2, y2 = self._body_cc.linearPoints
+        gradient = QLinearGradient(
+            inner_rect.width() * x1 + inner_rect.left(),
+            inner_rect.height() * y1 + inner_rect.top(),
+            inner_rect.width() * x2 + inner_rect.left(),
+            inner_rect.height() * y2 + inner_rect.top()
+        )
+        if not self._body_cc.reverse:
+            gradient.setColorAt(0.0, self._body_cc.colorStart)
+            gradient.setColorAt(1.0, self._body_cc.colorEnd)
+        else:
+            gradient.setColorAt(0.0, self._body_cc.colorEnd)
+            gradient.setColorAt(1.0, self._body_cc.colorStart)
+        painter.fillPath(path, gradient)
+
+        # 绘制边框
+        painter.setPen(QPen(
+            self._border_cc.color,
+            1,
+            Qt.SolidLine,
+            Qt.RoundCap,
+            Qt.RoundJoin
+        ))
+        painter.setBrush(Qt.NoBrush)
+        painter.drawRoundedRect(inner_rect, radius, radius)
+        painter.end()
+
+
+class SliderTrack(QWidget):
+    def __init__(self, parent:QWidget = None):
+        super().__init__(parent)
+        self._body_cc = ColorController(self)
+        self._border_cc = ColorController(self)
+        self._radius_ctrl = FloatController(self)
+        self._loacation_ctrl = PositionController(self)
+
+    @property
+    def bodyColorCtrl(self): return self._body_cc
+
+    @property
+    def borderColorCtrl(self): return self._border_cc
+
+    @property
+    def radiusCtrl(self): return self._radius_ctrl
+
+    @property
+    def loactionCtrl(self): return self._loacation_ctrl
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        rect = self.rect()
+        # 计算内部矩形（考虑边框宽度）
+        inner_rect = QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5)
+        radius = self._radius_ctrl.value
+        if self._body_cc.color.alpha() > 0:
+            # 绘制背景
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._body_cc.color)
+            painter.drawRoundedRect(inner_rect, radius, radius)
+        # 绘制边框
+        if self._border_cc.color.alpha() > 0:
+            painter.setPen(QPen(
+                self._border_cc.color,
+                1,
+                Qt.SolidLine,
+                Qt.RoundCap,
+                Qt.RoundJoin
+            ))
+            painter.setBrush(Qt.NoBrush)
+            painter.drawRoundedRect(inner_rect, radius, radius)
+        painter.end()
+
+
+class SliderHandle(QWidget):
+    def __init__(self,
+                 parent: QWidget = None,
+                 radius: int = 6
+                 ):
+        super().__init__(parent)
+        self._radius = radius
+        self.resize(2*radius, 2*radius)
+
+        self._inner_scale_normal = 0.4      # 正常状态的内圈大小
+        self._inner_scale_hover = 0.6       # 悬停状态的内圈大小
+        self._inner_scale_pressed = 0.5     # 按下状态的内圈大小
+        self._inner_scale_released = 0.6    # 释放状态的内圈大小
+
+        self._outer_scale_normal = 0.8      # 正常状态的外圈大小
+        self._outer_scale_hover = 1.0       # 悬停状态的外圈大小
+        self._outer_scale_pressed = 1.0     # 按下状态的外圈大小
+        self._outer_scale_released = 1.0    # 释放状态的外圈大小
+
+        self._inner_scale_ctrl = FloatController(self)
+        self._outer_scale_ctrl = FloatController(self)
+
+        self._inner_cc = ColorController(self)
+        self._outer_cc = ColorController(self)
+        self._border_cc = ColorController(self)
+        self._location_ctrl = PositionController(self)
+
+        self._inner_scale_ctrl.setValue(self._inner_scale_normal)
+        self._outer_scale_ctrl.setValue(self._outer_scale_normal)
+
+    @property
+    def innerColorCtrl(self): return self._inner_cc
+
+    @property
+    def outerColorCtrl(self): return self._outer_cc
+
+    @property
+    def borderColorCtrl(self): return self._border_cc
+
+    @property
+    def locationCtrl(self): return self._location_ctrl
+
+    def parent(self) -> 'ZSlider':
+        return super().parent()
+
+    # region paintEvent
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        # 计算中心点和基础半径
+        center = QPointF(self.width()/2, self.height()/2)
+        base_radius = min(self.width(), self.height())/2 - 1
+        if self._inner_cc.color.alpha() > 0:
+            # 绘制外圈(大小可变)
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._outer_cc.color)
+            outer_radius = base_radius * self._outer_scale_ctrl.value
+            painter.drawEllipse(center, outer_radius, outer_radius)
+        if self._inner_cc.color.alpha() > 0:
+            # 绘制内圈(大小可变)
+            inner_radius = base_radius * self._inner_scale_ctrl.value
+            painter.setBrush(self._inner_cc.color)
+            painter.drawEllipse(center, inner_radius, inner_radius)
+        if self._border_cc.color.alpha() > 0:
+            # 绘制外边框
+            painter.setPen(QPen(self._border_cc.color, 1))
+            border_radius = base_radius * self._outer_scale_ctrl.value
+            painter.setBrush(Qt.NoBrush)  # 不填充
+            painter.drawEllipse(center, border_radius, border_radius)
+        painter.end()
+
+
+    # region mouseEvent
+    def mousePressEvent(self, event):
+        self._inner_scale_ctrl.setValueTo(self._inner_scale_pressed)
+        self._outer_cc.setAlphaTo(150)
+        self._border_cc.setAlphaTo(150)
+
+    def mouseMoveEvent(self, event):
+        slider = self.parent()
+        pos = event.globalPos() - slider.mapToGlobal(QPoint(self._radius, self._radius))
+        if slider.isHorizontal:
+            delta = max(0, min(pos.x(), slider._track_length))
+            slider.setValue(delta / slider._track_length * slider._max)
+            ZGlobal.tooltip.showTip(
+                text = self.parent().displayValue,
+                target = self,
+                mode = ZGlobal.tooltip.Mode.TrackTarget,
+                position =ZPosition.Top)
+        else:
+            delta = max(0, min(pos.y(), slider._track_length))
+            slider.setValue(slider._max - delta / slider._track_length * slider._max)
+            ZGlobal.tooltip.showTip(
+                text = self.parent().displayValue,
+                target = self,
+                mode = ZGlobal.tooltip.Mode.TrackTarget,
+                position = ZPosition.Left)
+
+    def mouseReleaseEvent(self, event):
+        self._inner_scale_ctrl.setValueTo(self._inner_scale_released)
+        self._outer_cc.setAlphaTo(255)
+        self._border_cc.setAlphaTo(255)
+
+
+    def enterEvent(self, event):
+        super().enterEvent(event)
+        self._inner_scale_ctrl.setValueTo(self._inner_scale_hover)
+        self._outer_scale_ctrl.setValueTo(self._outer_scale_hover)
+        if self.parent().isHorizontal:
+            ZGlobal.tooltip.showTip(
+                text = self.parent().displayValue,
+                target = self,
+                mode = ZGlobal.tooltip.Mode.TrackTarget,
+                position = ZPosition.Top)
+        else:
+            ZGlobal.tooltip.showTip(
+                text = self.parent().displayValue,
+                target = self,
+                mode = ZGlobal.tooltip.Mode.TrackTarget,
+                position = ZPosition.Left)
+
+
+    def leaveEvent(self, event):
+        self._inner_scale_ctrl.setValueTo(self._inner_scale_normal)
+        self._outer_scale_ctrl.setValueTo(self._outer_scale_normal)
+        ZGlobal.tooltip.hideTipDelayed(500)
+
 
 class ZSlider(QWidget):
     class Weight(IntEnum):
@@ -58,7 +306,7 @@ class ZSlider(QWidget):
         self._fill = SliderFill(self)
         self._handle = SliderHandle(self,10)
 
-        self._style_data = StyleData[ZSliderStyleData](self, 'ZSlider')
+        self._style_data = StyleController[ZSliderStyleData](self, 'ZSlider')
         self._style_data.styleChanged.connect(self._styleChangeHandler)
 
         self._handle.locationCtrl.animation.valueChanged.connect(self._update_fill)
@@ -246,7 +494,7 @@ class ZSlider(QWidget):
         data = self._style_data.data
         self._track.bodyColorCtrl.setColorTo(data.Track)
         self._track.borderColorCtrl.setColorTo(data.TrackBorder)
-        self._fill.bodyColorCtrl.setColorTo(data.FillAreaStart, data.FillAreaEnd)
+        self._fill.bodyColorCtrl.setColorsTo(data.FillAreaStart, data.FillAreaEnd)
         self._fill.borderColorCtrl.setColorTo(data.FillAreaBorder)
         self._handle.innerColorCtrl.setColorTo(data.HandleInner)
         self._handle.outerColorCtrl.setColorTo(data.HandleOuter)

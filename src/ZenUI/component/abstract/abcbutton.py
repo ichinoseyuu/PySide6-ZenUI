@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent, QTimer
 from PySide6.QtGui import QMouseEvent, QEnterEvent
-from ZenUI.component.base import ZState
-class ABCButton(QWidget):
+from ZenUI.core import ZState
+from ZenUI.component.base import ZWidget
+class ABCButton(ZWidget):
     entered = Signal()
     leaved = Signal()
     pressed = Signal()
@@ -14,28 +15,33 @@ class ABCButton(QWidget):
         # self.setMouseTracking(True)
         self._state = ZState.Idle
         self._tool_tip: str = ""
-        self.entered.connect(self.hoverHandler)
-        self.leaved.connect(self.leaveHandler)
-        self.pressed.connect(self.pressHandler)
-        self.released.connect(self.releaseHandler)
-        self.clicked.connect(self.clickHandler)
+        self.entered.connect(self._hover_handler_)
+        self.leaved.connect(self._leave_handler_)
+        self.pressed.connect(self._press_handler_)
+        self.released.connect(self._release_handler_)
+        self.clicked.connect(self._click_handler_)
 
 
     # region Slot
     @Slot()
-    def hoverHandler(self): ...
+    def _hover_handler_(self):
+        '''鼠标进入时的槽函数'''
 
     @Slot()
-    def leaveHandler(self): ...
+    def _leave_handler_(self):
+        '''鼠标离开时的槽函数'''
 
     @Slot()
-    def pressHandler(self): ...
+    def _press_handler_(self):
+        '''鼠标按下时的槽函数'''
 
     @Slot()
-    def releaseHandler(self): ...
+    def _release_handler_(self):
+        '''鼠标释放时的槽函数'''
 
     @Slot()
-    def clickHandler(self): ...
+    def _click_handler_(self):
+        '''鼠标成功点击时的槽函数'''
 
 
     # region Property
@@ -92,11 +98,12 @@ class ABCToggleButton(ABCButton):
         self._checkable: bool = True
         self._checked: bool = False
         self._is_group_member: bool = False  # 标记是否为按钮组成员
-        self.toggled.connect(self.toggleHandler)
+        self.toggled.connect(self._toggle_handler_)
 
     # region Slot
     @Slot(bool)
-    def toggleHandler(self, c: bool): ...
+    def _toggle_handler_(self, c: bool):
+        '''按钮状态改变时的槽函数'''
 
     # region Property
     @property
@@ -141,7 +148,7 @@ class ABCRepeatButton(ABCButton):
 
         self._repeat_timer = QTimer(self) # 重复点击计时器
         self._repeat_timer.setInterval(50)
-        self._repeat_timer.timeout.connect(self.repeatClickHandler)
+        self._repeat_timer.timeout.connect(self._repeat_click_handler_)
 
         self._delay_timer = QTimer(self) # 延迟启动计时器
         self._delay_timer.setSingleShot(True)
@@ -151,7 +158,8 @@ class ABCRepeatButton(ABCButton):
 
     # region Slot
     @Slot()
-    def repeatClickHandler(self):
+    def _repeat_click_handler_(self):
+        '''重复点击时的槽函数'''
         self._repeat_count += 1
         self.clicked.emit()
 

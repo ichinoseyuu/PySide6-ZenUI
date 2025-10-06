@@ -3,9 +3,21 @@ from enum import IntEnum
 from PySide6.QtWidgets import QWidget,QSizePolicy
 from PySide6.QtCore import Qt, QSize, QMargins,QRectF,Signal
 from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen, QTextLayout, QTextOption
-from ZenUI.component.base import ColorController,FloatController,StyleData,ZWrapMode
-from ZenUI.core import ZTextBlockStyleData,ZDebug
-class ZTextBlock(QWidget):
+from ZenUI.component.base import ColorController,FloatController,StyleController,ZWidget
+from ZenUI.core import ZTextBlockStyleData,ZDebug,ZWrapMode
+
+class ZTextBlock(ZWidget):
+    textColorCtrl: ColorController
+    textBackColorCtrl: ColorController
+    bodyColorCtrl: ColorController
+    borderColorCtrl: ColorController
+    radiusCtrl: FloatController
+    styleDataCtrl: StyleController[ZTextBlockStyleData]
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{
+            'key': 'ZTextBlock'
+        },
+    }
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
@@ -26,34 +38,11 @@ class ZTextBlock(QWidget):
         self._is_selecting = False  # 是否正在选中
         self._drag_start_pos = None # 拖动开始位置
 
-        self._text_back_cc = ColorController(self)
-        self._text_cc = ColorController(self)
-        self._body_cc = ColorController(self)
-        self._border_cc = ColorController(self)
-        self._radius_ctrl = FloatController(self)
-        self._style_data = StyleData[ZTextBlockStyleData](self, 'ZTextBlock')
-        self._style_data.styleChanged.connect(self._styleChangeHandler)
-        self._initStyle()
-
+        self._init_style_()
         self.setMinimumSize(self._margins.left() + self._margins.right(), 24)
 
 
     # region Property
-    @property
-    def textColorCtrl(self) -> ColorController: return self._text_cc
-
-    @property
-    def bodyColorCtrl(self) -> ColorController: return self._body_cc
-
-    @property
-    def borderColorCtrl(self) -> ColorController: return self._border_cc
-
-    @property
-    def radiusCtrl(self) -> FloatController: return self._radius_ctrl
-
-    @property
-    def styleData(self): return self._style_data
-
     @property
     def selectedText(self) -> str: return self._selected_text
 
@@ -188,22 +177,22 @@ class ZTextBlock(QWidget):
         return max(total_height + mh, self.minimumHeight())
 
     # region private
-    def _initStyle(self):
-        data = self._style_data.data
-        self._text_cc.color = data.Text
-        self._body_cc.color = data.Body
-        self._border_cc.color = data.Border
-        self._radius_ctrl.value = data.Radius
-        self._text_back_cc.color = data.TextBackSectcted
+    def _init_style_(self):
+        data = self.styleDataCtrl.data
+        self.textColorCtrl.color = data.Text
+        self.bodyColorCtrl.color = data.Body
+        self.borderColorCtrl.color = data.Border
+        self.radiusCtrl.value = data.Radius
+        self.textBackColorCtrl.color = data.TextBackSectcted
         self.update()
 
-    def _styleChangeHandler(self):
-        data = self._style_data.data
-        self._radius_ctrl.value = data.Radius
-        self._body_cc.setColorTo(data.Body)
-        self._border_cc.setColorTo(data.Border)
-        self._text_cc.setColorTo(data.Text)
-        self._text_back_cc.setColorTo(data.TextBackSectcted)
+    def _style_change_handler_(self):
+        data = self.styleDataCtrl.data
+        self.radiusCtrl.value = data.Radius
+        self.bodyColorCtrl.setColorTo(data.Body)
+        self.borderColorCtrl.setColorTo(data.Border)
+        self.textColorCtrl.setColorTo(data.Text)
+        self.textBackColorCtrl.setColorTo(data.TextBackSectcted)
 
 
     def _is_selection(self) -> bool:
@@ -371,7 +360,7 @@ class ZTextBlock(QWidget):
 
         # 为每行绘制选中区域
         painter.setPen(Qt.NoPen)
-        painter.setBrush(self._text_back_cc.color)
+        painter.setBrush(self.textBackColorCtrl.color)
 
         for line_text, line_start_pos, line_y in lines_info:
             line_end_pos = line_start_pos + len(line_text)
@@ -404,17 +393,17 @@ class ZTextBlock(QWidget):
             QPainter.RenderHint.Antialiasing
             )
         rect = self.rect()
-        radius = self._radius_ctrl.value
+        radius = self.radiusCtrl.value
 
-        if self._body_cc.color.alpha() > 0:
+        if self.bodyColorCtrl.color.alpha() > 0:
             # draw background
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self._body_cc.color)
+            painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
 
-        if self._border_cc.color.alpha() > 0:
+        if self.borderColorCtrl.color.alpha() > 0:
             # draw border
-            painter.setPen(QPen(self._border_cc.color, 1))
+            painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(
                 QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),
@@ -439,7 +428,7 @@ class ZTextBlock(QWidget):
 
         # 绘制普通文本
         painter.setFont(self._font)
-        painter.setPen(self._text_cc.color)
+        painter.setPen(self.textColorCtrl.color)
         # 根据word_wrap设置不同的文本标志
         text_flags = self._get_text_flag()
         painter.drawText(text_rect, text_flags, self._text)

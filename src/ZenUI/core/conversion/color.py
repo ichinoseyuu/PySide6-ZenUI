@@ -2,8 +2,9 @@ from typing import Union
 import numpy
 import re
 from PySide6.QtGui import QColor
-class ZColorTool:
-    """颜色工具类，提供颜色转换、颜色验证等功能"""
+
+class ColorConverter:
+    """提供颜色转换、颜色验证等功能"""
     @staticmethod
     def RGBToARGB(color: Union[str, numpy.ndarray, tuple, list]):
         """将`#RRGGBB`转换为`#AARRGGBB`"""
@@ -74,7 +75,7 @@ class ZColorTool:
         """将`#RRGGBB`或`#AARRGGBB`转换为HSV颜色空间"""
         # 1. 确保 RGB 值正确获取
         if isinstance(color, str):
-            color = ZColorTool.toArray(color)
+            color = ColorConverter.toArray(color)
         # 2. 根据数组长度正确获取 RGB 值
         if len(color) == 3:
             r, g, b = color / 255.0  # 归一化到 0-1
@@ -130,7 +131,7 @@ class ZColorTool:
         """将`#RRGGBB`或`#AARRGGBB`转换为HSL颜色空间"""
         # 1. 确保 RGB 值正确获取
         if isinstance(color, str):
-            color = ZColorTool.toArray(color)
+            color = ColorConverter.toArray(color)
         # 2. 根据数组长度正确获取 RGB 值
         if len(color) == 3:
             r, g, b = color / 255.0  # 归一化到 0-1
@@ -195,7 +196,7 @@ class ZColorTool:
     def toQColor(value: Union[numpy.ndarray, list, tuple, str]):
         """将RGB或ARGB数组转换为QColor对象"""
         if isinstance(value, str):
-            value = ZColorTool.toArray(value)
+            value = ColorConverter.toArray(value)
         if len(value) == 3:
             r, g, b = value
             return QColor(r, g, b)
@@ -274,19 +275,19 @@ class ZColorTool:
         Returns:
             str: 调整后的颜色代码
         """
-        color_arr = ZColorTool.toArray(color)
+        color_arr = ColorConverter.toArray(color)
         # 使用现有的 toHSL 方法转换为 HSL
-        h, s, l = ZColorTool.toHSL(color)
+        h, s, l = ColorConverter.toHSL(color)
         # 调整亮度和饱和度
         l = min(1, max(0, l + lightness))
         s = min(1, max(0, s + saturation))
         # 使用现有的 HSLToRGB 方法转换回 RGB
-        rgb = ZColorTool.HSLToRGB((h, s, l))
+        rgb = ColorConverter.HSLToRGB((h, s, l))
         # 保持原始的透明度
         if len(color_arr) == 4:
-            return ZColorTool.toCode(numpy.array([color_arr[0], rgb[0], rgb[1], rgb[2]], dtype=numpy.int16))
+            return ColorConverter.toCode(numpy.array([color_arr[0], rgb[0], rgb[1], rgb[2]], dtype=numpy.int16))
         else:
-            return ZColorTool.toCode(rgb)
+            return ColorConverter.toCode(rgb)
 
     @staticmethod
     def lighter(color: Union[str, numpy.ndarray, tuple, list], amount: float = 0.1) -> str:
@@ -298,9 +299,9 @@ class ZColorTool:
             str: 调整后的颜色代码 (#RRGGBB 或 #AARRGGBB)
         """
         if not isinstance(color, str):
-            color = ZColorTool.toCode(color)
+            color = ColorConverter.toCode(color)
 
-        color_array = ZColorTool.toArray(color)
+        color_array = ColorConverter.toArray(color)
         alpha = None
 
         if len(color_array) == 4:
@@ -309,17 +310,17 @@ class ZColorTool:
         else:
             rgb = color_array
 
-        h, s, l = ZColorTool.toHSL(rgb)
+        h, s, l = ColorConverter.toHSL(rgb)
         # 增加亮度，但不超过 1
         new_l = min(1.0, l + (1.0 - l) * amount)
-        new_rgb = ZColorTool.HSLToRGB((h, s, new_l))
+        new_rgb = ColorConverter.HSLToRGB((h, s, new_l))
 
         # 重新组合 alpha 通道（如果有）
         if alpha is not None:
             new_color = numpy.array([alpha, *new_rgb], dtype=numpy.int16)
         else:
             new_color = new_rgb
-        return ZColorTool.toCode(new_color)
+        return ColorConverter.toCode(new_color)
 
     @staticmethod
     def darker(color: Union[str, numpy.ndarray, tuple, list], amount: float = 0.1) -> str:
@@ -331,9 +332,9 @@ class ZColorTool:
             str: 调整后的颜色代码 (#RRGGBB 或 #AARRGGBB)
         """
         if not isinstance(color, str):
-            color = ZColorTool.toCode(color)
+            color = ColorConverter.toCode(color)
 
-        color_array = ZColorTool.toArray(color)
+        color_array = ColorConverter.toArray(color)
         alpha = None
 
         if len(color_array) == 4:
@@ -342,17 +343,17 @@ class ZColorTool:
         else:
             rgb = color_array
 
-        h, s, l = ZColorTool.toHSL(rgb)
+        h, s, l = ColorConverter.toHSL(rgb)
         # 减少亮度，但不小于 0
         new_l = max(0.0, l * (1.0 - amount))
-        new_rgb = ZColorTool.HSLToRGB((h, s, new_l))
+        new_rgb = ColorConverter.HSLToRGB((h, s, new_l))
 
         if alpha is not None:
             new_color = numpy.array([alpha, *new_rgb], dtype=numpy.int16)
         else:
             new_color = new_rgb
 
-        return ZColorTool.toCode(new_color)
+        return ColorConverter.toCode(new_color)
 
     @staticmethod
     def isValidColor(color: str) -> bool:

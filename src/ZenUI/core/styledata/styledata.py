@@ -11,8 +11,8 @@ from ZenUI.core.styledata.theme_data import *
 class ZStyleDataFactory:
     dataclass_map = {
         'ZComboBox': ZComboBoxStyleData,
-        'ZComboBoxItem': ZComboBoxItemStyleData,
-        'ZComboBoxItemView': ZComboBoxItemViewStyleData,
+        'ZItem': ZItemStyleData,
+        'ZItemView': ZItemViewStyleData,
         'ZNavigationBar': ZNavigationBarStyleData,
         'ZSwitch': ZSwitchStyleData,
         'ZTextBox': ZTextBoxStyleData,

@@ -1,7 +1,8 @@
 from typing import Dict, Any
 from types import MappingProxyType
+from ZenUI.core.conversion import ColorConverter
 from .stylekey import ZStyleDataKey as K
-from ..color import ZColorTool
+
 
 __all__ = [
     'ACCENT_COLOR_LIGHT',
@@ -16,6 +17,15 @@ ACCENT_COLOR_LIGHT: str = '#38b9f2'
 ACCENT_COLOR_DARK: str = '#955595'
 
 DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
+    'ZItem': {
+        K.Text: '#dcdcdc',
+        K.Icon: '#dcdcdc',
+        K.Body: '#00ffffff',
+        K.BodyHover: '#10ffffff',
+        K.BodyPressed: '#0affffff',
+        K.Indicator: ACCENT_COLOR_DARK,
+        K.Radius: 5.0
+    },
     'ZSwitch':{
         K.Body: ACCENT_COLOR_DARK,
         K.Border: '#909090',
@@ -25,7 +35,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
     'ZTextBox': {
         K.Text: '#dcdcdc',
         K.TextBackSectcted: '#50955595',
-        K.Cursor: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.2),
+        K.Cursor: ColorConverter.adjust(ACCENT_COLOR_DARK, 0.2),
         K.Mask: '#909090',
         K.Underline: '#505050',
         K.UnderlineFocused: ACCENT_COLOR_DARK,
@@ -49,7 +59,7 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.Border: '#00000000',
         K.Radius: 5.0
     },
-    ('ZPanel', 'ZComboBoxItemView'): {
+    ('ZPanel', 'ZItemView'): {
         K.Body: '#272727',
         K.Border: '#1d1d1d',
         K.Radius: 5.0
@@ -65,9 +75,9 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.Track: '#464646',
         K.TrackBorder: '#585858',
         K.FillAreaStart: ACCENT_COLOR_DARK,
-        K.FillAreaEnd: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.2),
+        K.FillAreaEnd: ColorConverter.adjust(ACCENT_COLOR_DARK, 0.2),
         K.FillAreaBorder: ACCENT_COLOR_DARK,
-        K.HandleInner: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.2),
+        K.HandleInner: ColorConverter.adjust(ACCENT_COLOR_DARK, 0.2),
         K.HandleOuter: '#464646',
         K.HandleBorder: '#505050'
     },
@@ -89,8 +99,8 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.BodyHover: '#323232',
         K.BodyPressed: '#272727',
         K.BodyToggled: ACCENT_COLOR_DARK,
-        K.BodyToggledHover: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.05,0.05),
-        K.BodyToggledPressed: ZColorTool.adjust(ACCENT_COLOR_DARK, 0.1,0.1),
+        K.BodyToggledHover: ColorConverter.adjust(ACCENT_COLOR_DARK, 0.05,0.05),
+        K.BodyToggledPressed: ColorConverter.adjust(ACCENT_COLOR_DARK, 0.1,0.1),
         K.Border: '#363636',
         K.BorderToggled:ACCENT_COLOR_DARK,
         K.Radius: 5.0
@@ -153,8 +163,17 @@ DARK_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
 
 
 LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
+    'ZItem': {
+        K.Text: '#333333',
+        K.Icon: '#555555',
+        K.Body: '#00000000',
+        K.BodyHover: '#10000000',
+        K.BodyPressed: '#0a000000',
+        K.Indicator: ACCENT_COLOR_LIGHT,
+        K.Radius: 5.0
+    },
     'ZSwitch':{
-        K.Body: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.05,0.05),
+        K.Body: ColorConverter.adjust(ACCENT_COLOR_LIGHT, 0.05,0.05),
         K.Border: '#bfbfbf',
         K.Handle: '#909090',
         K.HandleToggled: '#f9f9f9'
@@ -186,7 +205,7 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.Border: '#00ffffff',
         K.Radius: 5.0
     },
-    ('ZPanel', 'ZComboBoxItemView'): {
+    ('ZPanel', 'ZItemView'): {
         K.Body: '#ffffff',
         K.Border: '#e5e5e5',
         K.Radius: 5.0
@@ -202,9 +221,9 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.Track: '#e5e5e5',
         K.TrackBorder: '#d8d8d8',
         K.FillAreaStart: ACCENT_COLOR_LIGHT,
-        K.FillAreaEnd: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.2),
+        K.FillAreaEnd: ColorConverter.adjust(ACCENT_COLOR_LIGHT, 0.2),
         K.FillAreaBorder: ACCENT_COLOR_LIGHT,
-        K.HandleInner: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.2),
+        K.HandleInner: ColorConverter.adjust(ACCENT_COLOR_LIGHT, 0.2),
         K.HandleOuter: '#ffffff',
         K.HandleBorder: '#e6e6e6'
     },
@@ -225,9 +244,9 @@ LIGHT_THEME: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.Body: '#ffffff',
         K.BodyHover: '#f2f2f2',
         K.BodyPressed: '#ebebeb',
-        K.BodyToggled: ZColorTool.adjust(ACCENT_COLOR_LIGHT, 0.05,0.05),
+        K.BodyToggled: ColorConverter.adjust(ACCENT_COLOR_LIGHT, 0.05,0.05),
         K.BodyToggledHover: ACCENT_COLOR_LIGHT,
-        K.BodyToggledPressed: ZColorTool.adjust(ACCENT_COLOR_LIGHT, -0.1),
+        K.BodyToggledPressed: ColorConverter.adjust(ACCENT_COLOR_LIGHT, -0.1),
         K.Border: '#dee2e6',
         K.BorderToggled: '#00dee2e6',
         K.Radius: 5.0

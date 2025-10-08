@@ -1,117 +1,25 @@
 from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
-from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPoint,QMargins,QPointF
+from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPointF,QPoint,Signal
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.abstract import ABCButton
 from ZenUI.component.window import ZFramelessWindow
+from ZenUI.component.itemview import ZItemView
 from ZenUI.component.base import (
     ColorController,
     FloatController,
     OpacityController,
-    WidgetSizeController,
-    PositionController,
-    PointController,
     PointFController,
     StyleController,
-    ZWidget,
     ZPadding
-    )
+)
 from ZenUI.core import (
-    ZButtonStyleData,
     ZComboBoxStyleData,
-    ZComboBoxItemStyleData,
-    ZComboBoxItemViewStyleData,
     ZDebug,
     ZGlobal,
-    ZPosition
 )
 
-class ZComboBoxItem(ABCButton):
-    bodyColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    textColorCtrl: ColorController
-    radiusCtrl: FloatController
-    opacityCtrl: OpacityController
-    styleDataCtrl: StyleController[ZComboBoxItemStyleData]
-    __controllers_kwargs__ = {
-        'styleDataCtrl':{
-            'key': 'ZComboBoxItem'
-        },
-    }
-    def __init__(self, parent: QWidget, text: str = ""):
-        super().__init__(parent)
-        self._text: str = ""
-        self._icon: QIcon = None
-        self._icon_size = QSize(16, 16)
-        self._font = QFont("Microsoft YaHei", 9)
-        self._padding = ZPadding(8, 8, 8, 8)
-        self._spacing = 0
-
-
-
-class ZComboBoxItemView(ZWidget):
-    bodyColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    radiusCtrl: FloatController
-    sizeCtrl: WidgetSizeController
-    positionCtrl: PositionController
-    opacityCtrl: OpacityController
-    styleDataCtrl: StyleController[ZComboBoxItemViewStyleData]
-    __controllers_kwargs__ = {
-        'styleDataCtrl':{
-            'key': 'ZComboBoxItemView'
-        },
-    }
-    def __init__(self, parent: QWidget, items: list[str]):
-        super().__init__()
-        self.setWindowFlags(Qt.WindowType.Popup | Qt.WindowType.FramelessWindowHint)
-        self._parent = parent
-        self._items = items
-        self._padding = ZPadding(4, 4, 4, 4)
-        self._spacing = 0
-        self._init_style_()
-        for item in self._items:
-            ZComboBoxItem(self)
-
-    # region event
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        rect = self.rect()
-        radius = self.radiusCtrl.value
-        if self.bodyColorCtrl.color.alpha() > 0:
-            # draw background
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyColorCtrl.color)
-            painter.drawRoundedRect(rect, radius, radius)
-        if self.borderColorCtrl.color.alpha() > 0:
-        # draw border
-            painter.setPen(QPen(self.borderColorCtrl.color, 1))
-            painter.setBrush(Qt.NoBrush)
-            # adjust border width
-            painter.drawRoundedRect(
-                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
-                radius,
-                radius
-            )
-        if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
-
-    # region private
-    def _init_style_(self):
-        data = self.styleDataCtrl.data
-        self.bodyColorCtrl.color = data.Body
-        self.borderColorCtrl.color = data.Border
-        self.radiusCtrl.value = data.Radius
-        self.update()
-
-    def _style_change_handler_(self):
-        data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
-        self.bodyColorCtrl.setColorTo(data.Body)
-        self.borderColorCtrl.setColorTo(data.Border)
-
-
 class ZComboBox(ABCButton):
+    selected = Signal(str)
     bodyColorCtrl: ColorController
     borderColorCtrl: ColorController
     textColorCtrl: ColorController
@@ -119,30 +27,33 @@ class ZComboBox(ABCButton):
     dropIconPosCtrl: PointFController
     radiusCtrl: FloatController
     opacityCtrl: OpacityController
-    styleDataCtrl: StyleController[ZButtonStyleData]
+    styleDataCtrl: StyleController[ZComboBoxStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{
-            'key': 'ZButton'
+            'key': 'ZComboBox'
         },
     }
     def __init__(self,
+                 options: list[str],
                  parent: QWidget = None,
                  name: str = None,
-                 text: str = None
+                 text: str = None,
                  ):
         super().__init__(parent)
         if name: self.setObjectName(name)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-        self._items: list[str] = []
-        self._item_view: ZComboBoxItemView = ZComboBoxItemView(self, self._items)
-        self._text: str = ''
+        self._options: list[str] = options
+        self._text: str = None
         self._drop_icon: QIcon = ZGlobal.getBuiltinIcon(u':/icons/arrow_down.svg')
         self._drop_icon_size = QSize(12, 12)
-        self._padding = ZPadding(8, 8, 8, 8) # 内边距
+        self._padding = ZPadding(16, 8, 8, 8) # 内边距
         self._spacing: int = 16
         self._font = QFont("Microsoft YaHei", 9)
         if text : self.text = text
 
+        self._item_view = ZItemView(self, self._options)
+        self._item_view.selected.connect(self._select_handler_)
 
         self.dropIconPosCtrl.animation.setBias(0.1)
         self.dropIconPosCtrl.animation.setFactor(0.2)
@@ -153,9 +64,6 @@ class ZComboBox(ABCButton):
 
 
     # region Property
-    @property
-    def itemView(self): return self._item_view
-
     @property
     def text(self) -> str: return self._text
 
@@ -195,17 +103,11 @@ class ZComboBox(ABCButton):
         else: self.opacityCtrl.fadeTo(0.3)
         super().setEnabled(enable)
 
-    def showIetmView(self):
-        # self._item_view.move(self.mapToGlobal(self.geometry().bottomLeft()))
-        # self._item_view.resize(self.width(), self._item_view.height())
-        # self._item_view.show()
-        #print(self._item_view.geometry())
-        self._subwindow = ZFramelessWindow()
-        self._subwindow.setWindowFlags(
-            Qt.WindowType.FramelessWindowHint|
-            Qt.WindowType.ToolTip
-            )
-        self._subwindow.show()
+    def addItem(self, item: str) -> None:
+        self._options.append(item)
+
+    def removeItem(self, item: str) -> None:
+        self._options.remove(item)
 
     def sizeHint(self):
         """重新实现sizeHint方法，更精确计算组合框合适尺寸"""
@@ -213,7 +115,7 @@ class ZComboBox(ABCButton):
         total_width = text_width + self._drop_icon_size.width() + self._padding.horizontal + self._spacing
         font_height = self.fontMetrics().height()
         total_height = max(font_height + self._padding.vertical, self._drop_icon_size.height() + 2)
-        min_width = 60
+        min_width = 100
         min_height = 30
         final_width = max(total_width, min_width)
         final_height = max(total_height, min_height)
@@ -255,10 +157,11 @@ class ZComboBox(ABCButton):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
         self.dropIconPosCtrl.moveTo(self._get_drop_icon_pos())
 
-
     def _click_handler_(self):
-        self.showIetmView()
-        pass
+        self._item_view.show()
+
+    def _select_handler_(self, item: str):
+        self.text = item
 
 
     # region paintEvent

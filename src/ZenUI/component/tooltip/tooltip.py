@@ -177,7 +177,7 @@ class ToolTipContent(QWidget):
         painter.drawText(text_rect, text_flags, self._text)
         painter.end()
 
-
+# region - ZToolTip
 class ZToolTip(QWidget):
     class Mode(IntEnum):
         TrackMouse = 0
@@ -189,12 +189,12 @@ class ZToolTip(QWidget):
         super().__init__()
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint|
-            Qt.WindowType.ToolTip|
+            Qt.WindowType.Tool|
             Qt.WindowType.WindowTransparentForInput|
             Qt.WindowType.WindowDoesNotAcceptFocus
             )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
+        #self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
         self._target: QWidget = None
         self._mode = self.Mode.TrackMouse
         self._position = ZPosition.Top
@@ -233,7 +233,7 @@ class ZToolTip(QWidget):
         self._init_style_()
         self.resize(self.sizeHint())
         ZQuickEffect.applyDropShadowOn(widget=self._content,color=(0, 0, 0, 40),blur_radius=12)
-        #阴影设置在content上，在切换window主题时才不会产生阴影绘制错误
+        QApplication.instance().installEventFilter(self)
 
     # region property
     @property
@@ -325,7 +325,6 @@ class ZToolTip(QWidget):
         self._repeat_timer.start(33)
 
     def hideTip(self):
-        #self.target = None
         self._opacity_ctrl.fadeOut()
 
     def hideTipDelayed(self, delay: int):
@@ -337,6 +336,11 @@ class ZToolTip(QWidget):
 
 
     # region event
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.Wheel:
+            self._opacity_ctrl.fadeOut()
+        return super().eventFilter(obj, event)
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self._content.move(self._margin, self._margin)
@@ -372,9 +376,12 @@ class ZToolTip(QWidget):
             self._location_ctrl.moveTo(pos)
         self.show()
 
+
     def _completely_hid_signal_handler(self):
         if self._opacity_ctrl.opacity == 0:
             self.target = None
+            self.hide()
+
 
     def _get_initial_pos(self) -> QPoint:
         if self._mode == self.Mode.TrackMouse:
@@ -493,181 +500,6 @@ class ZToolTip(QWidget):
                 y = tb - margin + offset.y()
                 return QPoint(x, y)
 
-        # region
-        # if mode == self.Mode.AlignTarget:
-        #     if tip_pos == self.TipPos.Top:
-        #         x = tc.x() - w//2
-        #         y = tt - ch - margin - offset.y()
-        #         return QPoint(x, y)
-
-        #     if tip_pos == self.TipPos.Bottom:
-        #         x = tc.x() - w//2
-        #         y = tb + offset.y() - margin
-        #         return QPoint(x, y)
-
-        #     if tip_pos == self.TipPos.Left:
-        #         x = tl - cw - margin - offset.x()
-        #         y = tc.y() - h//2
-        #         return QPoint(x, y)
-
-        #     if tip_pos == self.TipPos.Right:
-        #         x = tr - margin + offset.x()
-        #         y = tc.y() - h//2
-        #         return QPoint(x, y)
-
-        #     if tip_pos == self.TipPos.TopLeft:
-        #         x = tl - cw - margin - offset.x()
-        #         y = tt - ch - margin - offset.y()
-        #         return QPoint(x, y)
-
-        #     if tip_pos == self.TipPos.TopRight:
-        #         x = tr - margin + offset.x()
-        #         y = tt - ch - margin - offset.y()
-        #         return QPoint(x, y)
-
-        #     if tip_pos == self.TipPos.BottomLeft:
-        #         x = tl - cw - margin - offset.x()
-        #         y = tb - margin + offset.y()
-        #         return QPoint(x, y)
-
-        #     if tip_pos == self.TipPos.BottomRight:
-        #         x = tr - margin + offset.x()
-        #         y = tb - margin + offset.y()
-        #         return QPoint(x, y)
-        # endregion
-
         if mode == self.Mode.AlignTargetForEnterPos:
             pass
 
-    # region
-    # @timeit
-    # def _get_pos_should_be_move(self) -> QPoint:
-    #     m = QCursor.pos()
-    #     if self._target is None:
-    #         return m
-
-    #     # 计算目标位置和尺寸
-    #     tc = self._target.mapToGlobal(self._target.rect().center())
-    #     tw, th = self._target.width(), self._target.height()
-    #     tt, tl, tb, tr = tc.y() - th//2, tc.x() - tw//2, tc.y() + th//2, tc.x() + tw//2
-
-    #     # 计算自身尺寸
-    #     w, h = self.width(), self.height()
-    #     cw, ch = self._content.width(), self._content.height()
-    #     margin = self._margin
-    #     offset = self._offset
-
-    #     # 定义位置计算字典
-    #     pos_calculators = {
-    #         # TrackMouse模式的位置计算
-    #         (self.Mode.TrackMouse, self.TipPos.Top): lambda: QPoint(
-    #             m.x() - w//2,
-    #             m.y() - ch - margin - offset.y()
-    #         ),
-    #         (self.Mode.TrackMouse, self.TipPos.Bottom): lambda: QPoint(
-    #             m.x() - w//2,
-    #             m.y() - margin + offset.y()
-    #         ),
-    #         (self.Mode.TrackMouse, self.TipPos.Left): lambda: QPoint(
-    #             m.x() - cw - margin - offset.x(),
-    #             m.y() - h//2
-    #         ),
-    #         (self.Mode.TrackMouse, self.TipPos.Right): lambda: QPoint(
-    #             m.x() - margin + offset.x(),
-    #             m.y() - h//2
-    #         ),
-    #         (self.Mode.TrackMouse, self.TipPos.TopLeft): lambda: QPoint(
-    #             m.x() - cw - margin - offset.x(),
-    #             m.y() - ch - margin - offset.y()
-    #         ),
-    #         (self.Mode.TrackMouse, self.TipPos.TopRight): lambda: QPoint(
-    #             m.x() - margin + offset.x(),
-    #             m.y() - ch - margin - offset.y()
-    #         ),
-    #         (self.Mode.TrackMouse, self.TipPos.BottomLeft): lambda: QPoint(
-    #             m.x() - cw - margin - offset.x(),
-    #             m.y() + offset.y()
-    #         ),
-    #         (self.Mode.TrackMouse, self.TipPos.BottomRight): lambda: QPoint(
-    #             m.x() - margin + offset.x(),
-    #             m.y() - margin + offset.y()
-    #         ),
-
-    #         # TrackTarget模式的位置计算
-    #         (self.Mode.TrackTarget, self.TipPos.Top): lambda: QPoint(
-    #             tc.x() - w//2,
-    #             tt - ch - margin - offset.y()
-    #         ),
-    #         (self.Mode.TrackTarget, self.TipPos.Bottom): lambda: QPoint(
-    #             tc.x() - w//2,
-    #             tb + offset.y() - margin
-    #         ),
-    #         (self.Mode.TrackTarget, self.TipPos.Left): lambda: QPoint(
-    #             tl - cw - margin - offset.x(),
-    #             tc.y() - h//2
-    #         ),
-    #         (self.Mode.TrackTarget, self.TipPos.Right): lambda: QPoint(
-    #             tr - margin + offset.x(),
-    #             tc.y() - h//2
-    #         ),
-    #         (self.Mode.TrackTarget, self.TipPos.TopLeft): lambda: QPoint(
-    #             tl - cw - margin - offset.x(),
-    #             tt - ch - margin - offset.y()
-    #         ),
-    #         (self.Mode.TrackTarget, self.TipPos.TopRight): lambda: QPoint(
-    #             tr - margin + offset.x(),
-    #             tt - ch - margin - offset.y()
-    #         ),
-    #         (self.Mode.TrackTarget, self.TipPos.BottomLeft): lambda: QPoint(
-    #             tl - cw - margin - offset.x(),
-    #             tb - margin + offset.y()
-    #         ),
-    #         (self.Mode.TrackTarget, self.TipPos.BottomRight): lambda: QPoint(
-    #             tr - margin + offset.x(),
-    #             tb - margin + offset.y()
-    #         ),
-
-    #         # AlignTarget模式的位置计算
-    #         (self.Mode.AlignTarget, self.TipPos.Top): lambda: QPoint(
-    #             tc.x() - w//2,
-    #             tt - ch - margin - offset.y()
-    #         ),
-    #         (self.Mode.AlignTarget, self.TipPos.Bottom): lambda: QPoint(
-    #             tc.x() - w//2,
-    #             tb + offset.y() - margin
-    #         ),
-    #         (self.Mode.AlignTarget, self.TipPos.Left): lambda: QPoint(
-    #             tl - cw - margin - offset.x(),
-    #             tc.y() - h//2
-    #         ),
-    #         (self.Mode.AlignTarget, self.TipPos.Right): lambda: QPoint(
-    #             tr - margin + offset.x(),
-    #             tc.y() - h//2
-    #         ),
-    #         (self.Mode.AlignTarget, self.TipPos.TopLeft): lambda: QPoint(
-    #             tl - cw - margin - offset.x(),
-    #             tt - ch - margin - offset.y()
-    #         ),
-    #         (self.Mode.AlignTarget, self.TipPos.TopRight): lambda: QPoint(
-    #             tr - margin + offset.x(),
-    #             tt - ch - margin - offset.y()
-    #         ),
-    #         (self.Mode.AlignTarget, self.TipPos.BottomLeft): lambda: QPoint(
-    #             tl - cw - margin - offset.x(),
-    #             tb - margin + offset.y()
-    #         ),
-    #         (self.Mode.AlignTarget, self.TipPos.BottomRight): lambda: QPoint(
-    #             tr - margin + offset.x(),
-    #             tb - margin + offset.y()
-    #         ),
-
-    #         # AlignTargetForEnterPos模式的位置计算（暂留空）
-
-    #     }
-
-    #     calculator = pos_calculators.get((self._mode,self._position))
-    #     if calculator:
-    #         return calculator()
-
-    #     return QCursor.pos()
-    # endregion

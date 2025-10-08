@@ -8,7 +8,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QResizeEvent
 from ZenUI.core import ZGlobal,ZFramelessWindowStyleData
 from ZenUI.component.tooltip import ZToolTip
-from ZenUI.component.base import StyleController,WindowBackgroundController,ZWidget
+from ZenUI.component.base import StyleController,WindowBackgroundController
 from .titlebar import ZTitleBar
 from .win32utils import (
     WindowsWindowEffect,

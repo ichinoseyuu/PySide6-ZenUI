@@ -27,5 +27,10 @@ class PanelTest(ZScrollPanel):
         container = ZVContainer(card)
         card.layout().addWidget(container)
 
-        self.combobox_1 = ZComboBox(container, 'combobox_1', '下拉框')
-        container.addWidget(self.combobox_1)
+        self.combobox = ZComboBox(
+            parent=container,
+            name='combobox',
+            text='combobox',
+            options=['选项1', '选项2', '选项3'],
+            )
+        container.addWidget(self.combobox)

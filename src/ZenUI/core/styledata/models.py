@@ -19,8 +19,8 @@ __all__ = [
     'ZSwitchStyleData',
     'ZNavigationBarStyleData',
     'ZComboBoxStyleData',
-    'ZComboBoxItemStyleData',
-    'ZComboBoxItemViewStyleData',
+    'ZItemStyleData',
+    'ZItemViewStyleData',
     'StyleDataT',
     'StyleDataUnion'
     ]
@@ -169,16 +169,17 @@ class ZComboBoxStyleData:
     Radius: float = None
 
 @dataclass
-class ZComboBoxItemStyleData:
+class ZItemStyleData:
     Text: QColor = None
     Body: QColor = None
+    Icon: QColor = None
     BodyHover: QColor = None
     BodyPressed: QColor = None
-    Border: QColor = None
+    Indicator: QColor = None
     Radius: float = None
 
 @dataclass
-class ZComboBoxItemViewStyleData:
+class ZItemViewStyleData:
     Body: QColor = None
     Border: QColor = None
     Radius: float = None
@@ -200,8 +201,8 @@ StyleDataUnion = Union[
     ZSwitchStyleData,
     ZNavigationBarStyleData,
     ZComboBoxStyleData,
-    ZComboBoxItemStyleData,
-    ZComboBoxItemViewStyleData
+    ZItemStyleData,
+    ZItemViewStyleData
     ]
 
 # 定义类型变量，用于StyleData的泛型

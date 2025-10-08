@@ -1,9 +1,10 @@
 from PySide6.QtCore import QObject, Signal
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, overload
 from ZenUI.component.abstract import ABCToggleButton
 
 class ButttonGroup(QObject):
     """通用按钮组管理器,用于管理一组按钮"""
+    clicked = Signal()
     toggled = Signal()
     '切换信号'
 
@@ -17,15 +18,45 @@ class ButttonGroup(QObject):
         self._next_available_key = 0  # 用于自动生成唯一key的计数器
 
 
+    def isEnabled(self) -> bool:
+        """获取按钮组是否可用"""
+        return self._enabled
+
+    def setEnabled(self, enabled: bool) -> None:
+        """设置按钮组是否启用"""
+        self._enabled = enabled
+        for button in self._buttons.values():
+            button.setEnabled(enabled)
+
+    def buttons(self) -> List[ABCToggleButton]:
+        """获取按钮组中的所有按钮"""
+        return list(self._buttons.values())
+
+    def checkedButtonKey(self) -> Optional[int]:
+        """获取当前选中的按钮key"""
+        return self._checked_button
+
     def checkedButton(self) -> Optional[ABCToggleButton]:
         """获取当前选中的按钮"""
         return self._buttons.get(self._checked_button)
+
+    def lastCheckedButtonKey(self) -> Optional[int]:
+        """获取上一次选中的按钮key"""
+        return self._checked_button_last
+
+    def lastCheckedButton(self) -> Optional[ABCToggleButton]:
+        """获取上一次选中的按钮"""
+        return self._buttons.get(self._checked_button_last)
+
+    def count(self) -> int:
+        """获取按钮组中的按钮数量"""
+        return self._btn_count
+
 
 
     def getButton(self, key: int) -> Optional[ABCToggleButton]:
         """通过key获取按钮"""
         return self._buttons.get(key)
-
 
     def addButton(self, button: ABCToggleButton, key: Optional[int] = None) -> int:
         """
@@ -64,23 +95,31 @@ class ButttonGroup(QObject):
         self._btn_count += 1
         return used_key
 
+    @overload
+    def removeButton(self, key: int) -> None: ...
 
-    def removeButton(self, key: int) -> None:
-        """通过key从组中移除按钮"""
-        if key in self._buttons:
-            del self._buttons[key]
-            self._btn_count -= 1
-            # 如果移除的是当前选中按钮，清除选中状态
-            if key == self._checked_button:
-                self._checked_button = None
-                self._checked_button_last = None
+    @overload
+    def removeButton(self, button: ABCToggleButton) -> None: ...
 
+    def removeButton(self, args):
+        if isinstance(args, int):
+            if args in self._buttons:
+                del self._buttons[args]
+                self._btn_count -= 1
+                # 如果移除的是当前选中按钮，清除选中状态
+                if args == self._checked_button:
+                    self._checked_button = None
+                    self._checked_button_last = None
+        elif isinstance(args, ABCToggleButton):
+            for key, button in self._buttons.items():
+                if button == args:
+                    del self._buttons[key]
+                    self._btn_count -= 1
+                    # 如果移除的是当前选中按钮，清除选中状态
+                    if key == self._checked_button:
+                        self._checked_button = None
+                        self._checked_button_last = None
 
-    def setEnabled(self, enabled: bool) -> None:
-        """设置按钮组是否启用"""
-        self._enabled = enabled
-        for button in self._buttons.values():
-            button.setEnabled(enabled)
 
 
     def setCheckedButton(self, key: int, clicked: bool = True):
@@ -122,6 +161,7 @@ class ButttonGroup(QObject):
 
         # 如果点击的是已选中按钮则忽略
         if key == self._checked_button:
+            self.clicked.emit()
             return
 
         # 更新选中状态
@@ -139,6 +179,7 @@ class ButttonGroup(QObject):
         #self.buttonChanged.emit(self._checked_button_last, key)
         #self.buttonToggled.emit(key, True)
         self.toggled.emit()
+        self.clicked.emit()
 
 
     def toggleToNextButton(self, clicked: bool = True):

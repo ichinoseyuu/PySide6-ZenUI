@@ -3,9 +3,10 @@ from PySide6.QtCore import QMargins, QSize, Qt
 from PySide6.QtWidgets import QWidget
 from ZenUI.core import ZDebug
 
+# region - ZHContainer
 class ZHContainer(QWidget):
     """水平方向对齐的容器控件，支持不同间距设置和子控件同高功能"""
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self._widgets: list[QWidget] = []  # 存储所有子控件的列表
         self._alignment: Qt.AlignmentFlag = Qt.AlignLeft | Qt.AlignTop  # 默认为左上对齐
@@ -14,6 +15,7 @@ class ZHContainer(QWidget):
         self._batch_updating = False  # 批量更新锁
         self._layout_pending = False  # 布局更新 pending 标志
         self._height_expand = False  # 是否让所有控件与最高控件同高
+        self._uniform_height = False  # 是否启用等高功能
         self._shrinking = False  # 是否启用收缩功能
         self._margins = QMargins(0, 0, 0, 0)  # 边距（左、上、右、下）
 
@@ -75,6 +77,19 @@ class ZHContainer(QWidget):
         """设置是否让所有控件与最高控件同高"""
         if self._height_expand != value:
             self._height_expand = value
+            self.arrangeWidgets()
+
+
+    @property
+    def uniformHeight(self):
+        """获取是否让所有控件与最宽控件同高"""
+        return self._uniform_height
+
+    @uniformHeight.setter
+    def uniformHeight(self, value: bool):
+        """设置是否让所有控件与最宽控件同高"""
+        if self._uniform_height != value:
+            self._uniform_height = value
             self.arrangeWidgets()
 
 
@@ -200,10 +215,18 @@ class ZHContainer(QWidget):
         # 可用高度 = 容器高度 - 上下边距
         available_height = self.height() - (self._margins.top() + self._margins.bottom())
 
+        # 计算子控件的最大高度（如果需要基于子控件最大宽度统一设置）
+        max_child_height = 0
+        if self._height_expand and self._uniform_height:
+            max_child_width = max([widget.height() for widget in self._widgets], default=0)
+
         for i, obj in enumerate(self._widgets):
             # 适应最高控件高度（考虑边距后的可用高度）
             if self._height_expand:
-                obj.resize(obj.width(), available_height)
+                if self._uniform_height:
+                    obj.setFixedHeight(max_child_height)
+                else:
+                    obj.setFixedHeight(available_height)
 
             # 垂直对齐计算（基于可用高度）
             if self._alignment & Qt.AlignTop:
@@ -235,10 +258,10 @@ class ZHContainer(QWidget):
         if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
         painter.end()
 
-
+# region - ZVContainer
 class ZVContainer(QWidget):
     """垂直方向对齐的容器控件，支持不同间距设置和子控件同宽功能"""
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self._widgets: list[QWidget] = []  # 存储所有子控件的列表
         self._alignment: Qt.AlignmentFlag = Qt.AlignLeft | Qt.AlignTop  # 默认为左上对齐
@@ -247,6 +270,7 @@ class ZVContainer(QWidget):
         self._batch_updating = False  # 批量更新锁
         self._layout_pending = False  # 布局更新 pending 标志
         self._width_expand = False  # 是否让所有控件与最宽控件同宽
+        self._uniform_width = False  # 是否基于子控件最大宽度统一设置宽度
         self._shrinking = False  # 是否启用收缩功能
         self._margins = QMargins(0, 0, 0, 0)  # 新增：边距（左、上、右、下）
 
@@ -305,6 +329,18 @@ class ZVContainer(QWidget):
         """设置是否让所有控件与最宽控件同宽"""
         if self._width_expand != value:
             self._width_expand = value
+            self.arrangeWidgets()
+
+    @property
+    def uniformWidth(self):
+        """获取是否基于子控件最大宽度统一设置所有子控件宽度"""
+        return self._uniform_width
+
+    @uniformWidth.setter
+    def uniformWidth(self, value: bool):
+        """设置是否基于子控件最大宽度统一设置所有子控件宽度"""
+        if self._uniform_width != value:
+            self._uniform_width = value
             self.arrangeWidgets()
 
     # region public
@@ -432,10 +468,18 @@ class ZVContainer(QWidget):
         # 可用宽度 = 容器宽度 - 左右边距
         available_width = self.width() - (self._margins.left() + self._margins.right())
 
+        # 计算子控件的最大宽度（如果需要基于子控件最大宽度统一设置）
+        max_child_width = 0
+        if self._width_expand and self._uniform_width:
+            max_child_width = max([widget.width() for widget in self._widgets], default=0)
+
         for i, obj in enumerate(self._widgets):
             # 适应最宽控件宽度（考虑边距后的可用宽度）
             if self._width_expand:
-                obj.resize(available_width, obj.height())
+                if self._uniform_width:
+                    obj.resize(max_child_width, obj.height())
+                else:
+                    obj.resize(available_width, obj.height())
 
             # 水平对齐计算（基于可用宽度）
             if self._alignment & Qt.AlignLeft:

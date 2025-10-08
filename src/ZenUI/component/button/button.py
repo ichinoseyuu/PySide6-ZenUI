@@ -51,6 +51,7 @@ class ZButton(ABCButton):
     # region Property
     @property
     def text(self) -> str: return self._text
+
     @text.setter
     def text(self, text: str) -> None:
         self._text = text
@@ -58,6 +59,7 @@ class ZButton(ABCButton):
 
     @property
     def icon(self) -> QIcon: return self._icon
+
     @icon.setter
     def icon(self, icon: QIcon) -> None:
         self._icon = icon
@@ -65,6 +67,7 @@ class ZButton(ABCButton):
 
     @property
     def iconSize(self) -> QSize: return self._icon_size
+
     @iconSize.setter
     def iconSize(self, size: QSize) -> None:
         self._icon_size = size
@@ -72,6 +75,7 @@ class ZButton(ABCButton):
 
     @property
     def spacing(self) -> int: return self._spacing
+
     @spacing.setter
     def spacing(self, spacing: int) -> None:
         self._spacing = spacing
@@ -79,6 +83,7 @@ class ZButton(ABCButton):
 
     @property
     def font(self) -> QFont: return self._font
+
     @font.setter
     def font(self, font: QFont) -> None:
         self._font = font
@@ -153,7 +158,8 @@ class ZButton(ABCButton):
             QPainter.RenderHint.SmoothPixmapTransform
             )
         painter.setOpacity(self.opacityCtrl.opacity)
-        # 绘制背景
+
+        # 绘制背景和边框
         rect = self.rect()
         radius = self.radiusCtrl.value
         if self.bodyColorCtrl.color.alpha() > 0:
@@ -161,27 +167,22 @@ class ZButton(ABCButton):
             painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
         if self.borderColorCtrl.color.alpha() > 0:
-            # 绘制边框
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
-            # 调整矩形以避免边框模糊
             painter.drawRoundedRect(
-                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
+                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),
                 radius,
                 radius
             )
-        # 计算内容区域
+
         # 如果同时有图标和文本，绘制在一起
         if self._icon and self._text:
-            # 计算总宽度
             total_width = self._icon_size.width() + self._spacing + \
                          self.fontMetrics().boundingRect(self._text).width()
-            # 计算起始x坐标使内容居中
             start_x = (self.width() - total_width) // 2
+
             # 绘制图标
-            # 1. 获取原始 QPixmap
             pixmap = self._icon.pixmap(self._icon_size)
-            # 2. 创建一个新的 QPixmap 用于着色
             colored_pixmap = QPixmap(pixmap.size())
             colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
             colored_pixmap.fill(Qt.transparent)
@@ -190,13 +191,13 @@ class ZButton(ABCButton):
             painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
             painter_pix.fillRect(colored_pixmap.rect(), self.iconColorCtrl.color)
             painter_pix.end()
-            # 3. 绘制到按钮中心
+
             painter.drawPixmap(
                 start_x,
                 (self.height() - self._icon_size.height()) // 2,
                 colored_pixmap
             )
-            # 绘制文本
+
             painter.setFont(self._font)
             painter.setPen(self.textColorCtrl.color)
             text_rect = QRect(
@@ -206,11 +207,12 @@ class ZButton(ABCButton):
                 rect.height()
             )
             painter.drawText(text_rect, Qt.AlignLeft | Qt.AlignVCenter, self._text)
+
         # 只有图标
         elif self._icon:
-            # 1. 获取原始 QPixmap
+
             pixmap = self._icon.pixmap(self._icon_size)
-            # 2. 创建一个新的 QPixmap 用于着色
+
             colored_pixmap = QPixmap(pixmap.size())
             colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
             colored_pixmap.fill(Qt.transparent)
@@ -219,17 +221,19 @@ class ZButton(ABCButton):
             painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
             painter_pix.fillRect(colored_pixmap.rect(), self.iconColorCtrl.color)
             painter_pix.end()
-            # 3. 绘制到按钮中心
+
             painter.drawPixmap(
                 (self.width() - self._icon_size.width()) // 2,
                 (self.height() - self._icon_size.height()) // 2,
                 colored_pixmap
             )
+
         # 只有文本
         elif self._text:
             painter.setFont(self._font)
             painter.setPen(self.textColorCtrl.color)
             painter.drawText(rect, Qt.AlignCenter, self._text)
+
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 

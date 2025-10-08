@@ -92,12 +92,14 @@ class ZNavBarToggleButton(ABCToggleButton):
                 position = ZPosition.Right,
                 offset = QPoint(10, 0)
                 )
+
     def _leave_handler_(self):
         if self._checked:
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggled)
         else:
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
         if self._tool_tip != "": ZGlobal.tooltip.hideTip()
+
     def _press_handler_(self):
         if self._checked:
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggledPressed)

@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent, QTimer
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from ZenUI.core import ZState
 from ZenUI.component.base import ZWidget
+# region - ABCButton
 class ABCButton(ZWidget):
     entered = Signal()
     leaved = Signal()
@@ -78,6 +79,15 @@ class ABCButton(ZWidget):
             self._state = ZState.Pressed
             self.pressed.emit()
 
+    def mouseMoveEvent(self, event: QMouseEvent):
+        super().mouseMoveEvent(event)
+        if self.rect().contains(event.position().toPoint()):
+            self._state = ZState.Hover
+            self.entered.emit()
+        else:
+            self._state = ZState.Idle
+            self.leaved.emit()
+
     def mouseReleaseEvent(self, event: QMouseEvent):
         super().mouseReleaseEvent(event)
         if event.button() == Qt.MouseButton.LeftButton:
@@ -90,7 +100,7 @@ class ABCButton(ZWidget):
             return True
         return super().event(event)
 
-
+# region - ABCToggleButton
 class ABCToggleButton(ABCButton):
     toggled = Signal(bool)
     def __init__(self, *args, **kwargs):
@@ -139,7 +149,7 @@ class ABCToggleButton(ABCButton):
                         self._checked = True
                         self.toggled.emit(self._checked)
 
-
+# region - ABCRepeatButton
 class ABCRepeatButton(ABCButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -278,19 +278,23 @@ class ItemViewContent(ZWidget):
         self._init_items_()
 
 
-    def _init_items_(self):
-        for text in self._items:
-            item = ZItem(self, text=text)
-            self._layout.addWidget(item)
-            self._item_group.addButton(item)
+    def addItem(self, text: str):
+        self._items.append(text)
+        item = ZItem(self, text=text)
+        self._layout.addWidget(item)
+        self._item_group.addButton(item)
         self.resize(self.sizeHint())
 
-
-    def _item_clicked_handler_(self):
-        checked_item = self._item_group.checkedButton()
-        if isinstance(checked_item, ZItem):
-            self.parent().selected.emit(checked_item.text)
-        self.parent().opacityCtrl.fadeOut()
+    def removeItem(self, text: str):
+        for item in self._item_group.buttons():
+            if isinstance(item, ZItem) and item.text == text:
+                self._items.remove(text)
+                item.clicked.disconnect()
+                item.deleteLater()
+                self._item_group.removeButton(item)
+                self._layout.removeWidget(item)
+                break
+        self.resize(self.sizeHint())
 
     def sizeHint(self):
         total_height = 0
@@ -328,6 +332,20 @@ class ItemViewContent(ZWidget):
         self.radiusCtrl.value = data.Radius
         self.bodyColorCtrl.setColorTo(data.Body)
         self.borderColorCtrl.setColorTo(data.Border)
+
+    def _init_items_(self):
+        for text in self._items:
+            item = ZItem(self, text=text)
+            self._layout.addWidget(item)
+            self._item_group.addButton(item)
+        self.resize(self.sizeHint())
+
+
+    def _item_clicked_handler_(self):
+        checked_item = self._item_group.checkedButton()
+        if isinstance(checked_item, ZItem):
+            self.parent().selected.emit(checked_item.text)
+        self.parent().opacityCtrl.fadeOut()
 
     # region event
     def paintEvent(self, event):
@@ -404,6 +422,14 @@ class ZItemView(ZWidget):
                 item.entered.emit()
             else:
                 item.leaved.emit()
+
+    def addItem(self, text: str):
+        self._content.addItem(text)
+        self.resize(self.sizeHint())
+
+    def removeItem(self, text: str):
+        self._content.removeItem(text)
+        self.resize(self.sizeHint())
 
     # region event
     def resizeEvent(self, event):

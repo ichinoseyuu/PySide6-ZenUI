@@ -6,6 +6,7 @@ from PySide6.QtGui import *
 from ZenUI.component.base import PositionController,WidgetSizeController,WindowOpacityController,ColorController,FloatController,StyleController
 from ZenUI.core import ZDebug,ZToolTipStyleData,ZQuickEffect,ZPosition,ZState,ZWrapMode
 
+# region - ToolTipContent
 class ToolTipContent(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -189,12 +190,12 @@ class ZToolTip(QWidget):
         super().__init__()
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint|
-            Qt.WindowType.Tool|
+            Qt.WindowType.ToolTip|
             Qt.WindowType.WindowTransparentForInput|
             Qt.WindowType.WindowDoesNotAcceptFocus
             )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        #self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
+        self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
         self._target: QWidget = None
         self._mode = self.Mode.TrackMouse
         self._position = ZPosition.Top

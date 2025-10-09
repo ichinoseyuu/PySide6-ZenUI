@@ -33,4 +33,17 @@ class PanelTest(ZScrollPanel):
             text='combobox',
             options=['选项1', '选项2', '选项3'],
             )
+        self.combobox.addItem('选项4')
+        self.combobox.addItem('选项5')
+        self.combobox.removeItem('选项3')
         container.addWidget(self.combobox)
+        self.test_btn = ZButton(
+            parent=container,
+            name='test_btn',
+            text='测试按钮'
+            )
+        container.addWidget(self.test_btn)
+        self.test_btn.clicked.connect(self.test_btn_clicked)
+
+    def test_btn_clicked(self):
+        self.combobox.removeItem('选项3')

@@ -73,6 +73,9 @@ class ZComboBox(ABCButton):
         self.update()
 
     @property
+    def opitions(self) -> list[str]: return self._options
+
+    @property
     def font(self) -> QFont: return self._font
 
     @font.setter
@@ -104,10 +107,12 @@ class ZComboBox(ABCButton):
         super().setEnabled(enable)
 
     def addItem(self, item: str) -> None:
-        self._options.append(item)
+        #self._options.append(item) # ZItemView 内部的i tems 与 _options 共用内存
+        self._item_view.addItem(item)
 
     def removeItem(self, item: str) -> None:
-        self._options.remove(item)
+        #self._options.remove(item)
+        self._item_view.removeItem(item)
 
     def sizeHint(self):
         """重新实现sizeHint方法，更精确计算组合框合适尺寸"""

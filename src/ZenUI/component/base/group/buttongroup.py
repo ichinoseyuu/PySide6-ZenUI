@@ -110,8 +110,10 @@ class ButttonGroup(QObject):
                 if args == self._checked_button:
                     self._checked_button = None
                     self._checked_button_last = None
+
         elif isinstance(args, ABCToggleButton):
-            for key, button in self._buttons.items():
+            for key in list(self._buttons.keys()):
+                button = self._buttons[key]
                 if button == args:
                     del self._buttons[key]
                     self._btn_count -= 1
@@ -119,6 +121,7 @@ class ButttonGroup(QObject):
                     if key == self._checked_button:
                         self._checked_button = None
                         self._checked_button_last = None
+                    break
 
 
 

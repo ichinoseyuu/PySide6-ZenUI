@@ -20,6 +20,7 @@ from ZenUI.core import (
 
 class ZComboBox(ABCButton):
     selected = Signal(str)
+
     bodyColorCtrl: ColorController
     borderColorCtrl: ColorController
     textColorCtrl: ColorController
@@ -28,18 +29,15 @@ class ZComboBox(ABCButton):
     radiusCtrl: FloatController
     opacityCtrl: OpacityController
     styleDataCtrl: StyleController[ZComboBoxStyleData]
-    __controllers_kwargs__ = {
-        'styleDataCtrl':{
-            'key': 'ZComboBox'
-        },
-    }
+    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZComboBox'}}
+
     def __init__(self,
                  options: list[str],
                  parent: QWidget = None,
                  name: str = None,
                  text: str = None,
                  ):
-        super().__init__(parent)
+        super().__init__(parent=parent, font=QFont("Microsoft YaHei", 9))
         if name: self.setObjectName(name)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
@@ -47,10 +45,9 @@ class ZComboBox(ABCButton):
         self._text: str = None
         self._drop_icon: QIcon = ZGlobal.getBuiltinIcon(u':/icons/arrow_down.svg')
         self._drop_icon_size = QSize(12, 12)
-        self._padding = ZPadding(16, 8, 8, 8) # 内边距
+        self._padding = ZPadding(8, 8, 8, 8)
         self._spacing: int = 16
-        self._font = QFont("Microsoft YaHei", 9)
-        if text : self.text = text
+        if text : self._text = text
 
         self._item_view = ZItemView(self, self._options)
         self._item_view.selected.connect(self._select_handler_)
@@ -62,44 +59,43 @@ class ZComboBox(ABCButton):
         self.dropIconPosCtrl.setPos(self._get_drop_icon_pos())
 
 
+    @property
+    def opitions(self) -> list[str]: return self._options
 
-    # region Property
+    # region public method
     @property
     def text(self) -> str: return self._text
 
     @text.setter
-    def text(self, text: str) -> None:
-        self._text = text
+    def text(self, t: str) -> None:
+        self._text = t
         self.update()
 
-    @property
-    def opitions(self) -> list[str]: return self._options
-
-    @property
-    def font(self) -> QFont: return self._font
-
-    @font.setter
-    def font(self, f: QFont) -> None:
-        self._font = f
-        self.update()
+    def setText(self, t: str) -> None:
+        self.text = t
 
     @property
     def spacing(self) -> int: return self._spacing
 
     @spacing.setter
-    def spacing(self, spacing: int) -> None:
-        self._spacing = spacing
+    def spacing(self, s: int) -> None:
+        self._spacing = s
         self.update()
+
+    def setSpacing(self, s: int) -> None:
+        self.spacing = s
 
     @property
     def padding(self) -> ZPadding: return self._padding
 
     @padding.setter
-    def padding(self, padding: ZPadding) -> None:
-        self._padding = padding
+    def padding(self, p: ZPadding) -> None:
+        self._padding = p
         self.update()
 
-    # region public
+    def setPadding(self, p: ZPadding) -> None:
+        self.padding = p
+
     def setEnabled(self, enable: bool) -> None:
         if enable == self.isEnabled(): return
         if enable: self.opacityCtrl.fadeTo(1.0)
@@ -111,11 +107,9 @@ class ZComboBox(ABCButton):
         self._item_view.addItem(item)
 
     def removeItem(self, item: str) -> None:
-        #self._options.remove(item)
         self._item_view.removeItem(item)
 
     def sizeHint(self):
-        """重新实现sizeHint方法，更精确计算组合框合适尺寸"""
         text_width = self.fontMetrics().boundingRect(self._text).width() if self._text else 0
         total_width = text_width + self._drop_icon_size.width() + self._padding.horizontal + self._spacing
         font_height = self.fontMetrics().height()
@@ -128,7 +122,7 @@ class ZComboBox(ABCButton):
         return QSize(final_width, final_height)
 
 
-    # region private
+    # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
@@ -166,10 +160,10 @@ class ZComboBox(ABCButton):
         self._item_view.show()
 
     def _select_handler_(self, item: str):
-        self.text = item
+        self._text = item
 
 
-    # region paintEvent
+    # region event
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(
@@ -178,7 +172,6 @@ class ZComboBox(ABCButton):
             QPainter.RenderHint.SmoothPixmapTransform
             )
         painter.setOpacity(self.opacityCtrl.opacity)
-        # 绘制背景
         rect = self.rect()
         radius = self.radiusCtrl.value
         if self.bodyColorCtrl.color.alpha() > 0:
@@ -186,29 +179,21 @@ class ZComboBox(ABCButton):
             painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
         if self.borderColorCtrl.color.alpha() > 0:
-            # 绘制边框
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
-            # 调整矩形以避免边框模糊
             painter.drawRoundedRect(
-                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
-                radius,
-                radius
-            )
-        # 计算内容区域
-        # 文本
+                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),
+                radius, radius
+                )
         if self._text:
-            painter.setFont(self._font)
+            painter.setFont(self.font())
             painter.setPen(self.textColorCtrl.color)
             painter.drawText(
                 rect.adjusted(self._padding.left, 0, 0, 0),
                 Qt.AlignLeft|Qt.AlignVCenter,
                 self._text
                 )
-        # 图标
-        # 1. 获取原始 QPixmap
         pixmap = self._drop_icon.pixmap(self._drop_icon_size)
-        # 2. 创建一个新的 QPixmap 用于着色
         colored_pixmap = QPixmap(pixmap.size())
         colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
         colored_pixmap.fill(Qt.transparent)
@@ -218,7 +203,6 @@ class ZComboBox(ABCButton):
         painter_pix.fillRect(colored_pixmap.rect(), self.dropIconColorCtrl.color)
         painter_pix.end()
         painter.drawPixmap(self.dropIconPosCtrl.pos, colored_pixmap)
-        #print(self.dropIconPosCtrl.pos)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 
@@ -226,6 +210,6 @@ class ZComboBox(ABCButton):
     def _get_drop_icon_pos(self):
         '''获取下拉图标位置'''
         rect = self.rect()
-        icon_x = rect.right() - self._drop_icon_size.width() - self._padding.right  # 右侧距6px
-        icon_y = (rect.height() - self._drop_icon_size.height()) // 2 + 1  # 垂直居中
+        icon_x = rect.right() - self._drop_icon_size.width() - self._padding.right
+        icon_y = (rect.height() - self._drop_icon_size.height()) // 2 + 1
         return QPointF(icon_x, icon_y)

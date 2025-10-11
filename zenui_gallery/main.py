@@ -49,22 +49,22 @@ class ZenUIGallery(ZStandardFramelessWindow):
         self.pagelSettings = PanelSettings(self.stackContainer)
         self.stackContainer.addPanel(self.pagelSettings)
 
-        self.navigationBar.btnHome.clicked.connect(
+        self.navigationBar.getButton(0).clicked.connect(
             lambda: self.stackContainer.setCurrentPanel(self.panelHome)
             )
-        self.navigationBar.btnWidget.clicked.connect(
+        self.navigationBar.getButton(1).clicked.connect(
             lambda: self.stackContainer.setCurrentPanel(self.panelWidget)
             )
-        self.navigationBar.btnTest.clicked.connect(
+        self.navigationBar.getButton(2).clicked.connect(
             lambda: self.stackContainer.setCurrentPanel(self.panelTest)
             )
-        self.navigationBar.btnInfo.clicked.connect(
+        self.navigationBar.getButton(3).clicked.connect(
             lambda: self.stackContainer.setCurrentPanel(self.panelInfo)
             )
-        self.navigationBar.btnAbout.clicked.connect(
+        self.navigationBar.getButton(4).clicked.connect(
             lambda: self.stackContainer.setCurrentPanel(self.panelAbout)
             )
-        self.navigationBar.btnSettings.clicked.connect(
+        self.navigationBar.getButton(6).clicked.connect(
             lambda: self.stackContainer.setCurrentPanel(self.pagelSettings)
             )
 

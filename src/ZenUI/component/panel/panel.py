@@ -11,11 +11,8 @@ class ZPanel(ZWidget):
     radiusCtrl: FloatController
     positionCtrl: PositionController
     styleDataCtrl: StyleController[ZPanelStyleData]
-    __controllers_kwargs__ = {
-        'styleDataCtrl':{
-            'key': 'ZPanel'
-        },
-    }
+    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZPanel'}}
+
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
@@ -24,8 +21,6 @@ class ZPanel(ZWidget):
                  ):
         super().__init__(parent)
         if name: self.setObjectName(name)
-
-        # style property
         if style_data_light: self.styleDataCtrl.setData('Light',style_data_light)
         if style_data_dark: self.styleDataCtrl.setData('Dark',style_data_dark)
         self._init_style_()
@@ -34,23 +29,19 @@ class ZPanel(ZWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        rect = self.rect()
+        rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
         if self.bodyColorCtrl.color.alpha() > 0:
-            # draw background
             painter.setPen(Qt.NoPen)
             painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
         if self.borderColorCtrl.color.alpha() > 0:
-        # draw border
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
-            # adjust border width
             painter.drawRoundedRect(
-                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
-                radius,
-                radius
-            )
+                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),
+                radius, radius
+                )
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 

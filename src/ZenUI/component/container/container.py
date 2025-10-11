@@ -1,5 +1,5 @@
 from PySide6.QtGui import QPainter, QPen
-from PySide6.QtCore import QMargins, QSize, Qt
+from PySide6.QtCore import QMargins, QSize, Qt,Property
 from PySide6.QtWidgets import QWidget
 from ZenUI.core import ZDebug
 
@@ -27,73 +27,59 @@ class ZHContainer(QWidget):
         # self.adjustSize()
         # self.resizeEvent(None)
         #QTimer.singleShot(0, lambda: self.resizeEvent(None))
-
-    # region property
-    @property
-    def margins(self):
-        return self._margins
-
-    @margins.setter
-    def margins(self, margins: QMargins):
-        if self._margins != margins:
-            self._margins = margins
-            self.arrangeWidgets()
-
-    @property
     def widgets(self):
         """返回所有子控件列表"""
         return self._widgets.copy()
 
-    @property
+    def margins(self):
+        return self._margins
+
+    def setMargins(self, margins: QMargins):
+        if self._margins != margins:
+            self._margins = margins
+            self.arrangeWidgets()
+
     def alignment(self):
         return self._alignment
 
-    @alignment.setter
-    def alignment(self, align: Qt.AlignmentFlag):
+    def setAlignment(self, align: Qt.AlignmentFlag):
         # 确保是支持的对齐方式
         valid_alignments = (Qt.AlignLeft | Qt.AlignRight | Qt.AlignHCenter | Qt.AlignJustify |
                            Qt.AlignTop | Qt.AlignBottom | Qt.AlignVCenter)
         self._alignment = align & valid_alignments
         self.arrangeWidgets()
 
-    @property
     def defaultSpacing(self):
         """获取默认间距"""
         return self._default_spacing
 
-    @defaultSpacing.setter
-    def defaultSpacing(self, spacing: int):
+    def setDefaultSpacing(self, spacing: int):
         """设置默认间距，会影响后续添加的控件间距"""
         if spacing >= 0:
             self._default_spacing = spacing
 
-    @property
-    def heightExpand(self):
+
+    def isHeightExpand(self):
         """获取是否让所有控件与最高控件同高"""
         return self._height_expand
 
-    @heightExpand.setter
-    def heightExpand(self, value: bool):
+    def setHeightExpand(self, value: bool):
         """设置是否让所有控件与最高控件同高"""
         if self._height_expand != value:
             self._height_expand = value
             self.arrangeWidgets()
 
 
-    @property
-    def uniformHeight(self):
+    def isUniformHeight(self):
         """获取是否让所有控件与最宽控件同高"""
         return self._uniform_height
 
-    @uniformHeight.setter
-    def uniformHeight(self, value: bool):
+    def setUniformHeight(self, value: bool):
         """设置是否让所有控件与最宽控件同高"""
         if self._uniform_height != value:
             self._uniform_height = value
             self.arrangeWidgets()
 
-
-    # region public
     def addWidget(self, widget: QWidget, index: int = -1, spacing: int = None):
         """
         添加控件到容器
@@ -278,66 +264,53 @@ class ZVContainer(QWidget):
         # self.startBatchUpdate()
         # # 确保所有初始化代码执行完成后再结束批量更新
         # QTimer.singleShot(0, self.endBatchUpdate)
-
-    # region property
-    @property
-    def margins(self):
-        return self._margins
-
-    @margins.setter
-    def margins(self, margins: QMargins):
-        if self._margins != margins:
-            self._margins = margins
-            self.arrangeWidgets()
-
-    # 其余属性保持不变...
-    @property
     def widgets(self):
         """返回所有子控件列表"""
         return self._widgets.copy()
 
-    @property
+    # region property
+    def margins(self):
+        return self._margins
+
+    def setMargins(self, margins: QMargins):
+        if self._margins != margins:
+            self._margins = margins
+            self.arrangeWidgets()
+
     def alignment(self):
         return self._alignment
 
-    @alignment.setter
-    def alignment(self, align: Qt.AlignmentFlag):
+    def setAlignment(self, align: Qt.AlignmentFlag):
         # 确保是支持的对齐方式
         valid_alignments = (Qt.AlignLeft | Qt.AlignRight | Qt.AlignHCenter | Qt.AlignJustify |
                            Qt.AlignTop | Qt.AlignBottom | Qt.AlignVCenter)
         self._alignment = align & valid_alignments
         self.arrangeWidgets()
 
-    @property
     def defaultSpacing(self):
         """获取默认间距"""
         return self._default_spacing
 
-    @defaultSpacing.setter
-    def defaultSpacing(self, spacing: int):
+    def setDefaultSpacing(self, spacing: int):
         """设置默认间距，会影响后续添加的控件间距"""
         if spacing >= 0:
             self._default_spacing = spacing
 
-    @property
-    def widthExpand(self):
+    def isWidthExpand(self):
         """获取是否让所有控件与最宽控件同宽"""
         return self._width_expand
 
-    @widthExpand.setter
-    def widthExpand(self, value: bool):
+    def setWidthExpand(self, value: bool):
         """设置是否让所有控件与最宽控件同宽"""
         if self._width_expand != value:
             self._width_expand = value
             self.arrangeWidgets()
 
-    @property
-    def uniformWidth(self):
+    def isUniformWidth(self):
         """获取是否基于子控件最大宽度统一设置所有子控件宽度"""
         return self._uniform_width
 
-    @uniformWidth.setter
-    def uniformWidth(self, value: bool):
+    def setUniformWidth(self, value: bool):
         """设置是否基于子控件最大宽度统一设置所有子控件宽度"""
         if self._uniform_width != value:
             self._uniform_width = value

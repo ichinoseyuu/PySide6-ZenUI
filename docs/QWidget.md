@@ -6,7 +6,71 @@
 
 - **用途**：初始化 QWidget 对象
 - **参数**：包含大量可选参数，可以在创建时设置几乎所有的部件属性
-- **示例**：`widget = QWidget(parent=None, geometry=QRect(0,0,200,100))`
+
+| 参数名 | 类型 | 说明 |
+|--------|------|------|
+| parent | PySide6.QtWidgets.QWidget \| None | 父部件 |
+| f | PySide6.QtCore.Qt.WindowType | 窗口类型标志 |
+| modal | bool \| None | 模态性 |
+| windowModality | PySide6.QtCore.Qt.WindowModality \| None | 窗口模态类型 |
+| enabled | bool \| None | 是否启用部件 |
+| geometry | PySide6.QtCore.QRect \| None | 部件几何信息（位置+尺寸） |
+| frameGeometry | PySide6.QtCore.QRect \| None | 包含边框的几何信息 |
+| normalGeometry | PySide6.QtCore.QRect \| None | 正常状态下的几何信息 |
+| x | int \| None | X坐标位置 |
+| y | int \| None | Y坐标位置 |
+| pos | PySide6.QtCore.QPoint \| None | 位置点 |
+| frameSize | PySide6.QtCore.QSize \| None | 包含边框的尺寸 |
+| size | PySide6.QtCore.QSize \| None | 尺寸 |
+| width | int \| None | 宽度 |
+| height | int \| None | 高度 |
+| rect | PySide6.QtCore.QRect \| None | 部件矩形区域（相对于自身） |
+| childrenRect | PySide6.QtCore.QRect \| None | 子部件的矩形区域 |
+| childrenRegion | PySide6.QtGui.QRegion \| None | 子部件的区域 |
+| sizePolicy | PySide6.QtWidgets.QSizePolicy \| None | 尺寸策略 |
+| minimumSize | PySide6.QtCore.QSize \| None | 最小尺寸 |
+| maximumSize | PySide6.QtCore.QSize \| None | 最大尺寸 |
+| minimumWidth | int \| None | 最小宽度 |
+| minimumHeight | int \| None | 最小高度 |
+| maximumWidth | int \| None | 最大宽度 |
+| maximumHeight | int \| None | 最大高度 |
+| sizeIncrement | PySide6.QtCore.QSize \| None | 尺寸增量 |
+| baseSize | PySide6.QtCore.QSize \| None | 基础尺寸 |
+| palette | PySide6.QtGui.QPalette \| None | 调色板 |
+| font | PySide6.QtGui.QFont \| None | 字体 |
+| cursor | PySide6.QtGui.QCursor \| None | 鼠标光标 |
+| mouseTracking | bool \| None | 是否启用鼠标跟踪 |
+| tabletTracking | bool \| None | 是否启用数位板跟踪 |
+| isActiveWindow | bool \| None | 是否为活动窗口 |
+| focusPolicy | PySide6.QtCore.Qt.FocusPolicy \| None | 焦点策略 |
+| focus | bool \| None | 是否拥有焦点 |
+| contextMenuPolicy | PySide6.QtCore.Qt.ContextMenuPolicy \| None | 上下文菜单策略 |
+| updatesEnabled | bool \| None | 是否启用更新 |
+| visible | bool \| None | 是否可见 |
+| minimized | bool \| None | 是否最小化 |
+| maximized | bool \| None | 是否最大化 |
+| fullScreen | bool \| None | 是否全屏 |
+| sizeHint | PySide6.QtCore.QSize \| None | 建议尺寸 |
+| minimumSizeHint | PySide6.QtCore.QSize \| None | 最小建议尺寸 |
+| acceptDrops | bool \| None | 是否接受拖放 |
+| windowTitle | str \| None | 窗口标题 |
+| windowIcon | PySide6.QtGui.QIcon \| None | 窗口图标 |
+| windowIconText | str \| None | 窗口图标文本 |
+| windowOpacity | float \| None | 窗口不透明度 |
+| windowModified | bool \| None | 窗口修改状态 |
+| toolTip | str \| None | 工具提示 |
+| toolTipDuration | int \| None | 工具提示显示时长 |
+| statusTip | str \| None | 状态提示 |
+| whatsThis | str \| None | 帮助文本 |
+| accessibleName | str \| None | 可访问性名称 |
+| accessibleDescription | str \| None | 可访问性描述 |
+| accessibleIdentifier | str \| None | 可访问性标识符 |
+| layoutDirection | PySide6.QtCore.Qt.LayoutDirection \| None | 布局方向 |
+| autoFillBackground | bool \| None | 是否自动填充背景 |
+| styleSheet | str \| None | CSS样式表 |
+| locale | PySide6.QtCore.QLocale \| None | 区域设置 |
+| windowFilePath | str \| None | 关联文件路径 |
+| inputMethodHints | PySide6.QtCore.Qt.InputMethodHint \| None | 输入法提示 |
 
 ### `__repr__()`
 

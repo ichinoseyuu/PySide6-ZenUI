@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout,QSizePolicy
-from PySide6.QtCore import Qt, QMargins,QPoint
+from PySide6.QtCore import Qt, QMargins,QPoint,QSize
 from PySide6.QtGui import QFont, QIcon, QColor
 from ZenUI import *
 from demo_card import DemoCard
@@ -36,7 +36,7 @@ class PanelWidget(ZScrollPanel):
         self.layout().addLayout(layout)
 
         card = DemoCard(self)
-        layout.addWidget(card)
+        layout.addWidget(card, stretch=0)
 
         title = ZTextBlock(card, text= 'ZButton')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
@@ -97,40 +97,9 @@ class PanelWidget(ZScrollPanel):
                 )
             )
 
-        # region ZReapeatButton
-        card = DemoCard(self)
-        layout.addWidget(card)
-
-        title = ZTextBlock(card, text= 'ZReapeatButton')
-        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
-        card.layout().addWidget(title)
-
-        container = ZHContainer(card)
-        card.layout().addWidget(container)
-
-        info = ZTextBlock(container, text= '点击次数: 0')
-        container.addWidget(info)
-
-        self.repeat_btn = ZRepeatButton(
-            parent=container,
-            name='repeat_btn_1',
-            text='连点按钮'
-            )
-
-        container.addWidget(self.repeat_btn, spacing=16)
-        self.repeat_btn.clicked.connect(
-            lambda: info.setText(f'点击次数: {self.repeat_btn.repeatCount}')
-            )
-
-        layout = ZHBoxLayout(
-            margins=QMargins(0, 0, 0, 0),
-            spacing=30
-            )
-        self.layout().addLayout(layout)
-
         # region ZToggleButton
         card = DemoCard(self)
-        layout.addWidget(card)
+        layout.addWidget(card, stretch=0)
 
         title = ZTextBlock(card, text= 'ZToggleButton')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
@@ -162,79 +131,61 @@ class PanelWidget(ZScrollPanel):
             )
         container.addWidget(self.toggle_btn_3, spacing=16)
 
-        # region ZSwitch
-        card = DemoCard(self)
-        layout.addWidget(card)
-
-        title = ZTextBlock(card, text= 'ZSwitch')
-        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
-        card.layout().addWidget(title)
-
-        container = ZHContainer(card)
-        container.alignment = Qt.AlignmentFlag.AlignBottom
-        card.layout().addWidget(container)
-
-        self.switch_1 = ZSwitch(container, name='switch_1', weight= ZSwitch.Style.Compact)
-        container.addWidget(self.switch_1, spacing=16)
-
-        self.switch_2 = ZSwitch(container, name='switch_2', weight= ZSwitch.Style.Standard)
-        container.addWidget(self.switch_2, spacing=16)
-
-        self.switch_3 = ZSwitch(container, name='switch_3', weight= ZSwitch.Style.Comfortable)
-        container.addWidget(self.switch_3, spacing=16)
-
-        # region ZTextBox
         layout = ZHBoxLayout(
             margins=QMargins(0, 0, 0, 0),
             spacing=30
             )
         self.layout().addLayout(layout)
 
-        layout1 = ZVBoxLayout(
-            margins=QMargins(0, 0, 0, 0),
-            spacing=30
-            )
-        layout.addLayout(layout1)
-
+        # region ZSwitch
         card = DemoCard(self)
-        layout1.addWidget(card)
+        layout.addWidget(card, stretch=0)
 
-        title = ZTextBlock(card, text= 'ZTextBox')
+        title = ZTextBlock(card, text= 'ZSwitch')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
-        container = ZVContainer(card)
+        container = ZHContainer(card)
+        container.setAlignment(Qt.AlignmentFlag.AlignBottom)
         card.layout().addWidget(container)
 
-        self.text_box_1 = ZTextBox(container, name='text_box_1',read_only=True)
-        self.text_box_1.setMinimumWidth(300)
-        #self.text_box_1.setMaximumWidth(500)
-        self.text_box_1.setText('Hello ZenUI!')
-        container.addWidget(self.text_box_1)
+        self.switch_1 = ZSwitch(container, name='switch_1', style= ZSwitch.Style.Compact)
+        container.addWidget(self.switch_1, spacing=16)
 
-        self.text_box_2 = ZTextBox(container, name='text_box_2')
-        self.text_box_2.setMinimumWidth(300)
-        container.addWidget(self.text_box_2)
+        self.switch_2 = ZSwitch(container, name='switch_2', style= ZSwitch.Style.Standard)
+        container.addWidget(self.switch_2, spacing=16)
 
-        self.text_box_3 = ZTextBox(container, name='text_box_3',mask='请输入内容')
-        self.text_box_3.setMinimumWidth(300)
-        self.text_box_3.wrapMode = ZWrapMode.WrapAnywhere
-        self.text_box_3.setMaximumWidth(300)
-        def test():
-            print('test')
-            container.adjustSize()
-            # 2. 触发card的布局重新计算
-            card.layout().update()
-            # 3. 强制card根据新布局调整自身大小
-            card.adjustSize()
-            # 4. 如果card所在的父布局也需要更新，可进一步触发
-            self.layout().update()
-        self.text_box_3.heightChangedByWrapping.connect(test)
-        container.addWidget(self.text_box_3)
+        self.switch_3 = ZSwitch(container, name='switch_3', style= ZSwitch.Style.Comfortable)
+        container.addWidget(self.switch_3, spacing=16)
+
+        # region ZReapeatButton
+        card = DemoCard(self)
+        layout.addWidget(card, stretch=0)
+
+        title = ZTextBlock(card, text= 'ZReapeatButton')
+        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
+        card.layout().addWidget(title)
+
+        container = ZHContainer(card)
+        card.layout().addWidget(container)
+
+        info = ZTextBlock(container, text= '点击次数: 0')
+        container.addWidget(info)
+
+        self.repeat_btn = ZRepeatButton(
+            parent=container,
+            name='repeat_btn_1',
+            text='连点按钮'
+            )
+
+        container.addWidget(self.repeat_btn)
+        self.repeat_btn.clicked.connect(
+            lambda: info.setText(f'点击次数: {self.repeat_btn.repeatCount()}')
+            )
 
         # region ZComboBox
         card = DemoCard(self)
-        layout1.addWidget(card)
+        layout.addWidget(card, stretch=0)
 
         title = ZTextBlock(card, text= 'ZComboBox')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
@@ -252,10 +203,61 @@ class PanelWidget(ZScrollPanel):
         self.combo_box_1.addItem('丁程鑫')
         container.addWidget(self.combo_box_1)
 
+        # region ZLineEdit
+        layout = ZHBoxLayout(
+            margins=QMargins(0, 0, 0, 0),
+            spacing=30
+            )
+        self.layout().addLayout(layout)
+
+        card = DemoCard(self)
+        layout.addWidget(card, stretch=0)
+
+        title = ZTextBlock(card, text= 'ZLineEdit')
+        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
+        card.layout().addWidget(title)
+
+        container = ZVContainer(card)
+        card.layout().addWidget(container)
+
+        self.lineedit_1 = ZLineEdit(
+            parent=container,
+            name='lineedit_1',
+            text='唱、跳、rap、篮球',
+            read_only=True,
+            selectable=False,
+            minimumSize=QSize(300, 30)
+        )
+        container.addWidget(self.lineedit_1)
+
+        self.lineedit_2 = ZLineEdit(
+            parent=container,
+            name='lineedit_2',
+             text='孩子，这并不好笑',
+            read_only=True,
+            selectable=True,
+            minimumSize=QSize(300, 30)
+        )
+        container.addWidget(self.lineedit_2)
+
+        self.lineedit_3 = ZLineEdit(
+            parent=container,
+            name='lineedit_3',
+            minimumSize=QSize(300, 30)
+        )
+        container.addWidget(self.lineedit_3)
+
+        self.lineedit_4 = ZLineEdit(
+            parent=container,
+            name='lineedit_4',
+            placeholder='请输入你的名字',
+            minimumSize=QSize(300, 30)
+        )
+        container.addWidget(self.lineedit_4)
 
         # region Slider
         card = DemoCard(self)
-        layout.addWidget(card)
+        layout.addWidget(card, stretch=0)
 
         title = ZTextBlock(card, text= 'ZSlider')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
@@ -269,15 +271,15 @@ class PanelWidget(ZScrollPanel):
         card.layout().addLayout(hlayout)
 
         container1 = ZVContainer(card)
-        container1.alignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignCenter
-        container1.defaultSpacing = 16
+        container1.setAlignment(Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignCenter)
+        container1.setDefaultSpacing(16)
         hlayout.layout().addWidget(container1)
 
         self.hslider_1 = ZSlider(
             parent=container1,
             name='hslider_1',
             direction=ZDirection.Horizontal,
-            weight=ZSlider.Weight.Thin,
+            style=ZSlider.Style.Thin,
             scope=(0, 10),
             step=0.5,
             accuracy=0.1,
@@ -290,7 +292,7 @@ class PanelWidget(ZScrollPanel):
             parent=container1,
             name='hslider_2',
             direction=ZDirection.Horizontal,
-            weight=ZSlider.Weight.Normal,
+            style=ZSlider.Style.Normal,
             scope=(0, 100),
             step=1,
             accuracy=1,
@@ -303,7 +305,7 @@ class PanelWidget(ZScrollPanel):
             parent=container1,
             name='hslider_3',
             direction=ZDirection.Horizontal,
-            weight=ZSlider.Weight.Thick,
+            style=ZSlider.Style.Thick,
             scope=(0, 100),
             step=0.5,
             accuracy=0.1,
@@ -315,15 +317,15 @@ class PanelWidget(ZScrollPanel):
         container1.arrangeWidgets()
 
         container2 = ZHContainer(card)
-        container2.alignment = Qt.AlignmentFlag.AlignBottom
-        container2.defaultSpacing = 16
+        container2.setAlignment(Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignCenter)
+        container2.setDefaultSpacing(16)
         hlayout.layout().addWidget(container2)
 
         self.vslider_1 = ZSlider(
             parent=container2,
             name='vslider_1',
             direction=ZDirection.Vertical,
-            weight=ZSlider.Weight.Thin,
+            style=ZSlider.Style.Thin,
             scope=(0, 10),
             step=0.5,
             accuracy=0.1,
@@ -336,7 +338,7 @@ class PanelWidget(ZScrollPanel):
             parent=container2,
             name='vslider_2',
             direction=ZDirection.Vertical,
-            weight=ZSlider.Weight.Normal,
+            style=ZSlider.Style.Normal,
             scope=(0, 100),
             step=1,
             accuracy=1,
@@ -349,7 +351,7 @@ class PanelWidget(ZScrollPanel):
             parent=container2,
             name='vslider_3',
             direction=ZDirection.Vertical,
-            weight=ZSlider.Weight.Thick,
+            style=ZSlider.Style.Thick,
             scope=(0, 100),
             step=0.5,
             accuracy=0.1,
@@ -417,29 +419,4 @@ class PanelWidget(ZScrollPanel):
             "并提供了完整的 Qt 6.0+ 框架支持。"
         )
         container.addWidget(self.text_block_4)
-
-        title = ZTextBlock(card, text= 'ZRichTextBlock')
-        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
-        card.layout().addWidget(title)
-
-        container = ZVContainer(card)
-        card.layout().addWidget(container)
-
-        self.rich_text_1 = ZRichTextBlock(container, name='rich_text_1')
-        self.rich_text_1.html = '''
-        <p>
-            欢迎使用<span style="color: #ff6b6b; font-weight: bold;">ZenUI</span>组件库！
-            这个组件库基于<span style="color: #4ecdc4; font-style: bold;">PySide6</span>开发。
-        </p>
-        '''
-        container.addWidget(self.rich_text_1)
-
-        self.rich_text_2 = ZRichTextBlock(container, name='rich_text_2',selectable=True)
-        self.rich_text_2.html = '''
-        <p>
-            欢迎使用<span style="color: #ff6b6b; font-weight: bold;">ZenUI</span>组件库！
-            这个组件库基于<span style="color: #4ecdc4; font-style: bold;">PySide6</span>开发。
-        </p>
-        '''
-        container.addWidget(self.rich_text_2)
 

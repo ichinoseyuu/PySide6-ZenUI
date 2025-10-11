@@ -468,7 +468,7 @@ class ZTextBlock(ZWidget):
             super().mousePressEvent(event)
             return
 
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             char_pos = self._get_char_position_at_point(event.pos())
 
             # 如果按住Shift键，则是扩展选择
@@ -500,7 +500,7 @@ class ZTextBlock(ZWidget):
 
     def mouseReleaseEvent(self, event):
         """处理鼠标释放事件"""
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             self._is_selecting = False
         super().mouseReleaseEvent(event)
 

@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent, QTimer
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from ZenUI.core import ZState
 from ZenUI.component.base import ZWidget
-# region - ABCButton
+# region ABCButton
 class ABCButton(ZWidget):
     entered = Signal()
     leaved = Signal()
@@ -15,7 +15,7 @@ class ABCButton(ZWidget):
         # self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         # self.setMouseTracking(True)
         self._state = ZState.Idle
-        self._tool_tip: str = ""
+        self._tooltip: str = ""
         self.entered.connect(self._hover_handler_)
         self.leaved.connect(self._leave_handler_)
         self.pressed.connect(self._press_handler_)
@@ -23,7 +23,7 @@ class ABCButton(ZWidget):
         self.clicked.connect(self._click_handler_)
 
 
-    # region Slot
+    # region slot
     @Slot()
     def _hover_handler_(self):
         '''鼠标进入时的槽函数'''
@@ -45,24 +45,16 @@ class ABCButton(ZWidget):
         '''鼠标成功点击时的槽函数'''
 
 
-    # region Property
-    @property
+    # region public method
     def state(self) -> ZState: return self._state
 
-    @property
-    def toolTip(self): return self._tool_tip
+    def toolTip(self): return self._tooltip
 
-    @toolTip.setter
-    def toolTip(self, tip: str):
-        self._tool_tip = tip
-        self.update()
-
-    # region public
     def setToolTip(self, tip: str):
-        self._tool_tip = tip
+        self._tooltip = tip
         self.update()
 
-    # region Event
+    # region event
     def enterEvent(self, event: QEnterEvent):
         super().enterEvent(event)
         self._state = ZState.Hover
@@ -100,7 +92,7 @@ class ABCButton(ZWidget):
             return True
         return super().event(event)
 
-# region - ABCToggleButton
+# region ABCToggleButton
 class ABCToggleButton(ABCButton):
     toggled = Signal(bool)
     def __init__(self, *args, **kwargs):
@@ -115,28 +107,22 @@ class ABCToggleButton(ABCButton):
     def _toggle_handler_(self, c: bool):
         '''按钮状态改变时的槽函数'''
 
-    # region Property
-    @property
-    def checked(self) -> bool: return self._checked
+    # region public method
+    def isChecked(self) -> bool: return self._checked
 
-    @checked.setter
-    def checked(self, c: bool):
+    def setChecked(self, c: bool):
         self._checked = c
         self.toggled.emit(self._checked)
 
-    @property
-    def checkable(self) -> bool: return self._checkable
+    def isCheckable(self) -> bool: return self._checkable
 
-    @checkable.setter
-    def checkable(self, c: bool): self._checkable = c
+    def setCheckable(self, c: bool): self._checkable = c
 
-    @property
     def isGroupMember(self) -> bool: return self._is_group_member
 
-    @isGroupMember.setter
-    def isGroupMember(self, b: bool): self._is_group_member = b
+    def setGroupMember(self, b: bool): self._is_group_member = b
 
-    # region Event
+    # region event
     def mouseReleaseEvent(self, event: QMouseEvent):
         super().mouseReleaseEvent(event)
         if event.button() == Qt.MouseButton.LeftButton and self._checkable:
@@ -149,7 +135,7 @@ class ABCToggleButton(ABCButton):
                         self._checked = True
                         self.toggled.emit(self._checked)
 
-# region - ABCRepeatButton
+# region ABCRepeatButton
 class ABCRepeatButton(ABCButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -166,7 +152,7 @@ class ABCRepeatButton(ABCButton):
         self._delay_timer.timeout.connect(self._repeat_timer.start)
 
 
-    # region Slot
+    # region slot
     @Slot()
     def _repeat_click_handler_(self):
         '''重复点击时的槽函数'''
@@ -174,29 +160,21 @@ class ABCRepeatButton(ABCButton):
         self.clicked.emit()
 
     # region Property
-    @property
-    def repeatable(self) -> bool: return self._repeatable
+    def isRepeatable(self) -> bool: return self._repeatable
 
-    @repeatable.setter
-    def repeatable(self, r: bool): self._repeatable = r
+    def setRepeatable(self, r: bool): self._repeatable = r
 
-    @property
     def repeatCount(self) -> int: return self._repeat_count
 
-    @property
     def delayTime(self) -> int: return self._delay_timer.interval()
 
-    @delayTime.setter
-    def delayTime(self, delay: int): self._delay_timer.setInterval(delay)
+    def setDelayTime(self, delay: int): self._delay_timer.setInterval(delay)
 
-    @property
     def repeatTime(self) -> int: return self._repeat_timer.interval()
 
-    @repeatTime.setter
-    def repeatTime(self, repeat: int): self._repeat_timer.setInterval(repeat)
+    def setRepeatTime(self, repeat: int): self._repeat_timer.setInterval(repeat)
 
-
-    # region Event
+    # region event
     def mousePressEvent(self, event: QMouseEvent):
         super().mousePressEvent(event)
         if event.button() == Qt.MouseButton.LeftButton and self._repeatable:

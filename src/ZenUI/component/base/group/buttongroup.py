@@ -145,7 +145,7 @@ class ButttonGroup(QObject):
             button.clicked.emit()
 
         # 设置新按钮为选中状态
-        button.checked = True
+        button.setChecked(True)
 
         # 发送状态变化信号
         if self._checked_button != key:
@@ -174,7 +174,7 @@ class ButttonGroup(QObject):
         # 取消之前选中按钮
         if self._checked_button_last is not None:
             old_button = self._buttons[self._checked_button_last]
-            old_button.checked = False
+            old_button.setChecked(False)
             if hasattr(old_button, 'leaved') and callable(old_button.leaved):
                 old_button.leaved.emit()
 

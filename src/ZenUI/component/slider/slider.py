@@ -9,7 +9,8 @@ from ZenUI.component.base import (
     FloatController,
     PositionController,
     WidgetSizeController,
-    StyleController
+    StyleController,
+    ZWidget
 )
 from ZenUI.core import (
     ZGlobal,
@@ -18,194 +19,121 @@ from ZenUI.core import (
     ZPosition,
     ZDirection
 )
-class SliderFill(QWidget):
-    def __init__(self, parent:QWidget = None):
-        super().__init__(parent)
-        self._body_cc = LinearGradientController(self)
-        self._border_cc = ColorController(self)
-        self._radius_ctrl = FloatController(self)
-        self._location_ctrl = PositionController(self)
-        self._size_ctrl = WidgetSizeController(self)
-
-    @property
-    def bodyColorCtrl(self): return self._body_cc
-
-    @property
-    def borderColorCtrl(self): return self._border_cc
-
-    @property
-    def radiusCtrl(self): return self._radius_ctrl
-
-    @property
-    def locationCtrl(self): return self._location_ctrl
-
-    @property
-    def sizeCtrl(self): return self._size_ctrl
+# region SliderFill
+class SliderFill(ZWidget):
+    bodyColorCtrl: LinearGradientController
+    borderColorCtrl: ColorController
+    radiusCtrl: FloatController
+    positionCtrl: PositionController
+    sizeCtrl: WidgetSizeController
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        rect = self.rect()
-        radius = self._radius_ctrl.value
-
-        # 计算内部矩形（考虑边框宽度）
+        rect = QRectF(self.rect())
+        radius = self.radiusCtrl.value
         inner_rect = QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5)
-        # 创建圆角路径（基于inner_rect）
         path = QPainterPath()
         path.addRoundedRect(inner_rect, radius, radius)
-
-        # 绘制渐变背景
-        x1, y1, x2, y2 = self._body_cc.linearPoints
+        x1, y1, x2, y2 = self.bodyColorCtrl.linearPoints
         gradient = QLinearGradient(
             inner_rect.width() * x1 + inner_rect.left(),
             inner_rect.height() * y1 + inner_rect.top(),
             inner_rect.width() * x2 + inner_rect.left(),
             inner_rect.height() * y2 + inner_rect.top()
-        )
-        if not self._body_cc.reverse:
-            gradient.setColorAt(0.0, self._body_cc.colorStart)
-            gradient.setColorAt(1.0, self._body_cc.colorEnd)
+            )
+        if not self.bodyColorCtrl.reverse:
+            gradient.setColorAt(0.0, self.bodyColorCtrl.colorStart)
+            gradient.setColorAt(1.0, self.bodyColorCtrl.colorEnd)
         else:
-            gradient.setColorAt(0.0, self._body_cc.colorEnd)
-            gradient.setColorAt(1.0, self._body_cc.colorStart)
+            gradient.setColorAt(0.0, self.bodyColorCtrl.colorEnd)
+            gradient.setColorAt(1.0, self.bodyColorCtrl.colorStart)
         painter.fillPath(path, gradient)
-
-        # 绘制边框
         painter.setPen(QPen(
-            self._border_cc.color,
-            1,
-            Qt.SolidLine,
-            Qt.RoundCap,
-            Qt.RoundJoin
-        ))
+            self.borderColorCtrl.color, 1,
+            Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin
+            ))
         painter.setBrush(Qt.NoBrush)
         painter.drawRoundedRect(inner_rect, radius, radius)
         painter.end()
 
-
-class SliderTrack(QWidget):
-    def __init__(self, parent:QWidget = None):
-        super().__init__(parent)
-        self._body_cc = ColorController(self)
-        self._border_cc = ColorController(self)
-        self._radius_ctrl = FloatController(self)
-        self._loacation_ctrl = PositionController(self)
-
-    @property
-    def bodyColorCtrl(self): return self._body_cc
-
-    @property
-    def borderColorCtrl(self): return self._border_cc
-
-    @property
-    def radiusCtrl(self): return self._radius_ctrl
-
-    @property
-    def loactionCtrl(self): return self._loacation_ctrl
+# region SliderTrack
+class SliderTrack(ZWidget):
+    bodyColorCtrl: ColorController
+    borderColorCtrl: ColorController
+    radiusCtrl: FloatController
+    positionCtrl: PositionController
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        rect = self.rect()
-        # 计算内部矩形（考虑边框宽度）
+        rect = QRectF(self.rect())
         inner_rect = QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5)
-        radius = self._radius_ctrl.value
-        if self._body_cc.color.alpha() > 0:
-            # 绘制背景
+        radius = self.radiusCtrl.value
+        if self.bodyColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self._body_cc.color)
+            painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(inner_rect, radius, radius)
-        # 绘制边框
-        if self._border_cc.color.alpha() > 0:
+        if self.borderColorCtrl.color.alpha() > 0:
             painter.setPen(QPen(
-                self._border_cc.color,
-                1,
-                Qt.SolidLine,
-                Qt.RoundCap,
-                Qt.RoundJoin
-            ))
+                self.borderColorCtrl.color, 1,
+                Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin
+                ))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(inner_rect, radius, radius)
         painter.end()
 
-
-class SliderHandle(QWidget):
-    def __init__(self,
-                 parent: QWidget = None,
-                 radius: int = 6
-                 ):
+# region SliderHandle
+class SliderHandle(ZWidget):
+    innerColorCtrl: ColorController
+    outerColorCtrl: ColorController
+    borderColorCtrl: ColorController
+    innerScaleCtrl: FloatController
+    outerScaleCtrl: FloatController
+    positionCtrl: PositionController
+    def __init__(self, parent: QWidget = None, radius: int = 6):
         super().__init__(parent)
         self._radius = radius
+        self._inner_scale_normal = 0.4
+        self._inner_scale_hover = 0.6
+        self._inner_scale_pressed = 0.5
+        self._inner_scale_released = 0.6
+        self._outer_scale_normal = 0.8
+        self._outer_scale_hover = 1.0
+        self._outer_scale_pressed = 1.0
+        self._outer_scale_released = 1.0
+        self.innerScaleCtrl.setValue(self._inner_scale_normal)
+        self.outerScaleCtrl.setValue(self._outer_scale_normal)
         self.resize(2*radius, 2*radius)
-
-        self._inner_scale_normal = 0.4      # 正常状态的内圈大小
-        self._inner_scale_hover = 0.6       # 悬停状态的内圈大小
-        self._inner_scale_pressed = 0.5     # 按下状态的内圈大小
-        self._inner_scale_released = 0.6    # 释放状态的内圈大小
-
-        self._outer_scale_normal = 0.8      # 正常状态的外圈大小
-        self._outer_scale_hover = 1.0       # 悬停状态的外圈大小
-        self._outer_scale_pressed = 1.0     # 按下状态的外圈大小
-        self._outer_scale_released = 1.0    # 释放状态的外圈大小
-
-        self._inner_scale_ctrl = FloatController(self)
-        self._outer_scale_ctrl = FloatController(self)
-
-        self._inner_cc = ColorController(self)
-        self._outer_cc = ColorController(self)
-        self._border_cc = ColorController(self)
-        self._location_ctrl = PositionController(self)
-
-        self._inner_scale_ctrl.setValue(self._inner_scale_normal)
-        self._outer_scale_ctrl.setValue(self._outer_scale_normal)
-
-    @property
-    def innerColorCtrl(self): return self._inner_cc
-
-    @property
-    def outerColorCtrl(self): return self._outer_cc
-
-    @property
-    def borderColorCtrl(self): return self._border_cc
-
-    @property
-    def locationCtrl(self): return self._location_ctrl
 
     def parent(self) -> 'ZSlider':
         return super().parent()
 
-    # region paintEvent
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        # 计算中心点和基础半径
         center = QPointF(self.width()/2, self.height()/2)
         base_radius = min(self.width(), self.height())/2 - 1
-        if self._inner_cc.color.alpha() > 0:
-            # 绘制外圈(大小可变)
+        if self.innerColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self._outer_cc.color)
-            outer_radius = base_radius * self._outer_scale_ctrl.value
+            painter.setBrush(self.outerColorCtrl.color)
+            outer_radius = base_radius * self.outerScaleCtrl.value
             painter.drawEllipse(center, outer_radius, outer_radius)
-        if self._inner_cc.color.alpha() > 0:
-            # 绘制内圈(大小可变)
-            inner_radius = base_radius * self._inner_scale_ctrl.value
-            painter.setBrush(self._inner_cc.color)
+        if self.innerColorCtrl.color.alpha() > 0:
+            inner_radius = base_radius * self.innerScaleCtrl.value
+            painter.setBrush(self.innerColorCtrl.color)
             painter.drawEllipse(center, inner_radius, inner_radius)
-        if self._border_cc.color.alpha() > 0:
-            # 绘制外边框
-            painter.setPen(QPen(self._border_cc.color, 1))
-            border_radius = base_radius * self._outer_scale_ctrl.value
+        if self.borderColorCtrl.color.alpha() > 0:
+            painter.setPen(QPen(self.borderColorCtrl.color, 1))
+            border_radius = base_radius * self.outerScaleCtrl.value
             painter.setBrush(Qt.NoBrush)  # 不填充
             painter.drawEllipse(center, border_radius, border_radius)
         painter.end()
 
-
-    # region mouseEvent
     def mousePressEvent(self, event):
-        self._inner_scale_ctrl.setValueTo(self._inner_scale_pressed)
-        self._outer_cc.setAlphaTo(150)
-        self._border_cc.setAlphaTo(150)
+        self.innerScaleCtrl.setValueTo(self._inner_scale_pressed)
+        self.outerColorCtrl.setAlphaTo(150)
+        self.borderColorCtrl.setAlphaTo(150)
 
     def mouseMoveEvent(self, event):
         slider = self.parent()
@@ -228,15 +156,14 @@ class SliderHandle(QWidget):
                 position = ZPosition.Left)
 
     def mouseReleaseEvent(self, event):
-        self._inner_scale_ctrl.setValueTo(self._inner_scale_released)
-        self._outer_cc.setAlphaTo(255)
-        self._border_cc.setAlphaTo(255)
-
+        self.innerScaleCtrl.setValueTo(self._inner_scale_released)
+        self.outerColorCtrl.setAlphaTo(255)
+        self.borderColorCtrl.setAlphaTo(255)
 
     def enterEvent(self, event):
         super().enterEvent(event)
-        self._inner_scale_ctrl.setValueTo(self._inner_scale_hover)
-        self._outer_scale_ctrl.setValueTo(self._outer_scale_hover)
+        self.innerScaleCtrl.setValueTo(self._inner_scale_hover)
+        self.outerScaleCtrl.setValueTo(self._outer_scale_hover)
         if self.parent().isHorizontal:
             ZGlobal.tooltip.showTip(
                 text = self.parent().displayValue,
@@ -250,27 +177,29 @@ class SliderHandle(QWidget):
                 mode = ZGlobal.tooltip.Mode.TrackTarget,
                 position = ZPosition.Left)
 
-
     def leaveEvent(self, event):
-        self._inner_scale_ctrl.setValueTo(self._inner_scale_normal)
-        self._outer_scale_ctrl.setValueTo(self._outer_scale_normal)
+        self.innerScaleCtrl.setValueTo(self._inner_scale_normal)
+        self.outerScaleCtrl.setValueTo(self._outer_scale_normal)
         ZGlobal.tooltip.hideTipDelayed(500)
 
 
-class ZSlider(QWidget):
-    class Weight(IntEnum):
+# region ZSlider
+class ZSlider(ZWidget):
+    valueChanged = Signal(object)
+    displayValueChanged = Signal(str)
+    styleDataCtrl: StyleController[ZSliderStyleData]
+    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZSlider'}}
+
+    class Style(IntEnum):
         Thin = 4
         Normal = 5
         Thick = 6
-
-    valueChanged = Signal(object)
-    displayValueChanged = Signal(str)
 
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
                  direction: ZDirection = ZDirection.Horizontal,
-                 weight: Weight = Weight.Normal,
+                 style: Style = Style.Normal,
                  scope: tuple[int, int] | tuple[float, float] = (0, 100),
                  step: int = 1,
                  step_multiplier: int = 1,
@@ -280,10 +209,9 @@ class ZSlider(QWidget):
                  ):
         super().__init__(parent)
         if name: self.setObjectName(name)
-        if direction not in (ZDirection.Horizontal, ZDirection.Vertical):
-            raise ValueError('Invalid direction')
+        if direction not in (ZDirection.Horizontal, ZDirection.Vertical): raise ValueError('Invalid direction')
         self._dir = direction
-        self._weight = weight
+        self._style = style
         self._scope = scope
         self._min, self._max = scope
         self._step = max(step, accuracy)
@@ -294,7 +222,7 @@ class ZSlider(QWidget):
         self._value: int | float = 0
         self._percentage: float = 0.0
 
-        self._track_width: int = self._weight.value
+        self._track_width: int = self._style.value
         self._track_length: int = 0
         self._track_start: int = 0
         self._track_end: int = 0
@@ -304,16 +232,13 @@ class ZSlider(QWidget):
 
         self._track = SliderTrack(self)
         self._fill = SliderFill(self)
-        self._handle = SliderHandle(self,10)
+        self._handle = SliderHandle(self, 10)
 
-        self._style_data = StyleController[ZSliderStyleData](self, 'ZSlider')
-        self._style_data.styleChanged.connect(self._styleChangeHandler)
-
-        self._handle.locationCtrl.animation.valueChanged.connect(self._update_fill)
-        self._initStyle(value)
+        self._handle.positionCtrl.animation.valueChanged.connect(self._update_fill)
+        self._init_style_(value)
         #self.resize(self.sizeHint())
 
-    # region property
+    # region public
     @property
     def percentage(self): return self._percentage
 
@@ -327,70 +252,47 @@ class ZSlider(QWidget):
     def isVertical(self): return self._dir == ZDirection.Vertical
 
     @property
-    def track(self): return self._track
-
-    @property
-    def fill(self): return self._fill
-
-    @property
-    def handle(self): return self._handle
-
-    @property
-    def styleData(self): return self._style_data
-
-    @property
-    def weight(self): return self._weight
-    @weight.setter
-    def weight(self, weight: Weight):
-        self._weight = weight
-        self._track_width = self._weight.value
-        self._update_track()
-
-    @property
     def autoStripZero(self): return self._auto_strip_zero
-    @autoStripZero.setter
-    def autoStripZero(self, value: bool):
-        self._auto_strip_zero = value
 
-    @property
-    def scope(self): return self._scope
-    @scope.setter
-    def scope(self, scope: tuple):
-        self._scope = scope
-        self._max = scope[1]
-        self._min = scope[0]
-        self.setValue(self._value)
+    @autoStripZero.setter
+    def autoStripZero(self, v: bool):
+        self._auto_strip_zero = v
 
     @property
     def max(self): return self._max
+
     @max.setter
-    def max(self, max: int | float):
-        self._max = max
+    def max(self, m: int | float):
+        self._max = m
         self._scope = (self._min, self._max)
         self.setValue(self._value)
 
     @property
     def min(self): return self._min
+
     @min.setter
-    def min(self, min: int | float):
-        self._min = min
+    def min(self, m: int | float):
+        self._min = m
         self._scope = (self._min, self._max)
         self.setValue(self._value)
 
     @property
     def step(self): return self._step
+
     @step.setter
-    def step(self, step: int | float):
-        self._step = max(step, self._accuracy)
+    def step(self, s: int | float):
+        self._step = max(s, self._accuracy)
 
     @property
     def stepMultiplier(self): return self._step_multiplier
+
     @stepMultiplier.setter
     def stepMultiplier(self, step_multiplier: int):
         self._step_multiplier = step_multiplier
 
     @property
     def accuracy(self): return self._accuracy
+
     @accuracy.setter
     def accuracy(self, accuracy: int | float):
         self._accuracy = accuracy
@@ -398,14 +300,29 @@ class ZSlider(QWidget):
         self.setValue(self._value)
 
     @property
-    def value(self):
-        if self._accuracy >= 1:
-            return int(round(self._value))
-        decimal_places = max(0, len(str(self._accuracy).split('.')[-1]))
-        return round(self._value, decimal_places)
-    @value.setter
-    def value(self, value: float):
-        self.setValue(value)
+    def sliderStyle(self): return self._style
+
+    @sliderStyle.setter
+    def sliderStyle(self, s: Style):
+        self._style = s
+        self._track_width = self._style.value
+        self._update_track()
+
+    def setSliderStyle(self, s: Style):
+        self.sliderStyle = s
+
+    @property
+    def scope(self): return self._scope
+
+    @scope.setter
+    def scope(self, s: tuple):
+        self._scope = s
+        self._max = s[1]
+        self._min = s[0]
+        self.setValue(self._value)
+
+    def setScope(self, s: tuple):
+        self.scope = s
 
     @property
     def displayValue(self):
@@ -418,7 +335,25 @@ class ZSlider(QWidget):
                 s = s.rstrip('0').rstrip('.') if '.' in s else s
         return s
 
-    # region public
+    @property
+    def value(self):
+        if self._accuracy >= 1:
+            return int(round(self._value))
+        decimal_places = max(0, len(str(self._accuracy).split('.')[-1]))
+        return round(self._value, decimal_places)
+
+    @value.setter
+    def value(self, value: float):
+        clamped = max(self._min, min(value, self._max))
+        self._value = clamped
+        self._percentage = (self._value - self._min) / (self._max - self._min)
+        self._update_value()
+        self.valueChanged.emit(self.value)
+        self.displayValueChanged.emit(self.displayValue)
+
+    def setValue(self, value: int | float):
+        self.value = value
+
     @overload
     def stepValue(self, step: int, multiplier: int = 1) -> None:
         "根据步长调整值，使用自定义步进倍数"
@@ -436,16 +371,6 @@ class ZSlider(QWidget):
         elif len(args) == 2:
             new_value = self._value + args[0] * self._step * args[1]
             self.setValue(new_value)
-
-
-    def setValue(self, value: int | float):
-        clamped = max(self._min, min(value, self._max))
-        self._value = clamped
-        self._percentage = (self._value - self._min) / (self._max - self._min)
-        self._update_value()
-        self.valueChanged.emit(self.value)
-        self.displayValueChanged.emit(self.displayValue)
-
 
     def setFixedLength(self, length: int):
         """设置滑块长度为固定值"""
@@ -467,7 +392,7 @@ class ZSlider(QWidget):
             return QSize(self._track_width, h + self._handle_radius * 2)
 
     # region private
-    def _initStyle(self, value):
+    def _init_style_(self, value):
         if self.isHorizontal:
             self._fill.bodyColorCtrl.direction = 0
             self.setFixedHeight(2 * self._handle_radius)
@@ -479,7 +404,7 @@ class ZSlider(QWidget):
             self.setMinimumHeight(self._min_length + self._handle_radius * 2)
         self._update_track_radius()
         self.setValue(value)
-        data = self._style_data.data
+        data = self.styleDataCtrl.data
         self._track.bodyColorCtrl.color = data.Track
         self._track.borderColorCtrl.color = data.TrackBorder
         self._fill.bodyColorCtrl.colorStart = data.FillAreaStart
@@ -490,8 +415,8 @@ class ZSlider(QWidget):
         self._handle.borderColorCtrl.color = data.HandleBorder
         self.update()
 
-    def _styleChangeHandler(self):
-        data = self._style_data.data
+    def _style_change_handler_(self):
+        data = self.styleDataCtrl.data
         self._track.bodyColorCtrl.setColorTo(data.Track)
         self._track.borderColorCtrl.setColorTo(data.TrackBorder)
         self._fill.bodyColorCtrl.setColorsTo(data.FillAreaStart, data.FillAreaEnd)
@@ -542,9 +467,9 @@ class ZSlider(QWidget):
         #更新值/更新滑块位置
         if self.isHorizontal:
             handle_pos = QPoint(self._percentage * self._track_length, 0)
-            self._handle.locationCtrl.moveTo(handle_pos)
+            self._handle.positionCtrl.moveTo(handle_pos)
         else:
-            self._handle.locationCtrl.moveTo(0, self._track_length - self._percentage * self._track_length)
+            self._handle.positionCtrl.moveTo(0, self._track_length - self._percentage * self._track_length)
 
 
     def _update_fill(self):
@@ -570,10 +495,9 @@ class ZSlider(QWidget):
         if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
         painter.end()
 
-    # region keyPressEvent
     def keyPressEvent(self, event: QKeyEvent):
-        if self.isHorizontal and (event.key() == Qt.Key_Left or event.key() == Qt.Key_Right):
-            step = -1 if event.key() == Qt.Key_Left else 1
+        if self.isHorizontal and (event.key() == Qt.Key.Key_Left or event.key() == Qt.Key.Key_Right):
+            step = -1 if event.key() == Qt.Key.Key_Left else 1
             self.stepValue(step)
             ZGlobal.tooltip.showTip(
                 text=self.displayValue,
@@ -581,8 +505,8 @@ class ZSlider(QWidget):
                 mode=ZGlobal.tooltip.Mode.TrackTarget,
                 position=ZPosition.Top,
                 hide_delay=1000)
-        elif self.isVertical and (event.key() == Qt.Key_Up or event.key() == Qt.Key_Down):
-            step = 1 if event.key() == Qt.Key_Up else -1
+        elif self.isVertical and (event.key() == Qt.Key.Key_Up or event.key() == Qt.Key.Key_Down):
+            step = 1 if event.key() == Qt.Key.Key_Up else -1
             self.stepValue(step)
             ZGlobal.tooltip.showTip(
                 text=self.displayValue,
@@ -592,10 +516,9 @@ class ZSlider(QWidget):
                 hide_delay=1000)
         event.accept()
 
-    # region mouseEvent
     def mousePressEvent(self, event: QMouseEvent):
         super().mousePressEvent(event)
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             start = self._track_start
             end = self._track_end
             length = self._track_length
@@ -613,7 +536,6 @@ class ZSlider(QWidget):
             self._handle.enterEvent(None)
 
     def wheelEvent(self, event: QWheelEvent):
-        """处理鼠标滚轮事件"""
         steps = event.angleDelta().y() / 120
         self.stepValue(steps)
         if self.isHorizontal:
@@ -633,17 +555,12 @@ class ZSlider(QWidget):
         event.accept()
 
     def enterEvent(self, event):
-        """鼠标进入事件"""
         super().enterEvent(event)
-        # 开启鼠标追踪
         self.setMouseTracking(True)
-        # 设置焦点以接收滚轮事件
         self.setFocus()
 
     def leaveEvent(self, event):
-        """鼠标离开事件"""
         super().leaveEvent(event)
         self._handle.leaveEvent(None)
-        # 关闭鼠标追踪
         self.setMouseTracking(False)
         self.clearFocus()

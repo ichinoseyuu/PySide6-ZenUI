@@ -6,6 +6,7 @@ src/ZenUI.egg-info
 src/ZenUI/_legacy/
 zenui_gallery/image
 zenui_gallery/rc.qrc
+log/
 zenui.log
 
 *.pyc

@@ -13,6 +13,15 @@ class ZHBoxLayout(QHBoxLayout):
         self.setSpacing(spacing)
         if alignment: self.setAlignment(alignment)
 
+    def getAllWidgets(self) -> list[QWidget]:
+        """获取布局中所有的QWidget及其子类控件"""
+        widgets = []
+        for i in range(self.count()):
+            item = self.itemAt(i)
+            if item.widget():
+                widgets.append(item.widget())
+        return widgets
+
 class ZVBoxLayout(QVBoxLayout):
     def __init__(self,
                  parent: QWidget = None,
@@ -25,6 +34,15 @@ class ZVBoxLayout(QVBoxLayout):
         self.setSpacing(spacing)
         if alignment: self.setAlignment(alignment)
 
+    def getAllWidgets(self) -> list[QWidget]:
+        """获取布局中所有的QWidget及其子类控件"""
+        widgets = []
+        for i in range(self.count()):
+            item = self.itemAt(i)
+            if item.widget():
+                widgets.append(item.widget())
+        return widgets
+
 class ZGridLayout(QGridLayout):
     def __init__(self,
                  parent: QWidget = None,
@@ -36,3 +54,12 @@ class ZGridLayout(QGridLayout):
         self.setContentsMargins(margins)
         self.setSpacing(spacing)
         if alignment: self.setAlignment(alignment)
+
+    def getAllWidgets(self) -> list[QWidget]:
+        """获取布局中所有的QWidget及其子类控件"""
+        widgets = []
+        for i in range(self.count()):
+            item = self.itemAt(i)
+            if item.widget():
+                widgets.append(item.widget())
+        return widgets

@@ -77,7 +77,7 @@ class ColorController(QObject):
         super().__init__(parent)
         self._color: QColor = color
         self._anim = QPropertyAnimation(self, b'color')
-        self._anim.setDuration(250)
+        self._anim.setDuration(500)
         self._anim.setEasingCurve(QEasingCurve.Type.OutExpo)
 
 

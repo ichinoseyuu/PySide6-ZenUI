@@ -1,1 +1,0 @@
-from .richtextblock import ZRichTextBlock

@@ -18,60 +18,63 @@ from ZenUI.core import (
 class ZButton(ABCButton):
     bodyColorCtrl: ColorController
     borderColorCtrl: ColorController
-    textColorCtrl: ColorController
-    iconColorCtrl: ColorController
     radiusCtrl: FloatController
     opacityCtrl: OpacityController
+    textColorCtrl: ColorController
+    iconColorCtrl: ColorController
     styleDataCtrl: StyleController[ZButtonStyleData]
-    __controllers_kwargs__ = {
-        'styleDataCtrl':{
-            'key': 'ZButton'
-        },
-    }
+    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZButton'}}
+
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
                  text: str = None,
                  icon: QIcon = None
                  ):
-        super().__init__(parent)
+        super().__init__(parent=parent, font=QFont("Microsoft YaHei", 9))
         if name: self.setObjectName(name)
-
         self._text: str = None
         self._icon: QIcon = None
         self._icon_size = QSize(16, 16)
-        self._font = QFont("Microsoft YaHei", 9)
         self._spacing = 4
-        if text : self.text = text
-        if icon : self.icon = icon
-
+        if text : self._text = text
+        if icon : self._icon = icon
         self._init_style_()
         self.resize(self.sizeHint())
 
-    # region Property
+    # region public
     @property
     def text(self) -> str: return self._text
 
     @text.setter
-    def text(self, text: str) -> None:
-        self._text = text
+    def text(self, t: str) -> None:
+        self._text = t
         self.update()
+
+    def setText(self, t: str) -> None:
+        self.text = t
 
     @property
     def icon(self) -> QIcon: return self._icon
 
     @icon.setter
-    def icon(self, icon: QIcon) -> None:
-        self._icon = icon
+    def icon(self, i: QIcon) -> None:
+        self._icon = i
         self.update()
+
+    def setIcon(self, i: QIcon) -> None:
+        self.icon = i
 
     @property
     def iconSize(self) -> QSize: return self._icon_size
 
     @iconSize.setter
-    def iconSize(self, size: QSize) -> None:
-        self._icon_size = size
+    def iconSize(self, s: QSize) -> None:
+        self._icon_size = s
         self.update()
+
+    def setIconSize(self, s: QSize) -> None:
+        self.iconSize = s
 
     @property
     def spacing(self) -> int: return self._spacing
@@ -81,15 +84,9 @@ class ZButton(ABCButton):
         self._spacing = spacing
         self.update()
 
-    @property
-    def font(self) -> QFont: return self._font
+    def setSpacing(self, spacing: int) -> None:
+        self.spacing = spacing
 
-    @font.setter
-    def font(self, font: QFont) -> None:
-        self._font = font
-        self.update()
-
-    # region public
     def setEnabled(self, enable: bool) -> None:
         if enable == self.isEnabled(): return
         if enable: self.opacityCtrl.fadeTo(1.0)
@@ -111,7 +108,7 @@ class ZButton(ABCButton):
             return size
 
 
-    # region private
+    # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
@@ -132,14 +129,14 @@ class ZButton(ABCButton):
     # region slot
     def _hover_handler_(self):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
-        if self._tool_tip != "":
-            ZGlobal.tooltip.showTip(text=self._tool_tip,
+        if self._tooltip != "":
+            ZGlobal.tooltip.showTip(text=self._tooltip,
                         target=self,
                         position=ZPosition.TopRight,
                         offset=QPoint(6, 6))
     def _leave_handler_(self):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-        if self._tool_tip != "" or ZGlobal.tooltip.isShowing: ZGlobal.tooltip.hideTip()
+        if self._tooltip != "" or ZGlobal.tooltip.isShowing: ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyPressed)
@@ -158,9 +155,7 @@ class ZButton(ABCButton):
             QPainter.RenderHint.SmoothPixmapTransform
             )
         painter.setOpacity(self.opacityCtrl.opacity)
-
-        # 绘制背景和边框
-        rect = self.rect()
+        rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
         if self.bodyColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
@@ -171,17 +166,13 @@ class ZButton(ABCButton):
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(
                 QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),
-                radius,
-                radius
-            )
+                radius, radius
+                )
 
-        # 如果同时有图标和文本，绘制在一起
         if self._icon and self._text:
             total_width = self._icon_size.width() + self._spacing + \
                          self.fontMetrics().boundingRect(self._text).width()
-            start_x = (self.width() - total_width) // 2
-
-            # 绘制图标
+            start_x = (self.width() - total_width) / 2
             pixmap = self._icon.pixmap(self._icon_size)
             colored_pixmap = QPixmap(pixmap.size())
             colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
@@ -191,14 +182,12 @@ class ZButton(ABCButton):
             painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
             painter_pix.fillRect(colored_pixmap.rect(), self.iconColorCtrl.color)
             painter_pix.end()
-
             painter.drawPixmap(
                 start_x,
-                (self.height() - self._icon_size.height()) // 2,
+                (self.height() - self._icon_size.height()) / 2,
                 colored_pixmap
             )
-
-            painter.setFont(self._font)
+            painter.setFont(self.font())
             painter.setPen(self.textColorCtrl.color)
             text_rect = QRect(
                 start_x + self._icon_size.width() + self._spacing,
@@ -208,11 +197,8 @@ class ZButton(ABCButton):
             )
             painter.drawText(text_rect, Qt.AlignLeft | Qt.AlignVCenter, self._text)
 
-        # 只有图标
         elif self._icon:
-
             pixmap = self._icon.pixmap(self._icon_size)
-
             colored_pixmap = QPixmap(pixmap.size())
             colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
             colored_pixmap.fill(Qt.transparent)
@@ -221,16 +207,14 @@ class ZButton(ABCButton):
             painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
             painter_pix.fillRect(colored_pixmap.rect(), self.iconColorCtrl.color)
             painter_pix.end()
-
             painter.drawPixmap(
-                (self.width() - self._icon_size.width()) // 2,
-                (self.height() - self._icon_size.height()) // 2,
+                (self.width() - self._icon_size.width()) / 2,
+                (self.height() - self._icon_size.height()) / 2,
                 colored_pixmap
             )
 
-        # 只有文本
         elif self._text:
-            painter.setFont(self._font)
+            painter.setFont(self.font())
             painter.setPen(self.textColorCtrl.color)
             painter.drawText(rect, Qt.AlignCenter, self._text)
 

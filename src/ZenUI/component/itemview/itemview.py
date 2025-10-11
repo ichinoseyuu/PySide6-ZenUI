@@ -25,7 +25,7 @@ from ZenUI.core import (
     ZQuickEffect,
 )
 
-# region - ZItem
+# region ZItem
 class ZItem(ABCToggleButton):
     bodyColorCtrl: ColorController
     textColorCtrl: ColorController
@@ -34,11 +34,8 @@ class ZItem(ABCToggleButton):
     radiusCtrl: FloatController
     opacityCtrl: OpacityController
     styleDataCtrl: StyleController[ZItemStyleData]
-    __controllers_kwargs__ = {
-        'styleDataCtrl':{
-            'key': 'ZItem'
-        },
-    }
+    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZItem'}}
+
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
@@ -46,73 +43,78 @@ class ZItem(ABCToggleButton):
                  icon: QIcon = None,
                  checked: bool = False,
                  ):
-        super().__init__(parent)
+        super().__init__(parent=parent, font=QFont("Microsoft YaHei", 9))
         if name: self.setObjectName(name)
-        self.isGroupMember = True
-
+        self.setGroupMember(True)
         self._text: str = None
         self._icon: QIcon = None
         self._icon_size = QSize(16, 16)
-        self._font = QFont("Microsoft YaHei", 9)
         self._indicator_width = 3
         self._padding = ZPadding(4, 4, 16, 4)
         self._spacing = 6
-        if text : self.text = text
-        if icon : self.icon = icon
+        if text : self._text = text
+        if icon : self._icon = icon
         if checked: self._checked = checked
 
         self._init_style_()
         self.resize(self.sizeHint())
 
-    # region property
+    # region public method
     @property
     def text(self) -> str: return self._text
 
     @text.setter
-    def text(self, text: str) -> None:
-        self._text = text
+    def text(self, t: str) -> None:
+        self._text = t
         self.update()
+
+    def setText(self, t: str) -> None:
+        self.text = t
 
     @property
     def icon(self) -> QIcon: return self._icon
 
     @icon.setter
-    def icon(self, icon: QIcon) -> None:
-        self._icon = icon
+    def icon(self, i: QIcon) -> None:
+        self._icon = i
         self.update()
+
+    def setIcon(self, i: QIcon) -> None:
+        self.icon = i
 
     @property
     def iconSize(self) -> QSize: return self._icon_size
 
     @iconSize.setter
-    def iconSize(self, size: QSize) -> None:
-        self._icon_size = size
+    def setIconSize(self, s: QSize) -> None:
+        self._icon_size = s
         self.update()
 
-    @property
-    def font(self) -> QFont: return self._font
-
-    @font.setter
-    def font(self, f: QFont) -> None:
-        self._font = f
-        self.update()
+    def setIconSize(self, s: QSize) -> None:
+        self.iconSize = s
 
     @property
     def spacing(self) -> int: return self._spacing
 
     @spacing.setter
-    def spacing(self, spacing: int) -> None:
-        self._spacing = spacing
+    def spacing(self, s: int) -> None:
+        self._spacing = s
         self.update()
+
+    def setSpacing(self, s: int) -> None:
+        self.spacing = s
 
     @property
     def padding(self) -> ZPadding: return self._padding
 
     @padding.setter
-    def padding(self, padding: ZPadding) -> None:
-        self._padding = padding
+    def padding(self, p: ZPadding) -> None:
+        self._padding = p
         self.update()
-    # region public
+
+    def setPadding(self, p: ZPadding) -> None:
+        self.padding = p
+
     def setEnabled(self, enable: bool) -> None:
         if enable == self.isEnabled(): return
         if enable: self.opacityCtrl.fadeTo(1.0)
@@ -138,7 +140,7 @@ class ZItem(ABCToggleButton):
         return QSize(self.width(), total_height)
 
 
-    # region private
+    # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
@@ -146,7 +148,7 @@ class ZItem(ABCToggleButton):
         self.iconColorCtrl.color = data.Icon
         self.indicatorColorCtrl.color = data.Indicator
         self.radiusCtrl.value = data.Radius
-        if self.checked:
+        if self._checked:
             self.indicatorColorCtrl.opaque()
         else:
             self.indicatorColorCtrl.transparent()
@@ -159,7 +161,7 @@ class ZItem(ABCToggleButton):
         self.bodyColorCtrl.setColorTo(data.Body)
         self.textColorCtrl.setColorTo(data.Text)
         self.iconColorCtrl.setColorTo(data.Icon)
-        if self.checked:
+        if self._checked:
             self.indicatorColorCtrl.toOpaque()
         else:
             self.indicatorColorCtrl.toTransparent()
@@ -183,7 +185,7 @@ class ZItem(ABCToggleButton):
         else:
             self.indicatorColorCtrl.toTransparent()
 
-   # region paintEvent
+   # region event
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(
@@ -202,7 +204,7 @@ class ZItem(ABCToggleButton):
             painter.drawRoundedRect(rect, radius, radius)
 
         # 绘制左侧指示器（仅当选中时）
-        if self.checked and self.indicatorColorCtrl.color.alpha() > 0:
+        if self._checked and self.indicatorColorCtrl.color.alpha() > 0:
             indicator_width = self._indicator_width
             indicator_rect = QRect(
                 self._padding.left,  # 左内边距作为起始位置
@@ -246,24 +248,21 @@ class ZItem(ABCToggleButton):
                     self._icon_size.width() + self._spacing,
                     0, 0, 0
                 )
-            painter.setFont(self._font)
+            painter.setFont(self.font())
             painter.setPen(self.textColorCtrl.color)
             painter.drawText(text_rect, Qt.AlignLeft | Qt.AlignVCenter, self._text)
 
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
 
-# region - ItemViewContent
+# region ItemViewContent
 class ItemViewContent(ZWidget):
     bodyColorCtrl: ColorController
     borderColorCtrl: ColorController
     radiusCtrl: FloatController
     styleDataCtrl: StyleController[ZItemViewStyleData]
-    __controllers_kwargs__ = {
-        'styleDataCtrl':{
-            'key': 'ZItemView'
-        },
-    }
+    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZItemView'}}
+
     def __init__(self, parent: QWidget, items: list[str]):
         super().__init__(parent)
         self._items: list[str] = items
@@ -318,7 +317,7 @@ class ItemViewContent(ZWidget):
         return super().parent()
 
 
-    # region private
+    # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
@@ -344,7 +343,7 @@ class ItemViewContent(ZWidget):
     def _item_clicked_handler_(self):
         checked_item = self._item_group.checkedButton()
         if isinstance(checked_item, ZItem):
-            self.parent().selected.emit(checked_item.text)
+            self.parent().selected.emit(checked_item._text)
         self.parent().opacityCtrl.fadeOut()
 
     # region event
@@ -367,7 +366,7 @@ class ItemViewContent(ZWidget):
             )
         painter.end()
 
-# region - ItemView
+# region ItemView
 class ZItemView(ZWidget):
     selected = Signal(str)
     sizeCtrl: WidgetSizeController
@@ -400,7 +399,6 @@ class ZItemView(ZWidget):
     @property
     def content(self): return self._content
 
-    @property
     def selectedItem(self): return self._content._item_group.checkedButton()
 
     def parent(self): return self._target

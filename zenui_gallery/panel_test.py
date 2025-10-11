@@ -18,6 +18,7 @@ class PanelTest(ZScrollPanel):
         self.content.layout().addWidget(self.title)
 
         card = DemoCard(self)
+        card.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         self.content.layout().addWidget(card)
 
         title = ZTextBlock(self, text= '测试')
@@ -27,23 +28,13 @@ class PanelTest(ZScrollPanel):
         container = ZVContainer(card)
         card.layout().addWidget(container)
 
-        self.combobox = ZComboBox(
-            parent=container,
-            name='combobox',
-            text='combobox',
-            options=['选项1', '选项2', '选项3'],
-            )
-        self.combobox.addItem('选项4')
-        self.combobox.addItem('选项5')
-        self.combobox.removeItem('选项3')
-        container.addWidget(self.combobox)
-        self.test_btn = ZButton(
-            parent=container,
-            name='test_btn',
-            text='测试按钮'
-            )
-        container.addWidget(self.test_btn)
-        self.test_btn.clicked.connect(self.test_btn_clicked)
+        self.lineedit = ZLineEdit(container, 'textbox')
+        container.addWidget(self.lineedit)
 
-    def test_btn_clicked(self):
-        self.combobox.removeItem('选项3')
+
+        self.logbtn = ZButton(container, 'logbtn', '关闭/打开日志')
+        self.logbtn.clicked.connect(self._logbtn_clicked)
+        container.addWidget(self.logbtn)
+
+    def _logbtn_clicked(self):
+        ZDebug.disableLogging()

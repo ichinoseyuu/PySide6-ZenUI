@@ -1,18 +1,18 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Property, QPoint, QPointF
 from typing import overload
-from ZenUI.core import ZExpAnimationRefactor
+from ZenUI.core import ZExpPropertyAnimation
 
-class PositionController(QObject):
-    '''位置控制器，用于控制父控件的位置变化'''
+class ZAnimatedPosition(QObject):
+    '''具有属性动画的位置控制器，直接作用于父 QWidget 的位置'''
     def __init__(self, parent:QWidget):
         super().__init__(parent)
-        self._anim = ZExpAnimationRefactor(self, "pos")
+        self._anim = ZExpPropertyAnimation(self, "pos")
         self._anim.setBias(1)
         self._anim.setFactor(0.2)
 
     @property
-    def animation(self) -> ZExpAnimationRefactor: return self._anim
+    def animation(self) -> ZExpPropertyAnimation: return self._anim
 
     def getPos(self) -> QPoint: return self.parent().pos()
 
@@ -33,15 +33,14 @@ class PositionController(QObject):
     def moveTo(self, *args) -> None:
         self._anim.stop()
         if len(args) == 1 and isinstance(args[0], QPoint):
-            pos = args[0]
-            self._anim.setStartValue(self.parent().pos())
-        elif len(args) == 2 and isinstance(args[0], int):
-            pos = QPoint(args[0], args[1])
-            self._anim.setStartValue(self.parent().pos())
-        elif len(args) == 2 and isinstance(args[0], QPoint):
-            pos = args[1]
+            self._anim.setEndValue(args[0])
+        elif len(args) == 2 and all(isinstance(arg, int) for arg in args):
+            self._anim.setEndValue(QPoint(args[0], args[1]))
+        elif len(args) == 2 and all(isinstance(arg, QPoint) for arg in args):
             self._anim.setStartValue(args[0])
-        self._anim.setEndValue(pos)
+            self._anim.setEndValue(args[1])
+        else:
+            raise TypeError("Invalid arguments")
         self._anim.start()
 
     def moveBy(self, dx: int, dy: int) -> None:
@@ -51,9 +50,7 @@ class PositionController(QObject):
             dy: y方向偏移量
         """
         self._anim.stop()
-        current_pos = self.parent().pos()
-        target_pos = QPoint(current_pos.x() + dx, current_pos.y() + dy)
-        self._anim.setStartValue(current_pos)
+        target_pos = self.parent().pos() + QPoint(dx, dy)
         self._anim.setEndValue(target_pos)
         self._anim.start()
 
@@ -62,17 +59,17 @@ class PositionController(QObject):
         return super().parent()
 
 
-class PointController(QObject):
-    '''位置控制器，用于控制位置变化'''
+class ZAnimatedPoint(QObject):
+    '''具有属性动画的坐标控制器'''
     def __init__(self, parent:QWidget, point: QPoint = QPoint(0, 0)):
         super().__init__(parent)
         self._point = point
-        self._anim = ZExpAnimationRefactor(self, "pos")
+        self._anim = ZExpPropertyAnimation(self, "pos")
         self._anim.setBias(1)
         self._anim.setFactor(0.2)
 
     @property
-    def animation(self) -> ZExpAnimationRefactor: return self._anim
+    def animation(self) -> ZExpPropertyAnimation: return self._anim
 
     def getPos(self) -> QPoint: return self._point
 
@@ -95,15 +92,14 @@ class PointController(QObject):
     def moveTo(self, *args) -> None:
         self._anim.stop()
         if len(args) == 1 and isinstance(args[0], QPoint):
-            pos = args[0]
-            self._anim.setStartValue(self._point)
-        elif len(args) == 2 and isinstance(args[0], int):
-            pos = QPoint(args[0], args[1])
-            self._anim.setStartValue(self._point)
-        elif len(args) == 2 and isinstance(args[0], QPoint):
-            pos = args[1]
+            self._anim.setEndValue(args[0])
+        elif len(args) == 2 and all(isinstance(arg, int) for arg in args):
+            self._anim.setEndValue(QPoint(args[0], args[1]))
+        elif len(args) == 2 and all(isinstance(arg, QPoint) for arg in args):
             self._anim.setStartValue(args[0])
-        self._anim.setEndValue(pos)
+            self._anim.setEndValue(args[1])
+        else:
+            raise TypeError("Invalid arguments")
         self._anim.start()
 
     def moveBy(self, dx: int, dy: int) -> None:
@@ -113,9 +109,7 @@ class PointController(QObject):
             dy: y方向偏移量
         """
         self._anim.stop()
-        current_pos = self._point
-        target_pos = QPoint(current_pos.x() + dx, current_pos.y() + dy)
-        self._anim.setStartValue(current_pos)
+        target_pos = self._point + QPoint(dx, dy)
         self._anim.setEndValue(target_pos)
         self._anim.start()
 
@@ -124,17 +118,17 @@ class PointController(QObject):
         return super().parent()
 
 
-class PointFController(QObject):
-    '''位置控制器，用于控制位置变化'''
+class ZAnimatedPointF(QObject):
+    '''具有属性动画的浮点坐标控制器'''
     def __init__(self, parent:QWidget, point: QPointF = QPointF(0, 0)):
         super().__init__(parent)
         self._point = point
-        self._anim = ZExpAnimationRefactor(self, "pos")
+        self._anim = ZExpPropertyAnimation(self, "pos")
         self._anim.setBias(1)
         self._anim.setFactor(0.2)
 
     @property
-    def animation(self) -> ZExpAnimationRefactor: return self._anim
+    def animation(self) -> ZExpPropertyAnimation: return self._anim
 
     def getPos(self) -> QPointF: return self._point
 
@@ -146,26 +140,25 @@ class PointFController(QObject):
 
 
     @overload
-    def moveTo(self, pos: QPointF) -> None: ...
+    def moveTo(self, pos: QPoint|QPointF) -> None: ...
 
     @overload
-    def moveTo(self, start: QPointF, end: QPointF) -> None: ...
+    def moveTo(self, start: QPoint|QPointF, end: QPoint|QPointF) -> None: ...
 
     @overload
     def moveTo(self, x:int|float, y:int|float) -> None: ...
 
     def moveTo(self, *args) -> None:
         self._anim.stop()
-        if len(args) == 1 and isinstance(args[0], QPointF):
-            pos = args[0]
-            self._anim.setStartValue(self._point)
-        elif len(args) == 2 and isinstance(args[0], int|float):
-            pos = QPointF(args[0], args[1])
-            self._anim.setStartValue(self._point)
-        elif len(args) == 2 and isinstance(args[0], QPointF):
-            pos = args[1]
+        if len(args) == 1 and isinstance(args[0], QPoint|QPointF):
+            self._anim.setEndValue(args[0])
+        elif len(args) == 2 and all(isinstance(arg, int|float) for arg in args):
+            self._anim.setEndValue(QPointF(args[0], args[1]))
+        elif len(args) == 2 and all(isinstance(arg, QPoint|QPointF) for arg in args):
             self._anim.setStartValue(args[0])
-        self._anim.setEndValue(pos)
+            self._anim.setEndValue(args[1])
+        else:
+            raise TypeError("Invalid arguments")
         self._anim.start()
 
     def moveBy(self, dx: int|float, dy: int|float) -> None:
@@ -175,9 +168,7 @@ class PointFController(QObject):
             dy: y方向偏移量
         """
         self._anim.stop()
-        current_pos = self._point
-        target_pos = QPointF(current_pos.x() + dx, current_pos.y() + dy)
-        self._anim.setStartValue(current_pos)
+        target_pos = self._point + QPointF(dx, dy)
         self._anim.setEndValue(target_pos)
         self._anim.start()
 

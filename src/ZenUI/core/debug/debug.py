@@ -25,6 +25,21 @@ class ZDebug:
         logger.setLevel(logging.INFO)
 
     @staticmethod
+    def toggleLogging():
+        """启用或禁用所有日志输出"""
+        logger = logging.getLogger()
+        if logger.level == logging.CRITICAL + 1:
+            logger.setLevel(logging.INFO)
+        else:
+            logger.setLevel(logging.CRITICAL + 1)
+
+    @staticmethod
+    def enableLogging():
+        """启用所有日志输出"""
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+
+    @staticmethod
     def _init_logging_():
         log_formatter = logging.Formatter(
             "-%(asctime)s [%(filename)s:%(lineno)d]-%(levelname)s: %(message)s",

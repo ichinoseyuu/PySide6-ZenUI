@@ -7,26 +7,19 @@ from demo_card import DemoCard
 class PanelWidget(ZScrollPanel):
     def __init__(self,parent = None,name ='PanelWidget'):
         super().__init__(parent, name)
-        self.setLayout(
-            ZVBoxLayout(
-                self,
-                margins = QMargins(40, 30, 40, 30),
-                spacing=30,
-                alignment=Qt.AlignmentFlag.AlignTop
-                )
-            )
+        self.setLayout(ZVBoxLayout(self, QMargins(40, 30, 40, 30), 30, Qt.AlignmentFlag.AlignTop))
         self._setup_ui()
 
     def _setup_ui(self):
-        title = ZTextBlock(self, 'title', '基础组件')
+        title = ZHeadLine(self, 'title', '基础组件', display_indicator=True)
         title.setFont(QFont('Microsoft YaHei', 20, QFont.Weight.Bold))
-        title.margins = QMargins(6, 0, 6, 6)
+        title.padding = ZPadding(6, 0, 6, 6)
         self.layout().addWidget(title)
 
         # region ZButton
-        title = ZTextBlock(self, text= '基本输入组件')
+        title = ZHeadLine(self, text= '基本输入组件', display_indicator=True)
         title.setFont(QFont('Microsoft YaHei', 14, QFont.Weight.Bold))
-        title.margins = QMargins(6, 6, 6, 6)
+        title.padding = ZPadding(6, 6, 6, 6)
         self.layout().addWidget(title)
 
         layout = ZHBoxLayout(
@@ -38,7 +31,7 @@ class PanelWidget(ZScrollPanel):
         card = DemoCard(self)
         layout.addWidget(card, stretch=0)
 
-        title = ZTextBlock(card, text= 'ZButton')
+        title = ZHeadLine(card, text= 'ZButton')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
@@ -101,7 +94,7 @@ class PanelWidget(ZScrollPanel):
         card = DemoCard(self)
         layout.addWidget(card, stretch=0)
 
-        title = ZTextBlock(card, text= 'ZToggleButton')
+        title = ZHeadLine(card, text= 'ZToggleButton')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
@@ -141,7 +134,7 @@ class PanelWidget(ZScrollPanel):
         card = DemoCard(self)
         layout.addWidget(card, stretch=0)
 
-        title = ZTextBlock(card, text= 'ZSwitch')
+        title = ZHeadLine(card, text= 'ZSwitch')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
@@ -162,14 +155,14 @@ class PanelWidget(ZScrollPanel):
         card = DemoCard(self)
         layout.addWidget(card, stretch=0)
 
-        title = ZTextBlock(card, text= 'ZReapeatButton')
+        title = ZHeadLine(card, text= 'ZReapeatButton')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
         container = ZHContainer(card)
         card.layout().addWidget(container)
 
-        info = ZTextBlock(container, text= '点击次数: 0')
+        info = ZHeadLine(container, text= '点击次数: 0')
         container.addWidget(info)
 
         self.repeat_btn = ZRepeatButton(
@@ -180,14 +173,14 @@ class PanelWidget(ZScrollPanel):
 
         container.addWidget(self.repeat_btn)
         self.repeat_btn.clicked.connect(
-            lambda: info.setText(f'点击次数: {self.repeat_btn.repeatCount()}')
+            lambda: info.setText(f'点击次数: {self.repeat_btn.repeatCount}')
             )
 
         # region ZComboBox
         card = DemoCard(self)
         layout.addWidget(card, stretch=0)
 
-        title = ZTextBlock(card, text= 'ZComboBox')
+        title = ZHeadLine(card, text= 'ZComboBox')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
@@ -213,7 +206,7 @@ class PanelWidget(ZScrollPanel):
         card = DemoCard(self)
         layout.addWidget(card, stretch=0)
 
-        title = ZTextBlock(card, text= 'ZLineEdit')
+        title = ZHeadLine(card, text= 'ZLineEdit')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
@@ -223,9 +216,6 @@ class PanelWidget(ZScrollPanel):
         self.lineedit_1 = ZLineEdit(
             parent=container,
             name='lineedit_1',
-            text='唱、跳、rap、篮球',
-            read_only=True,
-            selectable=False,
             minimumSize=QSize(300, 30)
         )
         container.addWidget(self.lineedit_1)
@@ -233,9 +223,7 @@ class PanelWidget(ZScrollPanel):
         self.lineedit_2 = ZLineEdit(
             parent=container,
             name='lineedit_2',
-             text='孩子，这并不好笑',
-            read_only=True,
-            selectable=True,
+            placeholder='带有提示文字的编辑框',
             minimumSize=QSize(300, 30)
         )
         container.addWidget(self.lineedit_2)
@@ -243,6 +231,9 @@ class PanelWidget(ZScrollPanel):
         self.lineedit_3 = ZLineEdit(
             parent=container,
             name='lineedit_3',
+            text='不能修改的编辑框',
+            read_only=True,
+            selectable=False,
             minimumSize=QSize(300, 30)
         )
         container.addWidget(self.lineedit_3)
@@ -250,7 +241,9 @@ class PanelWidget(ZScrollPanel):
         self.lineedit_4 = ZLineEdit(
             parent=container,
             name='lineedit_4',
-            placeholder='请输入你的名字',
+             text='不能修改但可以选中编辑框',
+            read_only=True,
+            selectable=True,
             minimumSize=QSize(300, 30)
         )
         container.addWidget(self.lineedit_4)
@@ -259,7 +252,7 @@ class PanelWidget(ZScrollPanel):
         card = DemoCard(self)
         layout.addWidget(card, stretch=0)
 
-        title = ZTextBlock(card, text= 'ZSlider')
+        title = ZHeadLine(card, text= 'ZSlider')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
@@ -363,60 +356,30 @@ class PanelWidget(ZScrollPanel):
 
 
         # region Text
-        title = ZTextBlock(self, text= '文本显示组件')
+        title = ZHeadLine(self, text= '文本显示组件', display_indicator=True)
         title.setFont(QFont('Microsoft YaHei', 14, QFont.Weight.Bold))
-        title.margins = QMargins(6, 6, 6, 6)
+        title.padding = ZPadding(6, 6, 6, 6)
         self.layout().addWidget(title)
 
         card = DemoCard(self)
         self.layout().addWidget(card)
 
-        title = ZTextBlock(card, text= 'ZTextBlock')
+        title = ZHeadLine(card, text= 'ZHeadLine')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
-        container = ZVContainer(card)
+        container = ZHContainer(card)
         card.layout().addWidget(container)
 
-        self.text_block_1 = ZTextBlock(container, name='text_block_1')
-        self.text_block_1.margins = QMargins(6, 0, 6, 0)
-        self.text_block_1.wrapMode = ZWrapMode.NoWrap
-        self.text_block_1.text = (
-            "PySide6 是 Qt 官方提供的 Python 模块，"
-            "它允许开发者使用 Python 编写跨平台 GUI 应用程序，"
-            "并提供了完整的 Qt 6.0+ 框架支持。"
-        )
-        container.addWidget(self.text_block_1)
+        self.headline_1 = ZHeadLine(container, name='headline_1')
+        self.headline_1.text = '标题'
+        container.addWidget(self.headline_1)
 
-        self.text_block_2 = ZTextBlock(container, name='text_block_2',selectable=True)
-        self.text_block_2.margins = QMargins(6, 6, 6, 6)
-        self.text_block_2.wrapMode = ZWrapMode.NoWrap
-        self.text_block_2.text = (
-            "PySide6 是 Qt 官方提供的 Python 模块，"
-            "它允许开发者使用 Python 编写跨平台 GUI 应用程序，"
-            "并提供了完整的 Qt 6.0+ 框架支持。"
-        )
-        container.addWidget(self.text_block_2)
+        self.headline_2 = ZHeadLine(container, name='headline_2', display_indicator=True)
+        self.headline_2.text = '带有指示器的标题'
+        container.addWidget(self.headline_2)
 
-        self.text_block_3 = ZTextBlock(container, name='text_block_3',selectable=True)
-        self.text_block_3.setMaximumWidth(400)
-        self.text_block_3.margins = QMargins(6, 6, 6, 6)
-        self.text_block_3.wrapMode = ZWrapMode.WordWrap
-        self.text_block_3.text = (
-            "PySide6 是 Qt 官方提供的 Python 模块，"
-            "它允许开发者使用 Python 编写跨平台 GUI 应用程序，"
-            "并提供了完整的 Qt 6.0+ 框架支持。"
-        )
-        container.addWidget(self.text_block_3)
-
-        self.text_block_4 = ZTextBlock(container, name='text_block_4',selectable=True)
-        self.text_block_4.setMaximumWidth(400)
-        self.text_block_4.margins = QMargins(6, 6, 6, 6)
-        self.text_block_4.wrapMode = ZWrapMode.WrapAnywhere
-        self.text_block_4.text = (
-            "PySide6 是 Qt 官方提供的 Python 模块，"
-            "它允许开发者使用 Python 编写跨平台 GUI 应用程序，"
-            "并提供了完整的 Qt 6.0+ 框架支持。"
-        )
-        container.addWidget(self.text_block_4)
+        self.headline_3 = ZHeadLine(container, name='headline_3',selectable=True)
+        self.headline_3.text = '可选中的标题'
+        container.addWidget(self.headline_3)
 

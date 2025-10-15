@@ -5,10 +5,10 @@ from PySide6.QtCore import Qt, QRectF, QPointF
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.abstract import ABCToggleButton
 from ZenUI.component.base import (
-    ColorController,
-    OpacityController,
-    PositionController,
-    FloatController,
+    QAnimatedColor,
+    ZAnimatedOpacity,
+    ZAnimatedPosition,
+    QAnimatedFloat,
     StyleController,
     ZWidget
 )
@@ -21,11 +21,11 @@ class SwitchStyle:
     HandleDiameter: int
     Margin: int
 
-
+# region SwitchHandle
 class SwitchHandle(ZWidget):
-    bodyColorCtrl: ColorController
-    positionCtrl: PositionController
-    scaleCtrl: FloatController
+    bodyColorCtrl: QAnimatedColor
+    positionCtrl: ZAnimatedPosition
+    scaleCtrl: QAnimatedFloat
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self.scale_nomal = 0.85
@@ -44,11 +44,11 @@ class SwitchHandle(ZWidget):
             painter.drawEllipse(center, scaled_radius, scaled_radius)
         painter.end()
 
-
+# region ZSwitch
 class ZSwitch(ABCToggleButton):
-    bodyColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    opacityCtrl: OpacityController
+    bodyColorCtrl: QAnimatedColor
+    borderColorCtrl: QAnimatedColor
+    opacityCtrl: ZAnimatedOpacity
     styleDataCtrl: StyleController[ZSwitchStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZSwitch'}}
 
@@ -73,7 +73,6 @@ class ZSwitch(ABCToggleButton):
     @property
     def handle(self): return self._handle
 
-    @property
     def isTurnOn(self) -> bool: return self._checked
 
     @property

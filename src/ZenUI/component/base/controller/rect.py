@@ -1,18 +1,18 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Property, QRect
 from typing import overload
-from ZenUI.core import ZExpAnimationRefactor
+from ZenUI.core import ZExpPropertyAnimation
 
-class GeometryController(QObject):
-    '''矩形控制器，用于控制父控件位置和尺寸变化'''
+class ZAnimatedGeometry(QObject):
+    '''具有属性动画的 Geometry 控制器，直接作用于父 QWidget'''
     def __init__(self, parent: QWidget):
         super().__init__(parent)
-        self._anim = ZExpAnimationRefactor(self, "rect")
+        self._anim = ZExpPropertyAnimation(self, "rect")
         self._anim.setBias(1)
         self._anim.setFactor(0.2)
 
     @property
-    def animation(self) -> ZExpAnimationRefactor: return self._anim
+    def animation(self) -> ZExpPropertyAnimation: return self._anim
 
     def getRect(self) -> QRect: return self.parent().geometry()
 
@@ -34,10 +34,8 @@ class GeometryController(QObject):
         self._anim.stop()
         if len(args) == 1 and isinstance(args[0], QRect):
             rect = args[0]
-            self._anim.setStartValue(self.parent().geometry())
         elif len(args) == 4 and all(isinstance(arg, int) for arg in args):
             rect = QRect(args[0], args[1], args[2], args[3])
-            self._anim.setStartValue(self.parent().geometry())
         elif len(args) == 2 and isinstance(args[0], QRect):
             rect = args[1]
             self._anim.setStartValue(args[0])
@@ -51,17 +49,17 @@ class GeometryController(QObject):
         return super().parent()
 
 
-class RectController(QObject):
-    '''QRect 控制器，用于控制 QRect 对象的变化'''
+class ZAnimatedRect(QObject):
+    '''具有属性动画的 QRect 控制器'''
     def __init__(self, parent: QWidget, rect: QRect = QRect(0, 0, 0, 0)):
         super().__init__(parent)
         self._rect = rect
-        self._anim = ZExpAnimationRefactor(self, "rect")
+        self._anim = ZExpPropertyAnimation(self, "rect")
         self._anim.setBias(1)
         self._anim.setFactor(0.2)
 
     @property
-    def animation(self) -> ZExpAnimationRefactor: return self._anim
+    def animation(self) -> ZExpPropertyAnimation: return self._anim
 
     def getRect(self) -> QRect: return self._rect
 
@@ -85,10 +83,8 @@ class RectController(QObject):
         self._anim.stop()
         if len(args) == 1 and isinstance(args[0], QRect):
             rect = args[0]
-            self._anim.setStartValue(self._rect)
         elif len(args) == 4 and all(isinstance(arg, int) for arg in args):
             rect = QRect(args[0], args[1], args[2], args[3])
-            self._anim.setStartValue(self._rect)
         elif len(args) == 2 and isinstance(args[0], QRect):
             rect = args[1]
             self._anim.setStartValue(args[0])

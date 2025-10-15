@@ -5,12 +5,12 @@ from PySide6.QtWidgets import QWidget,QApplication
 from ZenUI.component.abstract import ABCToggleButton
 from ZenUI.component.layout import ZVBoxLayout
 from ZenUI.component.base import (
-    ColorController,
-    FloatController,
-    OpacityController,
-    WindowOpacityController,
-    WidgetSizeController,
-    PositionController,
+    QAnimatedColor,
+    QAnimatedFloat,
+    ZAnimatedOpacity,
+    ZAnimatedWindowOpacity,
+    ZAnimatedWidgetSize,
+    ZAnimatedPosition,
     StyleController,
     ZWidget,
     ButttonGroup,
@@ -27,12 +27,12 @@ from ZenUI.core import (
 
 # region ZItem
 class ZItem(ABCToggleButton):
-    bodyColorCtrl: ColorController
-    textColorCtrl: ColorController
-    iconColorCtrl: ColorController
-    indicatorColorCtrl: ColorController
-    radiusCtrl: FloatController
-    opacityCtrl: OpacityController
+    bodyColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
+    textColorCtrl: QAnimatedColor
+    iconColorCtrl: QAnimatedColor
+    indicatorColorCtrl: QAnimatedColor
+    opacityCtrl: ZAnimatedOpacity
     styleDataCtrl: StyleController[ZItemStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZItem'}}
 
@@ -203,33 +203,34 @@ class ZItem(ABCToggleButton):
             painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
 
-        # 绘制左侧指示器（仅当选中时）
+        p = self._padding
+        fm = self.fontMetrics()
+        text_height = fm.height()
+        indicator_width = self._indicator_width
+        spacing = self._spacing
+        content_rect = rect.adjusted(p.left, p.top, -p.right, -p.bottom)
+        text_area_left = content_rect.left() + indicator_width + spacing
+
         if self._checked and self.indicatorColorCtrl.color.alpha() > 0:
-            indicator_width = self._indicator_width
-            indicator_rect = QRect(
-                self._padding.left,  # 左内边距作为起始位置
-                self._padding.top,   # 上内边距
-                indicator_width,  # 指示器宽度
-                rect.height() - self._padding.vertical-2 # 指示器高度（减去上下内边距）
-            )
+            indicator_h = max(2.0, min(content_rect.height(), text_height - fm.descent()))
+            indicator_y = content_rect.center().y() - indicator_h / 2
+            indicator_x = content_rect.left()
+            indicator_rect = QRectF(indicator_x, indicator_y, indicator_width, indicator_h)
             painter.setPen(Qt.NoPen)
             painter.setBrush(self.indicatorColorCtrl.color)
-            painter.drawRoundedRect(indicator_rect, indicator_width/2, indicator_width/2)
+            painter.drawRoundedRect(indicator_rect, indicator_width / 2, indicator_width / 2)
 
+        content_available_rect = QRect(
+            text_area_left,
+            content_rect.top(),
+            content_rect.width() - (text_area_left - content_rect.left()),
+            content_rect.height()
+        )
 
-        # 计算内容区域
-        content_left = self._padding.left + self._spacing + self._indicator_width
-        content_top = self._padding.top
-        content_right = rect.width() - self._padding.right + 1
-        content_bottom = rect.height() - self._padding.bottom
-        content_rect = QRect(content_left, content_top,
-                            content_right - content_left,
-                            content_bottom - content_top)
-
-        # 绘制图标和文本（合并处理）
         icon_draw = False
+        icon_right = content_available_rect.left()
         if self._icon:
-            icon_y = (content_rect.height() - self._icon_size.height()) // 2 + content_rect.top()
+            icon_y = (content_available_rect.height() - self._icon_size.height()) // 2 + content_available_rect.top()
             pixmap = self._icon.pixmap(self._icon_size)
             colored_pixmap = QPixmap(pixmap.size())
             colored_pixmap.fill(Qt.transparent)
@@ -237,17 +238,17 @@ class ZItem(ABCToggleButton):
                 p.drawPixmap(0, 0, pixmap)
                 p.setCompositionMode(QPainter.CompositionMode_SourceIn)
                 p.fillRect(colored_pixmap.rect(), self.iconColorCtrl.color)
-            painter.drawPixmap(content_rect.left(), icon_y, colored_pixmap)
+            painter.drawPixmap(content_available_rect.left(), icon_y, colored_pixmap)
             icon_draw = True
+            icon_right = content_available_rect.left() + self._icon_size.width() + spacing
 
-        # 绘制文本
         if self._text:
-            text_rect = content_rect
-            if icon_draw:
-                text_rect = text_rect.adjusted(
-                    self._icon_size.width() + self._spacing,
-                    0, 0, 0
-                )
+            text_rect = QRect(
+                icon_right if icon_draw else content_available_rect.left(),
+                content_available_rect.top(),
+                content_available_rect.width() - (icon_right - content_available_rect.left()),
+                content_available_rect.height()
+            )
             painter.setFont(self.font())
             painter.setPen(self.textColorCtrl.color)
             painter.drawText(text_rect, Qt.AlignLeft | Qt.AlignVCenter, self._text)
@@ -257,9 +258,9 @@ class ZItem(ABCToggleButton):
 
 # region ItemViewContent
 class ItemViewContent(ZWidget):
-    bodyColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    radiusCtrl: FloatController
+    bodyColorCtrl: QAnimatedColor
+    borderColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
     styleDataCtrl: StyleController[ZItemViewStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZItemView'}}
 
@@ -369,22 +370,14 @@ class ItemViewContent(ZWidget):
 # region ItemView
 class ZItemView(ZWidget):
     selected = Signal(str)
-    sizeCtrl: WidgetSizeController
-    positionCtrl: PositionController
-    opacityCtrl: WindowOpacityController
-    def __init__(self,
-                 target: QWidget,
-                 items: list[str]
-                 ):
-        super().__init__()
+    sizeCtrl: ZAnimatedWidgetSize
+    positionCtrl: ZAnimatedPosition
+    opacityCtrl: ZAnimatedWindowOpacity
+    def __init__(self, target: QWidget, items: list[str]):
+        super().__init__(f=Qt.WindowType.FramelessWindowHint|Qt.WindowType.Tool|Qt.WindowType.WindowStaysOnTopHint)
         self._target: QWidget = target
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         #self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
-        self.setWindowFlags(
-            Qt.WindowType.FramelessWindowHint|
-            Qt.WindowType.Tool|
-            Qt.WindowType.WindowStaysOnTopHint
-            )
         self._content = ItemViewContent(self, items)
         self._content.setFixedWidth(self._target.sizeHint().width())
         self._margin = ZMargin(8, 8, 8, 8)
@@ -399,7 +392,10 @@ class ZItemView(ZWidget):
     @property
     def content(self): return self._content
 
+    @property
     def selectedItem(self): return self._content._item_group.checkedButton()
+
+    def getSlectedItem(self): return self._content._item_group.checkedButton()
 
     def parent(self): return self._target
 

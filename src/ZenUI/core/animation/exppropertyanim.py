@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any,overload
 import numpy
 from PySide6.QtCore import *
 from PySide6.QtGui import *
@@ -36,7 +36,7 @@ class TypeConversionFuncs:
     }
 
 
-class ZExpAnimationRefactor(QAbstractAnimation):
+class ZExpPropertyAnimation(QAbstractAnimation):
     valueChanged = Signal(object)
 
     def __init__(self, target: QObject, property_name=None, parent=None) -> None:
@@ -48,6 +48,7 @@ class ZExpAnimationRefactor(QAbstractAnimation):
         self._property_type = None
         self._in_func = None
         self._out_func = None
+        self._start_value = None
         self._end_value = None
         self._current_value = None
         self.factor = 1/4
@@ -58,13 +59,15 @@ class ZExpAnimationRefactor(QAbstractAnimation):
 
         if property_name is not None:
             self.setPropertyName(property_name)
+        if target.objectName() == 'hslider_1':print(self._target.property(self._property_name))
+        self.finished.connect(self.resetStartValue)
 
 
-    def init(self, factor: float, bias: float, current_value, end_value) -> None:
-        self.factor = factor
-        self.bias = bias
-        self.setStartValue(current_value)
-        self.setEndValue(end_value)
+    def init(self, factor:float=None, bias:float=None, current_value=None, end_value=None) -> None:
+        if factor is not None: self.setFactor(factor)
+        if bias is not None: self.setBias(bias)
+        if current_value is not None: self.setStartValue(current_value)
+        if end_value is not None: self.setEndValue(end_value)
         self.resetVelocity()
 
 
@@ -138,6 +141,13 @@ class ZExpAnimationRefactor(QAbstractAnimation):
 
 
     def start(self, *args, **kwargs):
+        # new 2025.10.14
+        if self._start_value is None:
+            self.fromProperty()
+            # if self._property_name == 'pos':
+            #     import logging
+            #     logging.info(f"===========================================")
+            #     print(f"{self._target.__class__.__name__}.{self._property_name}:{self._current_value}->{self._end_value}")
         # Add check for equal start and end values
         if (self._current_value == self._end_value).all():
             # If current value equals end value, do not start the animation
@@ -176,12 +186,21 @@ class ZExpAnimationRefactor(QAbstractAnimation):
 
 
     def setStartValue(self, value: Any) -> None:
+        # if isinstance(value, self._property_type):
+        #     self._current_value = self._in_func(value)
+        # else:
+        #     self._current_value = numpy.array(value)
+        # self.valueChanged.emit(self._current_value)
         if isinstance(value, self._property_type):
-            self._current_value = self._in_func(value)
+            self._start_value = self._in_func(value)
         else:
-            self._current_value = numpy.array(value)
+            self._start_value = numpy.array(value)
+        self._current_value = self._start_value.copy()
         self.valueChanged.emit(self._current_value)
 
+    def resetStartValue(self) -> None:
+        """重置起始值为无效状态"""
+        self._start_value = None
 
     def resetVelocity(self):
         self._velocity = 0 * self._current_value

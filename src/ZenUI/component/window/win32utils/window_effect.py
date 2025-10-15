@@ -4,7 +4,7 @@ import win32api
 import win32con
 import win32gui
 from ctypes import POINTER, byref, c_bool, c_int, pointer, sizeof, WinDLL, windll, c_long,c_void_p
-from ctypes.wintypes import DWORD, LONG, LPCVOID
+from ctypes.wintypes import DWORD, LONG, LPCVOID, HRGN, UINT
 from PySide6.QtGui import QColor
 from .c_structures import (ACCENT_STATE, DWMNCRENDERINGPOLICY,WINDOWCOMPOSITIONATTRIB,DWMWINDOWATTRIBUTE,
                            MARGINS,ACCENT_POLICY,WINDOWCOMPOSITIONATTRIBDATA, DWM_BLURBEHIND)
@@ -25,6 +25,10 @@ class WindowsWindowEffect:
         self.DwmExtendFrameIntoClientArea = self.dwmapi.DwmExtendFrameIntoClientArea
         self.DwmEnableBlurBehindWindow = self.dwmapi.DwmEnableBlurBehindWindow
         self.DwmSetWindowAttribute = self.dwmapi.DwmSetWindowAttribute
+
+        self.RedrawWindow = self.user32.RedrawWindow
+        self.RedrawWindow.argtypes = [c_int, HRGN, HRGN, UINT]
+        self.RedrawWindow.restype = BOOL
 
         # 设置函数返回值类型
         self.SetWindowCompositionAttribute.restype = c_bool
@@ -60,6 +64,26 @@ class WindowsWindowEffect:
         self.accentPolicy.AccentFlags = DWORD(0)
         self.accentPolicy.AnimationId = DWORD(0)
 
+        self.winCompAttrData.Attribute = WINDOWCOMPOSITIONATTRIB.WCA_ACCENT_POLICY.value
+        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
+
+    def RepaintWindow(self, hWnd):
+        """触发窗口重绘"""
+        hWnd = int(hWnd)
+        # 参数说明：
+        # 1. 窗口句柄
+        # 2. 重绘区域（None 表示整个窗口）
+        # 3. 裁剪区域（None 表示无裁剪）
+        # 4. 重绘标志（RDW_INVALIDATE 标记区域为无效，RDW_UPDATENOW 立即重绘）
+        self.RedrawWindow(hWnd, None, None, 0x0001 | 0x0100)  # RDW_INVALIDATE | RDW_UPDATENOW
+
+    def removeBackgroundColor(self, hWnd):
+        """移除窗口背景颜色"""
+        hWnd = int(hWnd)
+        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_GRADIENT.value
+        self.accentPolicy.GradientColor = DWORD(0)
+        self.accentPolicy.AccentFlags = DWORD(0)
+        self.accentPolicy.AnimationId = DWORD(0)
         self.winCompAttrData.Attribute = WINDOWCOMPOSITIONATTRIB.WCA_ACCENT_POLICY.value
         self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
 

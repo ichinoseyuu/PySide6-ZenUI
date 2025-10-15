@@ -6,13 +6,11 @@ from ZenUI import *
 class PanelAbout(ZPanel):
     def __init__(self,parent = None,name ='PanelAbout'):
         super().__init__(parent = parent, name=name)
-        self.setLayout(ZVBoxLayout(self, margins = QMargins(40, 30, 40, 30),spacing=30))
+        self.setLayout(ZVBoxLayout(self, QMargins(40, 30, 40, 30), 30, Qt.AlignmentFlag.AlignTop))
         self._setup_ui()
 
     def _setup_ui(self):
-        self.text = ZTextBlock(parent=self,
-                                 name='text',
-                                 text='关于')
+        self.text = ZHeadLine(parent=self, name='text', text='关于', display_indicator=True)
         self.text.setFont(QFont('Microsoft YaHei', 20, QFont.Bold))
-        self.text.margins = QMargins(6, 0, 6, 6)
+        self.text.padding = ZPadding(6, 0, 6, 6)
         self.layout().addWidget(self.text)

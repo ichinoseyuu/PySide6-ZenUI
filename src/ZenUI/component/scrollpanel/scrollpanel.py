@@ -3,23 +3,23 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.itemview import ZItemView
 from ZenUI.component.base import (
-    PositionController,
-    ColorController,
-    FloatController,
+    ZAnimatedPosition,
+    QAnimatedColor,
+    QAnimatedFloat,
     StyleController,
     ZWidget
 )
 from ZenUI.core import (
     ZScrollPanelStyleData,
     ZDebug,
-    ZExpAnimationRefactor,
+    ZExpPropertyAnimation,
     ZDirection,
     ZState
 )
 # region ScrollContent
 class ScrollContent(ZWidget):
     resized = Signal()
-    positionCtrl: PositionController
+    positionCtrl: ZAnimatedPosition
 
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
@@ -30,10 +30,10 @@ class ScrollContent(ZWidget):
 
 # region ScrollHandle
 class ScrollHandle(ZWidget):
-    bodyColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    radiusCtrl: FloatController
-    positionCtrl: PositionController
+    bodyColorCtrl: QAnimatedColor
+    borderColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
+    positionCtrl: ZAnimatedPosition
 
     def __init__(self,parent: QWidget = None, direction = ZDirection.Vertical):
         super().__init__(parent)
@@ -45,8 +45,8 @@ class ScrollHandle(ZWidget):
         self._handle_width: int = 2
         self._handle_width_min: int = 2
         self._handle_width_max: int = 6
-        self._length_anim = ZExpAnimationRefactor(self, "handleLength")
-        self._width_anim = ZExpAnimationRefactor(self, "handleWidth")
+        self._length_anim = ZExpPropertyAnimation(self, "handleLength")
+        self._width_anim = ZExpPropertyAnimation(self, "handleWidth")
         self._width_anim.setBias(0.5)
         self._width_anim.setFactor(0.2)
         self._trans_timer = QTimer(self)
@@ -62,21 +62,21 @@ class ScrollHandle(ZWidget):
         self.borderColorCtrl.transparent()
 
     # region property
-    @Property(int)
-    def handleLength(self): return self.height() if self._dir == ZDirection.Vertical else self.width()
+    def getHandleLength(self): return self.height() if self._dir == ZDirection.Vertical else self.width()
 
-    @handleLength.setter
-    def handleLength(self, value):
+    def setHandleLength(self, value):
         self.setFixedHeight(value) if self._dir == ZDirection.Vertical else self.setFixedWidth(value)
 
-    @Property(int)
-    def handleWidth(self): return self._handle_width
+    handleLength: int = Property(int, getHandleLength, setHandleLength)
 
-    @handleWidth.setter
-    def handleWidth(self, value):
+    def getHandleWidth(self): return self._handle_width
+
+    def setHandleWidth(self, value):
         self._handle_width = value
         self.radiusCtrl.value = value / 2
         self.update()
+
+    handleWidth: int = Property(int, getHandleWidth, setHandleWidth)
 
     # region public
     def setHandleLengthTo(self, value):
@@ -177,10 +177,10 @@ class ScrollHandle(ZWidget):
 
 # region ZScrollPanel
 class ZScrollPanel(ZWidget):
-    bodyColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    radiusCtrl: FloatController
-    positionCtrl: PositionController
+    bodyColorCtrl: QAnimatedColor
+    borderColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
+    positionCtrl: ZAnimatedPosition
     styleDataCtrl: StyleController[ZScrollPanelStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZScrollPanel'}}
 
@@ -293,6 +293,7 @@ class ZScrollPanel(ZWidget):
 
     # region private
     def _init_style_(self):
+        self._update_handles_and_content()
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
         self.borderColorCtrl.color = data.Border
@@ -330,10 +331,7 @@ class ZScrollPanel(ZWidget):
             if (self._last_v_handle_pos != handle_pos):
                 self._handle_v.opaque()
             self._last_v_handle_pos = handle_pos
-            self._handle_v.positionCtrl.moveTo(
-                self.width() - self._handle_v.width(),
-                handle_pos
-                )
+            self._handle_v.positionCtrl.moveTo(self.width() - self._handle_v.width(),int(handle_pos))
         content_width = self._content.width()
         viewport_width = self.width()
         max_scroll_x = content_width - (viewport_width - self._handle_v.width())
@@ -345,10 +343,7 @@ class ZScrollPanel(ZWidget):
             if (self._last_h_handle_pos != handle_pos):
                 self._handle_h.opaque()
             self._last_h_handle_pos = handle_pos
-            self._handle_h.positionCtrl.moveTo(
-                int(handle_pos),
-                self.height() - self._handle_h.height()
-                )
+            self._handle_h.positionCtrl.moveTo(int(handle_pos),self.height() - self._handle_h.height())
 
 
     def _update_handles_and_content(self):
@@ -378,10 +373,7 @@ class ZScrollPanel(ZWidget):
         self._last_v_handle_len = handle_h
         self._handle_v.setHandleLengthTo(handle_h)
         self._handle_v.move(self.width() - self._handle_v.width(), self._handle_v.y())
-        self._handle_v.positionCtrl.moveTo(
-            self.width() - self._handle_v.width(),
-            handle_pos
-        )
+        self._handle_v.positionCtrl.moveTo(self.width() - self._handle_v.width(),int(handle_pos))
 
 
     def _update_horizontal_handle(self, cw, vw):
@@ -392,7 +384,7 @@ class ZScrollPanel(ZWidget):
             return
         content_visible_ratio = -self._content.x() / cw
         new_scroll_pos = max(0, min(int(content_visible_ratio * cw), max_scroll))
-        self._content.locationCtrl.moveTo(new_scroll_pos, self._content.y())
+        self._content.positionCtrl.moveTo(new_scroll_pos, self._content.y())
         handle_w = max(30, vw * min(1.0, vw / cw))
         handle_space = vw - handle_w
         handle_pos: int = (new_scroll_pos / max_scroll) * handle_space
@@ -404,7 +396,4 @@ class ZScrollPanel(ZWidget):
         self._last_h_handle_len = handle_w
         self._handle_h.setHandleLengthTo(handle_w)
         self._handle_h.move(self._handle_h.x(), self.height() - self._handle_h.height())
-        self._handle_h.positionCtrl.moveTo(
-            int(handle_pos),
-            self.height() - self._handle_h.height()
-        )
+        self._handle_h.positionCtrl.moveTo(int(handle_pos),self.height() - self._handle_h.height())

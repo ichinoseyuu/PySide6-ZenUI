@@ -6,15 +6,14 @@ __all__ = [
     'ZFramelessWindowStyleData',
     'ZButtonStyleData',
     'ZTitleBarButtonStyleData',
-    'ZTextBlockStyleData',
+    'ZHeadLineStyleData',
     'ZToolTipStyleData',
     'ZToggleButtonStyleData',
     'ZNavBarButtonStyleData',
     'ZNavBarToggleButtonStyleData',
     'ZScrollPanelStyleData',
     'ZSliderStyleData',
-    'ZTextBoxStyleData',
-    'ZRichTextBlockStyleData',
+    'ZLineEditStyleData',
     'ZPanelStyleData',
     'ZSwitchStyleData',
     'ZNavigationBarStyleData',
@@ -118,23 +117,16 @@ class ZToolTipStyleData:
     Radius: float = None
 
 @dataclass
-class ZTextBlockStyleData:
+class ZHeadLineStyleData:
     Text: QColor = None
     TextBackSectcted: QColor = None
+    Indicator: QColor = None
     Body: QColor = None
     Border: QColor = None
     Radius: float = None
 
 @dataclass
-class ZRichTextBlockStyleData:
-    Text: QColor = None
-    TextBackSectcted: QColor = None
-    Body: QColor = None
-    Border: QColor = None
-    Radius: float = None
-
-@dataclass
-class ZTextBoxStyleData:
+class ZLineEditStyleData:
     Text: QColor = None
     TextBackSectcted: QColor = None
     Cursor: QColor = None
@@ -188,15 +180,14 @@ StyleDataUnion = Union[
     ZButtonStyleData,
     ZTitleBarButtonStyleData,
     ZFramelessWindowStyleData,
-    ZTextBlockStyleData,
+    ZHeadLineStyleData,
     ZToolTipStyleData,
     ZToggleButtonStyleData,
     ZNavBarButtonStyleData,
     ZNavBarToggleButtonStyleData,
     ZScrollPanelStyleData,
     ZSliderStyleData,
-    ZTextBoxStyleData,
-    ZRichTextBlockStyleData,
+    ZLineEditStyleData,
     ZPanelStyleData,
     ZSwitchStyleData,
     ZNavigationBarStyleData,

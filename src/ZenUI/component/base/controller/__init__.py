@@ -1,7 +1,7 @@
-from .color import ColorController, LinearGradientController, WindowBackgroundController
-from .position import PositionController, PointController, PointFController
-from .rect import GeometryController, RectController
-from .opacity import OpacityController, WindowOpacityController
-from .size import WidgetSizeController, SizeController
-from .value import FloatController, IntegerController
+from .color import QAnimatedColor, QAnimatedLinearGradient, QAnimatedWindowBody
+from .position import ZAnimatedPosition, ZAnimatedPoint, ZAnimatedPointF
+from .rect import ZAnimatedGeometry, ZAnimatedRect
+from .opacity import ZAnimatedOpacity, ZAnimatedWindowOpacity
+from .size import ZAnimatedWidgetSize, ZAnimatedSize
+from .value import QAnimatedFloat, QAnimatedInt
 from .styledata import StyleController

@@ -2,7 +2,7 @@
 from PySide6.QtCore import QEvent, Qt, QPoint,QMargins
 from PySide6.QtGui import QIcon,QPainter
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
-from ZenUI.component.textblock import ZTextBlock
+from ZenUI.component.headline import ZHeadLine
 from ZenUI.core import ZGlobal,ZDebug
 from ..win32utils import startSystemMove, toggleWindowState
 from .abctitlebarbutton import ZABCTitleBarButton
@@ -114,8 +114,7 @@ class ZTitleBar(ZTitleBarBase):
         self.hBoxLayout.insertWidget(1, self.iconLabel, 0, Qt.AlignLeft|Qt.AlignVCenter)
         self.window().windowIconChanged.connect(self.setIcon)
 
-        self.title = ZTextBlock(self)
-        self.title.margins = QMargins(6, 0, 0, 0)
+        self.title = ZHeadLine(self)
         self.hBoxLayout.insertWidget(2, self.title, 0, Qt.AlignLeft|Qt.AlignVCenter)
         self.window().windowTitleChanged.connect(self.setTitle)
 

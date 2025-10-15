@@ -1,12 +1,13 @@
+from typing import overload
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject,QPropertyAnimation,QEasingCurve,Property
 from PySide6.QtGui import QColor
-from ZenUI.core import ZDirection
+from ZenUI.core import ZDirection,ZExpPropertyAnimation
 from typing import TYPE_CHECKING
 if TYPE_CHECKING: from ZenUI.component.window.framelesswindow import ZFramelessWindow
-
-class WindowBackgroundController(QObject):
-    '''窗口背景颜色控制器'''
+# region QAnimatedWindowBody
+class QAnimatedWindowBody(QObject):
+    '''具有原生属性动画的窗口背景控制器，直接作用于 windows 系统的窗口'''
     def __init__(self, window: 'ZFramelessWindow', color: QColor = QColor('#202020')):
         super().__init__(window)
         self._color: QColor = color
@@ -25,11 +26,21 @@ class WindowBackgroundController(QObject):
 
     color: QColor = Property(QColor, getColor, setColor)
 
+    @overload
+    def setColorTo(self, color: QColor): ...
 
-    def setColorTo(self, value: QColor) -> None:
+    @overload
+    def setColorTo(self, start: QColor, end: QColor): ...
+
+    def setColorTo(self, *args):
         self._anim.stop()
-        self._anim.setStartValue(self._color)
-        self._anim.setEndValue(value)
+        if len(args) == 1 and isinstance(args[0], QColor):
+            self._anim.setEndValue(args[0])
+        elif len(args) == 2 and all(isinstance(arg, QColor) for arg in args):
+            self._anim.setStartValue(args[0])
+            self._anim.setEndValue(args[1])
+        else:
+            raise TypeError('args must be QColor or (QColor, QColor)')
         self._anim.start()
 
 
@@ -71,8 +82,9 @@ class WindowBackgroundController(QObject):
     def parent(self) -> 'ZFramelessWindow':
         return super().parent()
 
-class ColorController(QObject):
-    '''颜色控制器，用于控制颜色变化'''
+# region QAnimatedColor
+class QAnimatedColor(QObject):
+    '''具有原生属性动画的颜色控制器'''
     def __init__(self, parent: QWidget, color: QColor = QColor('#202020')):
         super().__init__(parent)
         self._color: QColor = color
@@ -93,10 +105,21 @@ class ColorController(QObject):
     color: QColor = Property(QColor, getColor, setColor)
 
 
-    def setColorTo(self, value: QColor) -> None:
+    @overload
+    def setColorTo(self, color: QColor): ...
+
+    @overload
+    def setColorTo(self, start: QColor, end: QColor): ...
+
+    def setColorTo(self, *args):
         self._anim.stop()
-        self._anim.setStartValue(self._color)
-        self._anim.setEndValue(value)
+        if len(args) == 1 and isinstance(args[0], QColor):
+            self._anim.setEndValue(args[0])
+        elif len(args) == 2 and all(isinstance(arg, QColor) for arg in args):
+            self._anim.setStartValue(args[0])
+            self._anim.setEndValue(args[1])
+        else:
+            raise TypeError('args must be QColor or (QColor, QColor)')
         self._anim.start()
 
 
@@ -138,9 +161,88 @@ class ColorController(QObject):
     def parent(self) -> QWidget:
         return super().parent()
 
+# region ZAnimatedColor
+class ZAnimatedColor(QObject):
+    '''具有原生属性动画的颜色控制器'''
+    def __init__(self, parent: QWidget, color: QColor = QColor('#202020')):
+        super().__init__(parent)
+        self._color: QColor = color
+        self._anim = ZExpPropertyAnimation(self, 'color')
+        self._anim.setBias(1)
+        self._anim.setFactor(0.2)
 
-class LinearGradientController(QObject):
-    '''线性渐变控制器，用于控制线性渐变颜色变化'''
+
+    @property
+    def animation(self) -> ZExpPropertyAnimation: return self._anim
+
+    def getColor(self) -> QColor: return self._color
+
+    def setColor(self, value: QColor):
+        self._color = value
+        self.parent().update()
+
+    color: QColor = Property(QColor, getColor, setColor)
+
+
+    @overload
+    def setColorTo(self, color: QColor): ...
+
+    @overload
+    def setColorTo(self, start: QColor, end: QColor): ...
+
+    def setColorTo(self, *args):
+        self._anim.stop()
+        if len(args) == 1 and isinstance(args[0], QColor):
+            self._anim.setEndValue(args[0])
+        elif len(args) == 2 and all(isinstance(arg, QColor) for arg in args):
+            self._anim.setStartValue(args[0])
+            self._anim.setEndValue(args[1])
+        else:
+            raise TypeError('args must be QColor or (QColor, QColor)')
+        self._anim.start()
+
+
+    def transparent(self):
+        target = QColor(self._color)
+        target.setAlpha(0)
+        self.setColor(target)
+
+    def toTransparent(self):
+        target = QColor(self._color)
+        target.setAlpha(0)
+        self.setColorTo(target)
+
+
+    def opaque(self):
+        target = QColor(self._color)
+        target.setAlpha(255)
+        self.setColor(target)
+
+    def toOpaque(self):
+        target = QColor(self._color)
+        target.setAlpha(255)
+        self.setColorTo(target)
+
+
+    def setAlpha(self, alpha: int) -> None:
+        target = QColor(self._color)
+        target.setAlpha(alpha)
+        self.setColor(target)
+
+    def setAlphaTo(self, alpha: int) -> None:
+        target = QColor(self._color)
+        target.setAlpha(alpha)
+        self.setColorTo(target)
+
+    def stopAnimation(self) -> None:
+        self._anim.stop()
+
+    def parent(self) -> QWidget:
+        return super().parent()
+
+# region QAnimatedLinearGradient
+class QAnimatedLinearGradient(QObject):
+    '''具有原生属性动画的线性渐变颜色控制器'''
     def __init__(self, parent: QWidget, startColor: QColor = QColor('#202020'), endColor: QColor = QColor('#202020')):
         super().__init__(parent)
         self._color1: QColor = startColor
@@ -215,15 +317,14 @@ class LinearGradientController(QObject):
     colorEnd: QColor = Property(QColor, getColorEnd, setColorEnd)
 
 
+
     def setColorStartTo(self, value: QColor) -> None:
         self._anim1.stop()
-        self._anim1.setStartValue(self._color1)
         self._anim1.setEndValue(value)
         self._anim1.start()
 
     def setColorEndTo(self, value: QColor) -> None:
         self._anim2.stop()
-        self._anim2.setStartValue(self._color2)
         self._anim2.setEndValue(value)
         self._anim2.start()
 
@@ -234,8 +335,6 @@ class LinearGradientController(QObject):
     def setColorsTo(self, start: QColor, end: QColor) -> None:
         self._anim1.stop()
         self._anim2.stop()
-        self._anim1.setStartValue(self._color1)
-        self._anim2.setStartValue(self._color2)
         self._anim1.setEndValue(start)
         self._anim2.setEndValue(end)
         self._anim1.start()

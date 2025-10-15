@@ -70,8 +70,6 @@ class ZenUIGallery(ZStandardFramelessWindow):
 
 
 
-
-
 if __name__ == '__main__':
     # enable dpi scale
     # QApplication.setHighDpiScaleFactorRoundingPolicy( #  设置高DPI缩放因子的舍入策略为直接传递，不进行任何处理

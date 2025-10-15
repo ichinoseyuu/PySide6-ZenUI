@@ -8,7 +8,11 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QResizeEvent
 from ZenUI.core import ZGlobal,ZFramelessWindowStyleData
 from ZenUI.component.tooltip import ZToolTip
-from ZenUI.component.base import StyleController,WindowBackgroundController
+from ZenUI.component.base import (
+    StyleController,
+    QAnimatedWindowBody,
+    ZWidget
+)
 from .titlebar import ZTitleBar
 from .win32utils import (
     WindowsWindowEffect,
@@ -19,35 +23,28 @@ from .win32utils import (
     isMaximized,
     isFullScreen,
     getResizeBorderThickness
-    )
+)
 
 # region ZFramelessWindow
-class ZFramelessWindow(QWidget):
+class ZFramelessWindow(ZWidget):
     BORDER_WIDTH = 6
+    backgroundColorCtrl: QAnimatedWindowBody
+    styleDataCtrl: StyleController[ZFramelessWindowStyleData]
+    __controllers_kwargs__ = {'styleDataCtrl': {'key': 'ZFramelessWindow'}}
+
     def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
-        self.setStyleSheet('background-color: transparent;')
+        super().__init__(parent=parent,f=Qt.WindowType.FramelessWindowHint,styleSheet='background-color: transparent;')
         self._resizable = True
         self._windowEffect = WindowsWindowEffect(self)
         self._windowEffect.addWindowAnimation(self.winId())
         self._windowEffect.addShadowEffect(self.winId())
+        self._windowEffect.setBorderAccentColor(self.winId(),getSystemAccentColor())
         self.windowHandle().screenChanged.connect(self.__onScreenChanged)
-
-        self._backgroundColorCtrl = WindowBackgroundController(self)
-        self._styleDataCtrl = StyleController[ZFramelessWindowStyleData](self, 'ZFramelessWindow')
-        self._styleDataCtrl.styleChanged.connect(self._style_change_handler_)
         self._init_style_()
 
-    # region Property
+    # region public
     @property
     def windowEffect(self): return self._windowEffect
-
-    @property
-    def backgroundColorCtrl(self): return self._backgroundColorCtrl
-
-    @property
-    def styleDataCtrl(self): return self._styleDataCtrl
 
     @property
     def resizable(self) -> bool: return self._resizable
@@ -55,7 +52,8 @@ class ZFramelessWindow(QWidget):
     @resizable.setter
     def resizable(self, enabled: bool) -> None: self._resizable = enabled
 
-    # region Public Method
+    def setResizable(self, enabled: bool) -> None: self._resizable = enabled
+
     def moveCenter(self):
         screen = self.windowHandle().screen()
         if screen:
@@ -65,11 +63,14 @@ class ZFramelessWindow(QWidget):
             self.move(self.x() + self.width() / 2, self.y() + self.height() / 2)
 
 
+    # region private
     def _init_style_(self):
-        self._backgroundColorCtrl.color = self._styleDataCtrl.data.Body
+        self.backgroundColorCtrl.color = self.styleDataCtrl.data.Body
+
 
     def _style_change_handler_(self):
-        self._backgroundColorCtrl.setColorTo(self._styleDataCtrl.data.Body)
+        self.backgroundColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
+
 
     def __onScreenChanged(self):
         hWnd = int(self.windowHandle().winId())

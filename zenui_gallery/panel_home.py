@@ -5,7 +5,7 @@ from rc_rc import *
 class PanelHome(ZPanel):
     def __init__(self, parent = None, name ='PanelHome'):
         super().__init__(parent = parent, name=name)
-        self.setLayout(ZVBoxLayout(self))
+        self.setLayout(ZVBoxLayout(self,alignment=Qt.AlignmentFlag.AlignTop))
         self.image_bg = ZImage(parent=self,
                                   scale_type=ZImage.ScaleType.Fill,
                                   corner_radius=4)
@@ -41,9 +41,9 @@ class PanelHome(ZPanel):
 
 
     def _setup_ui(self):
-        self.text = ZTextBlock(parent=self,
+        self.text = ZHeadLine(parent=self,
                                  name='text',
                                  text='ZenUI Gallery')
         self.text.setFont(QFont('Microsoft YaHei', 24, QFont.Bold))
-        self.text.margins = QMargins(50,50,50,50)
+        self.text.padding = ZPadding(50,50,50,50)
         self.layout().addWidget(self.text)

@@ -5,33 +5,34 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 from ZenUI.component.base.controller import *
-from ZenUI.core import ZDebug,ZButtonStyleData
+from ZenUI.core import ZDebug,ZButtonStyleData,make_getter
 
 T = TypeVar('T')
 
 class ZWidget(QWidget):
     __controllers_types__ = [
-        ColorController,
-        LinearGradientController,
-        OpacityController,
-        WindowOpacityController,
-        PositionController,
-        PointController,
-        PointFController,
-        WidgetSizeController,
-        SizeController,
-        RectController,
-        GeometryController,
-        FloatController,
-        IntegerController,
-        StyleController,
+        QAnimatedColor,
+        QAnimatedWindowBody,
+        QAnimatedLinearGradient,
+        ZAnimatedOpacity,
+        ZAnimatedWindowOpacity,
+        ZAnimatedPosition,
+        ZAnimatedPoint,
+        ZAnimatedPointF,
+        ZAnimatedWidgetSize,
+        ZAnimatedSize,
+        ZAnimatedRect,
+        ZAnimatedGeometry,
+        QAnimatedFloat,
+        QAnimatedInt,
+        StyleController
         ]
     __controllers_kwargs__ = {}
     def __init__(self, *args, **kwargs):
         super().__init__( *args, **kwargs)
         controllers_kwargs = {}
         annotations = {}
-        for cls in inspect.getmro(self.__class__):
+        for cls in reversed(inspect.getmro(self.__class__)):
             if not issubclass(cls, ZWidget):
                 continue
             controllers_kwargs.update(getattr(cls, '__controllers_kwargs__', {}))
@@ -52,10 +53,6 @@ class ZWidget(QWidget):
             controller = ctrl_type(self,** kwargs)
             setattr(self, f'_{name}', controller)
             if not hasattr(self.__class__, name):
-                def make_getter(attr_name):
-                    def getter(self):
-                        return getattr(self, f'_{attr_name}')
-                    return getter
                 setattr(self.__class__, name, property(make_getter(name)))
 
             if ctrl_type.__name__ == 'StyleController':
@@ -71,9 +68,9 @@ class ZWidget(QWidget):
 
 
 class MyWidget(ZWidget):
-    bodyColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    radiusCtrl: FloatController
+    bodyColorCtrl: QAnimatedColor
+    borderColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
 
     __controllers_kwargs__ = {
         'bodyColorCtrl': {
@@ -90,9 +87,9 @@ class MyWidget(ZWidget):
         super().__init__(parent)
 
 class MyWidgetSub(MyWidget):
-    locationCtrl: PositionController
-    sizeCtrl: WidgetSizeController
-    opacityCtrl: OpacityController
+    locationCtrl: ZAnimatedPosition
+    sizeCtrl: ZAnimatedWidgetSize
+    opacityCtrl: ZAnimatedOpacity
     styleCtrl: StyleController[ZButtonStyleData]
 
     __controllers_kwargs__ = {

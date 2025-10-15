@@ -7,16 +7,16 @@ from demo_card import DemoCard
 class PanelSettings(ZPanel):
     def __init__(self, parent = None, name ='PanelSettings'):
         super().__init__(parent = parent, name=name)
-        self.setLayout(ZVBoxLayout(self, margins = QMargins(40, 30, 40, 30),spacing=30, alignment=Qt.AlignmentFlag.AlignTop))
+        self.setLayout(ZVBoxLayout(self, QMargins(40, 30, 40, 30), 30, Qt.AlignmentFlag.AlignTop))
         self._setup_ui()
 
     def layout(self) -> ZVBoxLayout:
         return super().layout()
 
     def _setup_ui(self):
-        self.text = ZTextBlock(self, 'text', '设置')
+        self.text = ZHeadLine(self, 'text', '设置', display_indicator=True)
         self.text.setFont(QFont('Microsoft YaHei', 20, QFont.Bold))
-        self.text.margins = QMargins(6, 0, 6, 6)
+        self.text.padding = ZPadding(6, 0, 6, 6)
         self.layout().addWidget(self.text)
 
         self.hcontainer = ZHContainer(self)
@@ -24,7 +24,7 @@ class PanelSettings(ZPanel):
         self.hcontainer.alignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
         self.layout().addWidget(self.hcontainer)
 
-        self.text_theme_set = ZTextBlock(self.hcontainer, 'theme_setting_label', '主题：')
+        self.text_theme_set = ZHeadLine(self.hcontainer, 'theme_setting_label', '主题：')
         self.text_theme_set.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Normal))
         self.hcontainer.addWidget(self.text_theme_set)
 

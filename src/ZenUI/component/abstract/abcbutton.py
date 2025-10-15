@@ -164,13 +164,22 @@ class ABCRepeatButton(ABCButton):
 
     def setRepeatable(self, r: bool): self._repeatable = r
 
+    @property
     def repeatCount(self) -> int: return self._repeat_count
 
+    @property
     def delayTime(self) -> int: return self._delay_timer.interval()
+
+    @delayTime.setter
+    def delayTime(self, delay: int): self._delay_timer.setInterval(delay)
 
     def setDelayTime(self, delay: int): self._delay_timer.setInterval(delay)
 
+    @property
     def repeatTime(self) -> int: return self._repeat_timer.interval()
+
+    @repeatTime.setter
+    def repeatTime(self, repeat: int): self._repeat_timer.setInterval(repeat)
 
     def setRepeatTime(self, repeat: int): self._repeat_timer.setInterval(repeat)
 

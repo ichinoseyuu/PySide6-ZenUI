@@ -4,11 +4,11 @@ from PySide6.QtGui import *
 from enum import IntEnum
 from typing import overload
 from ZenUI.component.base import (
-    ColorController,
-    LinearGradientController,
-    FloatController,
-    PositionController,
-    WidgetSizeController,
+    QAnimatedColor,
+    QAnimatedLinearGradient,
+    QAnimatedFloat,
+    ZAnimatedPosition,
+    ZAnimatedWidgetSize,
     StyleController,
     ZWidget
 )
@@ -21,11 +21,10 @@ from ZenUI.core import (
 )
 # region SliderFill
 class SliderFill(ZWidget):
-    bodyColorCtrl: LinearGradientController
-    borderColorCtrl: ColorController
-    radiusCtrl: FloatController
-    positionCtrl: PositionController
-    sizeCtrl: WidgetSizeController
+    bodyColorCtrl: QAnimatedLinearGradient
+    borderColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
+    sizeCtrl: ZAnimatedWidgetSize
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -59,10 +58,9 @@ class SliderFill(ZWidget):
 
 # region SliderTrack
 class SliderTrack(ZWidget):
-    bodyColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    radiusCtrl: FloatController
-    positionCtrl: PositionController
+    bodyColorCtrl: QAnimatedColor
+    borderColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -85,12 +83,12 @@ class SliderTrack(ZWidget):
 
 # region SliderHandle
 class SliderHandle(ZWidget):
-    innerColorCtrl: ColorController
-    outerColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    innerScaleCtrl: FloatController
-    outerScaleCtrl: FloatController
-    positionCtrl: PositionController
+    innerColorCtrl: QAnimatedColor
+    outerColorCtrl: QAnimatedColor
+    borderColorCtrl: QAnimatedColor
+    innerScaleCtrl: QAnimatedFloat
+    outerScaleCtrl: QAnimatedFloat
+    positionCtrl: ZAnimatedPosition
     def __init__(self, parent: QWidget = None, radius: int = 6):
         super().__init__(parent)
         self._radius = radius
@@ -138,9 +136,9 @@ class SliderHandle(ZWidget):
     def mouseMoveEvent(self, event):
         slider = self.parent()
         pos = event.globalPos() - slider.mapToGlobal(QPoint(self._radius, self._radius))
-        if slider.isHorizontal:
+        if slider.isHorizontal():
             delta = max(0, min(pos.x(), slider._track_length))
-            slider.setValue(delta / slider._track_length * slider._max)
+            slider.setValue(delta / slider._track_length * slider._max_value)
             ZGlobal.tooltip.showTip(
                 text = self.parent().displayValue,
                 target = self,
@@ -148,7 +146,7 @@ class SliderHandle(ZWidget):
                 position =ZPosition.Top)
         else:
             delta = max(0, min(pos.y(), slider._track_length))
-            slider.setValue(slider._max - delta / slider._track_length * slider._max)
+            slider.setValue(slider._max_value - delta / slider._track_length * slider._max_value)
             ZGlobal.tooltip.showTip(
                 text = self.parent().displayValue,
                 target = self,
@@ -164,7 +162,7 @@ class SliderHandle(ZWidget):
         super().enterEvent(event)
         self.innerScaleCtrl.setValueTo(self._inner_scale_hover)
         self.outerScaleCtrl.setValueTo(self._outer_scale_hover)
-        if self.parent().isHorizontal:
+        if self.parent().isHorizontal():
             ZGlobal.tooltip.showTip(
                 text = self.parent().displayValue,
                 target = self,
@@ -213,7 +211,7 @@ class ZSlider(ZWidget):
         self._dir = direction
         self._style = style
         self._scope = scope
-        self._min, self._max = scope
+        self._min_value, self._max_value = scope
         self._step = max(step, accuracy)
         self._step_multiplier = step_multiplier
         self._accuracy = accuracy
@@ -245,10 +243,8 @@ class ZSlider(ZWidget):
     @property
     def direction(self): return self._dir
 
-    @property
     def isHorizontal(self): return self._dir == ZDirection.Horizontal
 
-    @property
     def isVertical(self): return self._dir == ZDirection.Vertical
 
     @property
@@ -258,23 +254,32 @@ class ZSlider(ZWidget):
     def autoStripZero(self, v: bool):
         self._auto_strip_zero = v
 
-    @property
-    def max(self): return self._max
-
-    @max.setter
-    def max(self, m: int | float):
-        self._max = m
-        self._scope = (self._min, self._max)
-        self.setValue(self._value)
+    def setAutoStripZero(self, v: bool):
+        self.autoStripZero = v
 
     @property
-    def min(self): return self._min
+    def maxValue(self): return self._max_value
 
-    @min.setter
-    def min(self, m: int | float):
-        self._min = m
-        self._scope = (self._min, self._max)
+    @maxValue.setter
+    def maxValue(self, m: int | float):
+        self._max_value = m
+        self._scope = (self._min_value, self._max_value)
         self.setValue(self._value)
+
+    def setMaxValue(self, m: int | float):
+        self.maxValue = m
+
+    @property
+    def minValue(self): return self._min_value
+
+    @minValue.setter
+    def minValue(self, m: int | float):
+        self._min_value = m
+        self._scope = (self._min_value, self._max_value)
+        self.setValue(self._value)
+
+    def setMinValue(self, m: int | float):
+        self.minValue = m
 
     @property
     def step(self): return self._step
@@ -283,11 +288,17 @@ class ZSlider(ZWidget):
     def step(self, s: int | float):
         self._step = max(s, self._accuracy)
 
+    def setStep(self, s: int | float):
+        self._step = max(s, self._accuracy)
+
     @property
     def stepMultiplier(self): return self._step_multiplier
 
     @stepMultiplier.setter
     def stepMultiplier(self, step_multiplier: int):
+        self._step_multiplier = step_multiplier
+
+    def setStepMultiplier(self, step_multiplier: int):
         self._step_multiplier = step_multiplier
 
     @property
@@ -298,6 +309,9 @@ class ZSlider(ZWidget):
         self._accuracy = accuracy
         self._step = max(self._step, accuracy)
         self.setValue(self._value)
+
+    def setAccuracy(self, accuracy: int | float):
+        self.accuracy = accuracy
 
     @property
     def sliderStyle(self): return self._style
@@ -317,8 +331,8 @@ class ZSlider(ZWidget):
     @scope.setter
     def scope(self, s: tuple):
         self._scope = s
-        self._max = s[1]
-        self._min = s[0]
+        self._max_value = s[1]
+        self._min_value = s[0]
         self.setValue(self._value)
 
     def setScope(self, s: tuple):
@@ -344,9 +358,9 @@ class ZSlider(ZWidget):
 
     @value.setter
     def value(self, value: float):
-        clamped = max(self._min, min(value, self._max))
+        clamped = max(self._min_value, min(value, self._max_value))
         self._value = clamped
-        self._percentage = (self._value - self._min) / (self._max - self._min)
+        self._percentage = (self._value - self._min_value) / (self._max_value - self._min_value)
         self._update_value()
         self.valueChanged.emit(self.value)
         self.displayValueChanged.emit(self.displayValue)
@@ -384,7 +398,7 @@ class ZSlider(ZWidget):
 
 
     def sizeHint(self):
-        if self.isHorizontal:
+        if self.isHorizontal():
             w = max(self._fixed_track_length or self._min_length, self._min_length)
             return QSize(w + self._handle_radius * 2, self._track_width)
         else:
@@ -393,7 +407,7 @@ class ZSlider(ZWidget):
 
     # region private
     def _init_style_(self, value):
-        if self.isHorizontal:
+        if self.isHorizontal():
             self._fill.bodyColorCtrl.direction = 0
             self.setFixedHeight(2 * self._handle_radius)
             self.setMinimumWidth(self._min_length + self._handle_radius * 2)
@@ -403,7 +417,15 @@ class ZSlider(ZWidget):
             self.setFixedWidth(2 * self._handle_radius)
             self.setMinimumHeight(self._min_length + self._handle_radius * 2)
         self._update_track_radius()
-        self.setValue(value)
+        clamped = max(self._min_value, min(value, self._max_value))
+        self._value = clamped
+        self._percentage = (self._value - self._min_value) / (self._max_value - self._min_value)
+        if self.isHorizontal():
+            handle_pos = QPoint(self._percentage * self._track_length, 0)
+            self._handle.positionCtrl.setPos(handle_pos)
+        else:
+            handle_pos = QPoint(0, self._track_length - self._percentage * self._track_length)
+            self._handle.positionCtrl.setPos(handle_pos)
         data = self.styleDataCtrl.data
         self._track.bodyColorCtrl.color = data.Track
         self._track.borderColorCtrl.color = data.TrackBorder
@@ -428,7 +450,7 @@ class ZSlider(ZWidget):
     def _calc_track_length(self):
         if self._fixed_track_length is not None:
             return max(self._min_length, self._fixed_track_length)
-        if self.isHorizontal:
+        if self.isHorizontal():
             return max(self._min_length, self.width() - self._handle_radius * 2)
         else:
             return max(self._min_length, self.height() - self._handle_radius * 2)
@@ -446,7 +468,7 @@ class ZSlider(ZWidget):
         width = self._track_width
         percentage = self._percentage
         self._update_track_radius()
-        if self.isHorizontal:
+        if self.isHorizontal():
             y = (self.height() - width) // 2
             geo_track = QRect(start, y, length, width)
             self._track.setGeometry(geo_track)
@@ -465,16 +487,15 @@ class ZSlider(ZWidget):
 
     def _update_value(self):
         #更新值/更新滑块位置
-        if self.isHorizontal:
-            handle_pos = QPoint(self._percentage * self._track_length, 0)
-            self._handle.positionCtrl.moveTo(handle_pos)
+        if self.isHorizontal():
+            self._handle.positionCtrl.moveTo(int(self._percentage * self._track_length), 0)
         else:
-            self._handle.positionCtrl.moveTo(0, self._track_length - self._percentage * self._track_length)
+            self._handle.positionCtrl.moveTo(0, int(self._track_length - self._percentage * self._track_length))
 
 
     def _update_fill(self):
         #handle位置改变时的fill条更新逻辑，让fill始终随着handle移动
-        if self.isHorizontal:
+        if self.isHorizontal():
             size_fill = QSize(self._handle.x(), self._track_width)
             self._fill.resize(size_fill)
         else:
@@ -496,7 +517,7 @@ class ZSlider(ZWidget):
         painter.end()
 
     def keyPressEvent(self, event: QKeyEvent):
-        if self.isHorizontal and (event.key() == Qt.Key.Key_Left or event.key() == Qt.Key.Key_Right):
+        if self.isHorizontal() and (event.key() == Qt.Key.Key_Left or event.key() == Qt.Key.Key_Right):
             step = -1 if event.key() == Qt.Key.Key_Left else 1
             self.stepValue(step)
             ZGlobal.tooltip.showTip(
@@ -505,7 +526,7 @@ class ZSlider(ZWidget):
                 mode=ZGlobal.tooltip.Mode.TrackTarget,
                 position=ZPosition.Top,
                 hide_delay=1000)
-        elif self.isVertical and (event.key() == Qt.Key.Key_Up or event.key() == Qt.Key.Key_Down):
+        elif self.isVertical() and (event.key() == Qt.Key.Key_Up or event.key() == Qt.Key.Key_Down):
             step = 1 if event.key() == Qt.Key.Key_Up else -1
             self.stepValue(step)
             ZGlobal.tooltip.showTip(
@@ -522,23 +543,21 @@ class ZSlider(ZWidget):
             start = self._track_start
             end = self._track_end
             length = self._track_length
-            if self.isHorizontal:
-                # 限制点击范围
+            if self.isHorizontal():
                 x = min(max(event.x(), start), end)
                 percent = (x - start) / length
-                value = self._min + percent * (self._max - self._min)
+                value = self._min_value + percent * (self._max_value - self._min_value)
             else:
                 y = min(max(event.y(), start), end)
-                # 垂直方向是反向
                 percent = 1 - (y - start) / length
-                value = self._min + percent * (self._max - self._min)
+                value = self._min_value + percent * (self._max_value - self._min_value)
             self.setValue(value)
             self._handle.enterEvent(None)
 
     def wheelEvent(self, event: QWheelEvent):
         steps = event.angleDelta().y() / 120
         self.stepValue(steps)
-        if self.isHorizontal:
+        if self.isHorizontal():
             ZGlobal.tooltip.showTip(
                 text = self.displayValue,
                 target = self._handle,

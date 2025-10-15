@@ -1,14 +1,13 @@
 from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
-from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPointF,QPoint,Signal
+from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPointF, Signal
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.abstract import ABCButton
-from ZenUI.component.window import ZFramelessWindow
 from ZenUI.component.itemview import ZItemView
 from ZenUI.component.base import (
-    ColorController,
-    FloatController,
-    OpacityController,
-    PointFController,
+    QAnimatedColor,
+    QAnimatedFloat,
+    ZAnimatedOpacity,
+    ZAnimatedPointF,
     StyleController,
     ZPadding
 )
@@ -21,13 +20,13 @@ from ZenUI.core import (
 class ZComboBox(ABCButton):
     selected = Signal(str)
 
-    bodyColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    textColorCtrl: ColorController
-    dropIconColorCtrl: ColorController
-    dropIconPosCtrl: PointFController
-    radiusCtrl: FloatController
-    opacityCtrl: OpacityController
+    bodyColorCtrl: QAnimatedColor
+    borderColorCtrl: QAnimatedColor
+    textColorCtrl: QAnimatedColor
+    dropIconColorCtrl: QAnimatedColor
+    dropIconPosCtrl: ZAnimatedPointF
+    radiusCtrl: QAnimatedFloat
+    opacityCtrl: ZAnimatedOpacity
     styleDataCtrl: StyleController[ZComboBoxStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZComboBox'}}
 

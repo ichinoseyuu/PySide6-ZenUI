@@ -2,29 +2,30 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenUI.component.base import (
-    ColorController,
-    FloatController,
+    QAnimatedColor,
+    QAnimatedFloat,
     StyleController,
-    WidgetSizeController,
+    ZAnimatedWidgetSize,
     ZWidget,
+    ZPadding,
     ZTextCommand
 )
-from ZenUI.core import ZTextBoxStyleData, ZDebug
+from ZenUI.core import ZLineEditStyleData, ZDebug
 
 class ZLineEdit(ZWidget):
     editingFinished = Signal()
-    textColorCtrl: ColorController
-    textBackColorCtrl: ColorController
-    cursorColorCtrl: ColorController
-    maskColorCtrl: ColorController
-    underlineColorCtrl: ColorController
-    underlineWeightCtrl: FloatController
-    bodyColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    radiusCtrl: FloatController
-    sizeCtrl: WidgetSizeController
-    styleDataCtrl: StyleController[ZTextBoxStyleData]
-    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZTextBox'}}
+    textColorCtrl: QAnimatedColor
+    textBackColorCtrl: QAnimatedColor
+    cursorColorCtrl: QAnimatedColor
+    maskColorCtrl: QAnimatedColor
+    underlineColorCtrl: QAnimatedColor
+    underlineWeightCtrl: QAnimatedFloat
+    bodyColorCtrl: QAnimatedColor
+    borderColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
+    sizeCtrl: ZAnimatedWidgetSize
+    styleDataCtrl: StyleController[ZLineEditStyleData]
+    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZLineEdit'}}
 
     def __init__(self,
                  parent: QWidget = None,
@@ -35,7 +36,7 @@ class ZLineEdit(ZWidget):
                  selectable: bool = True,
                  minimumSize: QSize = QSize(200, 30),
                  ):
-        super().__init__(parent=parent, minimumSize=minimumSize)
+        super().__init__(parent=parent, minimumSize=minimumSize,font=QFont("Microsoft YaHei", 10))
         if name: self.setObjectName(name)
         self.setFocusPolicy(Qt.FocusPolicy.ClickFocus if read_only else Qt.FocusPolicy.StrongFocus)
         self.setAttribute(Qt.WidgetAttribute.WA_InputMethodEnabled)
@@ -52,8 +53,7 @@ class ZLineEdit(ZWidget):
         self._is_selecting = False
         self._selectable = selectable
 
-        self._font = QFont("Microsoft YaHei", 10)
-        self._margins = QMargins(6, 6, 6, 6)
+        self._padding = ZPadding(6, 6, 6, 6)
         self._alignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
         self._text_offset = 0
 
@@ -70,55 +70,69 @@ class ZLineEdit(ZWidget):
 
 
     # region public method
+    @property
     def text(self) -> str: return self._text
 
-    def setText(self, t: str) -> None:
+    @text.setter
+    def text(self, t: str) -> None:
         self._text = t or ""
         self._cursor_pos = min(self._cursor_pos, len(self._text))
         self.adjustSize()
         self.update()
 
+    def setText(self, t: str) -> None:
+        self.text = t
+
+    @property
     def selectedText(self) -> str: return self._selected_text
 
+    @property
     def placeHolderText(self) -> str: return self._placeholder
 
-    def setPlaceHolderText(self, t: str) -> None:
+    @placeHolderText.setter
+    def placeHolderText(self, t: str) -> None:
         self._placeholder = t or ""
         self.adjustSize()
         self.update()
 
-    def font(self) -> QFont: return self._font
+    def setPlaceHolderText(self, t: str) -> None:
+        self.placeHolderText = t
 
-    def setFont(self, font: QFont | str) -> None:
-        if isinstance(font, str):
-            self._font.setFamily(font)
-        else:
-            self._font = font
-        self.adjustSize()
+    @property
+    def readonly(self) -> bool: return self._read_only
+
+    @readonly.setter
+    def readonly(self, v: bool) -> None:
+        self._read_only = v
+        self.setFocusPolicy(v and Qt.FocusPolicy.ClickFocus or Qt.FocusPolicy.StrongFocus)
         self.update()
 
     def isReadOnly(self) -> bool: return self._read_only
 
     def setReadOnly(self, v: bool) -> None:
-        self._read_only = v
-        self.setFocusPolicy(v and Qt.FocusPolicy.ClickFocus or Qt.FocusPolicy.StrongFocus)
-        self.update()
+        self.readonly = v
 
-    def isSelectable(self) -> bool: return self._selectable
 
-    def setSelectable(self, v: bool) -> None:
+    @property
+    def selectable(self) -> bool: return self._selectable
+
+    @selectable.setter
+    def selectable(self, v: bool) -> None:
         self._selectable = v
         if not v: self._clear_selection()
         self.adjustSize()
         self.update()
 
+    def isSelectable(self) -> bool: return self._selectable
+
+    def setSelectable(self, v: bool) -> None:
+        self.selectable = v
+
     def sizeHint(self) -> QSize:
-        fm = QFontMetrics(self._font)
-        mw = self._margins.left() + self._margins.right()
-        mh = self._margins.top() + self._margins.bottom()
+        fm = QFontMetrics(self.font())
         display = self._display_text()
-        return QSize(max(fm.horizontalAdvance(display) + mw, self.minimumWidth()),
-                     max(fm.height() + mh, self.minimumHeight()))
+        return QSize(max(fm.horizontalAdvance(display) + self._padding.horizontal, self.minimumWidth()),
+                     max(fm.height() + self._padding.vertical, self.minimumHeight()))
 
     def adjustSize(self):
         self.resize(self.sizeHint())
@@ -179,11 +193,11 @@ class ZLineEdit(ZWidget):
                 max(self._selection_start, self._selection_end))
 
     def _update_selected_text(self):
-            if self._is_selection():
-                s, e = self._get_selection_range()
-                self._selected_text = self._text[s:e]
-            else:
-                self._selected_text = ""
+        if self._is_selection():
+            s, e = self._get_selection_range()
+            self._selected_text = self._text[s:e]
+        else:
+            self._selected_text = ""
 
     def _clear_selection(self):
         self._selection_start = -1
@@ -332,10 +346,10 @@ class ZLineEdit(ZWidget):
 
     def _text_rect(self) -> QRectF:
         r = QRectF(self.rect())
-        return QRectF(r.left() + self._margins.left(),
-                      r.top() + self._margins.top(),
-                      r.width() - (self._margins.left() + self._margins.right()),
-                      r.height() - (self._margins.top() + self._margins.bottom()))
+        return QRectF(r.left() + self._padding.left,
+                      r.top() + self._padding.top,
+                      r.width() - (self._padding.horizontal),
+                      r.height() - (self._padding.vertical))
 
     def _get_layout_y(self, text_rect: QRectF, fm: QFontMetrics) -> float:
         line_h = fm.height()
@@ -365,7 +379,7 @@ class ZLineEdit(ZWidget):
 
     def _ensure_cursor_visible(self):
         display = self._display_text()
-        fm = QFontMetrics(self._font)
+        fm = QFontMetrics(self.font())
         text_rect = self._text_rect()
         visible_w = text_rect.width()
         # 计算光标在 display 中的像素位置（光标右侧）
@@ -384,7 +398,7 @@ class ZLineEdit(ZWidget):
 
     def _get_char_position_at_point(self, point: QPoint) -> int:
         display = self._display_text()
-        fm = QFontMetrics(self._font)
+        fm = QFontMetrics(self.font())
         text_rect = self._text_rect()
         # y 检查
         line_y = self._get_layout_y(text_rect, fm)
@@ -424,8 +438,8 @@ class ZLineEdit(ZWidget):
                              self.underlineColorCtrl.color)
 
         # 文本区域
-        painter.setFont(self._font)
-        fm = QFontMetrics(self._font)
+        painter.setFont(self.font())
+        fm = QFontMetrics(self.font())
         text_rect = self._text_rect()
         display = self._display_text()
 
@@ -452,7 +466,7 @@ class ZLineEdit(ZWidget):
 
         # 绘制光标（若应显示）
         if self._should_show_cursor():
-            fm_draw = QFontMetrics(self._font)
+            fm_draw = QFontMetrics(self.font())
             layout_y = self._get_layout_y(text_rect, fm_draw)
             # 计算 cursor 在 display 文本中的索引（预编辑已包含在 display 中）
             display_text = display
@@ -550,7 +564,7 @@ class ZLineEdit(ZWidget):
                 return Qt.InputMethodQuery.ImReadOnly
             return None
         if query == Qt.InputMethodQuery.ImCursorRectangle:
-            fm = QFontMetrics(self._font)
+            fm = QFontMetrics(self.font())
             text_rect = self._text_rect()
             x = int(text_rect.left() + fm.horizontalAdvance(self._text[:self._cursor_pos]) - self._text_offset)
             y = int(text_rect.top())
@@ -584,7 +598,7 @@ class ZLineEdit(ZWidget):
     def mouseMoveEvent(self, event: QMouseEvent):
         if self._is_selecting:
             text_rect = self._text_rect()
-            fm = QFontMetrics(self._font)
+            fm = QFontMetrics(self.font())
             display = self._display_text()
             visible_w = text_rect.width()
             total_w = fm.horizontalAdvance(display)

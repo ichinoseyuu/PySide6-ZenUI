@@ -1,8 +1,9 @@
+from typing import overload
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QPropertyAnimation, QObject, Property, QEasingCurve
 
-class IntegerController(QObject):
-    '''整数控制器，用于控制整数变化'''
+class QAnimatedInt(QObject):
+    '''具有原生属性动画的整数控制器'''
     def __init__(self, parent: QWidget, value: int = 0):
         super().__init__(parent)
         self._value: int = value
@@ -22,10 +23,20 @@ class IntegerController(QObject):
     value: int = Property(int, getValue, setValue)
 
 
-    def setValueTo(self, value: int) -> None:
+
+    @overload
+    def setValueTo(self, value: int) -> None: ...
+
+    @overload
+    def setValueTo(self, start: int, end: int) -> None: ...
+
+    def setValueTo(self, *args) -> None:
         self._anim.stop()
-        self._anim.setStartValue(self._value)
-        self._anim.setEndValue(value)
+        if len(args) == 1:
+            self._anim.setEndValue(args[0])
+        elif len(args) == 2:
+            self._anim.setStartValue(args[0])
+            self._anim.setEndValue(args[1])
         self._anim.start()
 
 
@@ -33,8 +44,8 @@ class IntegerController(QObject):
         return super().parent()
 
 
-class FloatController(QObject):
-    '''浮点数控制器，用于控制浮点数变化'''
+class QAnimatedFloat(QObject):
+    '''具有原生属性动画的浮点数控制器'''
     def __init__(self, parent: QWidget, value: int|float = 0.0):
         super().__init__(parent)
         self._value: float = value
@@ -54,10 +65,19 @@ class FloatController(QObject):
     value: float = Property(float, getValue, setValue)
 
 
-    def setValueTo(self, value: float) -> None:
+    @overload
+    def setValueTo(self, value: int) -> None: ...
+
+    @overload
+    def setValueTo(self, start: int, end: int) -> None: ...
+
+    def setValueTo(self, *args) -> None:
         self._anim.stop()
-        self._anim.setStartValue(self._value)
-        self._anim.setEndValue(value)
+        if len(args) == 1:
+            self._anim.setEndValue(args[0])
+        elif len(args) == 2:
+            self._anim.setStartValue(args[0])
+            self._anim.setEndValue(args[1])
         self._anim.start()
 
 

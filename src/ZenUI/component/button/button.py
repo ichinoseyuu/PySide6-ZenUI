@@ -3,36 +3,38 @@ from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPoint
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.abstract import ABCButton
 from ZenUI.component.base import (
-    ColorController,
-    FloatController,
-    OpacityController,
+    QAnimatedColor,
+    QAnimatedFloat,
+    ZAnimatedOpacity,
     StyleController
     )
 from ZenUI.core import (
     ZButtonStyleData,
     ZDebug,
     ZGlobal,
-    ZPosition
+    ZPosition,
+    ZButtonStyle
 )
 
 class ZButton(ABCButton):
-    bodyColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    radiusCtrl: FloatController
-    opacityCtrl: OpacityController
-    textColorCtrl: ColorController
-    iconColorCtrl: ColorController
+    bodyColorCtrl: QAnimatedColor
+    borderColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
+    opacityCtrl: ZAnimatedOpacity
+    textColorCtrl: QAnimatedColor
+    iconColorCtrl: QAnimatedColor
     styleDataCtrl: StyleController[ZButtonStyleData]
-    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZButton'}}
 
     def __init__(self,
                  parent: QWidget = None,
                  name: str = None,
                  text: str = None,
-                 icon: QIcon = None
+                 icon: QIcon = None,
+                 style: ZButtonStyle = ZButtonStyle.Normal
                  ):
         super().__init__(parent=parent, font=QFont("Microsoft YaHei", 9))
         if name: self.setObjectName(name)
+        self._style = style
         self._text: str = None
         self._icon: QIcon = None
         self._icon_size = QSize(16, 16)
@@ -110,6 +112,11 @@ class ZButton(ABCButton):
 
     # region private method
     def _init_style_(self):
+        if self._style == ZButtonStyle.Normal:
+            self.styleDataCtrl.setKey("ZButton")
+        elif self._style == ZButtonStyle.Flat:
+            self.styleDataCtrl.setKey("ZFlatButton")
+
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
         self.textColorCtrl.color = data.Text
@@ -161,58 +168,43 @@ class ZButton(ABCButton):
             painter.setPen(Qt.NoPen)
             painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
+
         if self.borderColorCtrl.color.alpha() > 0:
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(
-                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),
-                radius, radius
+            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+
+
+        if self._icon:
+            pixmap = self._icon.pixmap(self._icon_size)
+            colored_pixmap = QPixmap(pixmap.size())
+            colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
+            colored_pixmap.fill(Qt.transparent)
+            with QPainter(colored_pixmap) as painter_pix:
+                painter_pix.drawPixmap(0, 0, pixmap)
+                painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
+                painter_pix.fillRect(colored_pixmap.rect(), self.iconColorCtrl.color)
+            if self._text:
+                total_width = self._icon_size.width() + self._spacing + self.fontMetrics().boundingRect(self._text).width()
+                start_x = (self.width() - total_width) / 2
+                painter.drawPixmap(
+                    start_x,
+                    (self.height() - self._icon_size.height()) / 2,
+                    colored_pixmap
                 )
-
-        if self._icon and self._text:
-            total_width = self._icon_size.width() + self._spacing + \
-                         self.fontMetrics().boundingRect(self._text).width()
-            start_x = (self.width() - total_width) / 2
-            pixmap = self._icon.pixmap(self._icon_size)
-            colored_pixmap = QPixmap(pixmap.size())
-            colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
-            colored_pixmap.fill(Qt.transparent)
-            painter_pix = QPainter(colored_pixmap)
-            painter_pix.drawPixmap(0, 0, pixmap)
-            painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
-            painter_pix.fillRect(colored_pixmap.rect(), self.iconColorCtrl.color)
-            painter_pix.end()
-            painter.drawPixmap(
-                start_x,
-                (self.height() - self._icon_size.height()) / 2,
-                colored_pixmap
-            )
-            painter.setFont(self.font())
-            painter.setPen(self.textColorCtrl.color)
-            text_rect = QRect(
-                start_x + self._icon_size.width() + self._spacing,
-                0,
-                rect.width(),
-                rect.height()
-            )
-            painter.drawText(text_rect, Qt.AlignLeft | Qt.AlignVCenter, self._text)
-
-        elif self._icon:
-            pixmap = self._icon.pixmap(self._icon_size)
-            colored_pixmap = QPixmap(pixmap.size())
-            colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
-            colored_pixmap.fill(Qt.transparent)
-            painter_pix = QPainter(colored_pixmap)
-            painter_pix.drawPixmap(0, 0, pixmap)
-            painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
-            painter_pix.fillRect(colored_pixmap.rect(), self.iconColorCtrl.color)
-            painter_pix.end()
-            painter.drawPixmap(
-                (self.width() - self._icon_size.width()) / 2,
-                (self.height() - self._icon_size.height()) / 2,
-                colored_pixmap
-            )
-
+                painter.setFont(self.font())
+                painter.setPen(self.textColorCtrl.color)
+                painter.drawText(
+                    QRect(start_x + self._icon_size.width() + self._spacing, 0, rect.width(), rect.height()),
+                    Qt.AlignLeft | Qt.AlignVCenter,
+                    self._text
+                )
+            else:
+                painter.drawPixmap(
+                    (self.width() - self._icon_size.width()) / 2,
+                    (self.height() - self._icon_size.height()) / 2,
+                    colored_pixmap
+                )
         elif self._text:
             painter.setFont(self.font())
             painter.setPen(self.textColorCtrl.color)
@@ -220,4 +212,3 @@ class ZButton(ABCButton):
 
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
-

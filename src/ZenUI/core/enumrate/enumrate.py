@@ -1,6 +1,10 @@
 from enum import Enum, IntEnum, IntFlag, auto
 
 
+class ZWindowType(IntEnum):
+    Frameless = auto()
+    Translucent = auto()
+
 class ZState(IntEnum):
     Idle = auto()
     Hover = auto()
@@ -27,6 +31,9 @@ class ZPosition(IntEnum):
     Center = auto()
     Custom = auto()
 
+class ZButtonStyle(IntEnum):
+    Normal = auto()
+    Flat = auto()
 
 class ZWrapMode(IntEnum):
     NoWrap = auto()

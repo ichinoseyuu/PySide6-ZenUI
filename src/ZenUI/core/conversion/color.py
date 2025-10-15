@@ -223,14 +223,17 @@ class ColorConverter:
 
     @classmethod
     def trans(cls, code: str, trans: float | int = 0):
-        """给指定的`#RRGGBB`颜色代码设置一个透明度，返回新的颜色代码"""
+        """给指定的`#RRGGBB`或`#AARRGGBB`颜色代码设置一个透明度，返回新的颜色代码"""
         value = cls.toArray(code)
-        # 如果trans是int类型，将其转换为0-1的float类型
         if isinstance(trans, int):
             trans = trans / 255.0
-        value_proceed = value * numpy.array([trans, 1, 1, 1])
-        code_proceed = cls.toCode(value_proceed)
-        return code_proceed
+        trans = max(0.0, min(1.0, trans))
+        if len(value) == 3:
+            value_proceed = numpy.array([trans * 255, value[0], value[1], value[2]], dtype=numpy.int16)
+        else:
+            value_proceed = value.copy()
+            value_proceed[0] = trans * 255
+        return cls.toCode(value_proceed.astype(numpy.int16))
 
     @classmethod
     def overlay(cls, base_color: str, overlay_color: str) -> str:

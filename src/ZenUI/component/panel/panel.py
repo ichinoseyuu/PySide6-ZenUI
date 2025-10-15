@@ -1,15 +1,15 @@
 from PySide6.QtWidgets import QWidget,QLayout
 from PySide6.QtCore import Qt,QRectF,Signal
 from PySide6.QtGui import QPainter,QPen,QPainterPath
-from ZenUI.component.base import ColorController,FloatController, PositionController,StyleController,ZWidget
+from ZenUI.component.base import QAnimatedColor,QAnimatedFloat, ZAnimatedPosition,StyleController,ZWidget
 from ZenUI.core import ZPanelStyleData, ZDebug
 
 class ZPanel(ZWidget):
     resized = Signal()
-    bodyColorCtrl: ColorController
-    borderColorCtrl: ColorController
-    radiusCtrl: FloatController
-    positionCtrl: PositionController
+    bodyColorCtrl: QAnimatedColor
+    borderColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
+    positionCtrl: ZAnimatedPosition
     styleDataCtrl: StyleController[ZPanelStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZPanel'}}
 

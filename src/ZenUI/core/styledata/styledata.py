@@ -1,9 +1,10 @@
 import logging
-from typing import overload, Dict, Any
+from typing import overload, Dict, Any,TYPE_CHECKING
 from dataclasses import fields, is_dataclass
 from enum import Enum
 from PySide6.QtGui import QColor
 from ZenUI.core.theme import ZThemeManager
+from ZenUI.core.enumrate import ZWindowType
 from ZenUI.core.utils import singleton
 from ZenUI.core.styledata.models import *
 from ZenUI.core.styledata.theme_data import *
@@ -15,14 +16,15 @@ class ZStyleDataFactory:
         'ZItemView': ZItemViewStyleData,
         'ZNavigationBar': ZNavigationBarStyleData,
         'ZSwitch': ZSwitchStyleData,
-        'ZTextBox': ZTextBoxStyleData,
-        'ZRichTextBlock':ZRichTextBlockStyleData,
-        'ZTextBlock': ZTextBlockStyleData,
+        'ZLineEdit': ZLineEditStyleData,
+        'ZHeadLine': ZHeadLineStyleData,
         'ZPanel': ZPanelStyleData,
         'ZScrollPanel': ZScrollPanelStyleData,
         'ZSlider': ZSliderStyleData,
         'ZButton': ZButtonStyleData,
+        'ZFlatButton': ZButtonStyleData,
         'ZToggleButton': ZToggleButtonStyleData,
+        'ZFlatToggleButton': ZToggleButtonStyleData,
         'ZThemeButton': ZTitleBarButtonStyleData,
         'ZNavBarButton': ZNavBarButtonStyleData,
         'ZNavBarToggleButton': ZNavBarToggleButtonStyleData,
@@ -86,7 +88,7 @@ class ZStyleDataManager:
         if len(args) == 1:
             name = args[0]
             theme = ZThemeManager().getTheme().name
-        else:
+        elif len(args) == 2:
             name, theme = args
 
         # 检查缓存
@@ -99,8 +101,13 @@ class ZStyleDataManager:
         # theme_data = THEME_DATA.get(theme, {})
         # component_data = theme_data.get(name, {})
 
-
-        theme_data = THEME_DATA.get(theme, {})
+        # from ZenUI.core.globals import ZGlobal
+        # theme_data = {}
+        # if ZGlobal.windowType is ZWindowType.Frameless:
+        #     theme_data = FRAMELESS_THEME_DATA.get(theme, {})
+        # elif ZGlobal.windowType is ZWindowType.Translucent:
+        #     theme_data = TRANSLUCENT_THEME_DATA.get(theme, {})
+        theme_data = FRAMELESS_THEME_DATA.get(theme, {})
         component_data = {}
         # 新增：支持从元组键中匹配组件样式
         for key, data in theme_data.items():
@@ -151,7 +158,7 @@ class ZStyleDataManager:
             'ToggleButton'
         ]
 
-        themes = [theme] if theme else list(THEME_DATA.keys())
+        themes = [theme] if theme else list(FRAMELESS_THEME_DATA.keys())
 
         for t in themes:
             for component in common_components:

@@ -1,18 +1,18 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Property, QSize
 from typing import overload
-from ZenUI.core import ZExpAnimationRefactor
+from ZenUI.core import ZExpPropertyAnimation
 
-class WidgetSizeController(QObject):
-    '''尺寸控制器，用于控制父控件尺寸变化'''
+class ZAnimatedWidgetSize(QObject):
+    '''具有属性动画的 QWidget 尺寸控制器，直接作用于父 QWidget'''
     def __init__(self, parent:QWidget):
         super().__init__(parent)
-        self._anim = ZExpAnimationRefactor(self, "size")
+        self._anim = ZExpPropertyAnimation(self, "size")
         self._anim.setBias(1)
         self._anim.setFactor(0.2)
 
     @property
-    def animation(self) -> ZExpAnimationRefactor: return self._anim
+    def animation(self) -> ZExpPropertyAnimation: return self._anim
 
     def getSize(self) -> QSize: return self.parent().size()
 
@@ -35,10 +35,8 @@ class WidgetSizeController(QObject):
         self._anim.stop()
         if len(args) == 1 and isinstance(args[0], QSize):
             size = args[0]
-            self._anim.setStartValue(self.parent().size())
         elif len(args) == 2 and isinstance(args[0], int):
             size = QSize(args[0], args[1])
-            self._anim.setStartValue(self.parent().size())
         elif len(args) == 2 and isinstance(args[0], QSize):
             size = args[1]
             self._anim.setStartValue(args[0])
@@ -50,17 +48,17 @@ class WidgetSizeController(QObject):
         return super().parent()
 
 
-class SizeController(QObject):
-    '''尺寸控制器，用于控制 QSize 的变化'''
+class ZAnimatedSize(QObject):
+    '''具有属性动画的 QSize 控制器'''
     def __init__(self, parent:QWidget, size: QSize = QSize(0, 0)):
         super().__init__(parent)
         self._size = size
-        self._anim = ZExpAnimationRefactor(self, "size")
+        self._anim = ZExpPropertyAnimation(self, "size")
         self._anim.setBias(1)
         self._anim.setFactor(0.2)
 
     @property
-    def animation(self) -> ZExpAnimationRefactor: return self._anim
+    def animation(self) -> ZExpPropertyAnimation: return self._anim
 
     def getSize(self) -> QSize: return self._size
 
@@ -84,10 +82,8 @@ class SizeController(QObject):
         self._anim.stop()
         if len(args) == 1 and isinstance(args[0], QSize):
             size = args[0]
-            self._anim.setStartValue(self._size)
         elif len(args) == 2 and isinstance(args[0], int):
             size = QSize(args[0], args[1])
-            self._anim.setStartValue(self._size)
         elif len(args) == 2 and isinstance(args[0], QSize):
             size = args[1]
             self._anim.setStartValue(args[0])

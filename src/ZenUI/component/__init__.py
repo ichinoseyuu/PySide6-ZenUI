@@ -12,6 +12,6 @@ from .iamge import *
 from .itemview import *
 from .combobox import *
 from .tooltip import *
-from .textblock import *
+from .headline import *
 from .lineedit import *
 from .window import *

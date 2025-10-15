@@ -1,3 +1,4 @@
+import logging
 from typing import overload,Dict,Generic
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Signal
@@ -10,17 +11,32 @@ class StyleController(QObject, Generic[StyleDataT]):
     - 存储自定义样式数据
     '''
     styleChanged = Signal()
-    def __init__(self, parent: QWidget, key: str):
+    def __init__(self, parent: QWidget, key: str=''):
         super().__init__(parent)
         self._custom: bool = False
         self._key: str = key
         self._data: StyleDataT = None
         self._custom_data: Dict[str, StyleDataT] = {'Light': None, 'Dark': None}
-        self._data = ZGlobal.styleDataManager.getStyleData(key)
-        ZGlobal.themeManager.themeChanged.connect(self._updateStyleData)
+        if key: self._data = ZGlobal.styleDataManager.getStyleData(key)
+        ZGlobal.themeManager.themeChanged.connect(self.updateStyleData)
 
     @property
     def data(self,) -> StyleDataT: return self._data
+
+    def updateStyleData(self, theme) -> None:
+        if self._custom:
+            self._data = self._custom_data[theme.name]
+        else:
+            self._data = ZGlobal.styleDataManager.getStyleData(self._key, theme.name)
+        self.styleChanged.emit()
+
+    def setKey(self, key: str, update: bool = False) -> None:
+        self._key = key
+        self._data = ZGlobal.styleDataManager.getStyleData(key)
+        if update: self.styleChanged.emit()
+
+    def updateDataFromManager(self):
+        self._data = ZGlobal.styleDataManager.getStyleData(self._key)
 
     @overload
     def setData(self, theme: str, data: StyleDataT) -> None: ...
@@ -45,19 +61,11 @@ class StyleController(QObject, Generic[StyleDataT]):
             self._custom_data['Dark'] = args[1]
         else:
             raise ValueError("Invalid arguments for setData")
-        self._updateStyleData(ZGlobal.themeManager.theme)
-
+        self.updateStyleData(ZGlobal.themeManager.theme)
 
     def clearCustomData(self) -> None:
         self._custom = False
-        self._updateStyleData(ZGlobal.themeManager.theme.name)
+        self.updateStyleData(ZGlobal.themeManager.theme.name)
 
     def parent(self) -> QWidget:
         return super().parent()
-
-    def _updateStyleData(self, theme) -> None:
-        if self._custom:
-            self._data = self._custom_data[theme.name]
-        else:
-            self._data = ZGlobal.styleDataManager.getStyleData(self._key, theme.name)
-        self.styleChanged.emit()

@@ -5,11 +5,11 @@ from PySide6.QtGui import QMouseEvent, QPainter, QIcon , QPixmap, QPen
 from ZenUI.component.abstract import ABCButton, ABCToggleButton
 from ZenUI.component.layout import ZVBoxLayout
 from ZenUI.component.base import (
-    ColorController,
-    OpacityController,
-    FloatController,
-    PositionController,
-    WidgetSizeController,
+    QAnimatedColor,
+    ZAnimatedOpacity,
+    QAnimatedFloat,
+    ZAnimatedPosition,
+    ZAnimatedWidgetSize,
     StyleController,
     ButttonGroup,
     ZWidget
@@ -26,10 +26,10 @@ from ZenUI.core import (
 
 # region ZNavBarButton
 class ZNavBarButton(ABCButton):
-    bodyColorCtrl: ColorController
-    iconColorCtrl: ColorController
-    radiusCtrl: FloatController
-    opacityCtrl: OpacityController
+    bodyColorCtrl: QAnimatedColor
+    iconColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
+    opacityCtrl: ZAnimatedOpacity
     styleDataCtrl: StyleController[ZNavBarButtonStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZNavBarButton'}}
 
@@ -50,17 +50,27 @@ class ZNavBarButton(ABCButton):
 
 
     # region public method
+    @property
     def icon(self) -> QIcon: return self._icon
 
-    def setIcon(self, icon: QIcon) -> None:
-        self._icon = icon
+    @icon.setter
+    def icon(self, i: QIcon) -> None:
+        self._icon = i
         self.update()
 
+    def setIcon(self, i: QIcon) -> None:
+        self.icon = i
+
+    @property
     def iconSize(self) -> QSize: return self._icon_size
 
-    def setIconSize(self, size: QSize) -> None:
-        self._icon_size = size
+    @iconSize.setter
+    def iconSize(self, s: QSize) -> None:
+        self._icon_size = s
         self.update()
+
+    def setIconSize(self, s: QSize) -> None:
+        self.iconSize = s
 
     def setEnabled(self, enable: bool) -> None:
         if enable == self.isEnabled(): return
@@ -92,7 +102,7 @@ class ZNavBarButton(ABCButton):
             ZGlobal.tooltip.showTip(
                 text = self._tooltip,
                 target = self,
-                mode = ZGlobal.tooltip.Mode.AlignTarget,
+                mode = ZGlobal.tooltip.Mode.TrackTarget,
                 position = ZPosition.Right,
                 offset = QPoint(10, 0)
                 )
@@ -138,10 +148,10 @@ class ZNavBarButton(ABCButton):
 
 # region ZNavBarToggleButton
 class ZNavBarToggleButton(ABCToggleButton):
-    bodyColorCtrl: ColorController
-    iconColorCtrl: ColorController
-    radiusCtrl: FloatController
-    opacityCtrl: OpacityController
+    bodyColorCtrl: QAnimatedColor
+    iconColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
+    opacityCtrl: ZAnimatedOpacity
     styleDataCtrl: StyleController[ZNavBarToggleButtonStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZNavBarToggleButton'}}
 
@@ -163,17 +173,27 @@ class ZNavBarToggleButton(ABCToggleButton):
 
 
     # region private method
+    @property
     def icon(self) -> QIcon: return self._icon
 
-    def setIcon(self, icon: QIcon) -> None:
-        self._icon = icon
+    @icon.setter
+    def icon(self, i: QIcon) -> None:
+        self._icon = i
         self.update()
 
+    def setIcon(self, i: QIcon) -> None:
+        self.icon = i
+
+    @property
     def iconSize(self) -> QSize: return self._icon_size
 
-    def setIconSize(self, size: QSize) -> None:
-        self._icon_size = size
+    @iconSize.setter
+    def iconSize(self, s: QSize) -> None:
+        self._icon_size = s
         self.update()
+
+    def setIconSize(self, s: QSize) -> None:
+        self.iconSize = s
 
     def setEnabled(self, enable: bool) -> None:
         if enable == self.isEnabled(): return
@@ -216,7 +236,7 @@ class ZNavBarToggleButton(ABCToggleButton):
             ZGlobal.tooltip.showTip(
                 text = self._tooltip,
                 target = self,
-                mode = ZGlobal.tooltip.Mode.AlignTarget,
+                mode = ZGlobal.tooltip.Mode.TrackTarget,
                 position = ZPosition.Right,
                 offset = QPoint(10, 0)
                 )
@@ -332,10 +352,10 @@ class FooterPanel(QWidget):
 
 # region Indicator
 class Indicator(ZWidget):
-    bodyColorCtrl: ColorController
-    opacityCtrl: OpacityController
-    positionCtrl: PositionController
-    sizeCtrl: WidgetSizeController
+    bodyColorCtrl: QAnimatedColor
+    opacityCtrl: ZAnimatedOpacity
+    positionCtrl: ZAnimatedPosition
+    sizeCtrl: ZAnimatedWidgetSize
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -484,14 +504,14 @@ class ZNavigationBar(ZWidget):
             self._indicator.resize(3, btn.height()-20)
             self._indicator.move(
             target_pos.x(),
-            target_pos.y() + (btn.height()-self._indicator.height())/2
+            target_pos.y() + (btn.height()-self._indicator.height())//2
             )
             return
         factor = min(0.5, max(0.2, distance / self.height()))
         self._indicator.positionCtrl.animation.setFactor(factor)
         self._indicator.positionCtrl.moveTo(
             target_pos.x(),
-            target_pos.y() + (btn.height()-self._indicator.height())/2
+            target_pos.y() + (btn.height()-self._indicator.height())//2
             )
 
     def _get_btn_pos_(self, btn: ZNavBarButton|ZNavBarToggleButton) -> QPoint:

@@ -18,6 +18,8 @@ class ZStyleDataFactory:
         'ZSwitch': ZSwitchStyleData,
         'ZLineEdit': ZLineEditStyleData,
         'ZHeadLine': ZHeadLineStyleData,
+        'ZLoginEdit': ZLoginEditStyleData,
+        'ZNumberEdit': ZNumberEditStyleData,
         'ZPanel': ZPanelStyleData,
         'ZScrollPanel': ZScrollPanelStyleData,
         'ZSlider': ZSliderStyleData,

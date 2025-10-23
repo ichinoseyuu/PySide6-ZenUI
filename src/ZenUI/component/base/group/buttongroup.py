@@ -2,7 +2,7 @@ from PySide6.QtCore import QObject, Signal
 from typing import Dict, List, Optional, Any, overload
 from ZenUI.component.abstract import ABCToggleButton
 
-class ButttonGroup(QObject):
+class ZButtonGroup(QObject):
     """通用按钮组管理器,用于管理一组按钮"""
     clicked = Signal()
     toggled = Signal()
@@ -58,7 +58,7 @@ class ButttonGroup(QObject):
         """通过key获取按钮"""
         return self._buttons.get(key)
 
-    def addButton(self, button: ABCToggleButton, key: Optional[int] = None) -> int:
+    def addButton(self, button: ABCToggleButton, key: Optional[int] = None, is_checked: bool = False) -> int:
         """
         添加按钮到组中
 
@@ -83,15 +83,14 @@ class ButttonGroup(QObject):
                 self._next_available_key += 1
             used_key = self._next_available_key
             self._next_available_key += 1
-
         self._buttons[used_key] = button
-        # 连接点击信号
-        button.clicked.connect(lambda: self._handle_button_clicked(used_key))
-
+        if not button.isGroupMember(): button.setGroupMember(True)
+        # 连接切换信号
+        button.clicked.connect(lambda k=used_key: self._handle_button_clicked(k))
+        button.toggled.connect(lambda checked, k=used_key: self._handle_button_toggled(k, checked))
         # 第一个按钮默认选中
-        if self._btn_count == 0:
-            self.setCheckedButton(used_key)
-
+        if is_checked or (self._btn_count == 0 and not is_checked):
+            self.setCheckedButton(used_key, False)
         self._btn_count += 1
         return used_key
 
@@ -124,12 +123,10 @@ class ButttonGroup(QObject):
                     break
 
 
-
     def setCheckedButton(self, key: int, clicked: bool = True):
         """设置选中的按钮"""
         if not self._enabled or key not in self._buttons:
             return
-
         button = self._buttons[key]
         # 取消之前选中的按钮
         if self._checked_button is not None and self._checked_button != key:
@@ -139,51 +136,44 @@ class ButttonGroup(QObject):
             # 如果按钮有leaved信号则发射（通用按钮可能没有，可根据实际需求调整）
             if hasattr(old_button, 'leaved') and callable(old_button.leaved):
                 old_button.leaved.emit()
-
         # 发射点击信号（如果需要）
         if clicked:
             button.clicked.emit()
-
         # 设置新按钮为选中状态
         button.setChecked(True)
-
         # 发送状态变化信号
         if self._checked_button != key:
             self._checked_button_last = self._checked_button
             self._checked_button = key
-            #self.buttonChanged.emit(self._checked_button_last, key)
-
-        #self.buttonToggled.emit(key, True)
         self.toggled.emit()
-
 
     def _handle_button_clicked(self, key: int):
-        """处理按钮点击事件"""
-        if not self._enabled:
+        """处理按钮自身点击事件"""
+        if not self._enabled or key not in self._buttons:
             return
-
-        # 如果点击的是已选中按钮则忽略
-        if key == self._checked_button:
-            self.clicked.emit()
-            return
-
-        # 更新选中状态
-        self._checked_button_last = self._checked_button
-        self._checked_button = key
-
-        # 取消之前选中按钮
-        if self._checked_button_last is not None:
-            old_button = self._buttons[self._checked_button_last]
-            old_button.setChecked(False)
-            if hasattr(old_button, 'leaved') and callable(old_button.leaved):
-                old_button.leaved.emit()
-
-        # 发送状态变化信号
-        #self.buttonChanged.emit(self._checked_button_last, key)
-        #self.buttonToggled.emit(key, True)
-        self.toggled.emit()
         self.clicked.emit()
 
+    def _handle_button_toggled(self, key: int, checked: bool):
+        """处理按钮自身状态变化事件"""
+        if not self._enabled or key not in self._buttons:
+            return
+
+        if key == self._checked_button: return
+
+        if checked:
+            # 更新选中状态并处理其他按钮
+            self._checked_button_last = self._checked_button
+            self._checked_button = key
+
+            # 取消其他所有按钮的选中状态
+            if self._checked_button_last is not None:
+                old_button = self._buttons[self._checked_button_last]
+                old_button.setChecked(False)
+                if hasattr(old_button, 'leaved') and callable(old_button.leaved):
+                    old_button.leaved.emit()
+
+            self.toggled.emit()
+            self.clicked.emit()
 
     def toggleToNextButton(self, clicked: bool = True):
         """切换到下一个按钮"""

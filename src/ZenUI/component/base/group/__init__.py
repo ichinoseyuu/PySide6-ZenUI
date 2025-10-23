@@ -1,1 +1,1 @@
-from .buttongroup import ButttonGroup
+from .buttongroup import ZButtonGroup

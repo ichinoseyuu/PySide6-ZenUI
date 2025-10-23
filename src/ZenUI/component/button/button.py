@@ -134,27 +134,27 @@ class ZButton(ABCButton):
         self.textColorCtrl.setColorTo(data.Text)
 
     # region slot
-    def _hover_handler_(self):
+    def _hover_handler_(self) -> None:
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
-        if self._tooltip != "":
+        if self._tooltip is not None:
             ZGlobal.tooltip.showTip(text=self._tooltip,
                         target=self,
                         position=ZPosition.TopRight,
                         offset=QPoint(6, 6))
-    def _leave_handler_(self):
+    def _leave_handler_(self) -> None:
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-        if self._tooltip != "" or ZGlobal.tooltip.isShowing: ZGlobal.tooltip.hideTip()
+        if self._tooltip is not None: ZGlobal.tooltip.hideTip()
 
-    def _press_handler_(self):
+    def _press_handler_(self) -> None:
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyPressed)
 
-    def _release_handler_(self):
+    def _release_handler_(self) -> None:
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
 
 
 
     # region paintEvent
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         painter = QPainter(self)
         painter.setRenderHint(
             QPainter.RenderHint.Antialiasing|

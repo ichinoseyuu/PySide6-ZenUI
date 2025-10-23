@@ -144,11 +144,6 @@ class ZExpPropertyAnimation(QAbstractAnimation):
         # new 2025.10.14
         if self._start_value is None:
             self.fromProperty()
-            # if self._property_name == 'pos':
-            #     import logging
-            #     logging.info(f"===========================================")
-            #     print(f"{self._target.__class__.__name__}.{self._property_name}:{self._current_value}->{self._end_value}")
-        # Add check for equal start and end values
         if (self._current_value == self._end_value).all():
             # If current value equals end value, do not start the animation
             return

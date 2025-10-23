@@ -1,6 +1,6 @@
 from typing import overload
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, QMargins, Slot, QPoint, QSize, QRect, QRectF
+from PySide6.QtCore import Qt, QMargins, Slot, QPoint, QSize, QRect, QRectF,Signal
 from PySide6.QtGui import QMouseEvent, QPainter, QIcon , QPixmap, QPen
 from ZenUI.component.abstract import ABCButton, ABCToggleButton
 from ZenUI.component.layout import ZVBoxLayout
@@ -11,7 +11,7 @@ from ZenUI.component.base import (
     ZAnimatedPosition,
     ZAnimatedWidgetSize,
     StyleController,
-    ButttonGroup,
+    ZButtonGroup,
     ZWidget
 )
 from ZenUI.core import (
@@ -98,7 +98,7 @@ class ZNavBarButton(ABCButton):
     # region slot
     def _hover_handler_(self):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
-        if self._tooltip != "":
+        if self._tooltip is not None:
             ZGlobal.tooltip.showTip(
                 text = self._tooltip,
                 target = self,
@@ -109,7 +109,7 @@ class ZNavBarButton(ABCButton):
 
     def _leave_handler_(self):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-        if self._tooltip != "": ZGlobal.tooltip.hideTip()
+        if self._tooltip is not None: ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyPressed)
@@ -232,7 +232,7 @@ class ZNavBarToggleButton(ABCToggleButton):
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggledHover)
         else:
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
-        if self._tooltip != "":
+        if self._tooltip is not None:
             ZGlobal.tooltip.showTip(
                 text = self._tooltip,
                 target = self,
@@ -246,7 +246,7 @@ class ZNavBarToggleButton(ABCToggleButton):
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggled)
         else:
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-        if self._tooltip != "": ZGlobal.tooltip.hideTip()
+        if self._tooltip is not None: ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
         if self._checked:
@@ -299,6 +299,7 @@ class ZNavBarToggleButton(ABCToggleButton):
 
 # region Panel
 class Panel(QWidget):
+    wheeled: Signal = Signal()
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self._content = QWidget(self)
@@ -320,6 +321,9 @@ class Panel(QWidget):
     def wheelEvent(self, event: QMouseEvent):
         content_height = self._content.layout().sizeHint().height()
         visible_height = self.height()
+        if content_height <= visible_height:
+            return
+
         max_offset = max(0, content_height - visible_height)
         delta = event.angleDelta().y()
         step = 30
@@ -328,6 +332,7 @@ class Panel(QWidget):
         elif delta > 0:
             self._offset = max(self._offset - step, 0)
         self._updateContentGeometry()
+        self.wheeled.emit()
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -392,8 +397,9 @@ class ZNavigationBar(ZWidget):
         self.setLayout(ZVBoxLayout(self, margins=QMargins(0, 0, 0, 0), spacing=0))
         self.layout().addWidget(self._panel, stretch=1)
         self.layout().addWidget(self._footer_panel, stretch=0)
-        self._btn_manager = ButttonGroup()
+        self._btn_manager = ZButtonGroup()
         self._btn_manager.toggled.connect(self._update_indicator_)
+        self._panel.wheeled.connect(self._sync_indicator_)
         self._init_style_()
 
     # region property
@@ -488,6 +494,7 @@ class ZNavigationBar(ZWidget):
 
     # region private
     def _init_style_(self):
+        self._indicator.resize(3, self._btn_size.height()-20)
         self._indicator.bodyColorCtrl.color = self.styleDataCtrl.data.Indicator
         self._indicator.update()
 
@@ -498,27 +505,27 @@ class ZNavigationBar(ZWidget):
     def _update_indicator_(self):
         btn = self._btn_manager.checkedButton()
         current_pos = self._indicator.pos()
-        target_pos = self._get_btn_pos_(btn)
+        target_pos = self._get_btn_global_pos_(btn)
         distance = abs(target_pos.y() - current_pos.y())
-        if distance == 0:
-            self._indicator.resize(3, btn.height()-20)
-            self._indicator.move(
-            target_pos.x(),
-            target_pos.y() + (btn.height()-self._indicator.height())//2
-            )
-            return
-        factor = min(0.5, max(0.2, distance / self.height()))
+        factor = min(0.5, max(0.2, distance / btn.height()))
         self._indicator.positionCtrl.animation.setFactor(factor)
         self._indicator.positionCtrl.moveTo(
             target_pos.x(),
             target_pos.y() + (btn.height()-self._indicator.height())//2
             )
 
-    def _get_btn_pos_(self, btn: ZNavBarButton|ZNavBarToggleButton) -> QPoint:
-        if not btn: return QPoint(0, 0)
-        pos = btn.pos()
-        parent_pos_in_nav = btn.parentWidget().pos()
-        return QPoint(
-            pos.x() + parent_pos_in_nav.x(),
-            pos.y() + parent_pos_in_nav.y()
-        )
+    @Slot()
+    def _sync_indicator_(self):
+        btn = self._btn_manager.checkedButton()
+        if btn.parentWidget() is self._panel:
+            self._indicator.stackUnder(self._footer_panel)
+        else:
+            self._indicator.raise_()
+        target_pos = self._get_btn_global_pos_(btn)
+        self._indicator.move(
+            target_pos.x(),
+            target_pos.y() + (btn.height()-self._indicator.height())//2
+            )
+
+    def _get_btn_global_pos_(self, btn: ZNavBarButton|ZNavBarToggleButton) -> QPoint:
+        return btn.pos() + btn.parentWidget().pos()

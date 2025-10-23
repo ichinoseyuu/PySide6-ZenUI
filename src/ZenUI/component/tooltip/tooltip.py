@@ -1,5 +1,6 @@
 import logging
 from enum import IntEnum
+from re import S
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
@@ -94,6 +95,7 @@ class ToolTipContent(ZWidget):
 
     def heightForWidth(self, width: int) -> int:
         p = self._padding
+        if not self._text: return max(p.vertical, self.minimumHeight())
         fm = QFontMetrics(self.font())
         rect = fm.boundingRect(
             0, 0, width, 0,
@@ -148,6 +150,9 @@ class ToolTipContent(ZWidget):
 
 # region ZToolTip
 class ZToolTip(ZWidget):
+    shown = Signal()
+    hidden = Signal()
+
     sizeCtrl: ZAnimatedWidgetSize
     positionCtrl: ZAnimatedPosition
     opacityCtrl: ZAnimatedWindowOpacity
@@ -181,14 +186,12 @@ class ZToolTip(ZWidget):
         self._hide_timer = QTimer()
         self._hide_timer.setSingleShot(True)
         self._hide_timer.timeout.connect(self.hideTip)
-        self.positionCtrl.animation.setBias(1)
-        self.positionCtrl.animation.setFactor(0.1)
-        self.sizeCtrl.animation.setBias(1)
-        self.sizeCtrl.animation.setFactor(0.1)
-        self.opacityCtrl.animation.setBias(0.02)
-        self.opacityCtrl.animation.setFactor(0.2)
+        self.opacityCtrl.animation.init(factor=0.2, bias=0.02, current_value=0)
         self.opacityCtrl.completelyHide.connect(self._complete_hide)
+        self.opacityCtrl.completelyShow.connect(self.shown.emit)
         self.resize(self.sizeHint())
+        self.sizeCtrl.animation.init(factor=0.1, bias=1,current_value=self.size())
+        self.positionCtrl.animation.init(factor=0.1, bias=1,current_value=self.pos())
         ZQuickEffect.applyDropShadowOn(widget=self._content,color=(0, 0, 0, 40),blur_radius=12)
         QApplication.instance().installEventFilter(self)
 
@@ -210,10 +213,6 @@ class ZToolTip(ZWidget):
     @mode.setter
     def mode(self, m: Mode):
         self._mode = m
-        # if m in [self.Mode.TrackMouse, self.Mode.TrackTarget]:
-        #     self._tracker_timer.start()
-        # else:
-        #     self._tracker_timer.stop()
 
     def setMode(self, mode: Mode):
         self.mode = mode
@@ -270,15 +269,27 @@ class ZToolTip(ZWidget):
         self.raise_()
         new_pos = self._get_pos_should_be_move()
         distance = new_pos - self.pos()
-        if self.windowOpacity() == 0 or distance.manhattanLength() > 150:
+
+        if distance.manhattanLength() > 200:
+            self.setWindowOpacity(0)
             self.resize(self.sizeHint())
             self.move(self._get_initial_pos())
+            self.show()
+            self._tracker_timer.start()
+            self.opacityCtrl.fadeIn()
+        elif self.windowOpacity() == 0:
+            self.resize(self.sizeHint())
+            self.move(self._get_initial_pos())
+            self.show()
+            self._tracker_timer.start()
+            self.opacityCtrl.fadeIn()
         else:
-            self.sizeCtrl.resizeTo(self.sizeHint())
+            self.sizeCtrl.resizeTo(self.size(), self.sizeHint())
             self.positionCtrl.moveTo(new_pos)
-        self.show()
-        self._tracker_timer.start()
-        self.opacityCtrl.fadeIn()
+            self.show()
+            self._tracker_timer.start()
+            self.opacityCtrl.fadeIn()
+
         if hide_delay > 0: self._hide_timer.start(hide_delay)
         self._repeat_timer.start(33)
 
@@ -317,8 +328,7 @@ class ZToolTip(ZWidget):
 
     def _complete_hide(self):
         self.hide()
-        self._text = ""
-        self.resize(self.sizeHint())
+        self.hidden.emit()
 
     def _get_initial_pos(self):
         tip_pos = self._position

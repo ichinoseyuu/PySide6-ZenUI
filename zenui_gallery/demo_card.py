@@ -4,7 +4,7 @@ from PySide6.QtGui import QFont,QColor
 from ZenUI import *
 
 class DemoCard(ZPanel):
-    def __init__(self,parent = None,name ='DemoCard'):
+    def __init__(self,parent:QWidget = None,name ='DemoCard'):
         light_data = ZPanelStyleData(Body=QColor('#f3f3f3'), Border=QColor('#e5e5e5'), Radius=5.0)
         dark_data = ZPanelStyleData(Body=QColor('#202020'), Border=QColor('#1d1d1d'), Radius=5.0)
         super().__init__(parent, name, light_data, dark_data)

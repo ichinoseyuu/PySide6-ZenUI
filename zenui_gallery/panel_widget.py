@@ -39,12 +39,7 @@ class PanelWidget(ZScrollPanel):
         card.layout().addWidget(container)
 
         btn_icon = ZGlobal.iconPack.toIcon('ic_fluent_save_regular')
-
-        self.btn_1 = ZButton(
-            parent=container,
-            name='btn_1',
-            icon=btn_icon
-            )
+        self.btn_1 = ZButton(container, 'btn_1', icon=btn_icon)
         self.btn_1.setToolTip('保存')
         container.addWidget(self.btn_1, spacing=16)
         self.btn_1.clicked.connect(
@@ -56,12 +51,7 @@ class PanelWidget(ZScrollPanel):
                 )
             )
 
-        self.btn_2 = ZButton(
-            parent=container,
-            name='btn_2',
-            icon=btn_icon,
-            text='保存'
-            )
+        self.btn_2 = ZButton(container, 'btn_2', icon=btn_icon, text='保存')
         container.addWidget(self.btn_2, spacing=16)
         self.btn_2.clicked.connect(
             lambda: ZGlobal.tooltip.showTip(
@@ -73,11 +63,7 @@ class PanelWidget(ZScrollPanel):
                 hide_delay=800
                 )
             )
-        self.btn_3 = ZButton(
-            parent=container,
-            name='btn_3',
-            text='保存'
-            )
+        self.btn_3 = ZButton(container, 'btn_3', text='保存')
         container.addWidget(self.btn_3, spacing=16)
         self.btn_3.clicked.connect(
             lambda: ZGlobal.tooltip.showTip(
@@ -90,6 +76,18 @@ class PanelWidget(ZScrollPanel):
                 )
             )
 
+        self.btn_4 = ZButton(container, 'btn_4', text='保存', style=ZButtonStyle.Flat)
+        container.addWidget(self.btn_4, spacing=16)
+        self.btn_4.clicked.connect(
+            lambda: ZGlobal.tooltip.showTip(
+                text='保存成功',
+                target=self.btn_4,
+                mode=ZToolTip.Mode.TrackTarget,
+                position=ZPosition.Top,
+                offset=QPoint(0, 6),
+                hide_delay=800
+                )
+            )
         # region ZToggleButton
         card = DemoCard(self)
         layout.addWidget(card, stretch=0)
@@ -101,28 +99,19 @@ class PanelWidget(ZScrollPanel):
         container = ZHContainer(card)
         card.layout().addWidget(container)
 
-        self.toggle_btn_1 = ZToggleButton(
-            parent=container,
-            name='toggle_btn_1',
-            icon=btn_icon
-            )
+        self.toggle_btn_1 = ZToggleButton(container,'toggle_btn_1',icon=btn_icon)
         self.toggle_btn_1.setToolTip('自动保存')
         container.addWidget(self.toggle_btn_1, spacing=16)
 
-        self.toggle_btn_2 = ZToggleButton(
-            parent=container,
-            name='toggle_btn_2',
-            icon=btn_icon,
-            text='自动保存'
-            )
+        self.toggle_btn_2 = ZToggleButton(container,'toggle_btn_2',icon=btn_icon,text='自动保存')
         container.addWidget(self.toggle_btn_2, spacing=16)
 
-        self.toggle_btn_3 = ZToggleButton(
-            parent=container,
-            name='toggle_btn_3',
-            text='自动保存'
-            )
+        self.toggle_btn_3 = ZToggleButton(container,'toggle_btn_3',text='自动保存')
         container.addWidget(self.toggle_btn_3, spacing=16)
+
+        self.toggle_btn_4 = ZToggleButton(container,'toggle_btn_4',text='自动保存', style=ZButtonStyle.Flat)
+        container.addWidget(self.toggle_btn_4, spacing=16)
+
 
         layout = ZHBoxLayout(
             margins=QMargins(0, 0, 0, 0),
@@ -187,13 +176,9 @@ class PanelWidget(ZScrollPanel):
         container = ZVContainer(card)
         card.layout().addWidget(container)
 
-        self.combo_box_1 = ZComboBox(
-            text='请选择你的英雄',
-            options=['牢大', '坤坤', '凡凡'],
-            parent=container,
-            name='combo_box_1')
-        self.combo_box_1.addItem('马嘉祺')
-        self.combo_box_1.addItem('丁程鑫')
+        self.combo_box_1 = ZComboBox(self, name='combo_box_1',text='请选择')
+        self.combo_box_1.addOption('马嘉祺')
+        self.combo_box_1.addOption('丁程鑫')
         container.addWidget(self.combo_box_1)
 
         # region ZLineEdit
@@ -258,8 +243,7 @@ class PanelWidget(ZScrollPanel):
 
         hlayout = ZHBoxLayout(
             margins=QMargins(0, 0, 0, 0),
-            spacing=16,
-            alignment=Qt.AlignLeft|Qt.AlignTop
+            spacing=16
             )
         card.layout().addLayout(hlayout)
 

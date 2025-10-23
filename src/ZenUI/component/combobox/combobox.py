@@ -1,6 +1,7 @@
-from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
-from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPointF, Signal
+from PySide6.QtGui import QPainter,QFont,QPen,QIcon,QPixmap
+from PySide6.QtCore import Qt,QSize,QRectF,QPointF,Signal
 from PySide6.QtWidgets import QWidget
+from typing import Any,Dict
 from ZenUI.component.abstract import ABCButton
 from ZenUI.component.itemview import ZItemView
 from ZenUI.component.base import (
@@ -9,7 +10,7 @@ from ZenUI.component.base import (
     ZAnimatedOpacity,
     ZAnimatedPointF,
     StyleController,
-    ZPadding
+    ZPadding,
 )
 from ZenUI.core import (
     ZComboBoxStyleData,
@@ -17,8 +18,9 @@ from ZenUI.core import (
     ZGlobal,
 )
 
+# region ZComboBox
 class ZComboBox(ABCButton):
-    selected = Signal(str)
+    optionChanged = Signal(str, object)
 
     bodyColorCtrl: QAnimatedColor
     borderColorCtrl: QAnimatedColor
@@ -31,25 +33,24 @@ class ZComboBox(ABCButton):
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZComboBox'}}
 
     def __init__(self,
-                 options: list[str],
                  parent: QWidget = None,
                  name: str = None,
+                 options: Dict[str, Any]= None,
                  text: str = None,
                  ):
         super().__init__(parent=parent, font=QFont("Microsoft YaHei", 9))
         if name: self.setObjectName(name)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-
-        self._options: list[str] = options
+        self._options: Dict[str, Any] = {}
         self._text: str = None
         self._drop_icon: QIcon = ZGlobal.getBuiltinIcon(u':/icons/arrow_down.svg')
         self._drop_icon_size = QSize(12, 12)
         self._padding = ZPadding(8, 8, 8, 8)
         self._spacing: int = 16
-        if text : self._text = text
-
-        self._item_view = ZItemView(self, self._options)
-        self._item_view.selected.connect(self._select_handler_)
+        if text :self._text = text
+        if options: self._options = options
+        self._options_view = ZItemView(self, self._options.keys())
+        self._options_view.selected.connect(self._select_handler_)
 
         self.dropIconPosCtrl.animation.setBias(0.1)
         self.dropIconPosCtrl.animation.setFactor(0.2)
@@ -58,10 +59,17 @@ class ZComboBox(ABCButton):
         self.dropIconPosCtrl.setPos(self._get_drop_icon_pos())
 
 
-    @property
-    def opitions(self) -> list[str]: return self._options
-
     # region public method
+    @property
+    def options(self) -> Dict[str, Any]:
+        return self._options
+
+    @property
+    def currentValue(self) -> any:
+        if self._text in self._options:
+            return self._options[self._text]
+        return None
+
     @property
     def text(self) -> str: return self._text
 
@@ -101,12 +109,20 @@ class ZComboBox(ABCButton):
         else: self.opacityCtrl.fadeTo(0.3)
         super().setEnabled(enable)
 
-    def addItem(self, item: str) -> None:
-        #self._options.append(item) # ZItemView 内部的i tems 与 _options 共用内存
-        self._item_view.addItem(item)
+    def addOption(self, key: str, value: Any = None) -> None:
+        #self._options.append(item) # ZItemView 内部的items 与 _options 共用内存
+        self._options[key] = value
+        self._options_view.addItem(key)
+        # if key == self._text:
+        #     self._options_view.selectItem(key)
 
-    def removeItem(self, item: str) -> None:
-        self._item_view.removeItem(item)
+    def removeOption(self, key: str) -> None:
+        if key in self._options:
+            del self._options[key]
+            self._options_view.removeItem(key)
+            if self._text == key:
+                self._text = None
+                self.update()
 
     def sizeHint(self):
         text_width = self.fontMetrics().boundingRect(self._text).width() if self._text else 0
@@ -156,11 +172,13 @@ class ZComboBox(ABCButton):
         self.dropIconPosCtrl.moveTo(self._get_drop_icon_pos())
 
     def _click_handler_(self):
-        self._item_view.show()
+        self._options_view.show()
 
     def _select_handler_(self, item: str):
-        self._text = item
-
+        if item in self._options:
+            self._text = item
+            self.optionChanged.emit(item, self._options[item])
+            self.update()
 
     # region event
     def paintEvent(self, event):

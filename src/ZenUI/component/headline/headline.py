@@ -220,15 +220,16 @@ class ZHeadLine(ZWidget):
             )
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
+
         if self.bodyColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
             painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
+
         if self.borderColorCtrl.color.alpha() > 0:
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
-
 
         p = self._padding
         fm = QFontMetrics(self.font())

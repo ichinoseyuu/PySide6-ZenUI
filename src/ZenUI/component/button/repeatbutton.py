@@ -136,14 +136,14 @@ class ZRepeatButton(ABCRepeatButton):
     # region slot
     def _hover_handler_(self):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
-        if self._tooltip != "":
+        if self._tooltip is not None:
             ZGlobal.tooltip.showTip(text=self._tooltip,
                         target=self,
                         position=ZPosition.TopRight,
                         offset=QPoint(6, 6))
     def _leave_handler_(self):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-        if self._tooltip != "" or ZGlobal.tooltip.isShowing: ZGlobal.tooltip.hideTip()
+        if self._tooltip is not None: ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyPressed)

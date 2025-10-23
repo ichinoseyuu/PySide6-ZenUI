@@ -14,6 +14,8 @@ __all__ = [
     'ZScrollPanelStyleData',
     'ZSliderStyleData',
     'ZLineEditStyleData',
+    'ZLoginEditStyleData',
+    'ZNumberEditStyleData',
     'ZPanelStyleData',
     'ZSwitchStyleData',
     'ZNavigationBarStyleData',
@@ -130,7 +132,33 @@ class ZLineEditStyleData:
     Text: QColor = None
     TextBackSectcted: QColor = None
     Cursor: QColor = None
-    Mask: QColor = None
+    PlaceHolder: QColor = None
+    Underline: QColor = None
+    UnderlineFocused: QColor = None
+    Body: QColor = None
+    BodyHover: QColor = None
+    BodyFocused: QColor = None
+    Border: QColor = None
+    Radius: float = None
+
+@dataclass
+class ZLoginEditStyleData:
+    Text: QColor = None
+    TextBackSectcted: QColor = None
+    Cursor: QColor = None
+    Underline: QColor = None
+    UnderlineFocused: QColor = None
+    Body: QColor = None
+    BodyHover: QColor = None
+    BodyFocused: QColor = None
+    Border: QColor = None
+    Radius: float = None
+
+@dataclass
+class ZNumberEditStyleData:
+    Text: QColor = None
+    TextBackSectcted: QColor = None
+    Cursor: QColor = None
     Underline: QColor = None
     UnderlineFocused: QColor = None
     Body: QColor = None
@@ -188,6 +216,8 @@ StyleDataUnion = Union[
     ZScrollPanelStyleData,
     ZSliderStyleData,
     ZLineEditStyleData,
+    ZLoginEditStyleData,
+    ZNumberEditStyleData,
     ZPanelStyleData,
     ZSwitchStyleData,
     ZNavigationBarStyleData,

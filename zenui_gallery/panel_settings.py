@@ -28,27 +28,24 @@ class PanelSettings(ZPanel):
         self.text_theme_set.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Normal))
         self.hcontainer.addWidget(self.text_theme_set)
 
-        self.btn_theme_set_1 = ZButton(
-            parent=self.hcontainer,
-            name='btn_theme_set_1',
-            text='浅色')
+        self.btn_theme_set_1 = ZToggleButton(self.hcontainer, 'btn_theme_set_1', text='浅色')
+        self.btn_theme_set_1.setGroupMember(True)
         self.btn_theme_set_1.clicked.connect(lambda: ZGlobal.themeManager.setThemeForce(ZTheme.Light))
         self.hcontainer.addWidget(self.btn_theme_set_1)
 
-        self.btn_theme_set_2 = ZButton(
-            parent=self.hcontainer,
-            name='btn_theme_set_2',
-            text='深色')
+        self.btn_theme_set_2 = ZToggleButton(self.hcontainer, 'btn_theme_set_2', text='深色')
+        self.btn_theme_set_2.setGroupMember(True)
         self.btn_theme_set_2.clicked.connect(lambda: ZGlobal.themeManager.setThemeForce(ZTheme.Dark))
         self.hcontainer.addWidget(self.btn_theme_set_2)
 
-        self.btn_theme_set_3 = ZButton(
-            parent=self.hcontainer,
-            name='btn_theme_set_3',
-            text='跟随系统')
+        self.btn_theme_set_3 = ZToggleButton(self.hcontainer, 'btn_theme_set_3', text='跟随系统')
+        self.btn_theme_set_3.setGroupMember(True)
         self.btn_theme_set_3.clicked.connect(lambda: ZGlobal.themeManager.setThemeMode(ZThemeMode.FollowSystem))
         self.hcontainer.addWidget(self.btn_theme_set_3)
-
+        self.theme_btn_group = ZButtonGroup(self.hcontainer)
+        self.theme_btn_group.addButton(self.btn_theme_set_1)
+        self.theme_btn_group.addButton(self.btn_theme_set_2)
+        self.theme_btn_group.addButton(self.btn_theme_set_3)
 
 
 

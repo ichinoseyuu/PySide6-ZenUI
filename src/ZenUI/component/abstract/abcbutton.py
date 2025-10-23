@@ -14,8 +14,6 @@ class ABCButton(ZWidget):
         super().__init__(*args, **kwargs)
         # self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         # self.setMouseTracking(True)
-        self._state = ZState.Idle
-        self._tooltip: str = ""
         self.entered.connect(self._hover_handler_)
         self.leaved.connect(self._leave_handler_)
         self.pressed.connect(self._press_handler_)
@@ -43,16 +41,6 @@ class ABCButton(ZWidget):
     @Slot()
     def _click_handler_(self):
         '''鼠标成功点击时的槽函数'''
-
-
-    # region public method
-    def state(self) -> ZState: return self._state
-
-    def toolTip(self): return self._tooltip
-
-    def setToolTip(self, tip: str):
-        self._tooltip = tip
-        self.update()
 
     # region event
     def enterEvent(self, event: QEnterEvent):
@@ -87,10 +75,7 @@ class ABCButton(ZWidget):
             if self.rect().contains(event.position().toPoint()):
                 self.clicked.emit()
 
-    def event(self, event: QEvent):
-        if event.type() == QEvent.Type.ToolTip:
-            return True
-        return super().event(event)
+
 
 # region ABCToggleButton
 class ABCToggleButton(ABCButton):

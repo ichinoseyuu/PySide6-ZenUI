@@ -31,11 +31,11 @@ FRAMELESS_DARK_THEME_DATA: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.Handle: '#bcbcbc',
         K.HandleToggled: '#bfbfbf'
     },
-    'ZLineEdit': {
+    ('ZLineEdit', 'ZLoginEdit', 'ZNumberEdit'): {
         K.Text: '#dcdcdc',
         K.TextBackSectcted: '#50955595',
         K.Cursor: ColorConverter.adjust(ACCENT_COLOR_DARK, 0.2),
-        K.Mask: '#909090',
+        K.PlaceHolder: '#909090',
         K.Underline: '#505050',
         K.UnderlineFocused: ACCENT_COLOR_DARK,
         K.Body: '#2d2d2d',
@@ -195,11 +195,11 @@ FRAMELESS_LIGHT_THEME_DATA: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.Handle: '#909090',
         K.HandleToggled: '#f9f9f9'
     },
-    'ZLineEdit': {
+    ('ZLineEdit', 'ZLoginEdit', 'ZNumberEdit'): {
         K.Text: '#333333',
         K.TextBackSectcted: '#5038b9f2',
         K.Cursor: ACCENT_COLOR_LIGHT,
-        K.Mask: '#808080',
+        K.PlaceHolder: '#808080',
         K.Underline: '#cdcdcd',
         K.UnderlineFocused: ACCENT_COLOR_LIGHT,
         K.Body: '#f9f9f9',

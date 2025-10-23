@@ -29,21 +29,8 @@ class PanelTest(ZScrollPanel):
         card.layout().addWidget(container)
 
 
-        self.headline = ZHeadLine(container, 'headline', 'headline',True)
-        container.addWidget(self.headline)
+        self.numberedit = ZNumberEdit(container)
+        container.addWidget(self.numberedit)
 
-        self.lineedit = ZLineEdit(container, 'textbox')
-        container.addWidget(self.lineedit)
-
-        self.logbtn = ZButton(container, 'logbtn', '关闭/打开日志')
-        self.logbtn.clicked.connect(ZDebug.toggleLogging)
-        container.addWidget(self.logbtn)
-
-        self.btn_frame_wind = ZButton(container, 'btn_frame_wind', 'FramelessWindow',style=ZButtonStyle.Flat)
-        container.addWidget(self.btn_frame_wind)
-
-        self.btn_areo_wind = ZRepeatButton(container, 'btn_areo_wind', 'AreoEffectWindow',style=ZButtonStyle.Flat)
-        container.addWidget(self.btn_areo_wind)
-
-        self.btn_areo_wind_2 = ZToggleButton(container, 'btn_areo_wind_2', 'AreoEffectWindow',style=ZButtonStyle.Flat)
-        container.addWidget(self.btn_areo_wind_2)
+        self.loginedit = ZLoginEdit(container)
+        container.addWidget(self.loginedit)

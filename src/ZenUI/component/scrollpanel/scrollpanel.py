@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from ZenUI.component.itemview import ZItemView
 from ZenUI.component.base import (
     ZAnimatedPosition,
     QAnimatedColor,
@@ -271,10 +270,6 @@ class ZScrollPanel(ZWidget):
 
 
     def wheelEvent(self, event: QWheelEvent):
-        for widget in QApplication.topLevelWidgets():
-            if isinstance(widget, ZItemView) and widget.isVisible():
-                event.ignore()
-                return
         current_x = -self._content.x()
         current_y = -self._content.y()
         if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:

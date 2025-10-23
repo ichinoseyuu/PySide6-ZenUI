@@ -63,3 +63,4 @@ class ZStyleDataKey(Enum):
     Cursor = 'Cursor'
     Mask = 'Mask'
     Indicator = 'Indicator'
+    PlaceHolder = 'PlaceHolder'

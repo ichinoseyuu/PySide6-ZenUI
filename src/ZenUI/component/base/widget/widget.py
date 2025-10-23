@@ -2,10 +2,10 @@ import inspect
 import logging
 from typing import TypeVar, cast, get_origin
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt,QEvent
 from PySide6.QtGui import QColor
 from ZenUI.component.base.controller import *
-from ZenUI.core import ZDebug,ZButtonStyleData,make_getter
+from ZenUI.core import ZButtonStyleData,make_getter,ZState
 
 T = TypeVar('T')
 
@@ -28,8 +28,10 @@ class ZWidget(QWidget):
         StyleController
         ]
     __controllers_kwargs__ = {}
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__( *args, **kwargs)
+        self._state = ZState.Idle
+        self._tooltip: str = None
         controllers_kwargs = {}
         annotations = {}
         for cls in reversed(inspect.getmro(self.__class__)):
@@ -60,11 +62,31 @@ class ZWidget(QWidget):
                 style_controller.styleChanged.connect(self._style_change_handler_)
 
 
-    def _init_style_(self):
+    def _init_style_(self) -> None:
         '''初始化样式'''
 
-    def _style_change_handler_(self):
+    def _style_change_handler_(self) -> None:
         '''主题改变时的槽函数'''
+
+    # region public method
+    def state(self) -> ZState:
+        '''获取当前状态'''
+        return self._state
+
+    def toolTip(self) -> str:
+        '''获取工具提示'''
+        return self._tooltip
+
+    def setToolTip(self, tip: str) -> None:
+        '''设置工具提示'''
+        self._tooltip = tip
+        self.update()
+
+    def event(self, event: QEvent) -> bool:
+        if event.type() == QEvent.Type.ToolTip:
+            return True
+        return super().event(event)
+
 
 
 class MyWidget(ZWidget):
@@ -83,7 +105,7 @@ class MyWidget(ZWidget):
             'value': 5.0
         }
     }
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
 
 class MyWidgetSub(MyWidget):

@@ -2,7 +2,6 @@ from typing import overload
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QMargins, Slot, QPoint, QSize, QRect, QRectF,Signal
 from PySide6.QtGui import QMouseEvent, QPainter, QIcon , QPixmap, QPen
-from ZenUI.component.abstract import ABCButton, ABCToggleButton
 from ZenUI.component.layout import ZVBoxLayout
 from ZenUI.component.base import (
     QAnimatedColor,
@@ -12,7 +11,9 @@ from ZenUI.component.base import (
     ZAnimatedWidgetSize,
     StyleController,
     ZButtonGroup,
-    ZWidget
+    ZWidget,
+    ABCButton,
+    ABCToggleButton
 )
 from ZenUI.core import (
     ZDebug,
@@ -42,7 +43,7 @@ class ZNavBarButton(ABCButton):
                  ):
         super().__init__(parent=parent, maximumSize=size)
         if name : self.setObjectName(name)
-        if tooltip: self._tooltip = tooltip
+        if tooltip: self.setToolTip(tooltip)
         self._icon: QIcon = icon
         self._icon_size = QSize(20, 20)
         self._init_style_()
@@ -98,9 +99,9 @@ class ZNavBarButton(ABCButton):
     # region slot
     def _hover_handler_(self):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
-        if self._tooltip is not None:
+        if self.toolTip() != '':
             ZGlobal.tooltip.showTip(
-                text = self._tooltip,
+                text = self.toolTip(),
                 target = self,
                 mode = ZGlobal.tooltip.Mode.TrackTarget,
                 position = ZPosition.Right,
@@ -109,7 +110,7 @@ class ZNavBarButton(ABCButton):
 
     def _leave_handler_(self):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-        if self._tooltip is not None: ZGlobal.tooltip.hideTip()
+        if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyPressed)
@@ -164,7 +165,7 @@ class ZNavBarToggleButton(ABCToggleButton):
                  ):
         super().__init__(parent=parent, maximumSize=size)
         if name: self.setObjectName(name)
-        if tooltip: self._tooltip = tooltip
+        if tooltip: self.setToolTip(tooltip)
         self.setGroupMember(True)
         self._icon = icon
         self._icon_size = QSize(20, 20)
@@ -232,9 +233,9 @@ class ZNavBarToggleButton(ABCToggleButton):
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggledHover)
         else:
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
-        if self._tooltip is not None:
+        if self.toolTip() != '':
             ZGlobal.tooltip.showTip(
-                text = self._tooltip,
+                text = self.toolTip(),
                 target = self,
                 mode = ZGlobal.tooltip.Mode.TrackTarget,
                 position = ZPosition.Right,
@@ -246,7 +247,7 @@ class ZNavBarToggleButton(ABCToggleButton):
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggled)
         else:
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-        if self._tooltip is not None: ZGlobal.tooltip.hideTip()
+        if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
         if self._checked:

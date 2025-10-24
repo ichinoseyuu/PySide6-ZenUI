@@ -2,12 +2,12 @@
 from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap, QColor
 from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPoint
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.abstract import ABCToggleButton
 from ZenUI.component.base import (
     QAnimatedColor,
     QAnimatedFloat,
     ZAnimatedOpacity,
-    StyleController
+    StyleController,
+    ABCToggleButton
 )
 from ZenUI.core import (
     ZDebug,
@@ -152,8 +152,8 @@ class ZToggleButton(ABCToggleButton):
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggledHover)
         else:
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
-        if self._tooltip is not None:
-            ZGlobal.tooltip.showTip(text=self._tooltip,
+        if self.toolTip() != '':
+            ZGlobal.tooltip.showTip(text=self.toolTip(),
                                     target=self,
                                     position=ZPosition.TopRight,
                                     offset=QPoint(6, 6))
@@ -162,7 +162,7 @@ class ZToggleButton(ABCToggleButton):
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggled)
         else:
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-        if self._tooltip is not None: ZGlobal.tooltip.hideTip()
+        if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
         if self._checked:

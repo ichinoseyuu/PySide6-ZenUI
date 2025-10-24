@@ -31,7 +31,6 @@ class ZWidget(QWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__( *args, **kwargs)
         self._state = ZState.Idle
-        self._tooltip: str = None
         controllers_kwargs = {}
         annotations = {}
         for cls in reversed(inspect.getmro(self.__class__)):
@@ -70,16 +69,10 @@ class ZWidget(QWidget):
 
     # region public method
     def state(self) -> ZState:
-        '''获取当前状态'''
         return self._state
 
-    def toolTip(self) -> str:
-        '''获取工具提示'''
-        return self._tooltip
-
     def setToolTip(self, tip: str) -> None:
-        '''设置工具提示'''
-        self._tooltip = tip
+        super().setToolTip(tip)
         self.update()
 
     def event(self, event: QEvent) -> bool:
@@ -88,7 +81,7 @@ class ZWidget(QWidget):
         return super().event(event)
 
 
-
+# region ==========================
 class MyWidget(ZWidget):
     bodyColorCtrl: QAnimatedColor
     borderColorCtrl: QAnimatedColor

@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal, Slot, QPoint, QEvent, QTimer
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from ZenUI.core import ZState
-from ZenUI.component.base import ZWidget
+from ZenUI.component.base.widget import ZWidget
 # region ABCButton
 class ABCButton(ZWidget):
     entered = Signal()

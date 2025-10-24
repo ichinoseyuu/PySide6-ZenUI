@@ -2,7 +2,6 @@ from PySide6.QtGui import QPainter,QFont,QPen,QIcon,QPixmap
 from PySide6.QtCore import Qt,QSize,QRectF,QPointF,Signal
 from PySide6.QtWidgets import QWidget
 from typing import Any,Dict
-from ZenUI.component.abstract import ABCButton
 from ZenUI.component.itemview import ZItemView
 from ZenUI.component.base import (
     QAnimatedColor,
@@ -11,6 +10,7 @@ from ZenUI.component.base import (
     ZAnimatedPointF,
     StyleController,
     ZPadding,
+    ABCButton
 )
 from ZenUI.core import (
     ZComboBoxStyleData,

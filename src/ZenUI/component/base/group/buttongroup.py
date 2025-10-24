@@ -1,6 +1,6 @@
 from PySide6.QtCore import QObject, Signal
 from typing import Dict, List, Optional, Any, overload
-from ZenUI.component.abstract import ABCToggleButton
+from ZenUI.component.base.abstract import ABCToggleButton
 
 class ZButtonGroup(QObject):
     """通用按钮组管理器,用于管理一组按钮"""

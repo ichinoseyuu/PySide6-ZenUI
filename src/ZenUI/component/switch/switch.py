@@ -3,14 +3,14 @@ from dataclasses import dataclass
 from PySide6.QtGui import QPainter, QPen
 from PySide6.QtCore import Qt, QRectF, QPointF
 from PySide6.QtWidgets import QWidget
-from ZenUI.component.abstract import ABCToggleButton
 from ZenUI.component.base import (
     QAnimatedColor,
     ZAnimatedOpacity,
     ZAnimatedPosition,
     QAnimatedFloat,
     StyleController,
-    ZWidget
+    ZWidget,
+    ABCToggleButton
 )
 from ZenUI.core import ZSwitchStyleData,ZDebug
 

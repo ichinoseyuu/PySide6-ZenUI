@@ -2,7 +2,6 @@ from PySide6.QtGui import QPainter,QFont,QPen,QIcon,QPixmap
 from PySide6.QtCore import Qt,QRect,QSize,QRectF,Signal,QMargins,QPoint
 from PySide6.QtWidgets import QWidget
 from ZenUI.component.layout import ZVBoxLayout
-from ZenUI.component.abstract import ABCToggleButton
 from ZenUI.component.base import (
     QAnimatedColor,
     QAnimatedFloat,
@@ -14,7 +13,8 @@ from ZenUI.component.base import (
     ZWidget,
     ZButtonGroup,
     ZPadding,
-    ZMargin
+    ZMargin,
+    ABCToggleButton
 )
 from ZenUI.core import (
     ZItemStyleData,

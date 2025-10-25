@@ -1,5 +1,5 @@
 [project]
-name = "ZenUI"
+name = "ZenWidgets"
 version = "0.1.0"
 description = "A UI component library based on QWidget in PySide6"
 readme = "README.md"

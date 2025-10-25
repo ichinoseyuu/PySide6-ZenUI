@@ -1,4 +1,4 @@
-# ZenUI
+# ZenWidgets
 
 ## preview
 

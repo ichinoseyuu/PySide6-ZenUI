@@ -12,13 +12,14 @@ class PanelInfo(ZScrollPanel):
 
 
     def _setup_ui(self):
-        self.title = ZHeadLine(self, 'title', '状态与信息', display_indicator=True)
+        self.title = ZHeadLine(self, text='状态与信息', display_indicator=True)
         self.title.setFont(QFont('Microsoft YaHei', 20, QFont.Weight.Bold))
-        self.title.padding = ZPadding(6, 0, 6, 6)
-        self.content.layout().addWidget(self.title)
+        self.title.setPadding(ZPadding(6, 0, 6, 6))
+        self.content().layout().addWidget(self.title)
+        self.content().layout().setAlignment(Qt.AlignmentFlag.AlignTop)
 
         card = DemoCard(self)
-        self.content.layout().addWidget(card)
+        self.content().layout().addWidget(card)
 
         title = ZHeadLine(self, text='ZToolTip')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
@@ -72,13 +73,19 @@ class PanelInfo(ZScrollPanel):
         hcontainer_3.addWidget(self.numberedit_3)
 
         hcontainer_4 = ZHContainer(card)
+        hcontainer_4.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         self.panel_1 = ZPanel(hcontainer_4)
+        self.panel_1.setFixedSize(100, 100)
         hcontainer_4.addWidget(self.panel_1)
 
         self.panel_2 = ZPanel(hcontainer_4)
-        hcontainer_4.addWidget(self.panel_2)
+        self.panel_2.setFixedSize(100, 100)
+        hcontainer_4.addWidget(self.panel_2,spacing=60)
 
+        self.panel_3 = ZPanel(hcontainer_4)
+        self.panel_3.setFixedSize(100, 100)
+        hcontainer_4.addWidget(self.panel_3,spacing=60)
 
         vcontainer.addWidget(hcontainer_1)
         vcontainer.addWidget(hcontainer_2)
@@ -89,16 +96,18 @@ class PanelInfo(ZScrollPanel):
         self.panel_1.leaveEvent = self._on_target_leave
         self.panel_2.enterEvent = self._on_target_enter
         self.panel_2.leaveEvent = self._on_target_leave
+        self.panel_3.enterEvent = self._on_target_enter
+        self.panel_3.leaveEvent = self._on_target_leave
         card.layout().addWidget(vcontainer)
 
 
     def _on_target_enter(self, event):
         # 从控件获取当前设置
-        position = self.combobox_1.currentValue
-        mode = self.combobox_2.currentValue
-        hide_delay = self.numberedit_1.value
-        offset = QPoint(self.numberedit_2.value, self.numberedit_3.value)
-        text = self.lineedit.text
+        position = self.combobox_1.currentValue()
+        mode = self.combobox_2.currentValue()
+        hide_delay = self.numberedit_1.value()
+        offset = QPoint(self.numberedit_2.value(), self.numberedit_3.value())
+        text = self.lineedit.text()
         if self.panel_1.underMouse():
             ZGlobal.tooltip.showTip(
                 text=text,
@@ -112,6 +121,15 @@ class PanelInfo(ZScrollPanel):
             ZGlobal.tooltip.showTip(
                 text=text,
                 target=self.panel_2,
+                mode=mode,
+                position=position,
+                offset=offset,
+                hide_delay=hide_delay
+            )
+        elif self.panel_3.underMouse():
+            ZGlobal.tooltip.showTip(
+                text=text,
+                target=self.panel_3,
                 mode=mode,
                 position=position,
                 offset=offset,

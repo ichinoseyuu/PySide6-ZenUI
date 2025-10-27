@@ -22,13 +22,17 @@ class ZHeadLine(ZWidget):
 
     def __init__(self,
                  parent: QWidget = None,
-                 name: str = None,
                  text: str = "",
+                 font: QFont = QFont('Microsoft YaHei', 9),
                  display_indicator: bool = False,
-                 selectable: bool = False):
-        super().__init__(parent=parent,font=QFont("Microsoft YaHei", 9))
-        if name: self.setObjectName(name)
-        self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+                 selectable: bool = False,
+                 objectName: str | None = None,
+                 ):
+        super().__init__(parent=parent,
+                         objectName=objectName,
+                         font=font,
+                         )
+        if selectable: self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self._text = text
         self._selected_text = ""
         self._spacing = 6
@@ -45,35 +49,25 @@ class ZHeadLine(ZWidget):
         self.setMinimumSize(self._padding.horizontal, 24)
 
     # region public
-    @property
     def selectedText(self) -> str: return self._selected_text
 
-    @property
     def text(self) -> str: return self._text
 
-    @text.setter
-    def text(self, t: str) -> None:
-        self._text = t
-        self.adjustSize()
-        self.update()
-
     def setText(self, t: str) -> None:
-        self.text = t
-
-    @property
-    def selectable(self) -> bool: return self._selectable
-
-    @selectable.setter
-    def selectable(self, v: bool) -> None:
-        self._selectable = v
-        if not v: self._clear_selection()
+        self._text = t
         self.adjustSize()
         self.update()
 
     def isSelectable(self) -> bool: return self._selectable
 
     def setSelectable(self, v: bool) -> None:
-        self.selectable = v
+        self._selectable = v
+        if v: self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        else:
+            self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+            self._clear_selection()
+        self.adjustSize()
+        self.update()
 
     def isDisplayIndicator(self) -> bool: return self._isdisplay_indicator
 
@@ -82,41 +76,25 @@ class ZHeadLine(ZWidget):
         self.adjustSize()
         self.update()
 
-    @property
     def padding(self) -> ZPadding: return self._padding
 
-    @padding.setter
-    def padding(self, p: ZPadding) -> None:
+    def setPadding(self, p: ZPadding) -> None:
         self._padding = p
         self.adjustSize()
         self.update()
 
-    def setPadding(self, p: ZPadding) -> None:
-        self.padding = p
-
-    @property
     def spacing(self) -> int: return self._spacing
 
-    @spacing.setter
-    def spacing(self, s: int) -> None:
+    def setSpacing(self, s: int) -> None:
         self._spacing = s
         self.adjustSize()
         self.update()
 
-    def setSpacing(self, s: int) -> None:
-        self.spacing = s
-
-    @property
     def alignment(self) -> Qt.AlignmentFlag: return self._alignment
 
-    @alignment.setter
-    def alignment(self, a: Qt.AlignmentFlag) -> None:
+    def setAlignment(self, a: Qt.AlignmentFlag) -> None:
         align = a & Qt.AlignmentFlag.AlignHorizontal_Mask
         self._alignment = align
-        self.update()
-
-    def setAlignment(self, a: Qt.AlignmentFlag) -> None:
-        self._alignment = a
         self.update()
 
     def sizeHint(self):
@@ -213,7 +191,9 @@ class ZHeadLine(ZWidget):
 
     # region paintEvent
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(
             QPainter.RenderHint.TextAntialiasing|
             QPainter.RenderHint.Antialiasing
@@ -232,9 +212,9 @@ class ZHeadLine(ZWidget):
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
 
         p = self._padding
-        fm = QFontMetrics(self.font())
+        fm = self.fontMetrics()
         text_height = fm.height()
-        indicator_width = self._indicator_width
+        indicator_w = self._indicator_width
         spacing = self._spacing
         content_rect = rect.adjusted(p.left, p.top, -p.right, -p.bottom)
         text_rect = QRectF(content_rect)
@@ -243,21 +223,21 @@ class ZHeadLine(ZWidget):
             indicator_h = max(2.0, min(content_rect.height(), text_height - fm.descent()))
             indicator_y = content_rect.center().y() - indicator_h / 2
             if self._alignment & Qt.AlignmentFlag.AlignRight:
-                indicator_x = content_rect.right() - indicator_width
-                text_rect = QRectF(content_rect.adjusted(0, 0, -(indicator_width + spacing), 0))
+                indicator_x = content_rect.right() - indicator_w
+                text_rect = QRectF(content_rect.adjusted(0, 0, -(indicator_w + spacing), 0))
             elif self._alignment & Qt.AlignmentFlag.AlignHCenter:
-                total_w = indicator_width + spacing + text_width
+                total_w = indicator_w + spacing + text_width
                 start_x = content_rect.left() + (content_rect.width() - total_w) / 2
                 indicator_x = start_x
-                text_rect = QRectF(start_x + indicator_width + spacing, content_rect.top(), text_width, content_rect.height())
+                text_rect = QRectF(start_x + indicator_w + spacing, content_rect.top(), text_width, content_rect.height())
             else:
                 indicator_x = content_rect.left()
-                text_rect = QRectF(content_rect.adjusted(indicator_width + spacing, 0, 0, 0))
+                text_rect = QRectF(content_rect.adjusted(indicator_w + spacing, 0, 0, 0))
 
-            indicator_rect = QRectF(indicator_x, indicator_y, indicator_width, indicator_h)
+            indicator_rect = QRectF(indicator_x, indicator_y, indicator_w, indicator_h)
             painter.setPen(Qt.NoPen)
             painter.setBrush(self.indicatorColorCtrl.color)
-            painter.drawRoundedRect(indicator_rect, indicator_width / 2, indicator_width / 2)
+            painter.drawRoundedRect(indicator_rect, indicator_w / 2, indicator_w / 2)
 
         self._update_selected_text()
         if self._selectable and self._is_selection() and self._text:
@@ -273,9 +253,8 @@ class ZHeadLine(ZWidget):
 
     # region keyPressEvent
     def keyPressEvent(self, event):
-        if not self._selectable:
-            super().keyPressEvent(event)
-            return
+        super().keyPressEvent(event)
+        if not self._selectable: return
 
         if event.key() == Qt.Key.Key_C and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
             if self._is_selection() and self._selected_text:
@@ -291,13 +270,11 @@ class ZHeadLine(ZWidget):
                 self.update()
             return
 
-        super().keyPressEvent(event)
 
     # region mouseEvent
     def mousePressEvent(self, event):
-        if not self._selectable or not self._text:
-            super().mousePressEvent(event)
-            return
+        super().mousePressEvent(event)
+        if not self._selectable or not self._text: return
 
         if event.button() == Qt.MouseButton.LeftButton:
             char_pos = self._get_char_position_at_point(event.pos())
@@ -311,24 +288,21 @@ class ZHeadLine(ZWidget):
                 self._is_selecting = True
                 self._drag_start_pos = event.pos()
             self.update()
-        super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        if not self._selectable or not self._text:
-            super().mouseMoveEvent(event)
-            return
+        super().mouseMoveEvent(event)
+        if not self._selectable or not self._text: return
+
         if self._is_selecting:
             char_pos = self._get_char_position_at_point(event.pos())
             self._selection_end = char_pos
             self.update()
-        super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
+        super().mouseReleaseEvent(event)
         if event.button() == Qt.MouseButton.LeftButton:
             self._is_selecting = False
-        super().mouseReleaseEvent(event)
 
     def focusOutEvent(self, event):
-        if self._selectable:
-            self._clear_selection()
         super().focusOutEvent(event)
+        if self._selectable: self._clear_selection()

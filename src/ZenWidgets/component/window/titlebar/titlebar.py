@@ -119,7 +119,7 @@ class ZTitleBar(ZTitleBarBase):
         self.window().windowTitleChanged.connect(self.setTitle)
 
     def setTitle(self, title):
-        self.title.text = title
+        self.title.setText(title)
 
     def setIcon(self, icon):
         self.iconLabel.setPixmap(QIcon(icon).pixmap(20, 20))

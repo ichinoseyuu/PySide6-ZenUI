@@ -52,9 +52,14 @@ FRAMELESS_DARK_THEME_DATA: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.Border: '#00000000',
         K.Radius: 5.0
     },
-    ('ZPanel', 'ZItemView'): {
+    'ZPanel': {
         K.Body: '#272727',
         K.Border: '#1d1d1d',
+        K.Radius: 5.0
+    },
+    'ZItemView': {
+        K.Body: '#272727',
+        K.Border: '#303030',
         K.Radius: 5.0
     },
     'ZScrollPanel': {
@@ -66,11 +71,11 @@ FRAMELESS_DARK_THEME_DATA: Dict[str, Dict[str, Any]] = MappingProxyType({
     },
     'ZSlider': {
         K.Track: '#464646',
-        K.TrackBorder: '#585858',
-        K.FillAreaStart: ACCENT_COLOR_DARK,
-        K.FillAreaEnd: ColorConverter.adjust(ACCENT_COLOR_DARK, 0.2),
-        K.FillAreaBorder: ACCENT_COLOR_DARK,
-        K.HandleInner: ColorConverter.adjust(ACCENT_COLOR_DARK, 0.2),
+        K.TrackBorder: '#505050',
+        K.FillAreaStart: '#65479e',
+        K.FillAreaEnd: ACCENT_COLOR_DARK,
+        K.FillAreaBorder: ColorConverter.adjust(ACCENT_COLOR_DARK, 0.05),
+        K.HandleInner: ColorConverter.adjust(ACCENT_COLOR_DARK, 0.05),
         K.HandleOuter: '#464646',
         K.HandleBorder: '#505050'
     },
@@ -216,9 +221,14 @@ FRAMELESS_LIGHT_THEME_DATA: Dict[str, Dict[str, Any]] = MappingProxyType({
         K.Border: '#00ffffff',
         K.Radius: 5.0
     },
-    ('ZPanel', 'ZItemView'): {
+    'ZPanel': {
         K.Body: '#ffffff',
         K.Border: '#e5e5e5',
+        K.Radius: 5.0
+    },
+    'ZItemView': {
+        K.Body: '#ffffff',
+        K.Border: '#e0e0e0',
         K.Radius: 5.0
     },
     'ZScrollPanel': {

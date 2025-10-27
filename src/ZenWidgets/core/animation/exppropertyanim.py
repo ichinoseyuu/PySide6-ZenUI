@@ -70,6 +70,8 @@ class ZExpPropertyAnimation(QAbstractAnimation):
         if end_value is not None: self.setEndValue(end_value)
         self.resetVelocity()
 
+    def isRunning(self) -> bool:
+        return self.state() == QAbstractAnimation.State.Running
 
     def setFactor(self, factor: float):
         """

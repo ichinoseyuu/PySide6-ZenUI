@@ -22,7 +22,7 @@ class QAnimatedWindowBody(QObject):
 
     def setColor(self, value: QColor):
         self._color = value
-        self.parent().windowEffect.setBackgroundColor(self.parent().winId(), value)
+        self.parent().windowEffect().setBackgroundColor(self.parent().winId(), value)
 
     color: QColor = Property(QColor, getColor, setColor)
 

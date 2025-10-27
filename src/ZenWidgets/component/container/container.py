@@ -6,8 +6,15 @@ from ZenWidgets.core import ZDebug
 # region - ZHContainer
 class ZHContainer(QWidget):
     """水平方向对齐的容器控件，支持不同间距设置和子控件同高功能"""
-    def __init__(self, parent: QWidget = None):
-        super().__init__(parent,sizePolicy=QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred))
+    def __init__(self,
+                 parent: QWidget = None,
+                 objectName: str | None = None,
+                 sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+                 ):
+        super().__init__(parent,
+                         objectName=objectName,
+                         sizePolicy=sizePolicy
+                         )
         self._widgets: list[QWidget] = []
         self._alignment: Qt.AlignmentFlag = Qt.AlignLeft | Qt.AlignVCenter
         self._spacings: list[int] = []

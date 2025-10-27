@@ -10,10 +10,10 @@ class GlobalIconPack:
     package_folder_path = os.path.join(current_module_path, "packages")
 
     def __init__(self):
-        self.default_color = '#a8a8a8'
+        self._default_color = '#a8a8a8'
 
-        self.icons = {}
-        self.icons_classified = {
+        self._icons = {}
+        self._icons_classified = {
             "__unclassified__": {}
         }
 
@@ -22,11 +22,11 @@ class GlobalIconPack:
 
     def setDefaultColor(self, code) -> None:
         '''设置默认图标颜色'''
-        self.default_color = code
+        self._default_color = code
 
     @property
     def defaultColor(self) -> str:
-        return self.default_color
+        return self._default_color
 
     def reload_internals(self) -> None:
         '''重新加载内置图标包'''
@@ -52,23 +52,23 @@ class GlobalIconPack:
 
     def append_class(self, class_name, force=False) -> None:
         '''添加图标包分类'''
-        if class_name in self.icons_classified.keys() and (force is False):
+        if class_name in self._icons_classified.keys() and (force is False):
             raise ValueError(f"Class name {class_name} is already exist.")
-        self.icons_classified[class_name] = {}
+        self._icons_classified[class_name] = {}
 
     def append(self, name, data, class_name: str = "__unclassified__") -> None:
         '''添加图标'''
-        self.icons[name] = data
-        self.icons_classified[class_name][name] = data
+        self._icons[name] = data
+        self._icons_classified[class_name][name] = data
 
     def get(self, name, color_code: str = None) -> bytes:
         '''获取图标数据'''
-        color_code = self.default_color if color_code is None else color_code
-        return self.icons[name].replace("<<<COLOR_CODE>>>", color_code).encode()
+        color_code = self._default_color if color_code is None else color_code
+        return self._icons[name].replace("<<<COLOR_CODE>>>", color_code).encode()
 
     def getFromData(self, data, color_code: str = None) -> bytes:
         '''从数据获取图标数据'''
-        color_code = self.default_color if color_code is None else color_code
+        color_code = self._default_color if color_code is None else color_code
         return data.replace("<<<COLOR_CODE>>>", color_code).encode()
 
     def getByteArray(self, name, color_code: str = None) -> QByteArray:
@@ -79,13 +79,13 @@ class GlobalIconPack:
     def getDict(self, class_name=None) -> dict:
         """ 获取图标字典 """
         if class_name is None:
-            return self.icons
+            return self._icons
         else:
-            return self.icons_classified[class_name]
+            return self._icons_classified[class_name]
 
     def getClassNames(self) -> dict.keys:
         '''获取图标包分类名称列表'''
-        return self.icons_classified.keys()
+        return self._icons_classified.keys()
 
     def toPixmap(self, name: str, size: QSize = QSize(64, 64), color_code: str = None):
         '''
@@ -118,3 +118,32 @@ class GlobalIconPack:
             QIcon
         '''
         return QIcon(self.toPixmap(name, size, color_code))
+
+    def icons(self, size: QSize = QSize(64, 64), color_code: str = None) -> iter:
+        '''
+        迭代获取所有图标Pixmap
+        Args:
+            size: 图标大小
+            color_code: 图标颜色代码
+        Returns:
+            迭代器，依次返回 (图标名称, 图标Pixmap) 元组
+        '''
+        # 按图标名称排序后迭代，确保顺序一致
+        for name in sorted(self._icons.keys()):
+            yield name, self.toPixmap(name, size, color_code)
+
+    def iconsByClass(self, class_name: str, size: QSize = QSize(64, 64), color_code: str = None) -> iter:
+        '''
+        按分类迭代获取图标Pixmap
+        Args:
+            class_name: 分类名称
+            size: 图标大小
+            color_code: 图标颜色代码
+        Returns:
+            迭代器，依次返回 (图标名称, 图标Pixmap) 元组
+        '''
+        if class_name not in self._icons_classified:
+            raise ValueError(f"分类 {class_name} 不存在")
+
+        for name in sorted(self._icons_classified[class_name].keys()):
+            yield name, self.toPixmap(name, size, color_code)

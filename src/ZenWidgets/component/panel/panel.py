@@ -26,7 +26,9 @@ class ZPanel(ZWidget):
 
     # region event
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value

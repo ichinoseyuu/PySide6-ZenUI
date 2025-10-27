@@ -1,5 +1,6 @@
+from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal, Slot, QEvent, QTimer
-from PySide6.QtGui import QMouseEvent, QEnterEvent
+from PySide6.QtGui import QMouseEvent, QEnterEvent, QFont
 from ZenWidgets.core import ZState
 from ZenWidgets.component.base.widget import ZWidget
 # region ABCButton
@@ -9,8 +10,19 @@ class ABCButton(ZWidget):
     pressed = Signal()
     released = Signal()
     clicked = Signal()
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self,
+                 parent: QWidget | ZWidget | None = None,
+                 *args,
+                 objectName: str | None = None,
+                 toolTip: str | None = None,
+                 **kwargs
+                 ):
+        super().__init__(parent,
+                         *args,
+                         objectName=objectName,
+                         toolTip=toolTip,
+                         **kwargs
+                         )
         self.entered.connect(self._hover_handler_)
         self.leaved.connect(self._leave_handler_)
         self.pressed.connect(self._press_handler_)
@@ -77,12 +89,26 @@ class ABCButton(ZWidget):
 # region ABCToggleButton
 class ABCToggleButton(ABCButton):
     toggled = Signal(bool)
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._checkable: bool = True
-        self._checked: bool = False
-        self._is_group_member: bool = False  # 标记是否为按钮组成员
+    def __init__(self,
+                 parent: QWidget | ZWidget | None = None,
+                 *args,
+                 checked: bool = False,
+                 checkable: bool = True,
+                 is_group_member: bool = False,
+                 objectName: str | None = None,
+                 toolTip: str | None = None,
+                 **kwargs
+                 ):
+        super().__init__(parent,
+                         *args,
+                         objectName=objectName,
+                         toolTip=toolTip,
+                         **kwargs
+                         )
         self.toggled.connect(self._toggle_handler_)
+        self._checkable: bool = checkable
+        self._checked: bool = checked
+        self._is_group_member: bool = is_group_member
 
     # region Slot
     @Slot(bool)
@@ -119,19 +145,33 @@ class ABCToggleButton(ABCButton):
 
 # region ABCRepeatButton
 class ABCRepeatButton(ABCButton):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._repeatable = True
+    def __init__(self,
+                 parent: QWidget | ZWidget | None = None,
+                 *args,
+                 repeatable: bool = True,
+                 interval: int = 50,
+                 delay: int = 500,
+                 objectName: str | None = None,
+                 toolTip: str | None = None,
+                 **kwargs
+                 ):
+        super().__init__(parent,
+                         *args,
+                         objectName=objectName,
+                         toolTip=toolTip,
+                         **kwargs
+                         )
+        self._repeatable = repeatable
         self._repeat_count = 1
 
-        self._repeat_timer = QTimer(self) # 重复点击计时器
-        self._repeat_timer.setInterval(50)
-        self._repeat_timer.timeout.connect(self._repeat_click_handler_)
+        self._trigger_interval = QTimer(self) # 触发间隔
+        self._trigger_interval.setInterval(interval)
+        self._trigger_interval.timeout.connect(self._repeat_click_handler_)
 
-        self._delay_timer = QTimer(self) # 延迟启动计时器
-        self._delay_timer.setSingleShot(True)
-        self._delay_timer.setInterval(500)
-        self._delay_timer.timeout.connect(self._repeat_timer.start)
+        self._trigger_delay = QTimer(self) # 触发延迟
+        self._trigger_delay.setSingleShot(True)
+        self._trigger_delay.setInterval(delay)
+        self._trigger_delay.timeout.connect(self._trigger_interval.start)
 
 
     # region slot
@@ -146,31 +186,22 @@ class ABCRepeatButton(ABCButton):
 
     def setRepeatable(self, r: bool): self._repeatable = r
 
-    @property
     def repeatCount(self) -> int: return self._repeat_count
 
-    @property
-    def delayTime(self) -> int: return self._delay_timer.interval()
+    def triggerInterval(self) -> int: return self._trigger_interval.interval()
 
-    @delayTime.setter
-    def delayTime(self, delay: int): self._delay_timer.setInterval(delay)
+    def setTriggerInterval(self, t: int): self._trigger_interval.setInterval(t)
 
-    def setDelayTime(self, delay: int): self._delay_timer.setInterval(delay)
+    def triggerDelay(self) -> int: return self._trigger_delay.interval()
 
-    @property
-    def repeatTime(self) -> int: return self._repeat_timer.interval()
-
-    @repeatTime.setter
-    def repeatTime(self, repeat: int): self._repeat_timer.setInterval(repeat)
-
-    def setRepeatTime(self, repeat: int): self._repeat_timer.setInterval(repeat)
+    def setTriggerDelay(self, d: int): self._trigger_delay.setInterval(d)
 
     # region event
     def mousePressEvent(self, event: QMouseEvent):
         super().mousePressEvent(event)
         if event.button() == Qt.MouseButton.LeftButton and self._repeatable:
             #self.setMouseTracking(True)
-            self._delay_timer.start()
+            self._trigger_delay.start()
 
     # def mouseMoveEvent(self, event: QMouseEvent):
     #     super().mouseMoveEvent(event)
@@ -186,6 +217,6 @@ class ABCRepeatButton(ABCButton):
     def mouseReleaseEvent(self, event: QMouseEvent):
         super().mouseReleaseEvent(event)
         if event.button() == Qt.MouseButton.LeftButton and self._repeatable:
-            self._delay_timer.stop()
-            self._repeat_timer.stop()
+            self._trigger_delay.stop()
+            self._trigger_interval.stop()
             self._repeat_count = 1

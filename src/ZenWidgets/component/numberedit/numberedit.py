@@ -1,5 +1,6 @@
+from ast import arg
 import logging
-from PySide6.QtWidgets import QApplication,QWidget,QVBoxLayout
+from PySide6.QtWidgets import QApplication,QWidget
 from PySide6.QtCore import Signal,QSize,QTimer,QPoint,QPointF,QRectF,Qt
 from PySide6.QtGui import QFontMetrics,QFont,QWheelEvent,QMouseEvent,QPainterPath,QPainter,QKeyEvent,QPen
 from ZenWidgets.component.base import (
@@ -10,7 +11,10 @@ from ZenWidgets.component.base import (
     ZPadding,
     ZTextCommand
 )
-from ZenWidgets.core import ZLineEditStyleData, ZDebug
+from ZenWidgets.core import (
+    ZLineEditStyleData,
+    ZDebug
+)
 
 class ZNumberEdit(ZWidget):
     editingFinished = Signal()
@@ -28,18 +32,22 @@ class ZNumberEdit(ZWidget):
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZNumberEdit'}}
 
     def __init__(self,
-                 parent: QWidget = None,
-                 name: str = None,
+                 parent: QWidget | ZWidget | None = None,
                  text: str = '0',
-                 minimumSize: QSize = QSize(200, 30),
+                 font: QFont = QFont('Microsoft YaHei', 9),
                  integer_digits: int = 10,
                  step: int = 1,
                  allow_decimal: bool = False,
                  decimal_places: int = 2,
-                 allow_negative: bool = False
+                 allow_negative: bool = False,
+                 minimumSize: QSize = QSize(200, 30),
+                 objectName: str | None = None,
                  ):
-        super().__init__(parent=parent, minimumSize=minimumSize,font=QFont("Microsoft YaHei", 9))
-        if name: self.setObjectName(name)
+        super().__init__(parent=parent,
+                         objectName=objectName,
+                         minimumSize=minimumSize,
+                         font=font
+                         )
         self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self._text = text
         self._selected_text = ""
@@ -67,63 +75,44 @@ class ZNumberEdit(ZWidget):
 
 
     # region public method
-    @property
     def text(self) -> str: return self._text
 
-    @text.setter
-    def text(self, t: str) -> None:
+    def setText(self, t: str) -> None:
         self._text = t or ""
         self._cursor_pos = min(self._cursor_pos, len(self._text))
         self.adjustSize()
         self.update()
 
-    def setText(self, t: str) -> None:
-        self.text = t
-
-    @property
     def selectedText(self) -> str: return self._selected_text
 
-    @property
     def value(self) -> float|int:
         try:
             return float(self._text) if self._allow_decimal else int(self._text)
         except ValueError:
             return 0
 
-    @property
     def integerDigits(self) -> int:
         return self._integer_digits
 
-    @integerDigits.setter
-    def integerDigits(self, v: int) -> None:
+    def setIntegerDigits(self, v: int) -> None:
         if v > 0 and self._integer_digits != v:
             self._integer_digits = v
             self._text = self._validate_text(self._text)
             self.update()
 
-    def setIntegerDigits(self, v: int) -> None:
-        self.integerDigits = v
-
-    @property
     def decimalPlaces(self) -> int:
         return self._decimal_places
 
-    @decimalPlaces.setter
-    def decimalPlaces(self, v: int) -> None:
+    def setDecimalPlaces(self, v: int) -> None:
         if v >= 0 and self._decimal_places != v:
             self._decimal_places = v
             self._text = self._validate_text(self._text)
             self.update()
 
-    def setDecimalPlaces(self, v: int) -> None:
-        self.decimalPlaces = v
-
-    @property
     def allowNegative(self) -> bool:
         return self._allow_negative
 
-    @allowNegative.setter
-    def allowNegative(self, v: bool) -> None:
+    def setAllowNegative(self, v: bool) -> None:
         if self._allow_negative != v:
             self._allow_negative = v
             # 如果不允许负数，清除可能存在的负号
@@ -132,9 +121,6 @@ class ZNumberEdit(ZWidget):
                 self._cursor_pos = max(0, self._cursor_pos - 1)
             self._text = self._validate_text(self._text)
             self.update()
-
-    def setAllowNegative(self, v: bool) -> None:
-        self.allowNegative = v
 
     def increase(self, auto_repeat=False):
         """按步长增加数值"""
@@ -151,7 +137,7 @@ class ZNumberEdit(ZWidget):
                 if not auto_repeat:
                     self._push_undo_delay(old, self._text, oldpos, self._cursor_pos)
                 self.update()
-                self.textChanged.emit(self.text)
+                self.textChanged.emit(self.text())
         except (ValueError, TypeError):
             base_value = 0.0 if self._allow_decimal else 0
             new_value = base_value + self._step
@@ -173,7 +159,7 @@ class ZNumberEdit(ZWidget):
                 if not auto_repeat:
                     self._push_undo_delay(old, self._text, oldpos, self._cursor_pos)
                 self.update()
-                self.textChanged.emit(self.text)
+                self.textChanged.emit(self.text())
         except (ValueError, TypeError):
             base_value = 0.0 if self._allow_decimal else 0
             new_value = base_value - self._step
@@ -343,7 +329,7 @@ class ZNumberEdit(ZWidget):
             self._cursor_pos = start
             self._clear_selection()
             self._push_undo(old, self._text, oldpos, self._cursor_pos)
-            self.textChanged.emit(self.text)
+            self.textChanged.emit(self.text())
 
     def _copy(self):
         if self._is_selection():
@@ -373,7 +359,7 @@ class ZNumberEdit(ZWidget):
         if not event.isAutoRepeat():
             self._push_undo_delay(old, self._text, oldpos, self._cursor_pos)
         self.update()
-        self.textChanged.emit(self.text)
+        self.textChanged.emit(self.text())
 
     # region undo/redo
     def _undo(self):
@@ -388,7 +374,7 @@ class ZNumberEdit(ZWidget):
         self._cursor_pos = cmd.old_pos
         self._clear_selection()
         self.update()
-        self.textChanged.emit(self.text)
+        self.textChanged.emit(self.text())
 
     def _redo(self):
         if self._undo_timer.isActive():
@@ -402,7 +388,7 @@ class ZNumberEdit(ZWidget):
         self._cursor_pos = cmd.new_pos
         self._clear_selection()
         self.update()
-        self.textChanged.emit(self.text)
+        self.textChanged.emit(self.text())
 
     # region del/backspace/insert
     def _delete_forward(self, auto_repeat=False):
@@ -417,7 +403,7 @@ class ZNumberEdit(ZWidget):
         if not auto_repeat:
             self._push_undo_delay(old, self._text, oldpos, self._cursor_pos)
         self.update()
-        self.textChanged.emit(self.text)
+        self.textChanged.emit(self.text())
 
     def _insert_text(self, text: str, auto_repeat=False):
         filtered = self._filter_valid_chars(text)
@@ -441,7 +427,7 @@ class ZNumberEdit(ZWidget):
         if not auto_repeat:
             self._push_undo_delay(old, self._text, oldpos, self._cursor_pos)
         self.update()
-        self.textChanged.emit(self.text)
+        self.textChanged.emit(self.text())
 
     def _backspace(self, auto_repeat=False):
         old, oldpos = self._text, self._cursor_pos
@@ -453,7 +439,7 @@ class ZNumberEdit(ZWidget):
             if not auto_repeat:
                 self._push_undo_delay(old, self._text, oldpos, self._cursor_pos)
             self.update()
-            self.textChanged.emit(self.text)
+            self.textChanged.emit(self.text())
             return
         if self._cursor_pos > 0:
             self._text = self._text[:oldpos - 1] + self._text[oldpos:]
@@ -461,7 +447,7 @@ class ZNumberEdit(ZWidget):
             if not auto_repeat:
                 self._push_undo_delay(old, self._text, oldpos, self._cursor_pos)
             self.update()
-            self.textChanged.emit(self.text)
+            self.textChanged.emit(self.text())
 
 
     def _text_rect(self) -> QRectF:
@@ -516,7 +502,9 @@ class ZNumberEdit(ZWidget):
 
     # region paintEvent
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHints(QPainter.RenderHint.Antialiasing | QPainter.RenderHint.TextAntialiasing)
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
@@ -573,6 +561,7 @@ class ZNumberEdit(ZWidget):
 
     # region keyPressEvent
     def keyPressEvent(self, event: QKeyEvent):
+        super().keyPressEvent(event)
         self.cursorColorCtrl.toOpaque()
         # 通用 Ctrl 快捷
         if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
@@ -617,10 +606,10 @@ class ZNumberEdit(ZWidget):
             self.editingFinished.emit(); return
         if event.text():
             self._insert_text(event.text(), event.isAutoRepeat()); return
-        super().keyPressEvent(event)
 
     # region mouseEvent
     def mousePressEvent(self, event: QMouseEvent):
+        super().mousePressEvent(event)
         if event.button() == Qt.MouseButton.LeftButton:
             if self._focus_select_complete:
                 self._focus_select_complete = False
@@ -637,7 +626,6 @@ class ZNumberEdit(ZWidget):
                 self._selection_end = pos
                 self._is_selecting = True
             self.update()
-        super().mousePressEvent(event)
 
 
     def mouseMoveEvent(self, event: QMouseEvent):
@@ -650,11 +638,12 @@ class ZNumberEdit(ZWidget):
             super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
+        super().mouseReleaseEvent(event)
         if event.button() == Qt.MouseButton.LeftButton:
             self._is_selecting = False
-        super().mouseReleaseEvent(event)
 
     def focusInEvent(self, event):
+        super().focusInEvent(event)
         self.cursorColorCtrl.toOpaque()
         self._selection_start = 0
         self._selection_end = len(self._text)
@@ -662,30 +651,30 @@ class ZNumberEdit(ZWidget):
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyFocused)
         self.underlineColorCtrl.setColorTo(self.styleDataCtrl.data.UnderlineFocused)
         self.underlineWeightCtrl.setValueTo(1.8)
-        super().focusInEvent(event)
 
     def focusOutEvent(self, event):
+        super().focusOutEvent(event)
         self.cursorColorCtrl.transparent()
         self.cursorColorCtrl.stopAnimation()
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
         self.underlineColorCtrl.setColorTo(self.styleDataCtrl.data.Underline)
         self.underlineWeightCtrl.setValueTo(1.4)
         self._clear_selection()
-        super().focusOutEvent(event)
 
     def enterEvent(self, event):
+        super().enterEvent(event)
         if not self.hasFocus():
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
-        super().enterEvent(event)
 
     def leaveEvent(self, event):
+        super().leaveEvent(event)
         if self.hasFocus():
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyFocused)
         else:
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-        super().leaveEvent(event)
 
     def wheelEvent(self, event: QWheelEvent):
+        super().wheelEvent(event)
         delta = event.angleDelta().y()
         if delta > 0:
             self.increase()

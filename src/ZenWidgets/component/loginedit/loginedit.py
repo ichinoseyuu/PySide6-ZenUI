@@ -28,16 +28,20 @@ class ZLoginEdit(ZWidget):
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZLoginEdit'}}
 
     def __init__(self,
-                 parent: QWidget = None,
-                 name: str = None,
+                 parent: QWidget | ZWidget | None = None,
                  text: str = '',
-                 minimumSize: QSize = QSize(200, 30),
+                 font: QFont = QFont('Microsoft YaHei', 9),
                  digits: int = 0,
                  is_masked = False,
-                 allow_characters = True
+                 allow_characters = True,
+                 minimumSize: QSize = QSize(200, 30),
+                 objectName: str | None = None,
                  ):
-        super().__init__(parent=parent, minimumSize=minimumSize,font=QFont("Microsoft YaHei", 9))
-        if name: self.setObjectName(name)
+        super().__init__(parent=parent,
+                         objectName=objectName,
+                         minimumSize=minimumSize,
+                         font=font
+                         )
         self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self._text = ''
         self._selected_text = ""
@@ -62,20 +66,14 @@ class ZLoginEdit(ZWidget):
 
 
     # region public method
-    @property
     def text(self) -> str: return self._text
 
-    @text.setter
-    def text(self, t: str) -> None:
+    def setText(self, t: str) -> None:
         self._text = t or ""
         self._cursor_pos = min(self._cursor_pos, len(self._text))
         self.adjustSize()
         self.update()
 
-    def setText(self, t: str) -> None:
-        self.text = t
-
-    @property
     def selectedText(self) -> str: return self._selected_text
 
     def sizeHint(self) -> QSize:
@@ -208,7 +206,7 @@ class ZLoginEdit(ZWidget):
             self._cursor_pos = start
             self._clear_selection()
             self._push_undo(old, self._text, oldpos, self._cursor_pos)
-            self.valueChanged.emit(self.text)
+            self.valueChanged.emit(self.text())
 
     def _copy(self):
         if self._is_selection():
@@ -238,7 +236,7 @@ class ZLoginEdit(ZWidget):
         if not event.isAutoRepeat():
             self._push_undo_delay(old, self._text, oldpos, self._cursor_pos)
         self.update()
-        self.valueChanged.emit(self.text)
+        self.valueChanged.emit(self.text())
 
     # region undo/redo
     def _undo(self):
@@ -253,7 +251,7 @@ class ZLoginEdit(ZWidget):
         self._cursor_pos = cmd.old_pos
         self._clear_selection()
         self.update()
-        self.valueChanged.emit(self.text)
+        self.valueChanged.emit(self.text())
 
     def _redo(self):
         if self._undo_timer.isActive():
@@ -267,7 +265,7 @@ class ZLoginEdit(ZWidget):
         self._cursor_pos = cmd.new_pos
         self._clear_selection()
         self.update()
-        self.valueChanged.emit(self.text)
+        self.valueChanged.emit(self.text())
 
     # region del/backspace/insert
     def _delete_forward(self, auto_repeat=False):
@@ -282,7 +280,7 @@ class ZLoginEdit(ZWidget):
         if not auto_repeat:
             self._push_undo_delay(old, self._text, oldpos, self._cursor_pos)
         self.update()
-        self.valueChanged.emit(self.text)
+        self.valueChanged.emit(self.text())
 
     def _insert_text(self, text: str, auto_repeat=False):
         filtered = self._filter_valid_chars(text)
@@ -306,7 +304,7 @@ class ZLoginEdit(ZWidget):
         if not auto_repeat:
             self._push_undo_delay(old, self._text, oldpos, self._cursor_pos)
         self.update()
-        self.valueChanged.emit(self.text)
+        self.valueChanged.emit(self.text())
 
     def _backspace(self, auto_repeat=False):
         old, oldpos = self._text, self._cursor_pos
@@ -318,7 +316,7 @@ class ZLoginEdit(ZWidget):
             if not auto_repeat:
                 self._push_undo_delay(old, self._text, oldpos, self._cursor_pos)
             self.update()
-            self.valueChanged.emit(self.text)
+            self.valueChanged.emit(self.text())
             return
         if self._cursor_pos > 0:
             self._text = self._text[:oldpos - 1] + self._text[oldpos:]
@@ -326,7 +324,7 @@ class ZLoginEdit(ZWidget):
             if not auto_repeat:
                 self._push_undo_delay(old, self._text, oldpos, self._cursor_pos)
             self.update()
-            self.valueChanged.emit(self.text)
+            self.valueChanged.emit(self.text())
 
 
     def _text_rect(self) -> QRectF:
@@ -384,7 +382,9 @@ class ZLoginEdit(ZWidget):
 
     # region paintEvent
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHints(QPainter.RenderHint.Antialiasing | QPainter.RenderHint.TextAntialiasing)
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
@@ -446,6 +446,7 @@ class ZLoginEdit(ZWidget):
 
     # region keyPressEvent
     def keyPressEvent(self, event: QKeyEvent):
+        super().keyPressEvent(event)
         self.cursorColorCtrl.toOpaque()
         # 通用 Ctrl 快捷
         if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
@@ -490,10 +491,10 @@ class ZLoginEdit(ZWidget):
             self.editingFinished.emit(); return
         if event.text():
             self._insert_text(event.text(), event.isAutoRepeat()); return
-        super().keyPressEvent(event)
 
     # region mouseEvent
     def mousePressEvent(self, event: QMouseEvent):
+        super().mousePressEvent(event)
         if event.button() == Qt.MouseButton.LeftButton:
             pos = self._get_char_position_at_point(event.position())
             self._cursor_pos = pos
@@ -507,7 +508,6 @@ class ZLoginEdit(ZWidget):
                 self._selection_end = pos
                 self._is_selecting = True
             self.update()
-        super().mousePressEvent(event)
 
 
     def mouseMoveEvent(self, event: QMouseEvent):
@@ -520,37 +520,37 @@ class ZLoginEdit(ZWidget):
             super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
+        super().mouseReleaseEvent(event)
         if event.button() == Qt.MouseButton.LeftButton:
             self._is_selecting = False
-        super().mouseReleaseEvent(event)
 
     def focusInEvent(self, event):
+        super().focusInEvent(event)
         self.cursorColorCtrl.toOpaque()
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyFocused)
         self.underlineColorCtrl.setColorTo(self.styleDataCtrl.data.UnderlineFocused)
         self.underlineWeightCtrl.setValueTo(1.8)
-        super().focusInEvent(event)
 
     def focusOutEvent(self, event):
+        super().focusOutEvent(event)
         self.cursorColorCtrl.transparent()
         self.cursorColorCtrl.stopAnimation()
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
         self.underlineColorCtrl.setColorTo(self.styleDataCtrl.data.Underline)
         self.underlineWeightCtrl.setValueTo(1.4)
         self._clear_selection()
-        super().focusOutEvent(event)
 
     def enterEvent(self, event):
+        super().enterEvent(event)
         if not self.hasFocus():
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
-        super().enterEvent(event)
 
     def leaveEvent(self, event):
+        super().leaveEvent(event)
         if self.hasFocus():
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyFocused)
         else:
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-        super().leaveEvent(event)
 
 import sys
 if __name__ == '__main__':

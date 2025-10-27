@@ -14,6 +14,7 @@ from ZenWidgets.core import (
     ZDirection,
     ZState
 )
+from ZenWidgets.component.itemview import ZItemView
 # region ScrollContent
 class ScrollContent(ZWidget):
     resized = Signal()
@@ -185,7 +186,7 @@ class ZScrollPanel(ZWidget):
                  style_data_light: ZScrollPanelStyleData = None,
                  style_data_dark: ZScrollPanelStyleData = None
                  ):
-        super().__init__(parent)
+        super().__init__(parent,focusPolicy=Qt.FocusPolicy.WheelFocus)
         if name: self.setObjectName(name)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._content = ScrollContent(self)
@@ -200,7 +201,6 @@ class ZScrollPanel(ZWidget):
         if style_data_dark: self.styleDataCtrl.setData('Dark',style_data_dark)
         self._init_style_()
 
-    @property
     def content(self): return self._content
 
     # region public
@@ -266,6 +266,7 @@ class ZScrollPanel(ZWidget):
 
 
     def wheelEvent(self, event: QWheelEvent):
+        if not self.hasFocus(): return
         current_x = -self._content.x()
         current_y = -self._content.y()
         if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
@@ -278,9 +279,7 @@ class ZScrollPanel(ZWidget):
             step = delta / 120 * 100
             new_y = current_y - step
             self.scrollTo(x=current_x, y=new_y)
-
         event.accept()
-
 
     # region private
     def _init_style_(self):

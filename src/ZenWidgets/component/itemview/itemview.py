@@ -1,5 +1,5 @@
 from PySide6.QtGui import QPainter,QFont,QPen,QIcon,QPixmap
-from PySide6.QtCore import Qt,QRect,QSize,QRectF,Signal,QMargins,QPoint
+from PySide6.QtCore import Qt,QRect,QSize,QRectF,Signal,QMargins,QPoint,QEvent
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.layout import ZVBoxLayout
 from ZenWidgets.component.base import (
@@ -34,88 +34,56 @@ class ZItem(ABCToggleButton):
 
     def __init__(self,
                  parent: QWidget = None,
-                 name: str = None,
-                 text: str = None,
-                 icon: QIcon = None,
+                 text: str | None = None,
+                 font=QFont("Microsoft YaHei", 9),
+                 icon: QIcon | None = None,
                  checked: bool = False,
+                 objectName: str | None = None,
                  ):
-        super().__init__(parent=parent, font=QFont("Microsoft YaHei", 9))
-        if name: self.setObjectName(name)
-        self.setGroupMember(True)
-        self._text: str = None
-        self._icon: QIcon = None
+        super().__init__(parent=parent,
+                         checked=checked,
+                         is_group_member=True,
+                         objectName=objectName,
+                         font=font,
+                         )
+        self._text: str | None = text
+        self._icon: QIcon | None = icon
         self._icon_size = QSize(16, 16)
         self._padding = ZPadding(4, 4, 16, 4)
         self._spacing = 4
-        if text : self._text = text
-        if icon : self._icon = icon
-        if checked: self._checked = checked
-
         self._init_style_()
         self.resize(self.sizeHint())
 
     # region public method
-    @property
     def text(self) -> str: return self._text
 
-    @text.setter
-    def text(self, t: str) -> None:
+    def setText(self, t: str) -> None:
         self._text = t
         self.update()
 
-    def setText(self, t: str) -> None:
-        self.text = t
-
-    @property
     def icon(self) -> QIcon: return self._icon
 
-    @icon.setter
-    def icon(self, i: QIcon) -> None:
+    def setIcon(self, i: QIcon) -> None:
         self._icon = i
         self.update()
 
-    def setIcon(self, i: QIcon) -> None:
-        self.icon = i
-
-    @property
     def iconSize(self) -> QSize: return self._icon_size
 
-    @iconSize.setter
     def setIconSize(self, s: QSize) -> None:
         self._icon_size = s
         self.update()
 
-    def setIconSize(self, s: QSize) -> None:
-        self.iconSize = s
-
-    @property
     def spacing(self) -> int: return self._spacing
 
-    @spacing.setter
-    def spacing(self, s: int) -> None:
+    def setSpacing(self, s: int) -> None:
         self._spacing = s
         self.update()
 
-    def setSpacing(self, s: int) -> None:
-        self.spacing = s
-
-    @property
     def padding(self) -> ZPadding: return self._padding
 
-    @padding.setter
-    def padding(self, p: ZPadding) -> None:
+    def setPadding(self, p: ZPadding) -> None:
         self._padding = p
         self.update()
-
-    def setPadding(self, p: ZPadding) -> None:
-        self.padding = p
-
-    def setEnabled(self, enable: bool) -> None:
-
-        if enable == self.isEnabled(): return
-        if enable: self.opacityCtrl.fadeTo(1.0)
-        else: self.opacityCtrl.fadeTo(0.3)
-        super().setEnabled(enable)
 
     def sizeHint(self):
         # 宽度由父控件决定，这里只计算高度
@@ -180,15 +148,15 @@ class ZItem(ABCToggleButton):
 
    # region event
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(
             QPainter.RenderHint.Antialiasing|
             QPainter.RenderHint.TextAntialiasing|
             QPainter.RenderHint.SmoothPixmapTransform
             )
-        painter.setOpacity(self.opacityCtrl.opacity)
 
-        # 绘制背景
         rect = self.rect()
         radius = self.radiusCtrl.value
         if self.bodyColorCtrl.color.alpha() > 0:
@@ -199,19 +167,19 @@ class ZItem(ABCToggleButton):
         p = self._padding
         fm = self.fontMetrics()
         text_height = fm.height()
-        indicator_width = self.indicatorWidth
+        indicator_w = self.indicatorWidth
         spacing = self._spacing
         content_rect = rect.adjusted(p.left, p.top, -p.right, -p.bottom)
-        text_area_left = content_rect.left() + indicator_width + spacing
+        text_area_left = content_rect.left() + indicator_w + spacing
 
         if self._checked and self.indicatorColorCtrl.color.alpha() > 0:
             indicator_h = max(2.0, min(content_rect.height(), text_height - fm.descent()))
             indicator_y = content_rect.center().y() - indicator_h / 2
             indicator_x = content_rect.left()
-            indicator_rect = QRectF(indicator_x, indicator_y, indicator_width, indicator_h)
+            indicator_rect = QRectF(indicator_x, indicator_y, indicator_w, indicator_h)
             painter.setPen(Qt.NoPen)
             painter.setBrush(self.indicatorColorCtrl.color)
-            painter.drawRoundedRect(indicator_rect, indicator_width / 2, indicator_width / 2)
+            painter.drawRoundedRect(indicator_rect, indicator_w / 2, indicator_w / 2)
 
         content_available_rect = QRect(
             text_area_left,
@@ -282,7 +250,7 @@ class ViewContent(ZWidget):
 
     def removeItem(self, text: str):
         for item in self._item_group.buttons():
-            if isinstance(item, ZItem) and item.text == text:
+            if isinstance(item, ZItem) and item.text() == text:
                 self._items.remove(text)
                 item.clicked.disconnect()
                 item.deleteLater()
@@ -293,7 +261,7 @@ class ViewContent(ZWidget):
 
     def selectItem(self, text: str):
         for item in self._item_group.buttons():
-            if isinstance(item, ZItem) and item.text == text:
+            if isinstance(item, ZItem) and item.text() == text:
                 self._item_group.checkedButton().setChecked(False)
                 item.setChecked(True)
 
@@ -353,7 +321,9 @@ class ViewContent(ZWidget):
 
     # region event
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         rect = self.rect()
         radius = self.radiusCtrl.value
@@ -374,11 +344,10 @@ class ViewContent(ZWidget):
 # region ZItemView
 class ZItemView(ZWidget):
     selected = Signal(str)
-    def __init__(self, target: QWidget = None, items: list[str] = None):
+    def __init__(self,target: QWidget = None,items: list[str] = None):
         super().__init__(f=Qt.WindowType.FramelessWindowHint|Qt.WindowType.Tool|Qt.WindowType.WindowStaysOnTopHint)
         self._target: QWidget = target
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        #self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
         self._content = ViewContent(self, items)
         self._content.setFixedWidth(self._target.sizeHint().width()+self._content.layout().contentsMargins().left()+ZItem.indicatorWidth)
         self._margin = ZMargin(8, 8, 8, 8)
@@ -388,10 +357,8 @@ class ZItemView(ZWidget):
         self.resize(self.sizeHint())
         ZQuickEffect.applyDropShadowOn(widget=self._content,color=(0, 0, 0, 40),blur_radius=12)
 
-    @property
     def content(self): return self._content
 
-    @property
     def selectedItem(self): return self._content._item_group.checkedButton()
 
     def getSlectedItem(self): return self._content._item_group.checkedButton()
@@ -407,7 +374,7 @@ class ZItemView(ZWidget):
         super().show()
         self.move(self._get_ancher_position_())
         self.widgetSizeCtrl.resizeFromTo(QSize(self.width(),0),self.sizeHint())
-        self.setFocus(Qt.FocusReason.ActiveWindowFocusReason)
+        self.setFocus(Qt.FocusReason.PopupFocusReason)
         self.activateWindow()
         self.raise_()
 

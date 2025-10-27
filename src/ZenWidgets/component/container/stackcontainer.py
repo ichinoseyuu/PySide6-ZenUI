@@ -9,12 +9,13 @@ from ZenWidgets.core import ZDebug
 class ZStackContainer(QWidget):
     def __init__(self,
                  parent: QWidget = None,
-                 name: str = None,
                  start_point: QPoint = QPoint(0, 40),
-                 hide_last_panel: bool = True
+                 hide_last_panel: bool = True,
+                 name: str | None = None,
                  ):
-        super().__init__(parent)
-        if name: self.setObjectName(name)
+        super().__init__(parent,
+                         objectName=name
+                         )
         self._panels = {}
         self._panel_count = 0
         self._current_panel = None

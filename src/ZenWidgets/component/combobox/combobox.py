@@ -28,19 +28,21 @@ class ZComboBox(ABCButton):
     dropIconColorCtrl: QAnimatedColor
     dropIconPosCtrl: ZAnimatedPointF
     radiusCtrl: QAnimatedFloat
-    opacityCtrl: ZAnimatedOpacity
     styleDataCtrl: StyleController[ZComboBoxStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZComboBox'}}
 
     def __init__(self,
                  parent: QWidget = None,
-                 name: str = None,
                  options: Dict[str, Any]= None,
                  text: str = None,
+                 font: QFont = QFont("Microsoft YaHei", 9),
+                 objectName: str | None = None
                  ):
-        super().__init__(parent=parent, font=QFont("Microsoft YaHei", 9))
-        if name: self.setObjectName(name)
-        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        super().__init__(parent=parent,
+                         objectName=objectName,
+                         font=font,
+                         focusPolicy=Qt.FocusPolicy.ClickFocus
+                         )
         self._options: Dict[str, Any] = {}
         self._text: str = None
         self._drop_icon: QIcon = ZGlobal.getBuiltinIcon(u':/icons/arrow_down.svg')
@@ -60,54 +62,31 @@ class ZComboBox(ABCButton):
 
 
     # region public method
-    @property
     def options(self) -> Dict[str, Any]:
         return self._options
 
-    @property
-    def currentValue(self) -> any:
+    def currentValue(self) -> Any | None:
         if self._text in self._options:
             return self._options[self._text]
         return None
 
-    @property
     def text(self) -> str: return self._text
 
-    @text.setter
-    def text(self, t: str) -> None:
+    def setText(self, t: str) -> None:
         self._text = t
         self.update()
 
-    def setText(self, t: str) -> None:
-        self.text = t
-
-    @property
     def spacing(self) -> int: return self._spacing
 
-    @spacing.setter
-    def spacing(self, s: int) -> None:
+    def setSpacing(self, s: int) -> None:
         self._spacing = s
         self.update()
 
-    def setSpacing(self, s: int) -> None:
-        self.spacing = s
-
-    @property
     def padding(self) -> ZPadding: return self._padding
 
-    @padding.setter
-    def padding(self, p: ZPadding) -> None:
+    def setPadding(self, p: ZPadding) -> None:
         self._padding = p
         self.update()
-
-    def setPadding(self, p: ZPadding) -> None:
-        self.padding = p
-
-    def setEnabled(self, enable: bool) -> None:
-        if enable == self.isEnabled(): return
-        if enable: self.opacityCtrl.fadeTo(1.0)
-        else: self.opacityCtrl.fadeTo(0.3)
-        super().setEnabled(enable)
 
     def addOption(self, key: str, value: Any = None) -> None:
         #self._options.append(item) # ZItemView 内部的items 与 _options 共用内存
@@ -182,13 +161,14 @@ class ZComboBox(ABCButton):
 
     # region event
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(
             QPainter.RenderHint.Antialiasing|
             QPainter.RenderHint.TextAntialiasing|
             QPainter.RenderHint.SmoothPixmapTransform
             )
-        painter.setOpacity(self.opacityCtrl.opacity)
         rect = self.rect()
         radius = self.radiusCtrl.value
         if self.bodyColorCtrl.color.alpha() > 0:

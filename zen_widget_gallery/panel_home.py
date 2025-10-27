@@ -41,9 +41,7 @@ class PanelHome(ZPanel):
 
 
     def _setup_ui(self):
-        self.text = ZHeadLine(parent=self,
-                                 name='text',
-                                 text='ZenWidgets Gallery')
+        self.text = ZHeadLine(self, text='ZenWidgets Gallery')
         self.text.setFont(QFont('Microsoft YaHei', 24, QFont.Bold))
-        self.text.padding = ZPadding(50,50,50,50)
+        self.text.setPadding(ZPadding(50,50,50,50))
         self.layout().addWidget(self.text)

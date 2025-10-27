@@ -10,7 +10,7 @@ class PanelAbout(ZPanel):
         self._setup_ui()
 
     def _setup_ui(self):
-        self.text = ZHeadLine(parent=self, name='text', text='关于', display_indicator=True)
+        self.text = ZHeadLine(parent=self, text='关于', display_indicator=True)
         self.text.setFont(QFont('Microsoft YaHei', 20, QFont.Bold))
-        self.text.padding = ZPadding(6, 0, 6, 6)
+        self.text.setPadding(ZPadding(6, 0, 6, 6))
         self.layout().addWidget(self.text)

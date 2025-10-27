@@ -8,8 +8,6 @@ class ZState(IntEnum):
     Idle = auto()
     Hover = auto()
     Pressed = auto()
-    Hidden = auto()
-    Showing = auto()
 
 class ZDirection(IntEnum):
     Vertical = auto()
@@ -29,10 +27,6 @@ class ZPosition(IntEnum):
     BottomRight = auto()
     Center = auto()
     Custom = auto()
-
-class ZButtonStyle(IntEnum):
-    Normal = auto()
-    Flat = auto()
 
 class ZWrapMode(IntEnum):
     NoWrap = auto()

@@ -43,14 +43,9 @@ class ZFramelessWindow(ZWidget):
         self._init_style_()
 
     # region public
-    @property
     def windowEffect(self): return self._windowEffect
 
-    @property
-    def resizable(self) -> bool: return self._resizable
-
-    @resizable.setter
-    def resizable(self, enabled: bool) -> None: self._resizable = enabled
+    def isResizable(self) -> bool: return self._resizable
 
     def setResizable(self, enabled: bool) -> None: self._resizable = enabled
 
@@ -167,11 +162,9 @@ class ZStandardFramelessWindow(ZFramelessWindow):
         self._titlebar = ZTitleBar(self)
         self._centerWidget = QWidget(self)
 
-    @property
     def centerWidget(self):
         return self._centerWidget
 
-    @property
     def titleBar(self):
         return self._titlebar
 

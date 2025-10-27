@@ -27,16 +27,20 @@ class ZLineEdit(ZWidget):
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZLineEdit'}}
 
     def __init__(self,
-                 parent: QWidget = None,
-                 name: str = None,
+                 parent: QWidget | ZWidget | None = None,
                  text: str = "",
                  placeholder: str = "",
+                 font: QFont = QFont('Microsoft YaHei', 9),
                  read_only: bool = False,
                  selectable: bool = True,
                  minimumSize: QSize = QSize(200, 30),
+                 objectName: str | None = None,
                  ):
-        super().__init__(parent=parent, minimumSize=minimumSize,font=QFont("Microsoft YaHei", 9))
-        if name: self.setObjectName(name)
+        super().__init__(parent=parent,
+                         objectName=objectName,
+                         minimumSize=minimumSize,
+                         font=font
+                         )
         self.setFocusPolicy(Qt.FocusPolicy.ClickFocus if read_only else Qt.FocusPolicy.StrongFocus)
         self.setAttribute(Qt.WidgetAttribute.WA_InputMethodEnabled)
 
@@ -69,63 +73,37 @@ class ZLineEdit(ZWidget):
 
 
     # region public method
-    @property
     def text(self) -> str: return self._text
 
-    @text.setter
-    def text(self, t: str) -> None:
+    def setText(self, t: str) -> None:
         self._text = t or ""
         self._cursor_pos = min(self._cursor_pos, len(self._text))
         self.adjustSize()
         self.update()
 
-    def setText(self, t: str) -> None:
-        self.text = t
-
-    @property
     def selectedText(self) -> str: return self._selected_text
 
-    @property
     def placeHolderText(self) -> str: return self._placeholder
 
-    @placeHolderText.setter
-    def placeHolderText(self, t: str) -> None:
+    def setPlaceHolderText(self, t: str) -> None:
         self._placeholder = t or ""
         self.adjustSize()
-        self.update()
-
-    def setPlaceHolderText(self, t: str) -> None:
-        self.placeHolderText = t
-
-    @property
-    def readonly(self) -> bool: return self._read_only
-
-    @readonly.setter
-    def readonly(self, v: bool) -> None:
-        self._read_only = v
-        self.setFocusPolicy(v and Qt.FocusPolicy.ClickFocus or Qt.FocusPolicy.StrongFocus)
         self.update()
 
     def isReadOnly(self) -> bool: return self._read_only
 
     def setReadOnly(self, v: bool) -> None:
-        self.readonly = v
-
-
-    @property
-    def selectable(self) -> bool: return self._selectable
-
-    @selectable.setter
-    def selectable(self, v: bool) -> None:
-        self._selectable = v
-        if not v: self._clear_selection()
-        self.adjustSize()
+        self._read_only = v
+        self.setFocusPolicy(v and Qt.FocusPolicy.ClickFocus or Qt.FocusPolicy.StrongFocus)
         self.update()
 
     def isSelectable(self) -> bool: return self._selectable
 
     def setSelectable(self, v: bool) -> None:
-        self.selectable = v
+        self._selectable = v
+        if not v: self._clear_selection()
+        self.adjustSize()
+        self.update()
 
     def sizeHint(self) -> QSize:
         fm = QFontMetrics(self.font())
@@ -415,7 +393,9 @@ class ZLineEdit(ZWidget):
 
     # region paintEvent
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHints(QPainter.RenderHint.Antialiasing | QPainter.RenderHint.TextAntialiasing)
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
@@ -486,6 +466,7 @@ class ZLineEdit(ZWidget):
 
     # region keyPressEvent
     def keyPressEvent(self, event: QKeyEvent):
+        super().keyPressEvent(event)
         self.cursorColorCtrl.toOpaque()
         # 通用 Ctrl 快捷
         if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
@@ -493,7 +474,7 @@ class ZLineEdit(ZWidget):
                 self._copy(); return
             if event.key() == Qt.Key.Key_A:
                 self._selection_start = 0
-                self._selection_end = len(self._value)
+                self._selection_end = len(self._text)
                 self.update()
                 return
             if self._read_only:
@@ -538,11 +519,11 @@ class ZLineEdit(ZWidget):
             self.editingFinished.emit(); return
         if event.text():
             self._insert_text(event.text(), event.isAutoRepeat()); return
-        super().keyPressEvent(event)
 
 
     # region inputEvent
     def inputMethodEvent(self, event: QInputMethodEvent):
+        super().inputMethodEvent(event)
         if self._read_only:
             return
         if event.commitString():
@@ -581,8 +562,8 @@ class ZLineEdit(ZWidget):
 
     # region mouseEvent
     def mousePressEvent(self, event: QMouseEvent):
+        super().mousePressEvent(event)
         if not self._selectable:
-            super().mousePressEvent(event)
             return
         if event.button() == Qt.MouseButton.LeftButton:
             pos = self._get_char_position_at_point(event.position())
@@ -598,7 +579,6 @@ class ZLineEdit(ZWidget):
                 self._is_selecting = True
             self._ensure_cursor_visible()
             self.update()
-        super().mousePressEvent(event)
 
 
     def mouseMoveEvent(self, event: QMouseEvent):
@@ -629,38 +609,38 @@ class ZLineEdit(ZWidget):
             super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
+        super().mouseReleaseEvent(event)
         if event.button() == Qt.MouseButton.LeftButton:
             self._is_selecting = False
-        super().mouseReleaseEvent(event)
 
     def focusInEvent(self, event):
+        super().focusInEvent(event)
         if not self._read_only:
             self.cursorColorCtrl.toOpaque()
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyFocused)
         self.underlineColorCtrl.setColorTo(self.styleDataCtrl.data.UnderlineFocused)
         self.underlineWeightCtrl.setValueTo(1.8)
-        super().focusInEvent(event)
 
     def focusOutEvent(self, event):
+        super().focusOutEvent(event)
         self.cursorColorCtrl.transparent()
         self.cursorColorCtrl.stopAnimation()
         self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
         self.underlineColorCtrl.setColorTo(self.styleDataCtrl.data.Underline)
         self.underlineWeightCtrl.setValueTo(1.4)
         self._clear_selection()
-        super().focusOutEvent(event)
 
     def enterEvent(self, event):
+        super().enterEvent(event)
         if not self.hasFocus():
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
-        super().enterEvent(event)
 
     def leaveEvent(self, event):
+        super().leaveEvent(event)
         if self.hasFocus():
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyFocused)
         else:
             self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-        super().leaveEvent(event)
 
 # import sys
 # if __name__ == '__main__':

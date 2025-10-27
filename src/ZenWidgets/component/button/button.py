@@ -1,99 +1,81 @@
+from enum import Enum
 from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
 from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPoint
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
     QAnimatedColor,
     QAnimatedFloat,
-    ZAnimatedOpacity,
     StyleController,
-    ABCButton
+    ABCButton,
+    ZWidget
     )
 from ZenWidgets.core import (
     ZButtonStyleData,
     ZDebug,
     ZGlobal,
-    ZPosition,
-    ZButtonStyle
+    ZPosition
 )
 
 class ZButton(ABCButton):
     bodyColorCtrl: QAnimatedColor
     borderColorCtrl: QAnimatedColor
     radiusCtrl: QAnimatedFloat
-    opacityCtrl: ZAnimatedOpacity
     textColorCtrl: QAnimatedColor
     iconColorCtrl: QAnimatedColor
     styleDataCtrl: StyleController[ZButtonStyleData]
 
+    class Style(Enum):
+        Normal = 'ZButton'
+        Flat = 'ZFlatButton'
+
     def __init__(self,
-                 parent: QWidget = None,
-                 name: str = None,
-                 text: str = None,
-                 icon: QIcon = None,
-                 style: ZButtonStyle = ZButtonStyle.Normal
+                 parent: ZWidget | QWidget | None = None,
+                 text: str | None = None,
+                 font: QFont = QFont('Microsoft YaHei', 9),
+                 icon: QIcon | None = None,
+                 style: Style = Style.Normal,
+                 icon_size: QSize = QSize(16, 16),
+                 spacing: int = 4,
+                 objectName: str | None = None,
+                 toolTip: str | None = None,
                  ):
-        super().__init__(parent=parent, font=QFont("Microsoft YaHei", 9))
-        if name: self.setObjectName(name)
-        self._style = style
-        self._text: str = None
-        self._icon: QIcon = None
-        self._icon_size = QSize(16, 16)
-        self._spacing = 4
-        if text : self._text = text
-        if icon : self._icon = icon
+        super().__init__(parent=parent,
+                         objectName=objectName,
+                         toolTip=toolTip,
+                         font=font,
+                         )
+        self._style: ZButton.Style = style
+        self._text: str | None = text
+        self._icon: QIcon | None = icon
+        self._icon_size = icon_size
+        self._spacing = spacing
         self._init_style_()
         self.resize(self.sizeHint())
 
     # region public
-    @property
     def text(self) -> str: return self._text
 
-    @text.setter
-    def text(self, t: str) -> None:
+    def setText(self, t: str) -> None:
         self._text = t
         self.update()
 
-    def setText(self, t: str) -> None:
-        self.text = t
-
-    @property
     def icon(self) -> QIcon: return self._icon
 
-    @icon.setter
-    def icon(self, i: QIcon) -> None:
+    def setIcon(self, i: QIcon) -> None:
         self._icon = i
         self.update()
 
-    def setIcon(self, i: QIcon) -> None:
-        self.icon = i
-
-    @property
     def iconSize(self) -> QSize: return self._icon_size
 
-    @iconSize.setter
-    def iconSize(self, s: QSize) -> None:
+    def setIconSize(self, s: QSize) -> None:
         self._icon_size = s
         self.update()
 
-    def setIconSize(self, s: QSize) -> None:
-        self.iconSize = s
-
-    @property
     def spacing(self) -> int: return self._spacing
 
-    @spacing.setter
-    def spacing(self, spacing: int) -> None:
+    def setSpacing(self, spacing: int) -> None:
         self._spacing = spacing
         self.update()
-
-    def setSpacing(self, spacing: int) -> None:
-        self.spacing = spacing
-
-    def setEnabled(self, enable: bool) -> None:
-        if enable == self.isEnabled(): return
-        if enable: self.opacityCtrl.fadeTo(1.0)
-        else: self.opacityCtrl.fadeTo(0.3)
-        super().setEnabled(enable)
 
     def sizeHint(self):
         if self._icon and not self._text:
@@ -112,10 +94,10 @@ class ZButton(ABCButton):
 
     # region private method
     def _init_style_(self):
-        if self._style == ZButtonStyle.Normal:
-            self.styleDataCtrl.setKey("ZButton")
-        elif self._style == ZButtonStyle.Flat:
-            self.styleDataCtrl.setKey("ZFlatButton")
+        if self._style == self.Style.Normal:
+            self.styleDataCtrl.setKey(self._style.value)
+        elif self._style == self.Style.Flat:
+            self.styleDataCtrl.setKey(self._style.value)
 
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
@@ -155,13 +137,14 @@ class ZButton(ABCButton):
 
     # region paintEvent
     def paintEvent(self, event) -> None:
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(
             QPainter.RenderHint.Antialiasing|
             QPainter.RenderHint.TextAntialiasing|
             QPainter.RenderHint.SmoothPixmapTransform
             )
-        painter.setOpacity(self.opacityCtrl.opacity)
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
         if self.bodyColorCtrl.color.alpha() > 0:

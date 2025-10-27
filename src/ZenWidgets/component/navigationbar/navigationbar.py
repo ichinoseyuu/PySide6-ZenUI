@@ -33,52 +33,34 @@ class ZNavBarButton(ABCButton):
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZNavBarButton'}}
 
     def __init__(self,
-                 parent: QWidget = None,
-                 name: str = None,
-                 icon: QIcon = None,
-                 size: QSize = QSize(40, 40),
-                 tooltip: str = None
+                 parent: ZWidget | QWidget | None = None,
+                 icon: QIcon | None = None,
+                 fixed_size: QSize = QSize(40, 40),
+                 objectName: str | None = None,
+                 toolTip: str | None = None,
                  ):
-        super().__init__(parent=parent, maximumSize=size)
-        if name : self.setObjectName(name)
-        if tooltip: self.setToolTip(tooltip)
+        super().__init__(parent=parent,
+                         objectName=objectName,
+                         toolTip=toolTip
+                         )
         self._icon: QIcon = icon
         self._icon_size = QSize(20, 20)
         self._init_style_()
-        self.resize(self.sizeHint())
+        self.setFixedSize(fixed_size)
 
 
     # region public method
-    @property
     def icon(self) -> QIcon: return self._icon
 
-    @icon.setter
-    def icon(self, i: QIcon) -> None:
+    def setIcon(self, i: QIcon) -> None:
         self._icon = i
         self.update()
 
-    def setIcon(self, i: QIcon) -> None:
-        self.icon = i
-
-    @property
     def iconSize(self) -> QSize: return self._icon_size
 
-    @iconSize.setter
-    def iconSize(self, s: QSize) -> None:
+    def setIconSize(self, s: QSize) -> None:
         self._icon_size = s
         self.update()
-
-    def setIconSize(self, s: QSize) -> None:
-        self.iconSize = s
-
-    def setEnabled(self, enable: bool) -> None:
-        if enable == self.isEnabled(): return
-        if enable: self.opacityCtrl.fadeTo(1.0)
-        else: self.opacityCtrl.fadeTo(0.3)
-        super().setEnabled(enable)
-
-    def sizeHint(self):
-        return QSize(40, 40)
 
     # region private method
     def _init_style_(self):
@@ -118,12 +100,13 @@ class ZNavBarButton(ABCButton):
 
     # region event
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(
             QPainter.RenderHint.Antialiasing|
             QPainter.RenderHint.SmoothPixmapTransform
             )
-        painter.setOpacity(self.opacityCtrl.opacity)
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
         if self.bodyColorCtrl.color.alpha() > 0:
@@ -155,53 +138,35 @@ class ZNavBarToggleButton(ABCToggleButton):
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZNavBarToggleButton'}}
 
     def __init__(self,
-                 parent: QWidget = None,
-                 name: str = None,
-                 icon: QIcon = None,
-                 size: QSize = QSize(40, 40),
-                 tooltip: str = None,
+                 parent: ZWidget | QWidget | None = None,
+                 icon: QIcon | None = None,
+                 fixed_size: QSize = QSize(40, 40),
+                 objectName: str | None = None,
+                 toolTip: str | None = None,
                  ):
-        super().__init__(parent=parent, maximumSize=size)
-        if name: self.setObjectName(name)
-        if tooltip: self.setToolTip(tooltip)
+        super().__init__(parent=parent,
+                         objectName=objectName,
+                         toolTip=toolTip,
+                         )
         self.setGroupMember(True)
         self._icon = icon
         self._icon_size = QSize(20, 20)
         self._init_style_()
-        self.resize(self.sizeHint())
+        self.setFixedSize(fixed_size)
 
 
     # region private method
-    @property
     def icon(self) -> QIcon: return self._icon
 
-    @icon.setter
-    def icon(self, i: QIcon) -> None:
+    def setIcon(self, i: QIcon) -> None:
         self._icon = i
         self.update()
 
-    def setIcon(self, i: QIcon) -> None:
-        self.icon = i
-
-    @property
     def iconSize(self) -> QSize: return self._icon_size
 
-    @iconSize.setter
-    def iconSize(self, s: QSize) -> None:
+    def setIconSize(self, s: QSize) -> None:
         self._icon_size = s
         self.update()
-
-    def setIconSize(self, s: QSize) -> None:
-        self.iconSize = s
-
-    def setEnabled(self, enable: bool) -> None:
-        if enable == self.isEnabled(): return
-        if enable: self.opacityCtrl.fadeTo(1.0)
-        else: self.opacityCtrl.fadeTo(0.3)
-        super().setEnabled(enable)
-
-    def sizeHint(self):
-        return QSize(40, 40)
 
     # region private method
     def _init_style_(self):
@@ -265,12 +230,13 @@ class ZNavBarToggleButton(ABCToggleButton):
 
     # region event
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(
             QPainter.RenderHint.Antialiasing|
             QPainter.RenderHint.SmoothPixmapTransform
             )
-        painter.setOpacity(self.opacityCtrl.opacity)
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
         if self.bodyColorCtrl.color.alpha() > 0:
@@ -376,13 +342,14 @@ class ZNavigationBar(ZWidget):
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZNavigationBar'}}
 
     def __init__(self,
-                 parent: QWidget = None,
-                 name: str = None,
+                 parent: QWidget | ZWidget | None = None,
                  btn_size: QSize = QSize(40, 40),
-                 btn_icon_size: QSize = QSize(20, 20)
+                 btn_icon_size: QSize = QSize(20, 20),
+                 objectName: str | None = None
                  ):
-        super().__init__(parent)
-        if name: self.setObjectName(name)
+        super().__init__(parent=parent,
+                         objectName=objectName
+                         )
         self._buttons: list[ZNavBarButton|ZNavBarToggleButton] = []
         self._button_map: dict[str, ZNavBarButton|ZNavBarToggleButton] = {}
         self._btn_size = btn_size
@@ -399,39 +366,26 @@ class ZNavigationBar(ZWidget):
         self._panel.wheeled.connect(self._sync_indicator_)
         self._init_style_()
 
-    # region property
-    @property
+    # region public
     def panel(self) -> Panel:
         return self._panel
 
-    @property
     def footerPanel(self) -> FooterPanel:
         return self._footer_panel
 
-    # region public
-    @property
     def btnSize(self) -> QSize:return self._btn_size
 
-    @btnSize.setter
-    def btnSize(self, size: QSize) -> None:
-        self._btn_size = size
-        for btn in self._panel.getButtons():
-            btn.setMaximumSize(size)
-
     def setBtnSize(self, size: QSize) -> None:
-        self.btnSize = size
+        self._btn_size = size
+        for btn in self.getAllButtons():
+            btn.setFixedSize(size)
 
-    @property
     def btnIconSize(self) -> QSize:return self._btn_icon_size
 
-    @btnIconSize.setter
-    def btnIconSize(self, size: QSize) -> None:
-        self._btn_icon_size = size
-        for btn in self._panel.getButtons():
-            btn.setIconSize(size)
-
     def setBtnIconSize(self, size: QSize) -> None:
-        self.btnIconSize = size
+        self._btn_icon_size = size
+        for btn in self.getAllButtons():
+            btn.setIconSize(size)
 
     @overload
     def getButton(self, index: int) -> ZNavBarButton|ZNavBarToggleButton: ...
@@ -449,13 +403,13 @@ class ZNavigationBar(ZWidget):
         return [btn for (name, btn) in self._buttons]
 
     def addButton(self, name: str, icon: QIcon, panel: Panel|FooterPanel, tooltip: str = None):
-        btn = ZNavBarButton(panel, name, icon, self._btn_size, tooltip)
+        btn = ZNavBarButton(panel, objectName=name, icon=icon, fixed_size=self._btn_size, toolTip=tooltip)
         panel.layout().addWidget(btn)
         self._buttons.append(btn)
         self._button_map[name] = btn
 
     def insertButton(self, name: str, icon: QIcon, index: int, panel: Panel|FooterPanel, tooltip: str = None):
-        btn = ZNavBarButton(panel, name, icon, self._btn_size, tooltip)
+        btn = ZNavBarButton(panel, objectName=name, icon=icon, fixed_size=self._btn_size, toolTip=tooltip)
         panel.layout().insertWidget(index, btn)
         self._button_map[name] = btn
         if panel is self._footer_panel:
@@ -463,14 +417,14 @@ class ZNavigationBar(ZWidget):
         self._buttons.insert(index, btn)
 
     def addToggleButton(self, name: str, icon: QIcon, panel: Panel|FooterPanel, tooltip: str = None):
-        btn = ZNavBarToggleButton(panel, name, icon, self._btn_size, tooltip)
+        btn = ZNavBarToggleButton(panel, objectName=name, icon=icon, fixed_size=self._btn_size, toolTip=tooltip)
         panel.layout().addWidget(btn)
         self._btn_manager.addButton(btn)
         self._buttons.append(btn)
         self._button_map[name] = btn
 
     def insertToggleButton(self, name: str, icon: QIcon, index: int, panel: Panel|FooterPanel, tooltip: str = None):
-        btn = ZNavBarToggleButton(panel, name, icon, self._btn_size, tooltip)
+        btn = ZNavBarToggleButton(panel, objectName=name, icon=icon, fixed_size=self._btn_size, toolTip=tooltip)
         panel.layout().insertWidget(index, btn)
         self._button_map[name] = btn
         if panel is self._footer_panel:

@@ -41,6 +41,7 @@ class SwitchHandle(ZWidget):
             scaled_radius = radius * self.scaleCtrl.value
             painter.drawEllipse(center, scaled_radius, scaled_radius)
         painter.end()
+        event.accept()
 
 # region ZSwitch
 class ZSwitch(ABCToggleButton):
@@ -57,39 +58,30 @@ class ZSwitch(ABCToggleButton):
 
     def __init__(self,
                  parent: QWidget = None,
-                 name: str = None,
-                 style: Style = Style.Standard
+                 tun_on: bool = False,
+                 is_group_member: bool = False,
+                 style: Style = Style.Standard,
+                 objectName: str | None = None,
                  ):
-        super().__init__(parent)
-        self.setObjectName(name)
+        super().__init__(parent,
+                         checked=tun_on,
+                         is_group_member=is_group_member,
+                         objectName=objectName,
+                         )
         self._style = style
         self._handle = SwitchHandle(self)
         self._init_style_()
 
 
     # region public
-    @property
-    def handle(self): return self._handle
-
     def isTurnOn(self) -> bool: return self._checked
 
-    @property
     def switchStyle(self): return self._style
 
-    @switchStyle.setter
-    def switchStyle(self, v: Style):
+    def setSwitchStyle(self, v: Style):
         if v == self._style: return
         self._style = v
         self.update()
-
-    def setSwitchStyle(self, v: Style):
-        self.switchStyle = v
-
-    def setEnabled(self, e: bool) -> None:
-        if e == self.isEnabled(): return
-        if e: self.opacityCtrl.fadeTo(1.0)
-        else: self.opacityCtrl.fadeTo(0.3)
-        super().setEnabled(e)
 
     # region private
     def _init_style_(self):
@@ -144,9 +136,10 @@ class ZSwitch(ABCToggleButton):
 
     # region paintEvent
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setOpacity(self.opacityCtrl.opacity)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         rect = QRectF(self.rect())
         radius = self.height() / 2
         if self.borderColorCtrl.color.alpha() > 0:

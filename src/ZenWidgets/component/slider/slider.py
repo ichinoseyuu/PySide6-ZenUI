@@ -25,7 +25,9 @@ class SliderFill(ZWidget):
     radiusCtrl: QAnimatedFloat
 
     def paintEvent(self, event) -> None:
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(QPainter.Antialiasing)
         rect = QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5)
         radius = max(0.0, float(self.radiusCtrl.value))
@@ -61,7 +63,9 @@ class SliderTrack(ZWidget):
     radiusCtrl: QAnimatedFloat
 
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(QPainter.Antialiasing)
         rect = QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5)
         radius = max(0.0, float(self.radiusCtrl.value))
@@ -104,7 +108,9 @@ class SliderHandle(ZWidget):
         return super().parent()
 
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(QPainter.Antialiasing)
         center = QPointF(self.width() * 0.5, self.height() * 0.5)
         base_radius = max(0.0, min(self.width(), self.height()) * 0.5 - 1.0)
@@ -131,7 +137,7 @@ class SliderHandle(ZWidget):
         parent = self.parent()
         pos = ZPosition.Top if parent.isHorizontal() else ZPosition.Left
         ZGlobal.tooltip.showTip(
-            text=parent.displayValue,
+            text=parent.displayValue(),
             target=self,
             mode=ZGlobal.tooltip.Mode.TrackTarget,
             position=pos,
@@ -139,11 +145,13 @@ class SliderHandle(ZWidget):
         )
 
     def mousePressEvent(self, event):
+        super().mousePressEvent(event)
         self.innerScaleCtrl.setValueTo(self._inner_scale_pressed)
         self.outerColorCtrl.setAlphaTo(150)
         self.borderColorCtrl.setAlphaTo(150)
 
     def mouseMoveEvent(self, event):
+        super().mouseMoveEvent(event)
         slider = self.parent()
         global_pos = event.globalPos()
         local_pos = slider.mapFromGlobal(global_pos) - QPoint(self._radius, self._radius)
@@ -154,9 +162,9 @@ class SliderHandle(ZWidget):
             y = int(max(0, min(local_pos.y(), slider._track_length)))
             slider.setValue(slider._max_value - y / max(1, slider._track_length) * slider._max_value)
         self._show_handle_tooltip()
-        super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
+        super().mouseReleaseEvent(event)
         self.innerScaleCtrl.setValueTo(self._inner_scale_released)
         self.outerColorCtrl.setAlphaTo(255)
         self.borderColorCtrl.setAlphaTo(255)
@@ -168,8 +176,10 @@ class SliderHandle(ZWidget):
         self._show_handle_tooltip()
 
     def leaveEvent(self, event):
+        super().leaveEvent(event)
         self.innerScaleCtrl.setValueTo(self._inner_scale_normal)
         self.outerScaleCtrl.setValueTo(self._outer_scale_normal)
+        self.parent().clearFocus()
         ZGlobal.tooltip.hideTipDelayed(500)
 
 @dataclass
@@ -187,11 +197,10 @@ class ZSlider(ZWidget):
     class Style(Enum):
         Thin = SliderStyle(TrackWidth=4, HandleRadius=10)
         Normal = SliderStyle(TrackWidth=6, HandleRadius=12)
-        Thick = SliderStyle(TrackWidth=8, HandleRadius=14)
+        Thick = SliderStyle(TrackWidth=8, HandleRadius=12)
 
     def __init__(self,
                  parent: QWidget = None,
-                 name: str = None,
                  direction: ZDirection = ZDirection.Horizontal,
                  style: Style = Style.Normal,
                  scope: tuple[int, int] | tuple[float, float] = (0, 100),
@@ -200,10 +209,13 @@ class ZSlider(ZWidget):
                  accuracy: float = 1,
                  value: int|float = 0,
                  auto_strip_zero: bool = False,
-                 length: int = 150
-                 ) -> None:
-        super().__init__(parent)
-        if name: self.setObjectName(name)
+                 length: int = 150,
+                 objectName: str | None = None,
+                 ):
+        super().__init__(parent,
+                         objectName=objectName,
+                         focusPolicy=Qt.FocusPolicy.WheelFocus,
+                         )
         if direction not in (ZDirection.Horizontal, ZDirection.Vertical): raise ValueError('Invalid direction')
         self._dir = direction
         self._style = style
@@ -233,108 +245,65 @@ class ZSlider(ZWidget):
         self.resize(self.sizeHint())
 
     # region public
-    @property
     def percentage(self) -> float: return self._percentage
 
-    @property
     def direction(self) -> ZDirection: return self._dir
 
     def isHorizontal(self) -> bool: return self._dir == ZDirection.Horizontal
 
     def isVertical(self) -> bool: return self._dir == ZDirection.Vertical
 
-    @property
     def autoStripZero(self) -> bool: return self._auto_strip_zero
 
-    @autoStripZero.setter
-    def autoStripZero(self, v: bool):
+    def setAutoStripZero(self, v: bool):
         self._auto_strip_zero = v
 
-    def setAutoStripZero(self, v: bool):
-        self.autoStripZero = v
-
-    @property
     def maxValue(self): return self._max_value
 
-    @maxValue.setter
-    def maxValue(self, m: int | float):
+    def setMaxValue(self, m: int | float):
         self._max_value = m
         self._scope = (self._min_value, self._max_value)
         self.setValue(self._value)
 
-    def setMaxValue(self, m: int | float):
-        self.maxValue = m
-
-    @property
     def minValue(self): return self._min_value
 
-    @minValue.setter
-    def minValue(self, m: int | float):
+    def setMinValue(self, m: int | float):
         self._min_value = m
         self._scope = (self._min_value, self._max_value)
         self.setValue(self._value)
 
-    def setMinValue(self, m: int | float):
-        self.minValue = m
-
-    @property
     def step(self) -> int | float: return self._step
-
-    @step.setter
-    def step(self, s: int | float):
-        self._step = max(s, self._accuracy)
 
     def setStep(self, s: int | float):
         self._step = max(s, self._accuracy)
 
-    @property
     def stepMultiplier(self) -> int: return self._step_multiplier
-
-    @stepMultiplier.setter
-    def stepMultiplier(self, step_multiplier: int):
-        self._step_multiplier = step_multiplier
 
     def setStepMultiplier(self, step_multiplier: int):
         self._step_multiplier = step_multiplier
 
-    @property
     def accuracy(self) -> float | int: return self._accuracy
 
-    @accuracy.setter
-    def accuracy(self, accuracy: int | float):
+    def setAccuracy(self, accuracy: int | float):
         self._accuracy = accuracy
         self._step = max(self._step, accuracy)
         self.setValue(self._value)
 
-    def setAccuracy(self, accuracy: int | float):
-        self.accuracy = accuracy
-
-    @property
     def sliderStyle(self) -> Style: return self._style
 
-    @sliderStyle.setter
-    def sliderStyle(self, s: Style):
+    def setSliderStyle(self, s: Style):
         self._style = s
         self._track_width = self._style.value
         self._update_track()
 
-    def setSliderStyle(self, s: Style):
-        self.sliderStyle = s
-
-    @property
     def scope(self): return self._scope
 
-    @scope.setter
-    def scope(self, s: tuple):
+    def setScope(self, s: tuple):
         self._scope = s
         self._max_value = s[1]
         self._min_value = s[0]
         self.setValue(self._value)
 
-    def setScope(self, s: tuple):
-        self.scope = s
-
-    @property
     def displayValue(self) -> str:
         if self._accuracy >= 1:
             s = str(int(round(self._value)))
@@ -345,24 +314,19 @@ class ZSlider(ZWidget):
                 s = s.rstrip('0').rstrip('.') if '.' in s else s
         return s
 
-    @property
     def value(self) -> int | float:
         if self._accuracy >= 1:
             return int(round(self._value))
         decimal_places = max(0, len(str(self._accuracy).split('.')[-1]))
         return round(self._value, decimal_places)
 
-    @value.setter
-    def value(self, value: float):
+    def setValue(self, value: float):
         clamped = max(self._min_value, min(value, self._max_value))
         self._value = clamped
         self._percentage = (self._value - self._min_value) / (self._max_value - self._min_value)
         self._update_value()
-        self.valueChanged.emit(self.value)
-        self.displayValueChanged.emit(self.displayValue)
-
-    def setValue(self, value: int | float):
-        self.value = value
+        self.valueChanged.emit(self.value())
+        self.displayValueChanged.emit(self.displayValue())
 
     @overload
     def stepValue(self, step: int, multiplier: int = 1) -> None:
@@ -496,7 +460,7 @@ class ZSlider(ZWidget):
     def _show_tooltip(self):
         pos = ZPosition.Top if self.isHorizontal() else ZPosition.Left
         ZGlobal.tooltip.showTip(
-            text=self.displayValue,
+            text=self.displayValue(),
             target=self._handle,
             mode=ZGlobal.tooltip.Mode.TrackTarget,
             position=pos,
@@ -515,6 +479,7 @@ class ZSlider(ZWidget):
         painter.end()
 
     def keyPressEvent(self, event: QKeyEvent):
+        super().keyPressEvent(event)
         if self.isHorizontal() and (event.key() == Qt.Key.Key_Left or event.key() == Qt.Key.Key_Right):
             step = -1 if event.key() == Qt.Key.Key_Left else 1
             self.stepValue(step)
@@ -542,6 +507,7 @@ class ZSlider(ZWidget):
             self._handle.enterEvent(None)
 
     def wheelEvent(self, event: QWheelEvent):
+        super().wheelEvent(event)
         steps = event.angleDelta().y() / 120
         self.stepValue(steps)
         self._show_tooltip()
@@ -549,11 +515,8 @@ class ZSlider(ZWidget):
 
     def enterEvent(self, event):
         super().enterEvent(event)
-        self.setMouseTracking(True)
-        self.setFocus()
 
     def leaveEvent(self, event):
         super().leaveEvent(event)
         self._handle.leaveEvent(None)
-        self.setMouseTracking(False)
         self.clearFocus()

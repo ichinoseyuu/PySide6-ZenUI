@@ -23,12 +23,12 @@ class ZenUIGallery(ZStandardFramelessWindow):
         self.moveCenter()
         self.setWindowTitle("ZenWidgets Gallery")
         self.setWindowIcon(QIcon(":/image/icon.svg"))
-        self.contentLayout = ZHBoxLayout(self.centerWidget)
+        self.contentLayout = ZHBoxLayout(self.centerWidget())
 
-        self.navigationBar = NavigationBar(self.centerWidget)
+        self.navigationBar = NavigationBar(self.centerWidget())
         self.contentLayout.addWidget(self.navigationBar, stretch=0)
 
-        self.stackContainer = ZStackContainer(self.centerWidget,name="ZStackContainer")
+        self.stackContainer = ZStackContainer(self.centerWidget(),name="ZStackContainer")
         self.contentLayout.addWidget(self.stackContainer, stretch=1)
 
         self.panelHome = PanelHome(self.stackContainer)

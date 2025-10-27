@@ -1,6 +1,5 @@
 import logging
 from enum import IntEnum
-from re import S
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
@@ -12,7 +11,7 @@ from ZenWidgets.component.base import (
     ZWidget,
     ZPadding
 )
-from ZenWidgets.core import ZDebug,ZToolTipStyleData,ZQuickEffect,ZPosition,ZState,timeit
+from ZenWidgets.core import ZDebug,ZToolTipStyleData,ZQuickEffect,ZPosition
 
 # region ToolTipContent
 class ToolTipContent(ZWidget):
@@ -32,41 +31,12 @@ class ToolTipContent(ZWidget):
         self._init_style_()
 
     # region public
-    @property
     def text(self) -> str: return self._text
 
-    @text.setter
-    def text(self, t: str) -> None:
+    def setText(self, t: str) -> None:
         self._text = t
         self.adjustSize()
         self.update()
-
-    def setText(self, t: str) -> None:
-        self.text = t
-
-    @property
-    def padding(self) -> ZPadding: return self._padding
-
-    @padding.setter
-    def padding(self, p: ZPadding) -> None:
-        self._padding = p
-        self.adjustSize()
-        self.update()
-
-    def setPadding(self, p: ZPadding) -> None:
-        self.padding = p
-
-    @property
-    def alignment(self) -> Qt.AlignmentFlag: return self._alignment
-
-    @alignment.setter
-    def alignment(self, a: Qt.AlignmentFlag) -> None:
-        self._alignment = a
-        self.adjustSize()
-        self.update()
-
-    def setAlignment(self, a: Qt.AlignmentFlag) -> None:
-        self.alignment = a
 
     def sizeHint(self):
         p = self._padding
@@ -121,7 +91,9 @@ class ToolTipContent(ZWidget):
 
     # region event
     def paintEvent(self, event):
+        if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
+        painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing|QPainter.RenderHint.TextAntialiasing)
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
@@ -177,6 +149,9 @@ class ZToolTip(ZWidget):
         self._tracker_timer = QTimer()
         self._tracker_timer.setInterval(int(1000/60))
         self._tracker_timer.timeout.connect(self._update_pos_for_tracker)
+        self._show_timer = QTimer()
+        self._show_timer.setInterval(1000)
+        self._show_timer.setSingleShot(True)
         self._hide_timer = QTimer()
         self._hide_timer.setSingleShot(True)
         self._hide_timer.timeout.connect(self.hideTip)
@@ -190,75 +165,40 @@ class ZToolTip(ZWidget):
         QApplication.instance().installEventFilter(self)
 
     # region public
-    @property
-    def state(self) -> ZState:
-        if self.windowOpacity() == 0: return ZState.Hidden
-        else: return ZState.Showing
-
-    def isHidden(self) ->bool:
-        return True if self.windowOpacity() == 0 else False
-
-    def isShowing(self) ->bool:
-        return False if self.windowOpacity() == 0 else True
-
-    @property
     def mode(self) -> Mode: return self._mode
 
-    @mode.setter
-    def mode(self, m: Mode):
+    def setMode(self, m: Mode):
         self._mode = m
 
-    def setMode(self, mode: Mode):
-        self.mode = mode
-
-    @property
     def position(self) -> ZPosition: return self._position
 
-    @position.setter
-    def position(self, p: ZPosition):
+    def setPosition(self, p: ZPosition):
         self._position = p
 
-    def setPosition(self, position: ZPosition):
-        self._position = position
-
-    @property
     def offset(self) -> QPoint: return self._offset
 
-    @offset.setter
-    def offset(self, o: QPoint):
+    def setOffset(self, o: QPoint):
         self._offset = o
 
-    def setOffset(self, offset: QPoint):
-        self._offset = offset
+    def text(self) -> str: return self._content.text()
 
-    @property
-    def text(self) -> str: return self._content.text
+    def setText(self, t: str):
+        self._content.setText(t)
 
-    @text.setter
-    def text(self, t: str):
-        self._content.text = t
-
-    def setText(self, text: str) -> None:
-        self._content.text = text
-
-    @property
     def target(self): return self._target
 
-    @target.setter
-    def target(self, t: QWidget):
+    def setTarget(self, t: QWidget):
         self._target = t
         if self._target is None: self._tracker_timer.stop()
-
-    def setTarget(self, target):
-        self.target = target
 
     def showTip(self, text:str, target:QWidget, mode=Mode.TrackMouse, position=ZPosition.TopRight, offset=QPoint(6, 6), hide_delay:int=0):
         if self._repeat_timer.isActive(): return
         if self._hide_timer.isActive(): self._hide_timer.stop()
+        if self._show_timer.isActive(): self._show_timer.stop()
         self._target = target
-        self.mode = mode
+        self._mode = mode
         self._offset = offset
-        self._content.text = text
+        self._content.setText(text)
         self._position = position
         self.raise_()
         new_pos = self._get_pos_should_be_move()
@@ -289,7 +229,7 @@ class ZToolTip(ZWidget):
 
     def hideTip(self):
         self.windowOpacityCtrl.fadeOut()
-        self.target = None
+        self.setTarget(None)
 
     def hideTipDelayed(self, delay: int):
         if self._hide_timer.isActive(): self._hide_timer.stop()
@@ -317,8 +257,7 @@ class ZToolTip(ZWidget):
 
     # region private
     def _update_pos_for_tracker(self):
-        pos = self._get_pos_should_be_move()
-        self.widgetPositionCtrl.moveFromTo(self.pos(), pos)
+        self.widgetPositionCtrl.moveFromTo(self.pos(), self._get_pos_should_be_move())
 
     def _complete_hide(self):
         self.hide()

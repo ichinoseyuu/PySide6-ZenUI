@@ -11,15 +11,15 @@ class PanelWidget(ZScrollPanel):
         self._setup_ui()
 
     def _setup_ui(self):
-        title = ZHeadLine(self, 'title', '基础组件', display_indicator=True)
+        title = ZHeadLine(self, text='基础组件', display_indicator=True)
         title.setFont(QFont('Microsoft YaHei', 20, QFont.Weight.Bold))
-        title.padding = ZPadding(6, 0, 6, 6)
+        title.setPadding(ZPadding(6, 6, 6, 6))
         self.layout().addWidget(title)
 
         # region ZButton
         title = ZHeadLine(self, text= '基本输入组件', display_indicator=True)
         title.setFont(QFont('Microsoft YaHei', 14, QFont.Weight.Bold))
-        title.padding = ZPadding(6, 6, 6, 6)
+        title.setPadding(ZPadding(6, 6, 6, 6))
         self.layout().addWidget(title)
 
         layout = ZHBoxLayout(
@@ -39,7 +39,7 @@ class PanelWidget(ZScrollPanel):
         card.layout().addWidget(container)
 
         btn_icon = ZGlobal.iconPack.toIcon('ic_fluent_save_regular')
-        self.btn_1 = ZButton(container, 'btn_1', icon=btn_icon)
+        self.btn_1 = ZButton(container, icon=btn_icon)
         self.btn_1.setToolTip('保存')
         container.addWidget(self.btn_1, spacing=16)
         self.btn_1.clicked.connect(
@@ -51,7 +51,7 @@ class PanelWidget(ZScrollPanel):
                 )
             )
 
-        self.btn_2 = ZButton(container, 'btn_2', icon=btn_icon, text='保存')
+        self.btn_2 = ZButton(container, icon=btn_icon, text='保存')
         container.addWidget(self.btn_2, spacing=16)
         self.btn_2.clicked.connect(
             lambda: ZGlobal.tooltip.showTip(
@@ -63,7 +63,7 @@ class PanelWidget(ZScrollPanel):
                 hide_delay=800
                 )
             )
-        self.btn_3 = ZButton(container, 'btn_3', text='保存')
+        self.btn_3 = ZButton(container, text='保存')
         container.addWidget(self.btn_3, spacing=16)
         self.btn_3.clicked.connect(
             lambda: ZGlobal.tooltip.showTip(
@@ -76,7 +76,7 @@ class PanelWidget(ZScrollPanel):
                 )
             )
 
-        self.btn_4 = ZButton(container, 'btn_4', text='保存', style=ZButtonStyle.Flat)
+        self.btn_4 = ZButton(container, text='保存', style=ZButton.Style.Flat)
         container.addWidget(self.btn_4, spacing=16)
         self.btn_4.clicked.connect(
             lambda: ZGlobal.tooltip.showTip(
@@ -99,17 +99,17 @@ class PanelWidget(ZScrollPanel):
         container = ZHContainer(card)
         card.layout().addWidget(container)
 
-        self.toggle_btn_1 = ZToggleButton(container,'toggle_btn_1',icon=btn_icon)
+        self.toggle_btn_1 = ZToggleButton(container, icon=btn_icon)
         self.toggle_btn_1.setToolTip('自动保存')
         container.addWidget(self.toggle_btn_1, spacing=16)
 
-        self.toggle_btn_2 = ZToggleButton(container,'toggle_btn_2',icon=btn_icon,text='自动保存')
+        self.toggle_btn_2 = ZToggleButton(container, icon=btn_icon, text='自动保存')
         container.addWidget(self.toggle_btn_2, spacing=16)
 
-        self.toggle_btn_3 = ZToggleButton(container,'toggle_btn_3',text='自动保存')
+        self.toggle_btn_3 = ZToggleButton(container, text='自动保存')
         container.addWidget(self.toggle_btn_3, spacing=16)
 
-        self.toggle_btn_4 = ZToggleButton(container,'toggle_btn_4',text='自动保存', style=ZButtonStyle.Flat)
+        self.toggle_btn_4 = ZToggleButton(container, text='自动保存', style=ZToggleButton.Style.Flat)
         container.addWidget(self.toggle_btn_4, spacing=16)
 
 
@@ -131,13 +131,13 @@ class PanelWidget(ZScrollPanel):
         container.setAlignment(Qt.AlignmentFlag.AlignBottom)
         card.layout().addWidget(container)
 
-        self.switch_1 = ZSwitch(container, name='switch_1', style= ZSwitch.Style.Compact)
+        self.switch_1 = ZSwitch(container, style= ZSwitch.Style.Compact)
         container.addWidget(self.switch_1, spacing=16)
 
-        self.switch_2 = ZSwitch(container, name='switch_2', style= ZSwitch.Style.Standard)
+        self.switch_2 = ZSwitch(container, style= ZSwitch.Style.Standard)
         container.addWidget(self.switch_2, spacing=16)
 
-        self.switch_3 = ZSwitch(container, name='switch_3', style= ZSwitch.Style.Comfortable)
+        self.switch_3 = ZSwitch(container, style= ZSwitch.Style.Comfortable)
         container.addWidget(self.switch_3, spacing=16)
 
         # region ZReapeatButton
@@ -154,15 +154,11 @@ class PanelWidget(ZScrollPanel):
         info = ZHeadLine(container, text= '点击次数: 0')
         container.addWidget(info)
 
-        self.repeat_btn = ZRepeatButton(
-            parent=container,
-            name='repeat_btn_1',
-            text='连点按钮'
-            )
+        self.repeat_btn = ZRepeatButton(container, text='连点按钮')
 
         container.addWidget(self.repeat_btn)
         self.repeat_btn.clicked.connect(
-            lambda: info.setText(f'点击次数: {self.repeat_btn.repeatCount}')
+            lambda: info.setText(f'点击次数: {self.repeat_btn.repeatCount()}')
             )
 
         # region ZComboBox
@@ -177,7 +173,7 @@ class PanelWidget(ZScrollPanel):
         card.layout().addWidget(container)
 
         options = ['坤坤', '凡凡', '祺祺', '鑫鑫']
-        self.combo_box_1 = ZComboBox(self, name='combo_box_1',text='请选择')
+        self.combo_box_1 = ZComboBox(self, text='请选择')
         for option in options:
             self.combo_box_1.addOption(option)
         container.addWidget(self.combo_box_1)
@@ -204,14 +200,12 @@ class PanelWidget(ZScrollPanel):
 
         self.lineedit_1 = ZLineEdit(
             parent=container,
-            name='lineedit_1',
             minimumSize=QSize(300, 30)
         )
         container.addWidget(self.lineedit_1)
 
         self.lineedit_2 = ZLineEdit(
             parent=container,
-            name='lineedit_2',
             placeholder='带有提示文字的编辑框',
             minimumSize=QSize(300, 30)
         )
@@ -219,7 +213,6 @@ class PanelWidget(ZScrollPanel):
 
         self.lineedit_3 = ZLineEdit(
             parent=container,
-            name='lineedit_3',
             text='不能修改的编辑框',
             read_only=True,
             selectable=False,
@@ -229,8 +222,7 @@ class PanelWidget(ZScrollPanel):
 
         self.lineedit_4 = ZLineEdit(
             parent=container,
-            name='lineedit_4',
-             text='不能修改但可以选中编辑框',
+            text='不能修改但可以选中编辑框',
             read_only=True,
             selectable=True,
             minimumSize=QSize(300, 30)
@@ -254,10 +246,10 @@ class PanelWidget(ZScrollPanel):
         container = ZVContainer(card)
         card.layout().addWidget(container)
 
-        self.login_edit_1 = ZLoginEdit(card,'login_edit_1',allow_characters=False)
+        self.login_edit_1 = ZLoginEdit(card, allow_characters=False)
         container.addWidget(self.login_edit_1)
 
-        self.login_edit_2 = ZLoginEdit(card,'login_edit_2',is_masked=True)
+        self.login_edit_2 = ZLoginEdit(card, is_masked=True)
         container.addWidget(self.login_edit_2)
         # region ZNumberEdit
         card = DemoCard(self)
@@ -269,10 +261,10 @@ class PanelWidget(ZScrollPanel):
 
         container = ZVContainer(card)
         card.layout().addWidget(container)
-        self.number_edit_1 = ZNumberEdit(card,'number_edit_1')
+        self.number_edit_1 = ZNumberEdit(card)
         container.addWidget(self.number_edit_1)
 
-        self.number_edit_2 = ZNumberEdit(card,'number_edit_2',allow_negative=True,allow_decimal=True)
+        self.number_edit_2 = ZNumberEdit(card, allow_negative=True, allow_decimal=True)
         container.addWidget(self.number_edit_2)
 
         # region ZSlider
@@ -303,38 +295,38 @@ class PanelWidget(ZScrollPanel):
 
         self.hslider_1 = ZSlider(
             parent=container1,
-            name='hslider_1',
             direction=ZDirection.Horizontal,
             style=ZSlider.Style.Thin,
             scope=(0, 10),
             step=0.5,
             accuracy=0.1,
-            value=5
+            value=5,
+            length=300
             )
         container1.addWidget(self.hslider_1)
 
         self.hslider_2 = ZSlider(
             parent=container1,
-            name='hslider_2',
             direction=ZDirection.Horizontal,
             style=ZSlider.Style.Normal,
             scope=(0, 100),
             step=1,
             accuracy=1,
-            value=50
+            value=50,
+            length=300
             )
         container1.addWidget(self.hslider_2)
 
         self.hslider_3 = ZSlider(
             parent=container1,
-            name='hslider_3',
             direction=ZDirection.Horizontal,
             style=ZSlider.Style.Thick,
             scope=(0, 100),
             step=0.5,
             accuracy=0.1,
             value=50,
-            auto_strip_zero=True
+            auto_strip_zero=True,
+            length=300
             )
         container1.addWidget(self.hslider_3)
 
@@ -345,7 +337,6 @@ class PanelWidget(ZScrollPanel):
 
         self.vslider_1 = ZSlider(
             parent=container2,
-            name='vslider_1',
             direction=ZDirection.Vertical,
             style=ZSlider.Style.Thin,
             scope=(0, 10),
@@ -357,7 +348,6 @@ class PanelWidget(ZScrollPanel):
 
         self.vslider_2 = ZSlider(
             parent=container2,
-            name='vslider_2',
             direction=ZDirection.Vertical,
             style=ZSlider.Style.Normal,
             scope=(0, 100),
@@ -369,7 +359,6 @@ class PanelWidget(ZScrollPanel):
 
         self.vslider_3 = ZSlider(
             parent=container2,
-            name='vslider_3',
             direction=ZDirection.Vertical,
             style=ZSlider.Style.Thick,
             scope=(0, 100),
@@ -383,7 +372,7 @@ class PanelWidget(ZScrollPanel):
         # region Text
         title = ZHeadLine(self, text= '文本显示组件', display_indicator=True)
         title.setFont(QFont('Microsoft YaHei', 14, QFont.Weight.Bold))
-        title.padding = ZPadding(6, 6, 6, 6)
+        title.setPadding(ZPadding(6, 6, 6, 6))
         self.layout().addWidget(title)
 
         card = DemoCard(self)
@@ -396,15 +385,15 @@ class PanelWidget(ZScrollPanel):
         container = ZHContainer(card)
         card.layout().addWidget(container)
 
-        self.headline_1 = ZHeadLine(container, name='headline_1')
-        self.headline_1.text = '标题'
+        self.headline_1 = ZHeadLine(container)
+        self.headline_1.setText('标题')
         container.addWidget(self.headline_1)
 
-        self.headline_2 = ZHeadLine(container, name='headline_2', display_indicator=True)
-        self.headline_2.text = '带有指示器的标题'
+        self.headline_2 = ZHeadLine(container, display_indicator=True)
+        self.headline_2.setText('带指示器的标题')
         container.addWidget(self.headline_2)
 
-        self.headline_3 = ZHeadLine(container, name='headline_3',selectable=True)
-        self.headline_3.text = '可选中的标题'
+        self.headline_3 = ZHeadLine(container, selectable=True)
+        self.headline_3.setText('可选中的标题')
         container.addWidget(self.headline_3)
 

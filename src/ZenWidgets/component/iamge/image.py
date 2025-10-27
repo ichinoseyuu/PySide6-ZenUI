@@ -3,23 +3,25 @@ from enum import Enum
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter, QPixmap, QPainterPath, QPen
+from ZenWidgets.component.base import ZWidget
 from ZenWidgets.core import ZDebug
 
-class ZImage(QWidget):
+class ZImage(ZWidget):
     class ScaleType(Enum):
         Fit = 0 # 按比例缩放
         Fill = 1  # 填满
         Stretch = 2  # 拉伸
     def __init__(self,
                  parent: QWidget = None,
-                 name: str = None,
                  image_path: str = None,
                  scale_type: ScaleType = ScaleType.Fit,
                  corner_radius: int = 2,
-                 opacity: float = 1.0
+                 opacity: float = 1.0,
+                 objectName: str | None = None
                  ):
-        super().__init__(parent)
-        if name: self.setObjectName(name)
+        super().__init__(parent,
+                         objectName=objectName
+                         )
         self._image: QPixmap = QPixmap()       # 原始图片
         self._scaled_pixmap: QPixmap = QPixmap()   # 缩放后的图片
         self._opacity = opacity      # 透明度
@@ -49,6 +51,21 @@ class ZImage(QWidget):
         if self._image.isNull():
             print(f"图片加载失败: {image_path}")
             return False
+        self._updateScaledImage()
+        self.update()
+        return True
+
+    def setPixmap(self, pixmap: QPixmap) -> bool:
+        """直接设置QPixmap对象
+        Args:
+            pixmap: QPixmap对象
+        Returns:
+            bool: 是否成功设置
+        """
+        if pixmap.isNull():
+            print("无效的QPixmap对象")
+            return False
+        self._image = pixmap
         self._updateScaledImage()
         self.update()
         return True

@@ -33,7 +33,6 @@ class ZABCTitleBarButton(QWidget):
         self._icon_cc = QAnimatedColor(self)
 
     # region Property
-    @property
     def state(self) -> State: return self._state
 
     # region Func

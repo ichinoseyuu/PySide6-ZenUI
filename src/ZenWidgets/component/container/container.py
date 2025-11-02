@@ -1,7 +1,7 @@
 from PySide6.QtGui import QPainter, QPen
 from PySide6.QtCore import QMargins, QSize, Qt, QEvent
 from PySide6.QtWidgets import QWidget, QSizePolicy
-from ZenWidgets.core import ZDebug
+from ZenWidgets.core.debug import ZDebug
 
 # region - ZHContainer
 class ZHContainer(QWidget):

@@ -2,7 +2,7 @@ from PySide6.QtGui import QPainter,QFont,QPen,QIcon,QPixmap
 from PySide6.QtCore import Qt,QSize,QRectF,QPointF,Signal
 from PySide6.QtWidgets import QWidget
 from typing import Any,Dict
-from ZenWidgets.component.itemview import ZItemView
+from ZenWidgets.component.collections import ZItemView
 from ZenWidgets.component.base import (
     QAnimatedColor,
     QAnimatedFloat,

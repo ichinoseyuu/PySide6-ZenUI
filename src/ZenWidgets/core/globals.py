@@ -1,9 +1,11 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from ZenWidgets.component.tooltip import ZToolTip
+    from ZenWidgets.component.info import ZToolTip
 from PySide6.QtGui import QIcon
 from ZenWidgets.core.debug import ZDebug
 from ZenWidgets.gui import ZThemeManager,ZIconPack,ZPalette,ZStyleDataManager
+
+__All__ = ['ZGlobal']
 
 class ZGlobal(object):
     tooltip: 'ZToolTip' = None

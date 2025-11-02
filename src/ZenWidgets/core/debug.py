@@ -2,6 +2,8 @@ import logging
 from PySide6.QtGui import QPainter, QPen,QIcon
 from PySide6.QtCore import Qt, QRect
 
+__All__ = ['ZDebug']
+
 class ZDebug:
     draw_rect = False
 

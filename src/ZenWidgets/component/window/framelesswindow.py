@@ -6,7 +6,7 @@ from ctypes.wintypes import LPRECT, MSG
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QResizeEvent
-from ZenWidgets.component.tooltip import ZToolTip
+from ZenWidgets.component.info import ZToolTip
 from ZenWidgets.component.base import (
     StyleController,
     QAnimatedWindowBody,
@@ -22,7 +22,7 @@ from ZenWidgets.component.window.win32utils import (
     isFullScreen,
     getResizeBorderThickness
 )
-from ZenWidgets.core.globals.globals import ZGlobal
+from ZenWidgets.core.globals import ZGlobal
 from ZenWidgets.gui import ZFramelessWindowStyleData
 
 # region ZFramelessWindow

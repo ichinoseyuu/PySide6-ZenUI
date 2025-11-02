@@ -2,7 +2,7 @@
 from PySide6.QtCore import QEvent, Qt, QPoint
 from PySide6.QtGui import QIcon,QPainter
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
-from ZenWidgets.component.headline import ZHeadLine
+from ZenWidgets.component.text import ZHeadLine
 from ZenWidgets.core import ZDebug
 from ..win32utils import startSystemMove, toggleWindowState
 from .abctitlebarbutton import ZABCTitleBarButton

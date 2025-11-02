@@ -2,8 +2,7 @@ from PySide6.QtGui import QPainter, QPen, QResizeEvent
 from PySide6.QtCore import Qt, QPoint
 from PySide6.QtWidgets import QWidget
 from typing import overload
-from ZenWidgets.component.panel import ZPanel
-from ZenWidgets.component.scrollpanel import ZScrollPanel
+from ZenWidgets.component.panel import ZPanel,ZScrollPanel
 from ZenWidgets.core import ZDebug
 
 class ZStackContainer(QWidget):

@@ -10,11 +10,11 @@ from ZenWidgets.component.base import (
     ZWidget
     )
 from ZenWidgets.core import (
-    ZButtonStyleData,
     ZDebug,
     ZGlobal,
     ZPosition
 )
+from ZenWidgets.gui import ZButtonStyleData
 
 class ZButton(ABCButton):
     bodyColorCtrl: QAnimatedColor
@@ -22,18 +22,17 @@ class ZButton(ABCButton):
     radiusCtrl: QAnimatedFloat
     textColorCtrl: QAnimatedColor
     iconColorCtrl: QAnimatedColor
+    layerColorCtrl: QAnimatedColor
     styleDataCtrl: StyleController[ZButtonStyleData]
-
-    class Style(Enum):
-        Normal = 'ZButton'
-        Flat = 'ZFlatButton'
-
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{'key': 'ZButton'},
+        'radiusCtrl': {'value': 5.0},
+    }
     def __init__(self,
                  parent: ZWidget | QWidget | None = None,
                  text: str | None = None,
                  font: QFont = QFont('Microsoft YaHei', 9),
                  icon: QIcon | None = None,
-                 style: Style = Style.Normal,
                  icon_size: QSize = QSize(16, 16),
                  spacing: int = 4,
                  objectName: str | None = None,
@@ -44,7 +43,6 @@ class ZButton(ABCButton):
                          toolTip=toolTip,
                          font=font,
                          )
-        self._style: ZButton.Style = style
         self._text: str | None = text
         self._icon: QIcon | None = icon
         self._icon_size = icon_size
@@ -94,45 +92,38 @@ class ZButton(ABCButton):
 
     # region private method
     def _init_style_(self):
-        if self._style == self.Style.Normal:
-            self.styleDataCtrl.setKey(self._style.value)
-        elif self._style == self.Style.Flat:
-            self.styleDataCtrl.setKey(self._style.value)
-
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
         self.textColorCtrl.color = data.Text
         self.iconColorCtrl.color = data.Icon
         self.borderColorCtrl.color = data.Border
-        self.radiusCtrl.value = data.Radius
-        self.update()
+        self.layerColorCtrl.color = ZGlobal.palette.Transparent_reverse()
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
         self.bodyColorCtrl.setColorTo(data.Body)
         self.borderColorCtrl.setColorTo(data.Border)
         self.iconColorCtrl.setColorTo(data.Icon)
         self.textColorCtrl.setColorTo(data.Text)
+        self.layerColorCtrl.color = ZGlobal.palette.Transparent_reverse()
 
     # region slot
-    def _hover_handler_(self) -> None:
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
+    def _hover_handler_(self):
+        self.layerColorCtrl.setAlphaFTo(0.03)
         if self.toolTip() != '':
             ZGlobal.tooltip.showTip(text=self.toolTip(),
                         target=self,
                         position=ZPosition.TopRight,
                         offset=QPoint(6, 6))
-    def _leave_handler_(self) -> None:
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
+    def _leave_handler_(self):
+        self.layerColorCtrl.toTransparent()
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
-    def _press_handler_(self) -> None:
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyPressed)
+    def _press_handler_(self):
+        self.layerColorCtrl.setAlphaFTo(0.05)
 
-    def _release_handler_(self) -> None:
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
-
+    def _release_handler_(self):
+        self.layerColorCtrl.setAlphaFTo(0.03)
 
 
     # region paintEvent
@@ -157,6 +148,10 @@ class ZButton(ABCButton):
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
 
+        if self.layerColorCtrl.color.alpha() > 0:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self.layerColorCtrl.color)
+            painter.drawRoundedRect(rect, radius, radius)
 
         if self._icon:
             pixmap = self._icon.pixmap(self._icon_size)
@@ -195,3 +190,4 @@ class ZButton(ABCButton):
 
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
+        event.accept()

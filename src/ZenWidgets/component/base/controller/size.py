@@ -1,25 +1,23 @@
+from typing import overload,cast
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import QObject, Property, QSize
-from typing import overload
+from PySide6.QtCore import QObject, Property, QSize, Signal
 from ZenWidgets.core import ZExpPropertyAnimation
 
-class ZAnimatedWidgetSize(QObject):
-    '''具有属性动画的 QWidget 尺寸控制器，直接作用于父 QWidget'''
+# region ABCAnimatedSize
+class ABCAnimatedSize(QObject):
+    sizeChanged = Signal()
     def __init__(self, parent:QWidget):
         super().__init__(parent)
-        self._anim = ZExpPropertyAnimation(self, "size")
-        self._anim.setBias(1)
-        self._anim.setFactor(0.2)
+        self._anim: ZExpPropertyAnimation|None = None
 
     @property
     def animation(self) -> ZExpPropertyAnimation: return self._anim
 
-    def getSize(self) -> QSize: return self.parent().size()
+    def getSize(self) -> QSize: raise NotImplementedError
 
-    def setSize(self, size: QSize) -> None:
-        self.parent().resize(size)
+    def setSize(self, s: QSize) -> None: raise NotImplementedError
 
-    size: QSize = Property(QSize, getSize, setSize)
+    size: QSize = cast(QSize, Property(QSize, getSize, setSize, notify=sizeChanged))
 
 
     @overload
@@ -43,7 +41,24 @@ class ZAnimatedWidgetSize(QObject):
         return super().parent()
 
 
-class ZAnimatedSize(QObject):
+# region ZAnimatedWidgetSize
+class ZAnimatedWidgetSize(ABCAnimatedSize):
+    '''具有属性动画的 QWidget 尺寸控制器，直接作用于父 QWidget'''
+    def __init__(self, parent:QWidget):
+        super().__init__(parent)
+        self._anim = ZExpPropertyAnimation(self, "size")
+        self._anim.setBias(1)
+        self._anim.setFactor(0.2)
+
+
+    def getSize(self) -> QSize: return self.parent().size()
+
+    def setSize(self, size: QSize) -> None: self.parent().resize(size)
+
+    size: QSize = cast(QSize, Property(QSize, getSize, setSize, notify=ABCAnimatedSize.sizeChanged))
+
+# region ZAnimatedSize
+class ZAnimatedSize(ABCAnimatedSize):
     '''具有属性动画的 QSize 控制器'''
     def __init__(self, parent:QWidget, size: QSize = QSize(0, 0)):
         super().__init__(parent)
@@ -61,26 +76,4 @@ class ZAnimatedSize(QObject):
         self._size = size
         self.parent().update()
 
-    size: QSize = Property(QSize, getSize, setSize)
-
-
-    @overload
-    def resizeTo(self, size:QSize) -> None: ...
-
-    @overload
-    def resizeTo(self, x:int, y:int) -> None: ...
-
-    def resizeTo(self, *args) -> None:
-        self._anim.stop()
-        self._anim.setEndValue(QSize(*args))
-        self._anim.start()
-
-    def resizeFromTo(self, start: QSize, end: QSize) -> None:
-        self._anim.stop()
-        self._anim.setStartValue(start)
-        self._anim.setEndValue(end)
-        self._anim.start()
-
-
-    def parent(self) -> QWidget:
-        return super().parent()
+    size: QSize = cast(QSize, Property(QSize, getSize, setSize, notify=ABCAnimatedSize.sizeChanged))

@@ -1,54 +1,51 @@
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPainter, QPen
-from ZenWidgets.component.base import StyleController
-from ZenWidgets.core import ZTitleBarButtonStyleData,ZDebug
-from .abctitlebarbutton import ZABCTitleBarButton
-
+from PySide6.QtCore import Qt,Slot
+from PySide6.QtGui import QPainter,QPen,QColor
+from ZenWidgets.core import ZGlobal,ZDebug
+from ZenWidgets.gui import ZPalette
+from ZenWidgets.component.window.titlebar.abctitlebarbutton import ZABCTitleBarButton
 
 class ZMinimizeButton(ZABCTitleBarButton):
+    styledata = {
+        'Light':  QColor('#333333'),
+        'Dark': QColor('#dcdcdc')
+    }
+
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._style_data = StyleController[ZTitleBarButtonStyleData](self, 'ZMinimizeButton')
-        self._style_data.styleChanged.connect(self._styleChangeHandler)
-        self._initStyle()
+        ZGlobal.themeManager.themeChanged.connect(self._style_change_handler_)
+        self._init_style_()
 
-    @property
-    def styleData(self): return self._style_data
+    def _init_style_(self):
+        self._iconColorCtrl.setColor(self.styledata[ZGlobal.themeManager.getThemeName()])
+        self._layerColorCtrl.setColor(ZGlobal.palette.Transparent_reverse())
 
-    def _initStyle(self):
-        data = self._style_data.data
-        self._body_cc.color = data.Body
-        self._icon_cc.color = data.Icon
-        self.update()
-
-    def _styleChangeHandler(self):
-        data = self._style_data.data
-        self._body_cc.setColorTo(data.Body)
-        self._icon_cc.setColorTo(data.Icon)
+    @Slot(str)
+    def _style_change_handler_(self, theme: str):
+        self._layerColorCtrl.setColor(ZGlobal.palette.Transparent_reverse())
+        self._iconColorCtrl.setColorTo(self.styledata[theme])
 
     def hoverHandler(self):
-        self._body_cc.setColorTo(self._style_data.data.BodyHover)
+        self._layerColorCtrl.setAlphaTo(26)
 
     def leaveHandler(self):
-        self._body_cc.setColorTo(self._style_data.data.Body)
+        self._layerColorCtrl.setAlphaTo(0)
 
     def pressHandler(self):
-        self._body_cc.setColorTo(self._style_data.data.BodyPressed)
+        self._layerColorCtrl.setAlphaTo(18)
 
     def releaseHandler(self):
-        self._body_cc.setColorTo(self._style_data.data.Body)
+        self._layerColorCtrl.setAlphaTo(26)
 
     def paintEvent(self, e):
         painter = QPainter(self)
-        # draw background
-        painter.setBrush(self._body_cc.color)
+        painter.setBrush(self._layerColorCtrl.color)
         painter.setPen(Qt.NoPen)
         painter.drawRect(self.rect().adjusted(0, 1, 0, 0))
-        # draw icon
         painter.setBrush(Qt.NoBrush)
-        pen = QPen(self._icon_cc.color, 1)
+        pen = QPen(self._iconColorCtrl.color, 1)
         pen.setCosmetic(True)
         painter.setPen(pen)
         painter.drawLine(18, 16, 28, 16)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
         painter.end()
+        e.accept()

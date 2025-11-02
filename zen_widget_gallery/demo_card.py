@@ -5,9 +5,9 @@ from ZenWidgets import *
 
 class DemoCard(ZPanel):
     def __init__(self,parent:QWidget = None,name ='DemoCard'):
-        light_data = ZPanelStyleData(Body=QColor('#f3f3f3'), Border=QColor('#e5e5e5'), Radius=5.0)
-        dark_data = ZPanelStyleData(Body=QColor('#202020'), Border=QColor('#1d1d1d'), Radius=5.0)
-        super().__init__(parent, name, light_data, dark_data)
+        super().__init__(parent, name)
+        # self.styleDataCtrl.setCustomData("Light",ZStyleDataKey.Body, QColor('#F9F9F9'))
+        # self.styleDataCtrl.setCustomData("Dark",ZStyleDataKey.Body, QColor('#1D1D1D'))
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.setLayout(ZVBoxLayout(self,margins=QMargins(16,16,16,16),spacing=16))
 

@@ -2,40 +2,31 @@ import inspect
 import logging
 from typing import TypeVar, cast, get_origin, overload, Any
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt,QEvent,QPoint,QSize,Signal
+from PySide6.QtCore import Qt,QEvent,QPoint,QSize,Signal,Slot
 from PySide6.QtGui import QMouseEvent
 from ZenWidgets.component.base.controller import *
 from ZenWidgets.core import make_getter,ZState
 
 T = TypeVar('T')
 
-__controllers_types__= [
-    ZAnimatedWindowOpacity,
-    ZAnimatedWidgetPosition,
-    ZAnimatedWidgetSize,
-    ZAnimatedWidgetRect,
-    QAnimatedWindowBody,
-    StyleController,
-    QAnimatedColor,
-    QAnimatedLinearGradient,
-    ZAnimatedOpacity,
-    ZAnimatedPoint,
-    ZAnimatedPointF,
-    ZAnimatedSize,
-    ZAnimatedRect,
-    QAnimatedFloat,
-    QAnimatedInt
-    ]
-
 class ZWidget(QWidget):
+    '''
+    ZenWidgets 组件的基类
+    '''
+    __controllers_types__ = (
+        QAnimatedColor,
+        ZAnimatedOpacity,
+        ZAnimatedPoint,
+        ZAnimatedPointF,
+        ZAnimatedSize,
+        QAnimatedFloat,
+        QAnimatedLinearGradient,
+        ZAnimatedColor,
+        StyleController,
+        QAnimatedInt
+    )
     __controllers_kwargs__: dict[str, Any] = {}
     dragged = Signal(QPoint)
-
-    windowOpacityCtrl: ZAnimatedWindowOpacity
-    widgetSizeCtrl: ZAnimatedWidgetSize
-    widgetPositionCtrl: ZAnimatedWidgetPosition
-    opacityCtrl: ZAnimatedOpacity
-
     def __init__(self,
                  parent: QWidget | None = None,
                  *args,
@@ -49,16 +40,19 @@ class ZWidget(QWidget):
                          toolTip=toolTip,
                          **kwargs
                          )
-        self._create_controllers_()
         self._state = ZState.Idle
         self._move_anchor: QPoint = QPoint(0, 0)
         self._draggable: bool = False
         self._drag_pos: QPoint | None = None
-
+        self._windowOpacityCtrl: ZAnimatedWindowOpacity = ZAnimatedWindowOpacity(self)
+        self._widgetSizeCtrl: ZAnimatedWidgetSize = ZAnimatedWidgetSize(self)
+        self._widgetPositionCtrl: ZAnimatedWidgetPosition = ZAnimatedWidgetPosition(self)
+        self._opacityCtrl: ZAnimatedOpacity = ZAnimatedOpacity(self)
+        self._create_controllers_()
 
     def _create_controllers_(self) -> None:
         '''创建控制器'''
-        allowed_types = tuple(__controllers_types__)
+        allowed_types = self.__controllers_types__
         controllers_kwargs: dict[str, Any] = {}
         annotations: dict[str, Any] = {}
         # 遍历类的继承链，从ZWidget类和其子类中获取注解和控制器参数，让子类的注解覆盖父类的注解
@@ -92,8 +86,19 @@ class ZWidget(QWidget):
     def _init_style_(self) -> None:
         '''初始化样式'''
 
+    @Slot()
     def _style_change_handler_(self) -> None:
-        '''主题改变时的槽函数'''
+        '''样式改变时的槽函数'''
+
+    # region property
+    @property
+    def windowOpacityCtrl(self) -> ZAnimatedWindowOpacity: return self._windowOpacityCtrl
+    @property
+    def widgetSizeCtrl(self) -> ZAnimatedWidgetSize: return self._widgetSizeCtrl
+    @property
+    def widgetPositionCtrl(self) -> ZAnimatedWidgetPosition: return self._widgetPositionCtrl
+    @property
+    def opacityCtrl(self) -> ZAnimatedOpacity: return self._opacityCtrl
 
     # region public method
     def state(self) -> ZState: return self._state

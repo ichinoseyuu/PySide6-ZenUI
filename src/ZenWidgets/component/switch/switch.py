@@ -11,7 +11,8 @@ from ZenWidgets.component.base import (
     ZWidget,
     ABCToggleButton
 )
-from ZenWidgets.core import ZSwitchStyleData,ZDebug
+from ZenWidgets.core import ZDebug
+from ZenWidgets.gui import ZSwitchStyleData
 
 @dataclass
 class SwitchStyle:
@@ -97,7 +98,6 @@ class ZSwitch(ABCToggleButton):
             self.bodyColorCtrl.transparent()
             self._handle.bodyColorCtrl.color = data.Handle
         self.borderColorCtrl.color = data.Border
-        self.update()
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data

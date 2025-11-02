@@ -1,21 +1,21 @@
 # coding:utf-8
-from PySide6.QtCore import QEvent, Qt, QPoint,QMargins
+from PySide6.QtCore import QEvent, Qt, QPoint
 from PySide6.QtGui import QIcon,QPainter
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
 from ZenWidgets.component.headline import ZHeadLine
-from ZenWidgets.core import ZGlobal,ZDebug
+from ZenWidgets.core import ZDebug
 from ..win32utils import startSystemMove, toggleWindowState
 from .abctitlebarbutton import ZABCTitleBarButton
 from .closebutton import ZCloseButton
 from .maximizebutton import ZMaximizeButton
 from .minimizebutton import ZMinimizeButton
-from .themebutton import ZThemeButton
+from .themebutton import ZChangeThemeButton
 
 
 class ZTitleBarBase(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        self.themeBtn = ZThemeButton(parent=self)
+        self.themeBtn = ZChangeThemeButton(parent=self)
         self.minBtn = ZMinimizeButton(parent=self)
         self.maxBtn = ZMaximizeButton(parent=self)
         self.closeBtn = ZCloseButton(parent=self)
@@ -27,7 +27,6 @@ class ZTitleBarBase(QWidget):
         # self.setStyleSheet("background-color: transparent;border: 1px solid red;")
 
         # connect signal to slot
-        self.themeBtn.clicked.connect(ZGlobal.themeManager.toggleThemeForce)
         self.minBtn.clicked.connect(self.window().showMinimized)
         self.maxBtn.clicked.connect(self.__toggleMaxState)
         self.closeBtn.clicked.connect(self.window().close)

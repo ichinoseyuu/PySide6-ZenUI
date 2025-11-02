@@ -1,7 +1,8 @@
-from typing import overload
+from typing import overload,cast
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QPropertyAnimation, QObject, Property, QEasingCurve
 
+# region QAnimatedInt
 class QAnimatedInt(QObject):
     '''具有原生属性动画的整数控制器'''
     def __init__(self, parent: QWidget, value: int = 0):
@@ -20,9 +21,7 @@ class QAnimatedInt(QObject):
         self._value = value
         self.parent().update()
 
-    value: int = Property(int, getValue, setValue)
-
-
+    value: int = cast(int, Property(int, getValue, setValue))
 
     @overload
     def setValueTo(self, value: int) -> None: ...
@@ -39,11 +38,10 @@ class QAnimatedInt(QObject):
             self._anim.setEndValue(args[1])
         self._anim.start()
 
-
     def parent(self) -> QWidget:
         return super().parent()
 
-
+# region QAnimatedFloat
 class QAnimatedFloat(QObject):
     '''具有原生属性动画的浮点数控制器'''
     def __init__(self, parent: QWidget, value: int|float = 0.0):
@@ -62,8 +60,7 @@ class QAnimatedFloat(QObject):
         self._value = value
         self.parent().update()
 
-    value: float = Property(float, getValue, setValue)
-
+    value: float = cast(float, Property(float, getValue, setValue))
 
     @overload
     def setValueTo(self, value: int) -> None: ...
@@ -79,7 +76,6 @@ class QAnimatedFloat(QObject):
             self._anim.setStartValue(args[0])
             self._anim.setEndValue(args[1])
         self._anim.start()
-
 
     def parent(self) -> QWidget:
         return super().parent()

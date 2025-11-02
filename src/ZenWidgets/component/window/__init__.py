@@ -1,2 +1,1 @@
 from .framelesswindow import ZFramelessWindow,ZStandardFramelessWindow
-from .acrylicwindow import AcrylicWindow

@@ -13,11 +13,11 @@ from ZenWidgets.component.base import (
 )
 from ZenWidgets.core import (
     ZGlobal,
-    ZSliderStyleData,
     ZDebug,
     ZPosition,
     ZDirection
 )
+from ZenWidgets.gui import ZSliderStyleData
 # region SliderFill
 class SliderFill(ZWidget):
     bodyColorCtrl: QAnimatedLinearGradient
@@ -42,11 +42,11 @@ class SliderFill(ZWidget):
             rect.top() + rect.height() * y2
         )
         if not self.bodyColorCtrl.reverse:
-            gradient.setColorAt(0.0, self.bodyColorCtrl.colorStart)
-            gradient.setColorAt(1.0, self.bodyColorCtrl.colorEnd)
+            gradient.setColorAt(0.0, self.bodyColorCtrl.start.color)
+            gradient.setColorAt(1.0, self.bodyColorCtrl.end.color)
         else:
-            gradient.setColorAt(0.0, self.bodyColorCtrl.colorEnd)
-            gradient.setColorAt(1.0, self.bodyColorCtrl.colorStart)
+            gradient.setColorAt(0.0, self.bodyColorCtrl.end.color)
+            gradient.setColorAt(1.0, self.bodyColorCtrl.start.color)
 
         painter.fillPath(path, gradient)
 
@@ -384,19 +384,19 @@ class ZSlider(ZWidget):
         data = self.styleDataCtrl.data
         self._track.bodyColorCtrl.color = data.Track
         self._track.borderColorCtrl.color = data.TrackBorder
-        self._fill.bodyColorCtrl.colorStart = data.FillAreaStart
-        self._fill.bodyColorCtrl.colorEnd = data.FillAreaEnd
+        self._fill.bodyColorCtrl.start.color = data.FillAreaStart
+        self._fill.bodyColorCtrl.end.color = data.FillAreaEnd
         self._fill.borderColorCtrl.color = data.FillAreaBorder
         self._handle.innerColorCtrl.color = data.HandleInner
         self._handle.outerColorCtrl.color = data.HandleOuter
         self._handle.borderColorCtrl.color = data.HandleBorder
-        self.update()
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
         self._track.bodyColorCtrl.setColorTo(data.Track)
         self._track.borderColorCtrl.setColorTo(data.TrackBorder)
-        self._fill.bodyColorCtrl.setColorsTo(data.FillAreaStart, data.FillAreaEnd)
+        self._fill.bodyColorCtrl.start.setColorTo(data.FillAreaStart)
+        self._fill.bodyColorCtrl.end.setColorTo(data.FillAreaEnd)
         self._fill.borderColorCtrl.setColorTo(data.FillAreaBorder)
         self._handle.innerColorCtrl.setColorTo(data.HandleInner)
         self._handle.outerColorCtrl.setColorTo(data.HandleOuter)

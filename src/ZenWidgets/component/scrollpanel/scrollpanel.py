@@ -8,13 +8,12 @@ from ZenWidgets.component.base import (
     ZWidget
 )
 from ZenWidgets.core import (
-    ZScrollPanelStyleData,
     ZDebug,
     ZExpPropertyAnimation,
     ZDirection,
     ZState
 )
-from ZenWidgets.component.itemview import ZItemView
+from ZenWidgets.gui import ZScrollPanelStyleData
 # region ScrollContent
 class ScrollContent(ZWidget):
     resized = Signal()
@@ -181,13 +180,13 @@ class ZScrollPanel(ZWidget):
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZScrollPanel'}}
 
     def __init__(self,
-                 parent: QWidget = None,
-                 name: str = None,
-                 style_data_light: ZScrollPanelStyleData = None,
-                 style_data_dark: ZScrollPanelStyleData = None
+                 parent: ZWidget | QWidget | None = None,
+                 objectName: str | None = None,
                  ):
-        super().__init__(parent,focusPolicy=Qt.FocusPolicy.WheelFocus)
-        if name: self.setObjectName(name)
+        super().__init__(parent,
+                         objectName=objectName,
+                         focusPolicy=Qt.FocusPolicy.WheelFocus
+                         )
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._content = ScrollContent(self)
         self._last_v_handle_pos: float = 0.0
@@ -197,8 +196,6 @@ class ZScrollPanel(ZWidget):
         self._handle_v = ScrollHandle(self,ZDirection.Vertical)
         self._handle_h = ScrollHandle(self,ZDirection.Horizontal)
         self._content.resized.connect(self._update_handles_and_content)
-        if style_data_light: self.styleDataCtrl.setData('Light',style_data_light)
-        if style_data_dark: self.styleDataCtrl.setData('Dark',style_data_dark)
         self._init_style_()
 
     def content(self): return self._content
@@ -287,18 +284,15 @@ class ZScrollPanel(ZWidget):
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
         self.borderColorCtrl.color = data.Border
-        self.radiusCtrl.value = data.Radius
+        self.radiusCtrl.value = 5.0
         self._handle_h.bodyColorCtrl.color = data.Handle
         self._handle_v.bodyColorCtrl.color = data.Handle
         self._handle_h.borderColorCtrl.color = data.HandleBorder
         self._handle_v.borderColorCtrl.color = data.HandleBorder
-        self._handle_h.update()
-        self._handle_v.update()
-        self.update()
+
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
         self.bodyColorCtrl.setColorTo(data.Body)
         self.borderColorCtrl.setColorTo(data.Border)
         self._handle_h.bodyColorCtrl.setColorTo(data.Handle)

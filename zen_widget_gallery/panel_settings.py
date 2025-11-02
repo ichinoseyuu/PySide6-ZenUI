@@ -5,8 +5,8 @@ from ZenWidgets import *
 from demo_card import DemoCard
 
 class PanelSettings(ZPanel):
-    def __init__(self, parent = None, name ='PanelSettings'):
-        super().__init__(parent = parent, name=name)
+    def __init__(self, parent = None):
+        super().__init__(parent, objectName ='PanelSettings')
         self.setLayout(ZVBoxLayout(self, QMargins(40, 30, 40, 30), 30, Qt.AlignmentFlag.AlignTop))
         self._setup_ui()
 
@@ -30,12 +30,12 @@ class PanelSettings(ZPanel):
 
         self.btn_theme_set_1 = ZToggleButton(self.hcontainer, text='浅色')
         self.btn_theme_set_1.setGroupMember(True)
-        self.btn_theme_set_1.clicked.connect(lambda: ZGlobal.themeManager.setThemeForce(ZTheme.Light))
+        self.btn_theme_set_1.clicked.connect(lambda: ZGlobal.themeManager.setTheme(ZTheme.Light))
         self.hcontainer.addWidget(self.btn_theme_set_1)
 
         self.btn_theme_set_2 = ZToggleButton(self.hcontainer, text='深色')
         self.btn_theme_set_2.setGroupMember(True)
-        self.btn_theme_set_2.clicked.connect(lambda: ZGlobal.themeManager.setThemeForce(ZTheme.Dark))
+        self.btn_theme_set_2.clicked.connect(lambda: ZGlobal.themeManager.setTheme(ZTheme.Dark))
         self.hcontainer.addWidget(self.btn_theme_set_2)
 
         self.btn_theme_set_3 = ZToggleButton(self.hcontainer, text='跟随系统')

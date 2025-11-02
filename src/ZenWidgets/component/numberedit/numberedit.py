@@ -11,10 +11,9 @@ from ZenWidgets.component.base import (
     ZPadding,
     ZTextCommand
 )
-from ZenWidgets.core import (
-    ZLineEditStyleData,
-    ZDebug
-)
+from ZenWidgets.core import ZDebug
+
+from ZenWidgets.gui import ZNumberEditStyleData,ZPalette
 
 class ZNumberEdit(ZWidget):
     editingFinished = Signal()
@@ -28,8 +27,13 @@ class ZNumberEdit(ZWidget):
     bodyColorCtrl: QAnimatedColor
     borderColorCtrl: QAnimatedColor
     radiusCtrl: QAnimatedFloat
-    styleDataCtrl: StyleController[ZLineEditStyleData]
-    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZNumberEdit'}}
+    layerColorCtrl: QAnimatedColor
+    styleDataCtrl: StyleController[ZNumberEditStyleData]
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{'key': 'ZNumberEdit'},
+        'radiusCtrl': {'value': 5.0},
+        'underlineWeightCtrl': {'value': 1.3},
+    }
 
     def __init__(self,
                  parent: QWidget | ZWidget | None = None,
@@ -177,31 +181,29 @@ class ZNumberEdit(ZWidget):
     # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
+        self.bodyColorCtrl.color = data.Body
+        self.borderColorCtrl.color = data.Border
         self.textColorCtrl.color = data.Text
         self.textBackColorCtrl.color = data.TextBackSectcted
         self.cursorColorCtrl.color = data.Cursor
         self.underlineColorCtrl.color = data.Underline
-        self.bodyColorCtrl.color = data.Body
-        self.borderColorCtrl.color = data.Border
-        self.radiusCtrl.value = data.Radius
-        self.underlineWeightCtrl.value = 1.3
-        self.update()
+        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
 
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
-        self.cursorColorCtrl.setColorTo(data.Cursor)
-        self.borderColorCtrl.setColorTo(data.Border)
-        self.textColorCtrl.setColorTo(data.Text)
-        self.textBackColorCtrl.setColorTo(data.TextBackSectcted)
-
         if self.hasFocus():
             self.underlineColorCtrl.setColorTo(data.UnderlineFocused)
             self.bodyColorCtrl.setColorTo(data.BodyFocused)
         else:
             self.underlineColorCtrl.setColorTo(data.Underline)
             self.bodyColorCtrl.setColorTo(data.Body)
+        self.cursorColorCtrl.setColorTo(data.Cursor)
+        self.borderColorCtrl.setColorTo(data.Border)
+        self.textColorCtrl.setColorTo(data.Text)
+        self.textBackColorCtrl.setColorTo(data.TextBackSectcted)
+        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
+
 
 
     def _validate_text(self, text: str) -> str:
@@ -520,6 +522,10 @@ class ZNumberEdit(ZWidget):
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+        if self.layerColorCtrl.color.alpha() > 0:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self.layerColorCtrl.color)
+            painter.drawRoundedRect(rect, radius, radius)
         if self.underlineColorCtrl.color.alpha() > 0:
             underline_h = self.underlineWeightCtrl.value
             painter.fillRect(QRectF(rect.left(), rect.bottom() - underline_h, rect.width(), underline_h),
@@ -663,15 +669,11 @@ class ZNumberEdit(ZWidget):
 
     def enterEvent(self, event):
         super().enterEvent(event)
-        if not self.hasFocus():
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
+        self.layerColorCtrl.setAlphaFTo(0.03)
 
     def leaveEvent(self, event):
         super().leaveEvent(event)
-        if self.hasFocus():
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyFocused)
-        else:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
+        self.layerColorCtrl.toTransparent()
 
     def wheelEvent(self, event: QWheelEvent):
         super().wheelEvent(event)

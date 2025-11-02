@@ -1,8 +1,11 @@
 import logging
+import copy
 from typing import overload,Dict,Generic
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import QObject, Signal
-from ZenWidgets.core import StyleDataT, ZGlobal
+from PySide6.QtCore import QObject, Signal,Slot
+from PySide6.QtGui import QColor
+from ZenWidgets.core import ZGlobal
+from ZenWidgets.gui import StyleDataT,ZStyleDataKey
 
 
 class StyleController(QObject, Generic[StyleDataT]):
@@ -18,54 +21,89 @@ class StyleController(QObject, Generic[StyleDataT]):
         self._data: StyleDataT = None
         self._custom_data: Dict[str, StyleDataT] = {'Light': None, 'Dark': None}
         if key: self._data = ZGlobal.styleDataManager.getStyleData(key)
-        ZGlobal.themeManager.themeChanged.connect(self.updateStyleData)
+        ZGlobal.themeManager.themeChanged.connect(self._theme_change_handler_)
 
     @property
-    def data(self,) -> StyleDataT: return self._data
+    def data(self) -> StyleDataT:return copy.deepcopy(self._data)
 
-    def updateStyleData(self, theme) -> None:
+    @Slot(str)
+    def _theme_change_handler_(self, theme:str) -> None:
+        '''
+        接收主题改变信号,更新样式数据的槽函数
+        '''
         if self._custom:
-            self._data = self._custom_data[theme.name]
+            self._data = self._custom_data[theme]
         else:
-            self._data = ZGlobal.styleDataManager.getStyleData(self._key, theme.name)
+            self._data = ZGlobal.styleDataManager.getStyleData(self._key)
         self.styleChanged.emit()
 
-    def setKey(self, key: str, update: bool = False) -> None:
+    def setKey(self, key: str, /, update: bool = False) -> None:
+        '''
+        设置样式数据键,用于获取指定样式数据
+
+        :param key: 样式数据键
+        :param update: 是否立即更新样式数据
+        '''
         self._key = key
         self._data = ZGlobal.styleDataManager.getStyleData(key)
         if update: self.styleChanged.emit()
 
-    def updateDataFromManager(self):
-        self._data = ZGlobal.styleDataManager.getStyleData(self._key)
 
-    @overload
-    def setData(self, theme: str, data: StyleDataT) -> None: ...
+    def setCustomDataComplete(self, theme: str, data: StyleDataT, /, update: bool = False) -> None:
+        '''
+        完全自定义样式数据
 
-    @overload
-    def setData(self, light_data: StyleDataT, dark_data: StyleDataT) -> None: ...
-
-    def setData(self, *args) -> None:
+        :param theme: 主题
+        :param data: 样式数据
+        '''
+        if theme not in self._custom_data:
+            raise ValueError(f"不支持的主题: {theme}，必须是 'Light' 或 'Dark'")
+        self._custom_data[theme] = data
         self._custom = True
-        if len(args) == 2 and args[0] in ['Light', 'Dark']:
-            # 设置指定主题的样式，同时保留另一个主题的现有样式或使用默认样式
-            theme = args[0]
-            self._custom_data[theme] = args[1]
-            # 确保另一个主题也有值
-            other_theme = 'Dark' if theme == 'Light' else 'Light'
-            if self._custom_data[other_theme] is None:
-                # 如果另一个主题没有自定义样式，使用默认样式
-                self._custom_data[other_theme] = ZGlobal.styleDataManager.getStyleData(self._key, other_theme)
-        elif len(args) == 2 and isinstance(args[0], StyleDataT):
-            # 同时设置Light和Dark主题的样式
-            self._custom_data['Light'] = args[0]
-            self._custom_data['Dark'] = args[1]
-        else:
-            raise ValueError("Invalid arguments for setData")
-        self.updateStyleData(ZGlobal.themeManager.theme)
+        if update and theme == ZGlobal.themeManager.getThemeName():
+            self._data = data
+            self.styleChanged.emit()
 
-    def clearCustomData(self) -> None:
-        self._custom = False
-        self.updateStyleData(ZGlobal.themeManager.theme.name)
+    def setCustomData(self, theme: str, data_key: ZStyleDataKey, value: QColor, /, update: bool = False) -> None:
+        '''
+        自定义样式数据中的特定字段
+
+        :param theme: 主题
+        :param data_key: 要修改的样式数据字段键
+        :param value: 要设置的新值
+        '''
+        if theme not in self._custom_data:
+            raise ValueError(f"不支持的主题: {theme}，必须是 'Light' 或 'Dark'")
+        # 获取基础数据（优先用已有自定义数据，否则用默认数据）
+        base_data = self._custom_data[theme] if self._custom_data[theme] is not None else ZGlobal.styleDataManager.getStyleDataByTheme(self._key, theme)
+        new_data = copy.deepcopy(base_data)
+        if not hasattr(new_data, data_key.value):
+            raise AttributeError(f"StyleDataT 没有字段: {data_key}")
+        setattr(new_data, data_key.value, value)
+        self._custom_data[theme] = new_data
+        self._custom = True
+        if update and theme == ZGlobal.themeManager.getThemeName():
+            self._data = new_data
+            self.styleChanged.emit()
+
+    def setDefault(self):
+        self._data = ZGlobal.styleDataManager.getStyleData(self._key)
+        self.styleChanged.emit()
 
     def parent(self) -> QWidget:
         return super().parent()
+
+# import sys
+# from PySide6.QtWidgets import QApplication
+# from PySide6.QtGui import QColor
+# from ZenWidgets.gui import ZButtonStyleData
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     logging.basicConfig(level=logging.INFO)
+#     window = QWidget()
+#     controller = StyleController[ZButtonStyleData](window, 'ZButton')
+#     data = controller.data
+#     data.Body = QColor(255, 0, 0)
+#     print(data), print(controller._data)
+#     window.show()
+#     sys.exit(app.exec())

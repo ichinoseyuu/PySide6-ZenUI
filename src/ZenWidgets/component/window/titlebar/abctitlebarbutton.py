@@ -1,6 +1,6 @@
 from enum import Enum
-from PySide6.QtCore import Qt, Signal, QEvent
-from PySide6.QtGui import QMouseEvent, QEnterEvent
+from PySide6.QtCore import Qt,Signal,QEvent,Slot
+from PySide6.QtGui import QMouseEvent,QEnterEvent
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import QAnimatedColor
 
@@ -20,17 +20,14 @@ class ZABCTitleBarButton(QWidget):
         super().__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_NoMousePropagation) # 防止鼠标事件传播到父组件
         self.setFixedSize(46, 32)
-
         self.entered.connect(self.hoverHandler)
         self.leaved.connect(self.leaveHandler)
         self.pressed.connect(self.pressHandler)
         self.released.connect(self.releaseHandler)
         self.clicked.connect(self.clickHandler)
-
         self._state = self.State.Idle
-
-        self._body_cc = QAnimatedColor(self)
-        self._icon_cc = QAnimatedColor(self)
+        self._layerColorCtrl = QAnimatedColor(self)
+        self._iconColorCtrl = QAnimatedColor(self)
 
     # region Property
     def state(self) -> State: return self._state
@@ -39,20 +36,20 @@ class ZABCTitleBarButton(QWidget):
     def isPressed(self) -> bool: return self._state == self.State.Pressed
 
     # region Slot
-    def hoverHandler(self):
-        pass
+    @Slot()
+    def hoverHandler(self): ...
 
-    def leaveHandler(self):
-        pass
+    @Slot()
+    def leaveHandler(self): ...
 
-    def pressHandler(self):
-        pass
+    @Slot()
+    def pressHandler(self): ...
 
-    def releaseHandler(self):
-        pass
+    @Slot()
+    def releaseHandler(self): ...
 
-    def clickHandler(self):
-        pass
+    @Slot()
+    def clickHandler(self): ...
 
     # region Event
     def enterEvent(self, event: QEnterEvent):
@@ -67,16 +64,15 @@ class ZABCTitleBarButton(QWidget):
 
     def mousePressEvent(self, event: QMouseEvent):
         super().mousePressEvent(event)
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             self._state = self.State.Pressed
             self.pressed.emit()
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         super().mouseReleaseEvent(event)
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             self._state = self.State.Hover
             self.released.emit()
-            # 如果鼠标在按钮区域内释放，触发clicked信号
             if self.rect().contains(event.position().toPoint()):
                 self.clicked.emit()
 

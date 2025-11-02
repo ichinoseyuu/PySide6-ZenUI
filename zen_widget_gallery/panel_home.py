@@ -3,8 +3,8 @@ from PySide6.QtGui import QFont
 from ZenWidgets import *
 from rc_rc import *
 class PanelHome(ZPanel):
-    def __init__(self, parent = None, name ='PanelHome'):
-        super().__init__(parent = parent, name=name)
+    def __init__(self, parent = None):
+        super().__init__(parent, objectName ='PanelHome')
         self.setLayout(ZVBoxLayout(self,alignment=Qt.AlignmentFlag.AlignTop))
         self.image_bg = ZImage(parent=self,
                                   scale_type=ZImage.ScaleType.Fill,

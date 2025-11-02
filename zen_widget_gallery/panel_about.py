@@ -4,8 +4,8 @@ from PySide6.QtGui import QFont, QIcon, QColor
 from ZenWidgets import *
 
 class PanelAbout(ZPanel):
-    def __init__(self,parent = None,name ='PanelAbout'):
-        super().__init__(parent = parent, name=name)
+    def __init__(self, parent = None):
+        super().__init__(parent, objectName ='PanelAbout')
         self.setLayout(ZVBoxLayout(self, QMargins(40, 30, 40, 30), 30, Qt.AlignmentFlag.AlignTop))
         self._setup_ui()
 

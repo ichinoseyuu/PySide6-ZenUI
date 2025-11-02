@@ -5,7 +5,7 @@ from PySide6.QtGui import QPainter, QPixmap, QIcon
 from PySide6.QtSvg import QSvgRenderer
 
 
-class GlobalIconPack:
+class ZIconPack:
     current_module_path = os.path.dirname(os.path.abspath(__file__))
     package_folder_path = os.path.join(current_module_path, "packages")
 

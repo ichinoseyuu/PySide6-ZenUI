@@ -14,16 +14,15 @@ from ZenWidgets.component.base import (
     ABCToggleButton
 )
 from ZenWidgets.core import (
-    ZItemStyleData,
-    ZItemViewStyleData,
     ZDebug,
     ZQuickEffect,
 )
+from ZenWidgets.gui import ZItemStyleData, ZItemViewStyleData
 
 # region ZItem
 class ZItem(ABCToggleButton):
     indicatorWidth = 3
-    bodyColorCtrl: QAnimatedColor
+    layerColorCtrl: QAnimatedColor
     radiusCtrl: QAnimatedFloat
     textColorCtrl: QAnimatedColor
     iconColorCtrl: QAnimatedColor
@@ -104,22 +103,20 @@ class ZItem(ABCToggleButton):
     # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
-        self.bodyColorCtrl.color = data.Body
+        self.layerColorCtrl.color = data.Body
         self.textColorCtrl.color = data.Text
         self.iconColorCtrl.color = data.Icon
         self.indicatorColorCtrl.color = data.Indicator
-        self.radiusCtrl.value = data.Radius
+        self.radiusCtrl.value = 5.0
         if self._checked:
             self.indicatorColorCtrl.opaque()
         else:
             self.indicatorColorCtrl.transparent()
-        self.update()
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
         self.indicatorColorCtrl.color = data.Indicator
-        self.bodyColorCtrl.setColorTo(data.Body)
+        self.layerColorCtrl.setColorTo(data.Body)
         self.textColorCtrl.setColorTo(data.Text)
         self.iconColorCtrl.setColorTo(data.Icon)
         if self._checked:
@@ -129,16 +126,16 @@ class ZItem(ABCToggleButton):
 
     # region slot
     def _hover_handler_(self):
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
+        self.layerColorCtrl.setAlphaTo(16)
 
     def _leave_handler_(self):
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
+        self.layerColorCtrl.setAlphaTo(0)
 
     def _press_handler_(self):
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyPressed)
+        self.layerColorCtrl.setAlphaTo(10)
 
     def _release_handler_(self):
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
+        self.layerColorCtrl.setAlphaTo(16)
 
     def _toggle_handler_(self, checked):
         if checked:
@@ -159,9 +156,9 @@ class ZItem(ABCToggleButton):
 
         rect = self.rect()
         radius = self.radiusCtrl.value
-        if self.bodyColorCtrl.color.alpha() > 0:
+        if self.layerColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyColorCtrl.color)
+            painter.setBrush(self.layerColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
 
         p = self._padding
@@ -216,6 +213,7 @@ class ZItem(ABCToggleButton):
 
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
+        event.accept()
 
 # region ViewContent
 class ViewContent(ZWidget):
@@ -292,13 +290,12 @@ class ViewContent(ZWidget):
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
         self.borderColorCtrl.color = data.Border
-        self.radiusCtrl.value = data.Radius
+        self.radiusCtrl.value = 5.0
         self.update()
 
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
         self.bodyColorCtrl.setColorTo(data.Body)
         self.borderColorCtrl.setColorTo(data.Border)
 
@@ -334,12 +331,9 @@ class ViewContent(ZWidget):
         if self.borderColorCtrl.color.alpha() > 0:
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(
-                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),  # 使用 QRectF 实现亚像素渲染
-                radius,
-                radius
-            )
+            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
         painter.end()
+        event.accept()
 
 # region ZItemView
 class ZItemView(ZWidget):
@@ -401,6 +395,7 @@ class ZItemView(ZWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
         painter.end()
+        event.accept()
 
     def focusInEvent(self, event):
         super().focusInEvent(event)

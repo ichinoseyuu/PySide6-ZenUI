@@ -10,23 +10,28 @@ from ZenWidgets.component.base import (
     ZPadding,
     ZTextCommand
 )
-from ZenWidgets.core import ZLineEditStyleData, ZDebug
+from ZenWidgets.core import ZDebug
+from ZenWidgets.gui import ZLoginEditStyleData,ZPalette
 
 class ZLoginEdit(ZWidget):
     editingFinished = Signal()
     valueChanged = Signal(str)
 
+    bodyColorCtrl: QAnimatedColor
+    borderColorCtrl: QAnimatedColor
+    radiusCtrl: QAnimatedFloat
     textColorCtrl: QAnimatedColor
     textBackColorCtrl: QAnimatedColor
     cursorColorCtrl: QAnimatedColor
     underlineColorCtrl: QAnimatedColor
     underlineWeightCtrl: QAnimatedFloat
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
-    radiusCtrl: QAnimatedFloat
-    styleDataCtrl: StyleController[ZLineEditStyleData]
-    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZLoginEdit'}}
-
+    layerColorCtrl: QAnimatedColor
+    styleDataCtrl: StyleController[ZLoginEditStyleData]
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{'key': 'ZLoginEdit'},
+        'radiusCtrl': {'value': 5.0},
+        'underlineWeightCtrl': {'value': 1.3},
+    }
     def __init__(self,
                  parent: QWidget | ZWidget | None = None,
                  text: str = '',
@@ -93,25 +98,24 @@ class ZLoginEdit(ZWidget):
         self.underlineColorCtrl.color = data.Underline
         self.bodyColorCtrl.color = data.Body
         self.borderColorCtrl.color = data.Border
-        self.radiusCtrl.value = data.Radius
-        self.underlineWeightCtrl.value = 1.3
+        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
         self.update()
 
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
-        self.cursorColorCtrl.setColorTo(data.Cursor)
-        self.borderColorCtrl.setColorTo(data.Border)
-        self.textColorCtrl.setColorTo(data.Text)
-        self.textBackColorCtrl.setColorTo(data.TextBackSectcted)
-
         if self.hasFocus():
             self.underlineColorCtrl.setColorTo(data.UnderlineFocused)
             self.bodyColorCtrl.setColorTo(data.BodyFocused)
         else:
             self.underlineColorCtrl.setColorTo(data.Underline)
             self.bodyColorCtrl.setColorTo(data.Body)
+        self.cursorColorCtrl.setColorTo(data.Cursor)
+        self.borderColorCtrl.setColorTo(data.Border)
+        self.textColorCtrl.setColorTo(data.Text)
+        self.textBackColorCtrl.setColorTo(data.TextBackSectcted)
+        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
+
 
 
     def _validate_text(self, text: str) -> str:
@@ -400,6 +404,10 @@ class ZLoginEdit(ZWidget):
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+        if self.layerColorCtrl.color.alpha() > 0:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self.layerColorCtrl.color)
+            painter.drawRoundedRect(rect, radius, radius)
         if self.underlineColorCtrl.color.alpha() > 0:
             underline_h = self.underlineWeightCtrl.value
             painter.fillRect(QRectF(rect.left(), rect.bottom() - underline_h, rect.width(), underline_h),
@@ -476,13 +484,15 @@ class ZLoginEdit(ZWidget):
                 self._clear_selection()
             elif self._cursor_pos > 0:
                 self._cursor_pos -= 1
-            self.update(); return
+            self.update()
+            return
         if event.key() == Qt.Key.Key_Right:
             if self._is_selection():
                 self._clear_selection()
             elif self._cursor_pos < len(self._text):
                 self._cursor_pos += 1
-            self.update(); return
+            self.update()
+            return
         if event.key() == Qt.Key.Key_Backspace:
             self._backspace(event.isAutoRepeat()); return
         if event.key() == Qt.Key.Key_Delete:
@@ -542,15 +552,11 @@ class ZLoginEdit(ZWidget):
 
     def enterEvent(self, event):
         super().enterEvent(event)
-        if not self.hasFocus():
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
+        self.layerColorCtrl.setAlphaFTo(0.03)
 
     def leaveEvent(self, event):
         super().leaveEvent(event)
-        if self.hasFocus():
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyFocused)
-        else:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
+        self.layerColorCtrl.toTransparent()
 
 import sys
 if __name__ == '__main__':

@@ -6,15 +6,13 @@ from ctypes.wintypes import LPRECT, MSG
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QResizeEvent
-from ZenWidgets.core import ZGlobal,ZFramelessWindowStyleData
 from ZenWidgets.component.tooltip import ZToolTip
 from ZenWidgets.component.base import (
     StyleController,
     QAnimatedWindowBody,
-    ZWidget
 )
-from .titlebar import ZTitleBar
-from .win32utils import (
+from ZenWidgets.component.window.titlebar import ZTitleBar
+from ZenWidgets.component.window.win32utils import (
     WindowsWindowEffect,
     LPNCCALCSIZE_PARAMS,
     WinTaskbar,
@@ -24,14 +22,12 @@ from .win32utils import (
     isFullScreen,
     getResizeBorderThickness
 )
+from ZenWidgets.core.globals.globals import ZGlobal
+from ZenWidgets.gui import ZFramelessWindowStyleData
 
 # region ZFramelessWindow
-class ZFramelessWindow(ZWidget):
+class ZFramelessWindow(QWidget):
     BORDER_WIDTH = 6
-    backgroundColorCtrl: QAnimatedWindowBody
-    styleDataCtrl: StyleController[ZFramelessWindowStyleData]
-    __controllers_kwargs__ = {'styleDataCtrl': {'key': 'ZFramelessWindow'}}
-
     def __init__(self, parent=None):
         super().__init__(parent=parent,f=Qt.WindowType.FramelessWindowHint,styleSheet='background-color: transparent;')
         self._resizable = True
@@ -39,6 +35,9 @@ class ZFramelessWindow(ZWidget):
         self._windowEffect.addWindowAnimation(self.winId())
         self._windowEffect.addShadowEffect(self.winId())
         self._windowEffect.setBorderAccentColor(self.winId(),getSystemAccentColor())
+        self._windowBodyColorCtrl = QAnimatedWindowBody(self)
+        self._styleDataCtrl = StyleController[ZFramelessWindowStyleData](self,'ZFramelessWindow')
+        self._styleDataCtrl.styleChanged.connect(self._style_change_handler_)
         self.windowHandle().screenChanged.connect(self.__onScreenChanged)
         self._init_style_()
 
@@ -57,15 +56,12 @@ class ZFramelessWindow(ZWidget):
         else:
             self.move(self.x() + self.width() / 2, self.y() + self.height() / 2)
 
-
     # region private
     def _init_style_(self):
-        self.backgroundColorCtrl.color = self.styleDataCtrl.data.Body
-
+        self._windowBodyColorCtrl.color = self._styleDataCtrl.data.Body
 
     def _style_change_handler_(self):
-        self.backgroundColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-
+        self._windowBodyColorCtrl.setColorTo(self._styleDataCtrl.data.Body)
 
     def __onScreenChanged(self):
         hWnd = int(self.windowHandle().winId())

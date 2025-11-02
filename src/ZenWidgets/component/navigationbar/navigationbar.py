@@ -1,7 +1,7 @@
 from typing import overload
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QMargins, Slot, QPoint, QSize, QRect, QRectF,Signal
-from PySide6.QtGui import QMouseEvent, QPainter, QIcon , QPixmap, QPen
+from PySide6.QtGui import QMouseEvent, QPainter, QIcon , QPixmap, QColor
 from ZenWidgets.component.layout import ZVBoxLayout
 from ZenWidgets.component.base import (
     QAnimatedColor,
@@ -15,22 +15,28 @@ from ZenWidgets.component.base import (
 )
 from ZenWidgets.core import (
     ZDebug,
-    ZNavigationBarStyleData,
-    ZNavBarButtonStyleData,
-    ZNavBarToggleButtonStyleData,
     ZDebug,
     ZGlobal,
     ZPosition
 )
+from ZenWidgets.gui import (
+    ZNavigationBarStyleData,
+    ZNavBarButtonStyleData,
+    ZNavBarToggleButtonStyleData,
+    ZPalette
+)
 
 # region ZNavBarButton
 class ZNavBarButton(ABCButton):
-    bodyColorCtrl: QAnimatedColor
+    layerColorCtrl: QAnimatedColor
     iconColorCtrl: QAnimatedColor
     radiusCtrl: QAnimatedFloat
     opacityCtrl: ZAnimatedOpacity
     styleDataCtrl: StyleController[ZNavBarButtonStyleData]
-    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZNavBarButton'}}
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{'key': 'ZNavBarButton'},
+        'radiusCtrl': {'value': 5.0},
+    }
 
     def __init__(self,
                  parent: ZWidget | QWidget | None = None,
@@ -64,21 +70,17 @@ class ZNavBarButton(ABCButton):
 
     # region private method
     def _init_style_(self):
-        data = self.styleDataCtrl.data
-        self.bodyColorCtrl.color = data.Body
-        self.iconColorCtrl.color = data.Icon
-        self.radiusCtrl.value = data.Radius
-        self.update()
+        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
+        self.iconColorCtrl.color = self.styleDataCtrl.data.Icon
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
-        self.bodyColorCtrl.setColorTo(data.Body)
+        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
         self.iconColorCtrl.setColorTo(data.Icon)
 
     # region slot
     def _hover_handler_(self):
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
+        self.layerColorCtrl.setAlphaTo(22)
         if self.toolTip() != '':
             ZGlobal.tooltip.showTip(
                 text = self.toolTip(),
@@ -89,14 +91,14 @@ class ZNavBarButton(ABCButton):
                 )
 
     def _leave_handler_(self):
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
+        self.layerColorCtrl.toTransparent()
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyPressed)
+        self.layerColorCtrl.setAlphaTo(16)
 
     def _release_handler_(self):
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
+        self.layerColorCtrl.setAlphaTo(22)
 
     # region event
     def paintEvent(self, event):
@@ -109,9 +111,9 @@ class ZNavBarButton(ABCButton):
             )
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
-        if self.bodyColorCtrl.color.alpha() > 0:
+        if self.layerColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyColorCtrl.color)
+            painter.setBrush(self.layerColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
         pixmap = self._icon.pixmap(self._icon_size)
         colored_pixmap = QPixmap(pixmap.size())
@@ -130,13 +132,15 @@ class ZNavBarButton(ABCButton):
 
 # region ZNavBarToggleButton
 class ZNavBarToggleButton(ABCToggleButton):
-    bodyColorCtrl: QAnimatedColor
+    layerColorCtrl: QAnimatedColor
     iconColorCtrl: QAnimatedColor
     radiusCtrl: QAnimatedFloat
     opacityCtrl: ZAnimatedOpacity
     styleDataCtrl: StyleController[ZNavBarToggleButtonStyleData]
-    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZNavBarToggleButton'}}
-
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{'key': 'ZNavBarToggleButton'},
+        'radiusCtrl': {'value': 5.0},
+    }
     def __init__(self,
                  parent: ZWidget | QWidget | None = None,
                  icon: QIcon | None = None,
@@ -171,31 +175,28 @@ class ZNavBarToggleButton(ABCToggleButton):
     # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
+        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
         if self._checked:
-            self.bodyColorCtrl.color = data.BodyToggled
+            self.layerColorCtrl.setAlpha(13)
             self.iconColorCtrl.color = data.IconToggled
         else:
-            self.bodyColorCtrl.color = data.Body
             self.iconColorCtrl.color = data.Icon
-        self.update()
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
+        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
         if self._checked:
-            self.bodyColorCtrl.setColorTo(data.BodyToggled)
+            self.layerColorCtrl.setAlphaTo(13)
             self.iconColorCtrl.setColorTo(data.IconToggled)
         else:
-            self.bodyColorCtrl.setColorTo(data.Body)
             self.iconColorCtrl.setColorTo(data.Icon)
 
     # region slot
     def _hover_handler_(self):
         if self._checked:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggledHover)
+            self.layerColorCtrl.setAlphaTo(24)
         else:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
+            self.layerColorCtrl.setAlphaTo(22)
         if self.toolTip() != '':
             ZGlobal.tooltip.showTip(
                 text = self.toolTip(),
@@ -207,25 +208,24 @@ class ZNavBarToggleButton(ABCToggleButton):
 
     def _leave_handler_(self):
         if self._checked:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggled)
+            self.layerColorCtrl.setAlphaTo(13)
         else:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
+            self.layerColorCtrl.toTransparent()
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
         if self._checked:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggledPressed)
+            self.layerColorCtrl.setAlphaTo(18)
         else:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyPressed)
+            self.layerColorCtrl.setAlphaTo(16)
 
     def _toggle_handler_(self, checked):
         data = self.styleDataCtrl.data
         if checked:
-            self.iconColorCtrl.color = data.Body
-            self.bodyColorCtrl.setColorTo(data.BodyToggledHover)
+            self.layerColorCtrl.setAlphaTo(24)
             self.iconColorCtrl.setColorTo(data.IconToggled)
         else:
-            self.bodyColorCtrl.setColorTo(data.BodyHover)
+            self.layerColorCtrl.setAlphaTo(22)
             self.iconColorCtrl.setColorTo(data.Icon)
 
     # region event
@@ -239,9 +239,9 @@ class ZNavBarToggleButton(ABCToggleButton):
             )
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
-        if self.bodyColorCtrl.color.alpha() > 0:
+        if self.layerColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyColorCtrl.color)
+            painter.setBrush(self.layerColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
         if self._checked:
             pixmap = self._icon.pixmap(self._icon_size, QIcon.Mode.Normal, QIcon.State.On)

@@ -6,17 +6,16 @@ from ZenWidgets.component.itemview import ZItemView
 from ZenWidgets.component.base import (
     QAnimatedColor,
     QAnimatedFloat,
-    ZAnimatedOpacity,
     ZAnimatedPointF,
     StyleController,
     ZPadding,
     ABCButton
 )
 from ZenWidgets.core import (
-    ZComboBoxStyleData,
     ZDebug,
     ZGlobal,
 )
+from ZenWidgets.gui import ZComboBoxStyleData
 
 # region ZComboBox
 class ZComboBox(ABCButton):
@@ -28,9 +27,12 @@ class ZComboBox(ABCButton):
     dropIconColorCtrl: QAnimatedColor
     dropIconPosCtrl: ZAnimatedPointF
     radiusCtrl: QAnimatedFloat
+    layerColorCtrl: QAnimatedColor
     styleDataCtrl: StyleController[ZComboBoxStyleData]
-    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZComboBox'}}
-
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{'key': 'ZComboBox'},
+        'radiusCtrl': {'value': 5.0},
+    }
     def __init__(self,
                  parent: QWidget = None,
                  options: Dict[str, Any]= None,
@@ -120,34 +122,32 @@ class ZComboBox(ABCButton):
     def _init_style_(self):
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
-        self.textColorCtrl.color = data.Text
-        self.dropIconColorCtrl.color = data.Icon
         self.borderColorCtrl.color = data.Border
-        self.radiusCtrl.value = data.Radius
-        self.update()
+        self.dropIconColorCtrl.color = data.Icon
+        self.textColorCtrl.color = data.Text
+        self.layerColorCtrl.color = ZGlobal.palette.Transparent_reverse()
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
         self.bodyColorCtrl.setColorTo(data.Body)
         self.borderColorCtrl.setColorTo(data.Border)
-        self.textColorCtrl.setColorTo(data.Text)
         self.dropIconColorCtrl.setColorTo(data.Icon)
+        self.textColorCtrl.setColorTo(data.Text)
+        self.layerColorCtrl.color = ZGlobal.palette.Transparent_reverse()
 
     # region slot
     def _hover_handler_(self):
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
+        self.layerColorCtrl.setAlphaFTo(0.03)
 
     def _leave_handler_(self):
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
-
+        self.layerColorCtrl.toTransparent()
 
     def _press_handler_(self):
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyPressed)
+        self.layerColorCtrl.setAlphaFTo(0.05)
         self.dropIconPosCtrl.moveBy(0, 2)
 
     def _release_handler_(self):
-        self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
+        self.layerColorCtrl.setAlphaFTo(0.03)
         self.dropIconPosCtrl.moveTo(self._get_drop_icon_pos())
 
     def _click_handler_(self):
@@ -171,17 +171,22 @@ class ZComboBox(ABCButton):
             )
         rect = self.rect()
         radius = self.radiusCtrl.value
+
         if self.bodyColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
             painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
+
         if self.borderColorCtrl.color.alpha() > 0:
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(
-                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),
-                radius, radius
-                )
+            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+
+        if self.layerColorCtrl.color.alpha() > 0:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self.layerColorCtrl.color)
+            painter.drawRoundedRect(rect, radius, radius)
+
         if self._text:
             painter.setFont(self.font())
             painter.setPen(self.textColorCtrl.color)
@@ -190,6 +195,7 @@ class ZComboBox(ABCButton):
                 Qt.AlignLeft|Qt.AlignVCenter,
                 self._text
                 )
+
         pixmap = self._drop_icon.pixmap(self._drop_icon_size)
         colored_pixmap = QPixmap(pixmap.size())
         colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
@@ -202,6 +208,7 @@ class ZComboBox(ABCButton):
         painter.drawPixmap(self.dropIconPosCtrl.pos, colored_pixmap)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
+        event.accept()
 
 
     def _get_drop_icon_pos(self):

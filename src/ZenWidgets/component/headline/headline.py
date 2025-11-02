@@ -8,7 +8,8 @@ from ZenWidgets.component.base import (
     ZPadding,
     ZWidget
 )
-from ZenWidgets.core import ZHeadLineStyleData,ZDebug
+from ZenWidgets.core import ZDebug
+from ZenWidgets.gui import ZHeadLineStyleData
 
 class ZHeadLine(ZWidget):
     bodyColorCtrl: QAnimatedColor
@@ -121,14 +122,12 @@ class ZHeadLine(ZWidget):
         self.textColorCtrl.color = data.Text
         self.bodyColorCtrl.color = data.Body
         self.borderColorCtrl.color = data.Border
-        self.radiusCtrl.value = data.Radius
+        self.radiusCtrl.value = 5.0
         self.textBackColorCtrl.color = data.TextBackSectcted
         self.indicatorColorCtrl.color = data.Indicator
-        self.update()
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
         self.bodyColorCtrl.setColorTo(data.Body)
         self.borderColorCtrl.setColorTo(data.Border)
         self.textColorCtrl.setColorTo(data.Text)
@@ -240,6 +239,7 @@ class ZHeadLine(ZWidget):
             painter.drawRoundedRect(indicator_rect, indicator_w / 2, indicator_w / 2)
 
         self._update_selected_text()
+
         if self._selectable and self._is_selection() and self._text:
             self._draw_selection_background(painter, QRectF(text_rect), fm)
         painter.setFont(self.font())
@@ -249,7 +249,7 @@ class ZHeadLine(ZWidget):
 
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
-
+        event.accept()
 
     # region keyPressEvent
     def keyPressEvent(self, event):

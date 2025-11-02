@@ -5,8 +5,8 @@ from ZenWidgets import *
 from demo_card import DemoCard
 
 class PanelTest(ZScrollPanel):
-    def __init__(self, parent = None, name ='PanelTest'):
-        super().__init__(parent = parent, name=name)
+    def __init__(self, parent = None):
+        super().__init__(parent, objectName ='PanelTest')
         self.setLayout(ZVBoxLayout(self, QMargins(40, 30, 40, 30), 30, Qt.AlignmentFlag.AlignTop))
         self._setup_ui()
 

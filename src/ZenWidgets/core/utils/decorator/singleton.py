@@ -1,5 +1,7 @@
-def singleton(cls):
-    """单例装饰器"""
+def Singleton(cls):
+    """
+    基于字典缓存的单例类装饰器
+    """
     _instance = {}
 
     def _singleton(*args, **kwargs):

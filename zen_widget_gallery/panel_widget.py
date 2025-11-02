@@ -5,8 +5,8 @@ from ZenWidgets import *
 from demo_card import DemoCard
 
 class PanelWidget(ZScrollPanel):
-    def __init__(self,parent = None,name ='PanelWidget'):
-        super().__init__(parent, name)
+    def __init__(self, parent = None):
+        super().__init__(parent, objectName ='PanelWidget')
         self.setLayout(ZVBoxLayout(self, QMargins(40, 30, 40, 30), 30, Qt.AlignmentFlag.AlignTop))
         self._setup_ui()
 
@@ -75,19 +75,6 @@ class PanelWidget(ZScrollPanel):
                 hide_delay=800
                 )
             )
-
-        self.btn_4 = ZButton(container, text='保存', style=ZButton.Style.Flat)
-        container.addWidget(self.btn_4, spacing=16)
-        self.btn_4.clicked.connect(
-            lambda: ZGlobal.tooltip.showTip(
-                text='保存成功',
-                target=self.btn_4,
-                mode=ZToolTip.Mode.TrackTarget,
-                position=ZPosition.Top,
-                offset=QPoint(0, 6),
-                hide_delay=800
-                )
-            )
         # region ZToggleButton
         card = DemoCard(self)
         layout.addWidget(card, stretch=0)
@@ -108,10 +95,6 @@ class PanelWidget(ZScrollPanel):
 
         self.toggle_btn_3 = ZToggleButton(container, text='自动保存')
         container.addWidget(self.toggle_btn_3, spacing=16)
-
-        self.toggle_btn_4 = ZToggleButton(container, text='自动保存', style=ZToggleButton.Style.Flat)
-        container.addWidget(self.toggle_btn_4, spacing=16)
-
 
         layout = ZHBoxLayout(
             margins=QMargins(0, 0, 0, 0),

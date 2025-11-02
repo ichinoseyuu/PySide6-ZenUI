@@ -6,12 +6,12 @@ from PySide6.QtGui import *
 from ZenWidgets.component.base import (
     QAnimatedColor,
     QAnimatedFloat,
-    ZAnimatedWidgetRect,
     StyleController,
     ZWidget,
     ZPadding
 )
-from ZenWidgets.core import ZDebug,ZToolTipStyleData,ZQuickEffect,ZPosition
+from ZenWidgets.core import ZDebug,ZQuickEffect,ZPosition
+from ZenWidgets.gui import ZToolTipStyleData
 
 # region ToolTipContent
 class ToolTipContent(ZWidget):
@@ -78,16 +78,13 @@ class ToolTipContent(ZWidget):
         self.textColorCtrl.color = data.Text
         self.bodyColorCtrl.color = data.Body
         self.borderColorCtrl.color = data.Border
-        self.radiusCtrl.value = data.Radius
-        self.update()
+        self.radiusCtrl.value = 5.0
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
         self.textColorCtrl.setColorTo(data.Text)
         self.bodyColorCtrl.setColorTo(data.Body)
         self.borderColorCtrl.setColorTo(data.Border)
-        self.update()
 
     # region event
     def paintEvent(self, event):
@@ -121,8 +118,6 @@ class ToolTipContent(ZWidget):
 class ZToolTip(ZWidget):
     shown = Signal()
     hidden = Signal()
-
-    rectCtrl: ZAnimatedWidgetRect
 
     class Mode(IntEnum):
         TrackMouse = 0

@@ -1,1 +1,0 @@
-from .resizegrip import ResizeGrip,Edge

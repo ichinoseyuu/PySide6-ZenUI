@@ -11,10 +11,10 @@ from ZenWidgets.component.base import (
 )
 from ZenWidgets.core import (
     ZDebug,
-    ZToggleButtonStyleData,
     ZGlobal,
     ZPosition
 )
+from ZenWidgets.gui import ZToggleButtonStyleData
 
 class ZToggleButton(ABCToggleButton):
     bodyColorCtrl: QAnimatedColor
@@ -22,18 +22,17 @@ class ZToggleButton(ABCToggleButton):
     textColorCtrl: QAnimatedColor
     iconColorCtrl: QAnimatedColor
     radiusCtrl: QAnimatedFloat
+    layerColorCtrl: QAnimatedColor
     styleDataCtrl: StyleController[ZToggleButtonStyleData]
-
-    class Style(Enum):
-        Normal = 'ZToggleButton'
-        Flat = 'ZFlatToggleButton'
-
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{'key': 'ZToggleButton'},
+        'radiusCtrl': {'value': 5.0},
+    }
     def __init__(self,
                  parent: ZWidget | QWidget | None = None,
                  text: str | None = None,
                  font: QFont = QFont('Microsoft YaHei', 9),
                  icon: QIcon | None = None,
-                 style: Style = Style.Normal,
                  icon_size: QSize = QSize(16, 16),
                  spacing: int = 4,
                  checked: bool = False,
@@ -50,7 +49,6 @@ class ZToggleButton(ABCToggleButton):
                          toolTip=toolTip,
                          font=font,
                          )
-        self._style = style
         self._text: str | None = text
         self._icon: QIcon | None = icon
         self._icon_size = icon_size
@@ -100,31 +98,25 @@ class ZToggleButton(ABCToggleButton):
 
     # region private method
     def _init_style_(self):
-        if self._style == self.Style.Normal:
-            self.styleDataCtrl.setKey(self._style.value)
-        elif self._style == self.Style.Flat:
-            self.styleDataCtrl.setKey(self._style.value)
-
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
+        self.layerColorCtrl.color = ZGlobal.palette.Transparent_reverse()
         if self._checked:
             self.bodyColorCtrl.color = data.BodyToggled
             self.textColorCtrl.color = data.TextToggled
             self.iconColorCtrl.color = data.IconToggled
-            self.borderColorCtrl.color = data.BorderToggled
+            self.borderColorCtrl.color = data.BodyToggled
         else:
             self.bodyColorCtrl.color = data.Body
             self.textColorCtrl.color = data.Text
             self.iconColorCtrl.color = data.Icon
             self.borderColorCtrl.color = data.Border
-        self.update()
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.radiusCtrl.value = data.Radius
+        self.layerColorCtrl.color = ZGlobal.palette.Transparent_reverse()
         if self._checked:
             self.bodyColorCtrl.setColorTo(data.BodyToggled)
-            self.borderColorCtrl.setColorTo(data.BorderToggled)
+            self.borderColorCtrl.setColorTo(data.BodyToggled)
             self.iconColorCtrl.setColorTo(data.IconToggled)
             self.textColorCtrl.setColorTo(data.TextToggled)
         else:
@@ -135,38 +127,30 @@ class ZToggleButton(ABCToggleButton):
 
     # region slot
     def _hover_handler_(self):
-        if self._checked:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggledHover)
-        else:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyHover)
+        self.layerColorCtrl.setAlphaFTo(0.03)
         if self.toolTip() != '':
             ZGlobal.tooltip.showTip(text=self.toolTip(),
                                     target=self,
                                     position=ZPosition.TopRight,
                                     offset=QPoint(6, 6))
     def _leave_handler_(self):
-        if self._checked:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggled)
-        else:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.Body)
+        self.layerColorCtrl.toTransparent()
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
-        if self._checked:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyToggledPressed)
-        else:
-            self.bodyColorCtrl.setColorTo(self.styleDataCtrl.data.BodyPressed)
+        self.layerColorCtrl.setAlphaFTo(0.05)
 
 
     def _toggle_handler_(self, checked):
+        self.layerColorCtrl.setAlphaFTo(0.03)
         data = self.styleDataCtrl.data
         if checked:
-            self.bodyColorCtrl.setColorTo(data.BodyToggledHover)
-            self.borderColorCtrl.setColorTo(data.BorderToggled)
+            self.bodyColorCtrl.setColorTo(data.BodyToggled)
+            self.borderColorCtrl.setColorTo(data.BodyToggled)
             self.iconColorCtrl.setColorTo(data.IconToggled)
             self.textColorCtrl.setColorTo(data.TextToggled)
         else:
-            self.bodyColorCtrl.setColorTo(data.BodyHover)
+            self.bodyColorCtrl.setColorTo(data.Body)
             self.borderColorCtrl.setColorTo(data.Border)
             self.iconColorCtrl.setColorTo(data.Icon)
             self.textColorCtrl.setColorTo(data.Text)
@@ -193,6 +177,11 @@ class ZToggleButton(ABCToggleButton):
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+
+        if self.layerColorCtrl.color.alpha() > 0:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self.layerColorCtrl.color)
+            painter.drawRoundedRect(rect, radius, radius)
 
         if self._icon:
             pixmap = self._icon.pixmap(self._icon_size)
@@ -232,4 +221,5 @@ class ZToggleButton(ABCToggleButton):
 
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
+        event.accept()
 

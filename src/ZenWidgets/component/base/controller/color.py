@@ -119,7 +119,7 @@ class QAnimatedColor(ABCAnimatedColor):
         return super().parent()
 
 # region ZAnimatedColor
-class ZAnimatedColor(QObject):
+class ZAnimatedColor(ABCAnimatedColor):
     '''具有原生属性动画的颜色控制器'''
     def __init__(self, parent: QWidget, color: QColor = QColor('#202020')):
         super().__init__(parent, color)

@@ -97,6 +97,19 @@ class ZComboBox(ABCButton):
         # if key == self._text:
         #     self._options_view.selectItem(key)
 
+    def addOptions(self, options: Dict[str, Any]| list[tuple[str, Any]]| list[str]) -> None:
+        if isinstance(options, dict):
+            self._options.update(options)
+            self._options_view.addItems(options.keys())
+        elif isinstance(options, list):
+            for item in options:
+                if isinstance(item, str):
+                    self.addOption(item)
+                elif isinstance(item, tuple):
+                    self.addOption(item[0], item[1])
+        else:
+            raise TypeError(f'addOptions({options}) type error')
+
     def removeOption(self, key: str) -> None:
         if key in self._options:
             del self._options[key]

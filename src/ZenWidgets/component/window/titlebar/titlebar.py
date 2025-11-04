@@ -3,13 +3,13 @@ from PySide6.QtCore import QEvent, Qt, QPoint
 from PySide6.QtGui import QIcon,QPainter
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
 from ZenWidgets.component.text import ZHeadLine
+from ZenWidgets.component.window.win32utils import startSystemMove,toggleWindowState
+from ZenWidgets.component.window.titlebar.abctitlebarbutton import ZABCTitleBarButton
+from ZenWidgets.component.window.titlebar.closebutton import ZCloseButton
+from ZenWidgets.component.window.titlebar.maximizebutton import ZMaximizeButton
+from ZenWidgets.component.window.titlebar.minimizebutton import ZMinimizeButton
+from ZenWidgets.component.window.titlebar.themebutton import ZChangeThemeButton
 from ZenWidgets.core import ZDebug
-from ..win32utils import startSystemMove, toggleWindowState
-from .abctitlebarbutton import ZABCTitleBarButton
-from .closebutton import ZCloseButton
-from .maximizebutton import ZMaximizeButton
-from .minimizebutton import ZMinimizeButton
-from .themebutton import ZChangeThemeButton
 
 
 class ZTitleBarBase(QWidget):
@@ -23,8 +23,6 @@ class ZTitleBarBase(QWidget):
         self._moved = False
         self.dragPosition: QPoint = None
         self.setFixedHeight(32)
-        # self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
-        # self.setStyleSheet("background-color: transparent;border: 1px solid red;")
 
         # connect signal to slot
         self.minBtn.clicked.connect(self.window().showMinimized)
@@ -35,14 +33,13 @@ class ZTitleBarBase(QWidget):
 
     def eventFilter(self, obj, event):
         if obj is self.window():
-            if event.type() == QEvent.WindowStateChange:
+            if event.type() == QEvent.Type.WindowStateChange:
                 self.maxBtn.toggleMaxState()
                 return False
         return super().eventFilter(obj, event)
 
     def mouseDoubleClickEvent(self, event):
-        """ Toggles the maximization state of the window """
-        if event.button() != Qt.LeftButton or not self._isDoubleClickEnabled:
+        if event.button() != Qt.MouseButton.LeftButton or not self._isDoubleClickEnabled:
             return
         self.__toggleMaxState()
 
@@ -108,7 +105,7 @@ class ZTitleBar(ZTitleBarBase):
         self.hBoxLayout.addWidget(self.closeBtn, 0, Qt.AlignRight|Qt.AlignVCenter)
 
         self.iconLabel = QLabel(self)
-        self.iconLabel.setFixedSize(20, 20)
+        self.iconLabel.setFixedSize(0, 0)
         self.hBoxLayout.insertSpacing(0, 10)
         self.hBoxLayout.insertWidget(1, self.iconLabel, 0, Qt.AlignLeft|Qt.AlignVCenter)
         self.window().windowIconChanged.connect(self.setIcon)
@@ -122,6 +119,7 @@ class ZTitleBar(ZTitleBarBase):
 
     def setIcon(self, icon):
         self.iconLabel.setPixmap(QIcon(icon).pixmap(20, 20))
+        self.iconLabel.setFixedSize(20, 20)
 
     def setIconVisible(self, isVisible: bool):
         self.iconLabel.setVisible(isVisible)

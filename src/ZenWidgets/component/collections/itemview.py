@@ -246,6 +246,14 @@ class ViewContent(ZWidget):
         self._item_group.addButton(item)
         self.resize(self.sizeHint())
 
+    def addItems(self, texts: list[str]):
+        for text in texts:
+            self._items.append(text)
+            item = ZItem(self, text=text)
+            self._layout.addWidget(item)
+            self._item_group.addButton(item)
+        self.resize(self.sizeHint())
+
     def removeItem(self, text: str):
         for item in self._item_group.buttons():
             if isinstance(item, ZItem) and item.text() == text:
@@ -375,6 +383,10 @@ class ZItemView(ZWidget):
 
     def addItem(self, text: str):
         self._content.addItem(text)
+        self.resize(self.sizeHint())
+
+    def addItems(self, texts: list[str]):
+        self._content.addItems(texts)
         self.resize(self.sizeHint())
 
     def removeItem(self, text: str):

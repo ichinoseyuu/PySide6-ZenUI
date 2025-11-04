@@ -122,11 +122,11 @@ class PanelWidget(ZScrollPanel):
         self.switch_3 = ZSwitch(container, style= ZSwitch.Style.Comfortable)
         container.addWidget(self.switch_3, spacing=16)
 
-        # region ZReapeatButton
+        # region ZRepeatButton
         card = ZCard(self)
         layout.addWidget(card, stretch=0)
 
-        title = ZHeadLine(card, text= 'ZReapeatButton')
+        title = ZHeadLine(card, text= 'ZRepeatButton')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
@@ -154,12 +154,15 @@ class PanelWidget(ZScrollPanel):
         container = ZVContainer(card)
         card.layout().addWidget(container)
 
+        # options = ['坤坤', '凡凡', '祺祺', '鑫鑫']
+        # self.combo_box_1 = ZComboBox(self, text='请选择')
+        # for option in options:
+        #     self.combo_box_1.addOption(option)
+        # container.addWidget(self.combo_box_1)
         options = ['坤坤', '凡凡', '祺祺', '鑫鑫']
         self.combo_box_1 = ZComboBox(self, text='请选择')
-        for option in options:
-            self.combo_box_1.addOption(option)
+        self.combo_box_1.addOptions(options)
         container.addWidget(self.combo_box_1)
-
         # region ZLineEdit
         layout = ZHBoxLayout(
             margins=QMargins(0, 0, 0, 0),

@@ -19,6 +19,7 @@ class ZWidget(QWidget):
         ZAnimatedPoint,
         ZAnimatedPointF,
         ZAnimatedSize,
+        ZAnimatedRect,
         QAnimatedFloat,
         QAnimatedLinearGradient,
         ZAnimatedColor,
@@ -47,6 +48,7 @@ class ZWidget(QWidget):
         self._windowOpacityCtrl: ZAnimatedWindowOpacity = ZAnimatedWindowOpacity(self)
         self._widgetSizeCtrl: ZAnimatedWidgetSize = ZAnimatedWidgetSize(self)
         self._widgetPositionCtrl: ZAnimatedWidgetPosition = ZAnimatedWidgetPosition(self)
+        self._rectCtrl: ZAnimatedWidgetRect = ZAnimatedWidgetRect(self)
         self._opacityCtrl: ZAnimatedOpacity = ZAnimatedOpacity(self)
         self._create_controllers_()
 
@@ -93,10 +95,16 @@ class ZWidget(QWidget):
     # region property
     @property
     def windowOpacityCtrl(self) -> ZAnimatedWindowOpacity: return self._windowOpacityCtrl
+
     @property
     def widgetSizeCtrl(self) -> ZAnimatedWidgetSize: return self._widgetSizeCtrl
+
     @property
     def widgetPositionCtrl(self) -> ZAnimatedWidgetPosition: return self._widgetPositionCtrl
+
+    @property
+    def rectCtrl(self) -> ZAnimatedWidgetRect: return self._rectCtrl
+
     @property
     def opacityCtrl(self) -> ZAnimatedOpacity: return self._opacityCtrl
 

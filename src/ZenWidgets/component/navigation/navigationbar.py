@@ -23,7 +23,6 @@ from ZenWidgets.gui import (
     ZNavigationBarStyleData,
     ZNavBarButtonStyleData,
     ZNavBarToggleButtonStyleData,
-    ZPalette
 )
 
 # region ZNavBarButton
@@ -70,12 +69,13 @@ class ZNavBarButton(ABCButton):
 
     # region private method
     def _init_style_(self):
-        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
-        self.iconColorCtrl.color = self.styleDataCtrl.data.Icon
+        data = self.styleDataCtrl.data
+        self.layerColorCtrl.color = data.Layer
+        self.iconColorCtrl.color = data.Icon
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
         self.iconColorCtrl.setColorTo(data.Icon)
 
     # region slot
@@ -175,7 +175,7 @@ class ZNavBarToggleButton(ABCToggleButton):
     # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
-        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
         if self._checked:
             self.layerColorCtrl.setAlpha(13)
             self.iconColorCtrl.color = data.IconToggled
@@ -184,7 +184,7 @@ class ZNavBarToggleButton(ABCToggleButton):
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
         if self._checked:
             self.layerColorCtrl.setAlphaTo(13)
             self.iconColorCtrl.setColorTo(data.IconToggled)

@@ -24,7 +24,7 @@ class StyleController(QObject, Generic[StyleDataT]):
         ZGlobal.themeManager.themeChanged.connect(self._theme_change_handler_)
 
     @property
-    def data(self) -> StyleDataT:return copy.deepcopy(self._data)
+    def data(self) -> StyleDataT:return self._data
 
     @Slot(str)
     def _theme_change_handler_(self, theme:str) -> None:

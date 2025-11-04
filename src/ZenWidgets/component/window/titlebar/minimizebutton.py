@@ -1,30 +1,29 @@
-from PySide6.QtCore import Qt,Slot
-from PySide6.QtGui import QPainter,QPen,QColor
-from ZenWidgets.core import ZGlobal,ZDebug
-from ZenWidgets.gui import ZPalette
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPainter,QPen
 from ZenWidgets.component.window.titlebar.abctitlebarbutton import ZABCTitleBarButton
+from ZenWidgets.component.base import StyleController
+from ZenWidgets.core import ZDebug
+from ZenWidgets.gui import ZTitleBarButtonStyleData
 
 class ZMinimizeButton(ZABCTitleBarButton):
-    styledata = {
-        'Light':  QColor('#333333'),
-        'Dark': QColor('#dcdcdc')
-    }
-
     def __init__(self, parent=None):
         super().__init__(parent)
-        ZGlobal.themeManager.themeChanged.connect(self._style_change_handler_)
+        self._styleCtrl = StyleController[ZTitleBarButtonStyleData](self, 'ZTitleBarButton')
+        self._styleCtrl.styleChanged.connect(self._style_change_handler_)
         self._init_style_()
 
     def _init_style_(self):
-        self._iconColorCtrl.setColor(self.styledata[ZGlobal.themeManager.getThemeName()])
-        self._layerColorCtrl.setColor(ZGlobal.palette.Transparent_reverse())
+        data = self._styleCtrl.data
+        self._iconColorCtrl.color = data.Icon
+        self._layerColorCtrl.color = data.Layer
 
-    @Slot(str)
-    def _style_change_handler_(self, theme: str):
-        self._layerColorCtrl.setColor(ZGlobal.palette.Transparent_reverse())
-        self._iconColorCtrl.setColorTo(self.styledata[theme])
+    def _style_change_handler_(self):
+        data = self._styleCtrl.data
+        self._layerColorCtrl.setColor(data.Layer)
+        self._iconColorCtrl.setColorTo(data.Icon)
 
     def hoverHandler(self):
+        self._layerColorCtrl.color = self._styleCtrl.data.Layer
         self._layerColorCtrl.setAlphaTo(26)
 
     def leaveHandler(self):

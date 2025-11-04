@@ -162,7 +162,7 @@ class ABCRepeatButton(ABCButton):
                          **kwargs
                          )
         self._repeatable = repeatable
-        self._repeat_count = 1
+        self._repeat_count = 0
 
         self._trigger_interval = QTimer(self) # 触发间隔
         self._trigger_interval.setInterval(interval)
@@ -219,4 +219,4 @@ class ABCRepeatButton(ABCButton):
         if event.button() == Qt.MouseButton.LeftButton and self._repeatable:
             self._trigger_delay.stop()
             self._trigger_interval.stop()
-            self._repeat_count = 1
+            self._repeat_count = 0

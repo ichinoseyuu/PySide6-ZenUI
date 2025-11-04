@@ -103,7 +103,7 @@ class ZItem(ABCToggleButton):
     # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
-        self.layerColorCtrl.color = data.Body
+        self.layerColorCtrl.color = data.Layer
         self.textColorCtrl.color = data.Text
         self.iconColorCtrl.color = data.Icon
         self.indicatorColorCtrl.color = data.Indicator
@@ -116,7 +116,7 @@ class ZItem(ABCToggleButton):
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
         self.indicatorColorCtrl.color = data.Indicator
-        self.layerColorCtrl.setColorTo(data.Body)
+        self.layerColorCtrl.color = data.Layer
         self.textColorCtrl.setColorTo(data.Text)
         self.iconColorCtrl.setColorTo(data.Icon)
         if self._checked:

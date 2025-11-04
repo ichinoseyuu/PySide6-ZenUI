@@ -35,7 +35,12 @@ class ZABCTitleBarButton(QWidget):
     # region Func
     def isPressed(self) -> bool: return self._state == self.State.Pressed
 
+    def _init_style_(self): ...
+
     # region Slot
+    @Slot()
+    def _style_change_handler_(self):...
+
     @Slot()
     def hoverHandler(self): ...
 

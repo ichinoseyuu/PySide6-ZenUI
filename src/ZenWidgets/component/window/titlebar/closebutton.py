@@ -1,54 +1,36 @@
 from PySide6.QtCore import Qt,QLineF,Slot
 from PySide6.QtGui import QPainter, QPen,QColor
-from ZenWidgets.core import ZGlobal,ZDebug
 from ZenWidgets.component.window.titlebar.abctitlebarbutton import ZABCTitleBarButton
+from ZenWidgets.component.base import StyleController
+from ZenWidgets.core import ZDebug
+from ZenWidgets.gui import ZCloseButtonStyleData
 
 class ZCloseButton(ZABCTitleBarButton):
-    styledata = {
-        'Light': {
-            'Icon': QColor('#333333'),
-            'IconHover': QColor('#333333'),
-            'Body': QColor('#00e81b23'),
-            'BodyHover': QColor('#ffe81b23'),
-            'BodyPressed': QColor('#fff1707a')
-        },
-        'Dark': {
-            'Icon': QColor('#dcdcdc'),
-            'IconHover': QColor('#ffffff'),
-            'Body': QColor('#00e81b23'),
-            'BodyHover': QColor('#ffe81b23'),
-            'BodyPressed': QColor('#fff1707a')
-        }
-    }
     def __init__(self, parent=None):
         super().__init__(parent)
-        ZGlobal.themeManager.themeChanged.connect(self._style_change_handler_)
-        self._theme = ZGlobal.themeManager.getThemeName()
+        self._styleCtrl = StyleController[ZCloseButtonStyleData](self, 'ZCloseButton')
+        self._styleCtrl.styleChanged.connect(self._style_change_handler_)
         self._init_style_()
 
     def _init_style_(self):
-        self._layerColorCtrl.setColor(self.styledata[self._theme]['Body'])
-        self._iconColorCtrl.setColor(self.styledata[self._theme]['Icon'])
+        data =self._styleCtrl.data
+        self._layerColorCtrl.color = data.Layer
+        self._iconColorCtrl.color = data.Icon
 
-    @Slot(str)
-    def _style_change_handler_(self, theme: str):
-        self._theme = theme
-        self._layerColorCtrl.setColorTo(self.styledata[theme]['Body'])
-        self._iconColorCtrl.setColorTo(self.styledata[theme]['Icon'])
+    def _style_change_handler_(self):
+        self._iconColorCtrl.setColorTo(self._styleCtrl.data.Icon)
 
     def hoverHandler(self):
-        self._layerColorCtrl.setColorTo(self.styledata[self._theme]['BodyHover'])
-        self._iconColorCtrl.setColorTo(self.styledata[self._theme]['IconHover'])
+        self._layerColorCtrl.setColorTo(self._styleCtrl.data.LayerHover)
 
     def leaveHandler(self):
-        self._layerColorCtrl.setColorTo(self.styledata[self._theme]['Body'])
-        self._iconColorCtrl.setColorTo(self.styledata[self._theme]['Icon'])
+        self._layerColorCtrl.setColorTo(self._styleCtrl.data.Layer)
 
     def pressHandler(self):
-        self._layerColorCtrl.setColorTo(self.styledata[self._theme]['BodyPressed'])
+        self._layerColorCtrl.setColorTo(self._styleCtrl.data.LayerPressed)
 
     def releaseHandler(self):
-        self._layerColorCtrl.setColorTo(self.styledata[self._theme]['BodyHover'])
+        self._layerColorCtrl.setColorTo(self._styleCtrl.data.LayerHover)
 
     def paintEvent(self, e):
         painter = QPainter(self)

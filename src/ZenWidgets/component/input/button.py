@@ -97,7 +97,7 @@ class ZButton(ABCButton):
         self.textColorCtrl.color = data.Text
         self.iconColorCtrl.color = data.Icon
         self.borderColorCtrl.color = data.Border
-        self.layerColorCtrl.color = ZGlobal.palette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
@@ -105,7 +105,7 @@ class ZButton(ABCButton):
         self.borderColorCtrl.setColorTo(data.Border)
         self.iconColorCtrl.setColorTo(data.Icon)
         self.textColorCtrl.setColorTo(data.Text)
-        self.layerColorCtrl.color = ZGlobal.palette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
 
     # region slot
     def _hover_handler_(self):

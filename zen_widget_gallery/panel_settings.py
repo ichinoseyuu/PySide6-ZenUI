@@ -2,7 +2,6 @@ from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout
 from PySide6.QtCore import Qt,QMargins
 from PySide6.QtGui import QFont
 from ZenWidgets import *
-from demo_card import DemoCard
 
 class PanelSettings(ZPanel):
     def __init__(self, parent = None):

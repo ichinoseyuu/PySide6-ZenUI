@@ -98,8 +98,8 @@ class ZLoginEdit(ZWidget):
         self.underlineColorCtrl.color = data.Underline
         self.bodyColorCtrl.color = data.Body
         self.borderColorCtrl.color = data.Border
-        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
-        self.update()
+        self.layerColorCtrl.color = data.Layer
+
 
 
     def _style_change_handler_(self):
@@ -114,7 +114,7 @@ class ZLoginEdit(ZWidget):
         self.borderColorCtrl.setColorTo(data.Border)
         self.textColorCtrl.setColorTo(data.Text)
         self.textBackColorCtrl.setColorTo(data.TextBackSectcted)
-        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
 
 
 

@@ -130,7 +130,7 @@ class ZLineEdit(ZWidget):
         self.cursorColorCtrl.color = data.Cursor
         self.placeHolderColorCtrl.color = data.PlaceHolder
         self.underlineColorCtrl.color = data.Underline
-        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
 
 
     def _style_change_handler_(self):
@@ -146,7 +146,7 @@ class ZLineEdit(ZWidget):
         self.borderColorCtrl.setColorTo(data.Border)
         self.textColorCtrl.setColorTo(data.Text)
         self.textBackColorCtrl.setColorTo(data.TextBackSectcted)
-        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
 
 
 

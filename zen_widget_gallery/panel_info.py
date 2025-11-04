@@ -2,7 +2,6 @@ from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout,QSizePolicy
 from PySide6.QtCore import Qt, QMargins,QPoint,QSize
 from PySide6.QtGui import QFont, QIcon, QColor
 from ZenWidgets import *
-from demo_card import DemoCard
 
 class PanelInfo(ZScrollPanel):
     def __init__(self, parent = None):
@@ -18,7 +17,7 @@ class PanelInfo(ZScrollPanel):
         self.content().layout().addWidget(self.title)
         self.content().layout().setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        card = DemoCard(self)
+        card = ZCard(self)
         self.content().layout().addWidget(card)
 
         title = ZHeadLine(self, text='ZToolTip')

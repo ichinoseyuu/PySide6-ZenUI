@@ -2,7 +2,6 @@ from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout,QSizePolicy
 from PySide6.QtCore import Qt, QMargins,QPoint,QMarginsF,QSize
 from PySide6.QtGui import QFont, QIcon, QColor
 from ZenWidgets import *
-from demo_card import DemoCard
 
 class PanelTest(ZScrollPanel):
     def __init__(self, parent = None):
@@ -17,7 +16,7 @@ class PanelTest(ZScrollPanel):
         self.title.setPadding(ZPadding(6, 0, 6, 6))
         self.content().layout().addWidget(self.title)
 
-        card = DemoCard(self)
+        card = ZCard(self)
         card.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         self.content().layout().addWidget(card)
 

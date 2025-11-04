@@ -2,7 +2,6 @@ from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout,QSizePolicy
 from PySide6.QtCore import Qt, QMargins,QPoint,QSize
 from PySide6.QtGui import QFont, QIcon, QColor
 from ZenWidgets import *
-from demo_card import DemoCard
 
 class PanelWidget(ZScrollPanel):
     def __init__(self, parent = None):
@@ -28,7 +27,7 @@ class PanelWidget(ZScrollPanel):
             )
         self.layout().addLayout(layout)
 
-        card = DemoCard(self)
+        card = ZCard(self)
         layout.addWidget(card, stretch=0)
 
         title = ZHeadLine(card, text= 'ZButton')
@@ -76,7 +75,7 @@ class PanelWidget(ZScrollPanel):
                 )
             )
         # region ZToggleButton
-        card = DemoCard(self)
+        card = ZCard(self)
         layout.addWidget(card, stretch=0)
 
         title = ZHeadLine(card, text= 'ZToggleButton')
@@ -103,7 +102,7 @@ class PanelWidget(ZScrollPanel):
         self.layout().addLayout(layout)
 
         # region ZSwitch
-        card = DemoCard(self)
+        card = ZCard(self)
         layout.addWidget(card, stretch=0)
 
         title = ZHeadLine(card, text= 'ZSwitch')
@@ -124,7 +123,7 @@ class PanelWidget(ZScrollPanel):
         container.addWidget(self.switch_3, spacing=16)
 
         # region ZReapeatButton
-        card = DemoCard(self)
+        card = ZCard(self)
         layout.addWidget(card, stretch=0)
 
         title = ZHeadLine(card, text= 'ZReapeatButton')
@@ -134,18 +133,18 @@ class PanelWidget(ZScrollPanel):
         container = ZHContainer(card)
         card.layout().addWidget(container)
 
-        info = ZHeadLine(container, text= '点击次数: 0')
+        info = ZHeadLine(container, text= '连续点击次数: 0')
         container.addWidget(info)
 
-        self.repeat_btn = ZRepeatButton(container, text='连点按钮')
+        self.repeat_btn = ZRepeatButton(container, text='长按连点')
 
         container.addWidget(self.repeat_btn)
         self.repeat_btn.clicked.connect(
-            lambda: info.setText(f'点击次数: {self.repeat_btn.repeatCount()}')
+            lambda: info.setText(f'连续点击次数: {self.repeat_btn.repeatCount()}')
             )
 
         # region ZComboBox
-        card = DemoCard(self)
+        card = ZCard(self)
         layout.addWidget(card, stretch=0)
 
         title = ZHeadLine(card, text= 'ZComboBox')
@@ -169,7 +168,7 @@ class PanelWidget(ZScrollPanel):
 
         self.layout().addLayout(layout)
 
-        card = DemoCard(self)
+        card = ZCard(self)
         layout.addWidget(card, stretch=0)
 
         card.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -219,7 +218,7 @@ class PanelWidget(ZScrollPanel):
             )
         layout.addLayout(vlayout)
 
-        card = DemoCard(self)
+        card = ZCard(self)
         vlayout.addWidget(card, stretch=0)
 
         title = ZHeadLine(card, text= 'ZLoginEdit')
@@ -235,7 +234,7 @@ class PanelWidget(ZScrollPanel):
         self.login_edit_2 = ZLoginEdit(card, is_masked=True)
         container.addWidget(self.login_edit_2)
         # region ZNumberEdit
-        card = DemoCard(self)
+        card = ZCard(self)
         vlayout.addWidget(card, stretch=0)
 
         title = ZHeadLine(card, text= 'ZNumberEdit')
@@ -257,7 +256,7 @@ class PanelWidget(ZScrollPanel):
             )
         self.layout().addLayout(layout)
 
-        card = DemoCard(self)
+        card = ZCard(self)
         layout.addWidget(card, stretch=0)
 
         title = ZHeadLine(card, text= 'ZSlider')
@@ -358,7 +357,7 @@ class PanelWidget(ZScrollPanel):
         title.setPadding(ZPadding(6, 6, 6, 6))
         self.layout().addWidget(title)
 
-        card = DemoCard(self)
+        card = ZCard(self)
         self.layout().addWidget(card)
 
         title = ZHeadLine(card, text= 'ZHeadLine')

@@ -99,7 +99,7 @@ class ZToggleButton(ABCToggleButton):
     # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
-        self.layerColorCtrl.color = ZGlobal.palette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
         if self._checked:
             self.bodyColorCtrl.color = data.BodyToggled
             self.textColorCtrl.color = data.TextToggled
@@ -113,7 +113,7 @@ class ZToggleButton(ABCToggleButton):
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.layerColorCtrl.color = ZGlobal.palette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
         if self._checked:
             self.bodyColorCtrl.setColorTo(data.BodyToggled)
             self.borderColorCtrl.setColorTo(data.BodyToggled)

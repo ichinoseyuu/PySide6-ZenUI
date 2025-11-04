@@ -125,7 +125,7 @@ class ZComboBox(ABCButton):
         self.borderColorCtrl.color = data.Border
         self.dropIconColorCtrl.color = data.Icon
         self.textColorCtrl.color = data.Text
-        self.layerColorCtrl.color = ZGlobal.palette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
@@ -133,7 +133,7 @@ class ZComboBox(ABCButton):
         self.borderColorCtrl.setColorTo(data.Border)
         self.dropIconColorCtrl.setColorTo(data.Icon)
         self.textColorCtrl.setColorTo(data.Text)
-        self.layerColorCtrl.color = ZGlobal.palette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
 
     # region slot
     def _hover_handler_(self):

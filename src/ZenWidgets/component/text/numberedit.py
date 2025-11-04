@@ -187,7 +187,7 @@ class ZNumberEdit(ZWidget):
         self.textBackColorCtrl.color = data.TextBackSectcted
         self.cursorColorCtrl.color = data.Cursor
         self.underlineColorCtrl.color = data.Underline
-        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
+        self.layerColorCtrl.color = data.Layer
 
 
     def _style_change_handler_(self):
@@ -202,8 +202,7 @@ class ZNumberEdit(ZWidget):
         self.borderColorCtrl.setColorTo(data.Border)
         self.textColorCtrl.setColorTo(data.Text)
         self.textBackColorCtrl.setColorTo(data.TextBackSectcted)
-        self.layerColorCtrl.color = ZPalette.Transparent_reverse()
-
+        self.layerColorCtrl.color = data.Layer
 
 
     def _validate_text(self, text: str) -> str:

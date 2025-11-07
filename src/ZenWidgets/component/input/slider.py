@@ -5,10 +5,10 @@ from PySide6.QtCore import QPoint,QPointF,QRect,QRectF,QSize,Qt,Signal
 from PySide6.QtGui import QPainter,QPen,QLinearGradient,QPainterPath,QKeyEvent,QMouseEvent,QWheelEvent
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
-    QAnimatedColor,
-    QAnimatedLinearGradient,
+    ZAnimatedColor,
+    ZAnimatedLinearGradient,
     QAnimatedFloat,
-    StyleController,
+    ZStyleController,
     ZWidget
 )
 from ZenWidgets.core import (
@@ -20,8 +20,8 @@ from ZenWidgets.core import (
 from ZenWidgets.gui import ZSliderStyleData
 # region SliderFill
 class SliderFill(ZWidget):
-    bodyColorCtrl: QAnimatedLinearGradient
-    borderColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedLinearGradient
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
 
     def paintEvent(self, event) -> None:
@@ -58,8 +58,8 @@ class SliderFill(ZWidget):
 
 # region SliderTrack
 class SliderTrack(ZWidget):
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
 
     def paintEvent(self, event):
@@ -83,9 +83,9 @@ class SliderTrack(ZWidget):
 
 # region SliderHandle
 class SliderHandle(ZWidget):
-    innerColorCtrl: QAnimatedColor
-    outerColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
+    innerColorCtrl: ZAnimatedColor
+    outerColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     innerScaleCtrl: QAnimatedFloat
     outerScaleCtrl: QAnimatedFloat
 
@@ -191,7 +191,7 @@ class SliderStyle:
 class ZSlider(ZWidget):
     valueChanged = Signal(object)
     displayValueChanged = Signal(str)
-    styleDataCtrl: StyleController[ZSliderStyleData]
+    styleDataCtrl: ZStyleController[ZSliderStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZSlider'}}
 
     class Style(Enum):

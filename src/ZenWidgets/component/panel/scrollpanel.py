@@ -2,9 +2,9 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenWidgets.component.base import (
-    QAnimatedColor,
+    ZAnimatedColor,
     QAnimatedFloat,
-    StyleController,
+    ZStyleController,
     ZWidget
 )
 from ZenWidgets.core import (
@@ -27,8 +27,8 @@ class ScrollContent(ZWidget):
 
 # region ScrollHandle
 class ScrollHandle(ZWidget):
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
 
     def __init__(self,parent: QWidget = None, direction = ZDirection.Vertical):
@@ -173,10 +173,10 @@ class ScrollHandle(ZWidget):
 
 # region ZScrollPanel
 class ZScrollPanel(ZWidget):
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    styleDataCtrl: StyleController[ZScrollPanelStyleData]
+    styleDataCtrl: ZStyleController[ZScrollPanelStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZScrollPanel'}}
 
     def __init__(self,

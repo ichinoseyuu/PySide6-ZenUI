@@ -2,9 +2,9 @@ from PySide6.QtWidgets import QApplication,QWidget,QVBoxLayout
 from PySide6.QtCore import Signal,QSize,QTimer,QPoint,QPointF,QRectF,Qt,QRect
 from PySide6.QtGui import QFontMetrics,QFont,QMouseEvent,QPainterPath,QPainter,QKeyEvent,QPen,QInputMethodEvent
 from ZenWidgets.component.base import (
-    QAnimatedColor,
+    ZAnimatedColor,
     QAnimatedFloat,
-    StyleController,
+    ZStyleController,
     ZWidget,
     ZPadding,
     ZTextCommand
@@ -16,17 +16,17 @@ from ZenWidgets.gui import ZLineEditStyleData,ZPalette
 class ZLineEdit(ZWidget):
     editingFinished = Signal()
 
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    textColorCtrl: QAnimatedColor
-    textBackColorCtrl: QAnimatedColor
-    cursorColorCtrl: QAnimatedColor
-    placeHolderColorCtrl: QAnimatedColor
-    underlineColorCtrl: QAnimatedColor
+    textColorCtrl: ZAnimatedColor
+    textBackColorCtrl: ZAnimatedColor
+    cursorColorCtrl: ZAnimatedColor
+    placeHolderColorCtrl: ZAnimatedColor
+    underlineColorCtrl: ZAnimatedColor
     underlineWeightCtrl: QAnimatedFloat
-    layerColorCtrl: QAnimatedColor
-    styleDataCtrl: StyleController[ZLineEditStyleData]
+    layerColorCtrl: ZAnimatedColor
+    styleDataCtrl: ZStyleController[ZLineEditStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZLineEdit'},
         'radiusCtrl': {'value': 5.0},

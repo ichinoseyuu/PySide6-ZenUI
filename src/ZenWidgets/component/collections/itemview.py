@@ -3,10 +3,10 @@ from PySide6.QtCore import Qt,QRect,QSize,QRectF,Signal,QMargins,QPoint,QEvent
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.layout import ZVBoxLayout
 from ZenWidgets.component.base import (
-    QAnimatedColor,
+    ZAnimatedColor,
     QAnimatedFloat,
     ZAnimatedOpacity,
-    StyleController,
+    ZStyleController,
     ZWidget,
     ZButtonGroup,
     ZPadding,
@@ -22,13 +22,13 @@ from ZenWidgets.gui import ZItemStyleData, ZItemViewStyleData
 # region ZItem
 class ZItem(ABCToggleButton):
     indicatorWidth = 3
-    layerColorCtrl: QAnimatedColor
+    layerColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    textColorCtrl: QAnimatedColor
-    iconColorCtrl: QAnimatedColor
-    indicatorColorCtrl: QAnimatedColor
+    textColorCtrl: ZAnimatedColor
+    iconColorCtrl: ZAnimatedColor
+    indicatorColorCtrl: ZAnimatedColor
     opacityCtrl: ZAnimatedOpacity
-    styleDataCtrl: StyleController[ZItemStyleData]
+    styleDataCtrl: ZStyleController[ZItemStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZItem'}}
 
     def __init__(self,
@@ -217,10 +217,10 @@ class ZItem(ABCToggleButton):
 
 # region ViewContent
 class ViewContent(ZWidget):
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    styleDataCtrl: StyleController[ZItemViewStyleData]
+    styleDataCtrl: ZStyleController[ZItemViewStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZItemView'}}
 
     def __init__(self, parent: QWidget, items: list[str] = None):

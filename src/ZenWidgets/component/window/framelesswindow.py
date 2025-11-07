@@ -8,8 +8,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QResizeEvent
 from ZenWidgets.component.info import ZToolTip
 from ZenWidgets.component.base import (
-    StyleController,
-    QAnimatedWindowBody,
+    ZStyleController,
+    ZWindowBackGround,
 )
 from ZenWidgets.component.window.titlebar import ZTitleBar
 from ZenWidgets.component.window.win32utils import (
@@ -35,8 +35,8 @@ class ZFramelessWindow(QWidget):
         self._windowEffect.addWindowAnimation(self.winId())
         self._windowEffect.addShadowEffect(self.winId())
         self._windowEffect.setBorderAccentColor(self.winId(),getSystemAccentColor())
-        self._windowBodyColorCtrl = QAnimatedWindowBody(self)
-        self._styleDataCtrl = StyleController[ZFramelessWindowStyleData](self,'ZFramelessWindow')
+        self._windowBodyColorCtrl = ZWindowBackGround(self)
+        self._styleDataCtrl = ZStyleController[ZFramelessWindowStyleData](self,'ZFramelessWindow')
         self._styleDataCtrl.styleChanged.connect(self._style_change_handler_)
         self.windowHandle().screenChanged.connect(self.__onScreenChanged)
         self._init_style_()

@@ -3,8 +3,16 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Property, QPoint, QPointF,Signal
 from ZenWidgets.core import ZExpPropertyAnimation
 
+__All__ = [
+    'ABCAnimatedPoint',
+    'ZWidgetPosition',
+    'ZAnimatedPoint',
+    'ZAnimatedPointF'
+]
+
 # region ABCAnimatedPoint
 class ABCAnimatedPoint(QObject):
+    '''具有属性动画的坐标控制器的抽象类'''
     positionChanged = Signal(QPoint)
     def __init__(self, parent:QWidget):
         super().__init__(parent)
@@ -44,8 +52,8 @@ class ABCAnimatedPoint(QObject):
     def parent(self) -> QWidget:
         return super().parent()
 
-# region ZAnimatedWidgetPosition
-class ZAnimatedWidgetPosition(ABCAnimatedPoint):
+# region ZWidgetPosition
+class ZWidgetPosition(ABCAnimatedPoint):
     '''具有属性动画的位置控制器，直接作用于父 QWidget 的位置'''
     def __init__(self, parent: QWidget):
         super().__init__(parent)

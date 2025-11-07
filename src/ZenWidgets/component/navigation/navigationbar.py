@@ -4,10 +4,10 @@ from PySide6.QtCore import Qt, QMargins, Slot, QPoint, QSize, QRect, QRectF,Sign
 from PySide6.QtGui import QMouseEvent, QPainter, QIcon , QPixmap, QColor
 from ZenWidgets.component.layout import ZVBoxLayout
 from ZenWidgets.component.base import (
-    QAnimatedColor,
+    ZAnimatedColor,
     ZAnimatedOpacity,
     QAnimatedFloat,
-    StyleController,
+    ZStyleController,
     ZButtonGroup,
     ZWidget,
     ABCButton,
@@ -27,11 +27,11 @@ from ZenWidgets.gui import (
 
 # region ZNavBarButton
 class ZNavBarButton(ABCButton):
-    layerColorCtrl: QAnimatedColor
-    iconColorCtrl: QAnimatedColor
+    layerColorCtrl: ZAnimatedColor
+    iconColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
     opacityCtrl: ZAnimatedOpacity
-    styleDataCtrl: StyleController[ZNavBarButtonStyleData]
+    styleDataCtrl: ZStyleController[ZNavBarButtonStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZNavBarButton'},
         'radiusCtrl': {'value': 5.0},
@@ -132,11 +132,11 @@ class ZNavBarButton(ABCButton):
 
 # region ZNavBarToggleButton
 class ZNavBarToggleButton(ABCToggleButton):
-    layerColorCtrl: QAnimatedColor
-    iconColorCtrl: QAnimatedColor
+    layerColorCtrl: ZAnimatedColor
+    iconColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
     opacityCtrl: ZAnimatedOpacity
-    styleDataCtrl: StyleController[ZNavBarToggleButtonStyleData]
+    styleDataCtrl: ZStyleController[ZNavBarToggleButtonStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZNavBarToggleButton'},
         'radiusCtrl': {'value': 5.0},
@@ -322,7 +322,7 @@ class FooterPanel(QWidget):
 
 # region Indicator
 class Indicator(ZWidget):
-    bodyColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
     opacityCtrl: ZAnimatedOpacity
 
     def paintEvent(self, event):
@@ -338,7 +338,7 @@ class Indicator(ZWidget):
 
 # region ZNavigationBar
 class ZNavigationBar(ZWidget):
-    styleDataCtrl: StyleController[ZNavigationBarStyleData]
+    styleDataCtrl: ZStyleController[ZNavigationBarStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZNavigationBar'}}
 
     def __init__(self,

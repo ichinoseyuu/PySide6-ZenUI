@@ -152,6 +152,21 @@ dark_palette = {
     ZPaletteKey.Danger: '#CC6666'
 }
 
+    # ZPaletteKey.Window: '#101010',
+    # ZPaletteKey.Panel: '#141414',
+    # ZPaletteKey.Card: '#171717',
+    # ZPaletteKey.BodyDarker: '#171717',
+    # ZPaletteKey.Body: '#1C1C1C',
+    # ZPaletteKey.BodyLighter: '#212121',
+    # ZPaletteKey.BodyNeutral: '#505050',
+    # ZPaletteKey.Shadow: '#101010',
+    # ZPaletteKey.Border: '#2B2B2B',
+    # ZPaletteKey.BorderMuted: '#242424',
+    # ZPaletteKey.Text: '#F2F2F2',
+    # ZPaletteKey.TextMuted: '#D9D9D9',
+    # ZPaletteKey.TextMutedMore: '#9F9F9F',
+    # ZPaletteKey.Icon: '#CCCCCC',
+    # ZPaletteKey.IconMuted: '#B3B3B3',
 # region ZPalette
 class ZPalette(metaclass=NonInstantiableMeta):
     """全局唯一的调色板"""

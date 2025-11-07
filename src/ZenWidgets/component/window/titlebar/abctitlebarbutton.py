@@ -2,7 +2,7 @@ from enum import Enum
 from PySide6.QtCore import Qt,Signal,QEvent,Slot
 from PySide6.QtGui import QMouseEvent,QEnterEvent
 from PySide6.QtWidgets import QWidget
-from ZenWidgets.component.base import QAnimatedColor
+from ZenWidgets.component.base import ZAnimatedColor
 
 class ZABCTitleBarButton(QWidget):
     entered = Signal()
@@ -26,8 +26,8 @@ class ZABCTitleBarButton(QWidget):
         self.released.connect(self.releaseHandler)
         self.clicked.connect(self.clickHandler)
         self._state = self.State.Idle
-        self._layerColorCtrl = QAnimatedColor(self)
-        self._iconColorCtrl = QAnimatedColor(self)
+        self._layerColorCtrl = ZAnimatedColor(self)
+        self._iconColorCtrl = ZAnimatedColor(self)
 
     # region Property
     def state(self) -> State: return self._state

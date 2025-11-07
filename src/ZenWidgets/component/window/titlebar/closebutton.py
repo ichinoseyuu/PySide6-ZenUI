@@ -1,14 +1,14 @@
 from PySide6.QtCore import Qt,QLineF,Slot
 from PySide6.QtGui import QPainter, QPen,QColor
 from ZenWidgets.component.window.titlebar.abctitlebarbutton import ZABCTitleBarButton
-from ZenWidgets.component.base import StyleController
+from ZenWidgets.component.base import ZStyleController
 from ZenWidgets.core import ZDebug
 from ZenWidgets.gui import ZCloseButtonStyleData
 
 class ZCloseButton(ZABCTitleBarButton):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._styleCtrl = StyleController[ZCloseButtonStyleData](self, 'ZCloseButton')
+        self._styleCtrl = ZStyleController[ZCloseButtonStyleData](self, 'ZCloseButton')
         self._styleCtrl.styleChanged.connect(self._style_change_handler_)
         self._init_style_()
 

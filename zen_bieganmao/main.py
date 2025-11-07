@@ -46,7 +46,7 @@ class ZenBieGanMao(ZStandardFramelessWindow):
             self.timer.stop()
             ZGlobal.themeManager.setTheme(ZTheme.Dark)
             image = ZImage(self,image_path=':/bieganmao.jpg')
-            image.rectCtrl.scaleIn(QRect(self.width()//2-200, self.height()//2-200, 400, 400))
+            image.widgetRectCtrl.scaleIn(QRect(self.width()//2-200, self.height()//2-200, 400, 400))
             image.show()
             return
         colors = self.light_bg_color if ZGlobal.themeManager.getThemeName() == 'Light' else self.dark_bg_color

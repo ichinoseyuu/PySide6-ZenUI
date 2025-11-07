@@ -3,6 +3,12 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Property, QRect, Signal,QSize
 from ZenWidgets.core import ZExpPropertyAnimation
 
+__All__ = [
+    'ABCAnimatedRect',
+    'ZWidgetRect',
+    'ZAnimatedRect'
+]
+
 # region ABCAnimatedRect
 class ABCAnimatedRect(QObject):
     rectChanged = Signal()
@@ -63,8 +69,8 @@ class ABCAnimatedRect(QObject):
         return super().parent()
 
 
-# region ZAnimatedWidgetRect
-class ZAnimatedWidgetRect(ABCAnimatedRect):
+# region ZWidgetRect
+class ZWidgetRect(ABCAnimatedRect):
     '''具有属性动画的 QWidget 矩形控制器，直接作用于父 QWidget 的位置和大小'''
     def __init__(self, parent: QWidget):
         super().__init__(parent)

@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal, Slot, QEvent, QTimer
 from PySide6.QtGui import QMouseEvent, QEnterEvent, QFont
-from ZenWidgets.core import ZState
+from ZenWidgets.core import ZState,ZStyle
 from ZenWidgets.component.base.widget import ZWidget
 # region ABCButton
 class ABCButton(ZWidget):
@@ -13,12 +13,14 @@ class ABCButton(ZWidget):
     def __init__(self,
                  parent: QWidget | ZWidget | None = None,
                  *args,
+                 style: ZStyle = ZStyle.Default,
                  objectName: str | None = None,
                  toolTip: str | None = None,
                  **kwargs
                  ):
         super().__init__(parent,
                          *args,
+                         style=style,
                          objectName=objectName,
                          toolTip=toolTip,
                          **kwargs
@@ -95,12 +97,14 @@ class ABCToggleButton(ABCButton):
                  checked: bool = False,
                  checkable: bool = True,
                  is_group_member: bool = False,
+                 style: ZStyle = ZStyle.Default,
                  objectName: str | None = None,
                  toolTip: str | None = None,
                  **kwargs
                  ):
         super().__init__(parent,
                          *args,
+                         style=style,
                          objectName=objectName,
                          toolTip=toolTip,
                          **kwargs
@@ -151,12 +155,14 @@ class ABCRepeatButton(ABCButton):
                  repeatable: bool = True,
                  interval: int = 50,
                  delay: int = 500,
+                 style: ZStyle = ZStyle.Default,
                  objectName: str | None = None,
                  toolTip: str | None = None,
                  **kwargs
                  ):
         super().__init__(parent,
                          *args,
+                         style=style,
                          objectName=objectName,
                          toolTip=toolTip,
                          **kwargs

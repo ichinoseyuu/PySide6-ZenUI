@@ -3,6 +3,12 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Property, QSize, Signal
 from ZenWidgets.core import ZExpPropertyAnimation
 
+__All__ = [
+    'ABCAnimatedSize',
+    'ZWidgetSize',
+    'ZAnimatedSize'
+]
+
 # region ABCAnimatedSize
 class ABCAnimatedSize(QObject):
     sizeChanged = Signal()
@@ -41,8 +47,8 @@ class ABCAnimatedSize(QObject):
         return super().parent()
 
 
-# region ZAnimatedWidgetSize
-class ZAnimatedWidgetSize(ABCAnimatedSize):
+# region ZWidgetSize
+class ZWidgetSize(ABCAnimatedSize):
     '''具有属性动画的 QWidget 尺寸控制器，直接作用于父 QWidget'''
     def __init__(self, parent:QWidget):
         super().__init__(parent)

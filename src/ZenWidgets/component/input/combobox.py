@@ -4,10 +4,11 @@ from PySide6.QtWidgets import QWidget
 from typing import Any,Dict
 from ZenWidgets.component.collections import ZItemView
 from ZenWidgets.component.base import (
-    QAnimatedColor,
+    ZOpacityEffect,
+    ZAnimatedColor,
     QAnimatedFloat,
     ZAnimatedPointF,
-    StyleController,
+    ZStyleController,
     ZPadding,
     ABCButton
 )
@@ -21,14 +22,14 @@ from ZenWidgets.gui import ZComboBoxStyleData
 class ZComboBox(ABCButton):
     optionChanged = Signal(str, object)
 
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
-    textColorCtrl: QAnimatedColor
-    dropIconColorCtrl: QAnimatedColor
-    dropIconPosCtrl: ZAnimatedPointF
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    layerColorCtrl: QAnimatedColor
-    styleDataCtrl: StyleController[ZComboBoxStyleData]
+    layerCtrl: ZOpacityEffect
+    textColorCtrl: ZAnimatedColor
+    dropIconColorCtrl: ZAnimatedColor
+    dropIconPosCtrl: ZAnimatedPointF
+    styleDataCtrl: ZStyleController[ZComboBoxStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZComboBox'},
         'radiusCtrl': {'value': 5.0},
@@ -138,7 +139,6 @@ class ZComboBox(ABCButton):
         self.borderColorCtrl.color = data.Border
         self.dropIconColorCtrl.color = data.Icon
         self.textColorCtrl.color = data.Text
-        self.layerColorCtrl.color = data.Layer
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
@@ -146,21 +146,20 @@ class ZComboBox(ABCButton):
         self.borderColorCtrl.setColorTo(data.Border)
         self.dropIconColorCtrl.setColorTo(data.Icon)
         self.textColorCtrl.setColorTo(data.Text)
-        self.layerColorCtrl.color = data.Layer
 
     # region slot
     def _hover_handler_(self):
-        self.layerColorCtrl.setAlphaFTo(0.03)
+        self.layerCtrl.setAlphaFTo(0.06)
 
     def _leave_handler_(self):
-        self.layerColorCtrl.toTransparent()
+        self.layerCtrl.toTransparent()
 
     def _press_handler_(self):
-        self.layerColorCtrl.setAlphaFTo(0.05)
+        self.layerCtrl.setAlphaFTo(0.11)
         self.dropIconPosCtrl.moveBy(0, 2)
 
     def _release_handler_(self):
-        self.layerColorCtrl.setAlphaFTo(0.03)
+        self.layerCtrl.setAlphaFTo(0.06)
         self.dropIconPosCtrl.moveTo(self._get_drop_icon_pos())
 
     def _click_handler_(self):
@@ -184,21 +183,15 @@ class ZComboBox(ABCButton):
             )
         rect = self.rect()
         radius = self.radiusCtrl.value
-
         if self.bodyColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
             painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
-
         if self.borderColorCtrl.color.alpha() > 0:
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
-
-        if self.layerColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.layerColorCtrl.color)
-            painter.drawRoundedRect(rect, radius, radius)
+            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
+        self.layerCtrl.drawOpacityLayer(painter, rect, radius)
 
         if self._text:
             painter.setFont(self.font())

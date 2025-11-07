@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QEvent,QPoint,QSize,Signal,Slot
 from PySide6.QtGui import QMouseEvent
 from ZenWidgets.component.base.controller import *
-from ZenWidgets.core import make_getter,ZState
+from ZenWidgets.core import make_getter,ZState,ZStyle
 
 T = TypeVar('T')
 
@@ -14,23 +14,29 @@ class ZWidget(QWidget):
     ZenWidgets 组件的基类
     '''
     __controllers_types__ = (
-        QAnimatedColor,
+        ZAnimatedColor,
         ZAnimatedOpacity,
         ZAnimatedPoint,
         ZAnimatedPointF,
         ZAnimatedSize,
         ZAnimatedRect,
         QAnimatedFloat,
-        QAnimatedLinearGradient,
-        ZAnimatedColor,
-        StyleController,
-        QAnimatedInt
+        ZAnimatedFloat,
+        ZAnimatedLinearGradient,
+        ZStyleController,
+        ZFlashEffect,
+        ZOpacityEffect,
+        QAnimatedInt,
+        ZAnimatedInt,
     )
     __controllers_kwargs__: dict[str, Any] = {}
     dragged = Signal(QPoint)
     def __init__(self,
                  parent: QWidget | None = None,
                  *args,
+                 style: ZStyle = ZStyle.Default,
+                 dragable: bool = False,
+                 move_anchor: QPoint = QPoint(0, 0),
                  objectName: str | None = None,
                  toolTip: str | None = None,
                  **kwargs
@@ -41,14 +47,15 @@ class ZWidget(QWidget):
                          toolTip=toolTip,
                          **kwargs
                          )
-        self._state = ZState.Idle
-        self._move_anchor: QPoint = QPoint(0, 0)
-        self._draggable: bool = False
+        self._state: ZState = ZState.Idle
+        self._style: ZStyle = style
+        self._move_anchor: QPoint = move_anchor
+        self._draggable: bool = dragable
         self._drag_pos: QPoint | None = None
-        self._windowOpacityCtrl: ZAnimatedWindowOpacity = ZAnimatedWindowOpacity(self)
-        self._widgetSizeCtrl: ZAnimatedWidgetSize = ZAnimatedWidgetSize(self)
-        self._widgetPositionCtrl: ZAnimatedWidgetPosition = ZAnimatedWidgetPosition(self)
-        self._rectCtrl: ZAnimatedWidgetRect = ZAnimatedWidgetRect(self)
+        self._windowOpacityCtrl: ZWindowOpacity = ZWindowOpacity(self)
+        self._widgetSizeCtrl: ZWidgetSize = ZWidgetSize(self)
+        self._widgetPositionCtrl: ZWidgetPosition = ZWidgetPosition(self)
+        self._widgetRectCtrl: ZWidgetRect = ZWidgetRect(self)
         self._opacityCtrl: ZAnimatedOpacity = ZAnimatedOpacity(self)
         self._create_controllers_()
 
@@ -81,8 +88,8 @@ class ZWidget(QWidget):
             # 创建类属性
             if not hasattr(self.__class__, name): setattr(self.__class__, name, property(make_getter(name)))
             # 如果是样式控制器，则绑定样式改变时的槽函数
-            if ctrl_type.__name__ == 'StyleController':
-                style_controller = cast(StyleController[T], controller)
+            if ctrl_type.__name__ == 'ZStyleController':
+                style_controller = cast(ZStyleController[T], controller)
                 style_controller.styleChanged.connect(self._style_change_handler_)
 
     def _init_style_(self) -> None:
@@ -94,22 +101,32 @@ class ZWidget(QWidget):
 
     # region property
     @property
-    def windowOpacityCtrl(self) -> ZAnimatedWindowOpacity: return self._windowOpacityCtrl
+    def windowOpacityCtrl(self) -> ZWindowOpacity: return self._windowOpacityCtrl
 
     @property
-    def widgetSizeCtrl(self) -> ZAnimatedWidgetSize: return self._widgetSizeCtrl
+    def widgetSizeCtrl(self) -> ZWidgetSize: return self._widgetSizeCtrl
 
     @property
-    def widgetPositionCtrl(self) -> ZAnimatedWidgetPosition: return self._widgetPositionCtrl
+    def widgetPositionCtrl(self) -> ZWidgetPosition: return self._widgetPositionCtrl
 
     @property
-    def rectCtrl(self) -> ZAnimatedWidgetRect: return self._rectCtrl
+    def widgetRectCtrl(self) -> ZWidgetRect: return self._widgetRectCtrl
 
     @property
     def opacityCtrl(self) -> ZAnimatedOpacity: return self._opacityCtrl
 
     # region public method
     def state(self) -> ZState: return self._state
+
+    def style(self) -> ZStyle: return self._style
+
+    def moveAnchor(self): return self._move_anchor
+
+    def isFlat(self) -> bool: return self._style == ZStyle.Flat
+
+    def isPressed(self) -> bool: return self._state == ZState.Pressed
+
+    def isHover(self) -> bool: return self._state == ZState.Hover
 
     def isHidden(self) ->bool: return True if self.windowOpacity() == 0 else False
 
@@ -129,7 +146,9 @@ class ZWidget(QWidget):
         if d == self._draggable: return
         self._draggable = d
 
-    def moveAnchor(self): return self._move_anchor
+    def setStyle(self, s: ZStyle):
+        self._style = s
+        self.update()
 
     @overload
     def setMoveAnchor(self, x: int, y: int) -> None: ...

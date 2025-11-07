@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING: from main import ZenBieGanMao
 
 class PopupMessage(ZWidget):
-    bodyColorCtrl: QAnimatedColor
-    textColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    textColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
     def __init__(self,
                  backgroundColor: QColor,

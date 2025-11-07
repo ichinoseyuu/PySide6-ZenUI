@@ -4,9 +4,9 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenWidgets.component.base import (
-    QAnimatedColor,
+    ZAnimatedColor,
     QAnimatedFloat,
-    StyleController,
+    ZStyleController,
     ZWidget,
     ZPadding
 )
@@ -15,11 +15,11 @@ from ZenWidgets.gui import ZToolTipStyleData
 
 # region ToolTipContent
 class ToolTipContent(ZWidget):
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    textColorCtrl: QAnimatedColor
-    styleDataCtrl: StyleController[ZToolTipStyleData]
+    textColorCtrl: ZAnimatedColor
+    styleDataCtrl: ZStyleController[ZToolTipStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZToolTip'}}
 
     def __init__(self, parent=None):

@@ -3,9 +3,9 @@ from PySide6.QtWidgets import QApplication,QWidget,QVBoxLayout
 from PySide6.QtCore import Signal,QSize,QTimer,QPoint,QPointF,QRectF,Qt
 from PySide6.QtGui import QFontMetrics,QFont,QMouseEvent,QPainterPath,QPainter,QKeyEvent,QPen
 from ZenWidgets.component.base import (
-    QAnimatedColor,
+    ZAnimatedColor,
     QAnimatedFloat,
-    StyleController,
+    ZStyleController,
     ZWidget,
     ZPadding,
     ZTextCommand
@@ -17,16 +17,16 @@ class ZLoginEdit(ZWidget):
     editingFinished = Signal()
     valueChanged = Signal(str)
 
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    textColorCtrl: QAnimatedColor
-    textBackColorCtrl: QAnimatedColor
-    cursorColorCtrl: QAnimatedColor
-    underlineColorCtrl: QAnimatedColor
+    textColorCtrl: ZAnimatedColor
+    textBackColorCtrl: ZAnimatedColor
+    cursorColorCtrl: ZAnimatedColor
+    underlineColorCtrl: ZAnimatedColor
     underlineWeightCtrl: QAnimatedFloat
-    layerColorCtrl: QAnimatedColor
-    styleDataCtrl: StyleController[ZLoginEditStyleData]
+    layerColorCtrl: ZAnimatedColor
+    styleDataCtrl: ZStyleController[ZLoginEditStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZLoginEdit'},
         'radiusCtrl': {'value': 5.0},

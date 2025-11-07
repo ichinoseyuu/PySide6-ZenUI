@@ -4,10 +4,10 @@ from PySide6.QtGui import QPainter, QPen
 from PySide6.QtCore import Qt, QRectF, QPointF
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
-    QAnimatedColor,
+    ZAnimatedColor,
     ZAnimatedOpacity,
     QAnimatedFloat,
-    StyleController,
+    ZStyleController,
     ZWidget,
     ABCToggleButton
 )
@@ -23,7 +23,7 @@ class SwitchStyle:
 
 # region SwitchHandle
 class SwitchHandle(ZWidget):
-    bodyColorCtrl: QAnimatedColor
+    bodyCtrl: ZAnimatedColor
     scaleCtrl: QAnimatedFloat
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
@@ -36,9 +36,9 @@ class SwitchHandle(ZWidget):
         painter.setRenderHint(QPainter.Antialiasing)
         center = QPointF(self.width()/2, self.height()/2)
         radius = self.height()/2
-        if self.bodyColorCtrl.color.alpha() > 0:
+        if self.bodyCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyColorCtrl.color)
+            painter.setBrush(self.bodyCtrl.color)
             scaled_radius = radius * self.scaleCtrl.value
             painter.drawEllipse(center, scaled_radius, scaled_radius)
         painter.end()
@@ -46,10 +46,10 @@ class SwitchHandle(ZWidget):
 
 # region ZSwitch
 class ZSwitch(ABCToggleButton):
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     opacityCtrl: ZAnimatedOpacity
-    styleDataCtrl: StyleController[ZSwitchStyleData]
+    styleDataCtrl: ZStyleController[ZSwitchStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZSwitch'}}
 
     class Style(Enum):
@@ -93,21 +93,21 @@ class ZSwitch(ABCToggleButton):
 
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.setColor(data.Body)
-        self._handle.bodyColorCtrl.color = data.HandleToggled
+        self._handle.bodyCtrl.color = data.HandleToggled
         if not self._checked:
             self.bodyColorCtrl.transparent()
-            self._handle.bodyColorCtrl.color = data.Handle
+            self._handle.bodyCtrl.color = data.Handle
         self.borderColorCtrl.color = data.Border
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
         if self._checked:
             self.bodyColorCtrl.setColorTo(data.Body)
-            self._handle.bodyColorCtrl.setColorTo(data.HandleToggled)
+            self._handle.bodyCtrl.setColorTo(data.HandleToggled)
         else:
             self.bodyColorCtrl.setColor(data.Body)
             self.bodyColorCtrl.transparent()
-            self._handle.bodyColorCtrl.setColorTo(data.Handle)
+            self._handle.bodyCtrl.setColorTo(data.Handle)
         self.borderColorCtrl.setColorTo(data.Border)
 
 
@@ -123,10 +123,10 @@ class ZSwitch(ABCToggleButton):
         data = self.styleDataCtrl.data
         if checked:
             self.bodyColorCtrl.toOpaque()
-            self._handle.bodyColorCtrl.setColorTo(data.HandleToggled)
+            self._handle.bodyCtrl.setColorTo(data.HandleToggled)
         else:
             self.bodyColorCtrl.toTransparent()
-            self._handle.bodyColorCtrl.setColorTo(data.Handle)
+            self._handle.bodyCtrl.setColorTo(data.Handle)
         style = self._style.value
         handle_width = self._handle.width()
         margin = style.Margin
@@ -145,10 +145,7 @@ class ZSwitch(ABCToggleButton):
         if self.borderColorCtrl.color.alpha() > 0:
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(
-                QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),
-                radius, radius
-                )
+            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
         if self.bodyColorCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
             painter.setBrush(self.bodyColorCtrl.color)

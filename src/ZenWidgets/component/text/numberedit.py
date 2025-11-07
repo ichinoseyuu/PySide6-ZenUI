@@ -4,9 +4,9 @@ from PySide6.QtWidgets import QApplication,QWidget
 from PySide6.QtCore import Signal,QSize,QTimer,QPoint,QPointF,QRectF,Qt
 from PySide6.QtGui import QFontMetrics,QFont,QWheelEvent,QMouseEvent,QPainterPath,QPainter,QKeyEvent,QPen
 from ZenWidgets.component.base import (
-    QAnimatedColor,
+    ZAnimatedColor,
     QAnimatedFloat,
-    StyleController,
+    ZStyleController,
     ZWidget,
     ZPadding,
     ZTextCommand
@@ -19,16 +19,16 @@ class ZNumberEdit(ZWidget):
     editingFinished = Signal()
     textChanged = Signal(str)
 
-    textColorCtrl: QAnimatedColor
-    textBackColorCtrl: QAnimatedColor
-    cursorColorCtrl: QAnimatedColor
-    underlineColorCtrl: QAnimatedColor
+    textColorCtrl: ZAnimatedColor
+    textBackColorCtrl: ZAnimatedColor
+    cursorColorCtrl: ZAnimatedColor
+    underlineColorCtrl: ZAnimatedColor
     underlineWeightCtrl: QAnimatedFloat
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    layerColorCtrl: QAnimatedColor
-    styleDataCtrl: StyleController[ZNumberEditStyleData]
+    layerColorCtrl: ZAnimatedColor
+    styleDataCtrl: ZStyleController[ZNumberEditStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZNumberEdit'},
         'radiusCtrl': {'value': 5.0},

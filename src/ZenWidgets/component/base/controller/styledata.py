@@ -1,14 +1,14 @@
-import logging
 import copy
-from typing import overload,Dict,Generic
+from typing import Dict,Generic
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Signal,Slot
 from PySide6.QtGui import QColor
 from ZenWidgets.core import ZGlobal
 from ZenWidgets.gui import StyleDataT,ZStyleDataKey
 
+__All__ = ['ZStyleController']
 
-class StyleController(QObject, Generic[StyleDataT]):
+class ZStyleController(QObject, Generic[StyleDataT]):
     '''样式管理器
     - 决定控件的当前样式
     - 存储自定义样式数据

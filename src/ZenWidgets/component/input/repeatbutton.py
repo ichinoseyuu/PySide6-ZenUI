@@ -3,27 +3,31 @@ from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
 from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPoint
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
-    QAnimatedColor,
+    ZAnimatedColor,
     QAnimatedFloat,
-    StyleController,
+    ZStyleController,
+    ZOpacityEffect,
+    ZFlashEffect,
     ZWidget,
     ABCRepeatButton
 )
 from ZenWidgets.core import (
     ZDebug,
     ZGlobal,
-    ZPosition
+    ZPosition,
+    ZStyle
 )
 from ZenWidgets.gui import ZRepeatButtonStyleData
 
 class ZRepeatButton(ABCRepeatButton):
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
-    textColorCtrl: QAnimatedColor
-    iconColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    layerColorCtrl: QAnimatedColor
-    styleDataCtrl: StyleController[ZRepeatButtonStyleData]
+    hoverLayerCtrl: ZOpacityEffect
+    flashLayerCtrl: ZFlashEffect
+    textColorCtrl: ZAnimatedColor
+    iconColorCtrl: ZAnimatedColor
+    styleDataCtrl: ZStyleController[ZRepeatButtonStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZRepeatButton'},
         'radiusCtrl': {'value': 5.0},
@@ -39,6 +43,7 @@ class ZRepeatButton(ABCRepeatButton):
                  repeatable: bool = True,
                  interval: int = 50,
                  delay: int = 500,
+                 style: ZStyle = ZStyle.Default,
                  objectName: str | None = None,
                  toolTip: str | None = None,
                  ):
@@ -46,6 +51,7 @@ class ZRepeatButton(ABCRepeatButton):
                          repeatable=repeatable,
                          interval=interval,
                          delay=delay,
+                         style=style,
                          objectName=objectName,
                          toolTip=toolTip,
                          font=font,
@@ -104,7 +110,6 @@ class ZRepeatButton(ABCRepeatButton):
         self.textColorCtrl.color = data.Text
         self.iconColorCtrl.color = data.Icon
         self.borderColorCtrl.color = data.Border
-        self.layerColorCtrl.color = data.Layer
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
@@ -112,25 +117,21 @@ class ZRepeatButton(ABCRepeatButton):
         self.borderColorCtrl.setColorTo(data.Border)
         self.iconColorCtrl.setColorTo(data.Icon)
         self.textColorCtrl.setColorTo(data.Text)
-        self.layerColorCtrl.color = data.Layer
 
     # region slot
     def _hover_handler_(self):
-        self.layerColorCtrl.setAlphaFTo(0.03)
+        self.hoverLayerCtrl.setAlphaFTo(0.11 if self.isFlat() else 0.06)
         if self.toolTip() != '':
             ZGlobal.tooltip.showTip(text=self.toolTip(),
                         target=self,
                         position=ZPosition.TopRight,
                         offset=QPoint(6, 6))
     def _leave_handler_(self):
-        self.layerColorCtrl.toTransparent()
+        self.hoverLayerCtrl.toTransparent()
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
-    def _press_handler_(self):
-        self.layerColorCtrl.setAlphaFTo(0.05)
-
     def _release_handler_(self):
-        self.layerColorCtrl.setAlphaFTo(0.03)
+        self.flashLayerCtrl.flash()
 
 
 
@@ -147,20 +148,18 @@ class ZRepeatButton(ABCRepeatButton):
         rect = self.rect()
         radius = self.radiusCtrl.value
 
-        if self.bodyColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyColorCtrl.color)
-            painter.drawRoundedRect(rect, radius, radius)
+        if self._style != ZStyle.Flat:
+            if self.bodyColorCtrl.color.alpha() > 0:
+                painter.setPen(Qt.NoPen)
+                painter.setBrush(self.bodyColorCtrl.color)
+                painter.drawRoundedRect(rect, radius, radius)
+            if self.borderColorCtrl.color.alpha() > 0:
+                painter.setPen(QPen(self.borderColorCtrl.color, 1))
+                painter.setBrush(Qt.NoBrush)
+                painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
 
-        if self.borderColorCtrl.color.alpha() > 0:
-            painter.setPen(QPen(self.borderColorCtrl.color, 1))
-            painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
-
-        if self.layerColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.layerColorCtrl.color)
-            painter.drawRoundedRect(rect, radius, radius)
+        self.hoverLayerCtrl.drawOpacityLayer(painter, rect, radius)
+        self.flashLayerCtrl.drawFlashLayer(painter, rect, radius)
 
         if self._icon:
             pixmap = self._icon.pixmap(self._icon_size)

@@ -1,7 +1,8 @@
-from .color import QAnimatedColor, QAnimatedLinearGradient, QAnimatedWindowBody,ZAnimatedColor
-from .position import ZAnimatedWidgetPosition, ZAnimatedPoint, ZAnimatedPointF
-from .opacity import ZAnimatedOpacity, ZAnimatedWindowOpacity
-from .size import ZAnimatedWidgetSize, ZAnimatedSize
-from .rect import ZAnimatedWidgetRect, ZAnimatedRect
-from .value import QAnimatedFloat, QAnimatedInt
-from .styledata import StyleController
+from .color import *
+from .opacity import *
+from .position import *
+from .rect import *
+from .size import *
+from .effect import *
+from .value import *
+from .styledata import *

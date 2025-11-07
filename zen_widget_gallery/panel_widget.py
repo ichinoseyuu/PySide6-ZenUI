@@ -62,7 +62,7 @@ class PanelWidget(ZScrollPanel):
                 hide_delay=800
                 )
             )
-        self.btn_3 = ZButton(container, text='保存')
+        self.btn_3 = ZButton(container, text='保存',style=ZStyle.Flat)
         container.addWidget(self.btn_3, spacing=16)
         self.btn_3.clicked.connect(
             lambda: ZGlobal.tooltip.showTip(
@@ -92,7 +92,7 @@ class PanelWidget(ZScrollPanel):
         self.toggle_btn_2 = ZToggleButton(container, icon=btn_icon, text='自动保存')
         container.addWidget(self.toggle_btn_2, spacing=16)
 
-        self.toggle_btn_3 = ZToggleButton(container, text='自动保存')
+        self.toggle_btn_3 = ZToggleButton(container, text='自动保存',style=ZStyle.Flat)
         container.addWidget(self.toggle_btn_3, spacing=16)
 
         layout = ZHBoxLayout(
@@ -136,7 +136,7 @@ class PanelWidget(ZScrollPanel):
         info = ZHeadLine(container, text= '连续点击次数: 0')
         container.addWidget(info)
 
-        self.repeat_btn = ZRepeatButton(container, text='长按连点')
+        self.repeat_btn = ZRepeatButton(container, text='长按连点',style=ZStyle.Flat)
 
         container.addWidget(self.repeat_btn)
         self.repeat_btn.clicked.connect(

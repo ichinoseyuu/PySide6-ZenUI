@@ -2,9 +2,9 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QSize, QRectF,QRect
 from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen
 from ZenWidgets.component.base import (
-    QAnimatedColor,
+    ZAnimatedColor,
     QAnimatedFloat,
-    StyleController,
+    ZStyleController,
     ZPadding,
     ZWidget
 )
@@ -12,13 +12,13 @@ from ZenWidgets.core import ZDebug
 from ZenWidgets.gui import ZHeadLineStyleData
 
 class ZHeadLine(ZWidget):
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    textColorCtrl: QAnimatedColor
-    textBackColorCtrl: QAnimatedColor
-    indicatorColorCtrl: QAnimatedColor
-    styleDataCtrl: StyleController[ZHeadLineStyleData]
+    textColorCtrl: ZAnimatedColor
+    textBackColorCtrl: ZAnimatedColor
+    indicatorColorCtrl: ZAnimatedColor
+    styleDataCtrl: ZStyleController[ZHeadLineStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZHeadLine'}}
 
     def __init__(self,

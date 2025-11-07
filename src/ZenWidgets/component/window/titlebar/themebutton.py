@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt,QSize
 from PySide6.QtGui import QPainter,QIcon,QPixmap
 from ZenWidgets.component.window.titlebar.abctitlebarbutton import ZABCTitleBarButton
-from ZenWidgets.component.base import StyleController
+from ZenWidgets.component.base import ZStyleController
 from ZenWidgets.core import ZDebug,ZGlobal
 from ZenWidgets.gui import ZTitleBarButtonStyleData,ZTheme
 
@@ -18,7 +18,7 @@ class ZChangeThemeButton(ZABCTitleBarButton):
             state=QIcon.State.On
         )
         self._icon: QIcon = icon
-        self._styleCtrl = StyleController[ZTitleBarButtonStyleData](self, 'ZTitleBarButton')
+        self._styleCtrl = ZStyleController[ZTitleBarButtonStyleData](self, 'ZTitleBarButton')
         self._styleCtrl.styleChanged.connect(self._style_change_handler_)
         self._init_style_()
 

@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt,QPointF
 from PySide6.QtGui import QPainter,QPen,QPainterPath
 from ZenWidgets.component.window.titlebar.abctitlebarbutton import ZABCTitleBarButton
-from ZenWidgets.component.base import StyleController
+from ZenWidgets.component.base import ZStyleController
 from ZenWidgets.core import ZDebug
 from ZenWidgets.gui import ZTitleBarButtonStyleData
 
@@ -9,7 +9,7 @@ class ZMaximizeButton(ZABCTitleBarButton):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._isMax = False
-        self._styleCtrl = StyleController[ZTitleBarButtonStyleData](self, 'ZTitleBarButton')
+        self._styleCtrl = ZStyleController[ZTitleBarButtonStyleData](self, 'ZTitleBarButton')
         self._styleCtrl.styleChanged.connect(self._style_change_handler_)
         self._init_style_()
 

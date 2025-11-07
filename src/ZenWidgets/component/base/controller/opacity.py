@@ -3,8 +3,15 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Property, Signal
 from ZenWidgets.core import ZExpPropertyAnimation
 
+__All__ = [
+    "ABCAnimatedOpacity",
+    "ZAnimatedOpacity",
+    "ZWindowOpacity"
+]
+
 # region ABCAnimatedOpacity
 class ABCAnimatedOpacity(QObject):
+    '''具有属性动画的透明度控制器抽象类'''
     opacityChanged = Signal(float)
     completelyHide = Signal()
     completelyShow = Signal()
@@ -77,8 +84,8 @@ class ZAnimatedOpacity(ABCAnimatedOpacity):
 
     opacity: float = cast(float, Property(float, getOpacity, setOpacity, notify=ABCAnimatedOpacity.opacityChanged))
 
-# region ZAnimatedWindowOpacity
-class ZAnimatedWindowOpacity(ABCAnimatedOpacity):
+# region ZWindowOpacity
+class ZWindowOpacity(ABCAnimatedOpacity):
     '''具有属性动画的透明度控制器，直接作用于窗口透明度'''
     def __init__(self, parent: QWidget):
         super().__init__(parent)

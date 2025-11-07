@@ -1,18 +1,18 @@
 from PySide6.QtWidgets import QWidget,QSizePolicy
 from PySide6.QtCore import Qt,QRectF,QMargins
 from PySide6.QtGui import QPainter,QPen,QPainterPath
-from ZenWidgets.component.base import QAnimatedColor,QAnimatedFloat,StyleController,ZWidget
+from ZenWidgets.component.base import ZAnimatedColor,QAnimatedFloat,ZStyleController,ZWidget
 from ZenWidgets.component.layout import ZVBoxLayout,ZHBoxLayout
 from ZenWidgets.core import ZDebug
 from ZenWidgets.gui import ZCardStyleData
 
 class ZCard(ZWidget):
-    bodyColorCtrl: QAnimatedColor
-    borderColorCtrl: QAnimatedColor
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    shadowColorCtrl: QAnimatedColor
+    shadowColorCtrl: ZAnimatedColor
     shadowWidthCtrl: QAnimatedFloat
-    styleDataCtrl: StyleController[ZCardStyleData]
+    styleDataCtrl: ZStyleController[ZCardStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZCard'},
         'radiusCtrl': {'value': 8.0},
@@ -20,10 +20,12 @@ class ZCard(ZWidget):
     }
     def __init__(self,
                  parent: ZWidget | QWidget | None = None,
+                 display_border: bool = True,
                  display_shadow: bool = True,
                  objectName: str | None = None,
                  ):
         super().__init__(parent=parent, objectName=objectName)
+        self._display_border = display_border
         self._display_shadow = display_shadow
         self._init_style_()
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -34,6 +36,10 @@ class ZCard(ZWidget):
 
     def setShadowDisplay(self, display: bool,/):
         self._display_shadow = display
+        self.update()
+
+    def setBorderDisplay(self, display: bool,/):
+        self._display_border = display
         self.update()
 
     # region private
@@ -65,7 +71,7 @@ class ZCard(ZWidget):
             painter.setPen(Qt.NoPen)
             painter.fillRect(rect, self.bodyColorCtrl.color)
 
-        if self.borderColorCtrl.color.alpha() > 0:
+        if self._display_border and self.borderColorCtrl.color.alpha() > 0:
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)

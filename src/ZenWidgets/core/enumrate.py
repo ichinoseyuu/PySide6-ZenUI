@@ -2,6 +2,7 @@ from enum import Enum, IntEnum, IntFlag, auto
 
 __All__ = [
     'ZWindowType',
+    'ZStyle',
     'ZState',
     'ZDirection',
     'ZPosition',
@@ -11,6 +12,10 @@ __All__ = [
 class ZWindowType(IntEnum):
     Frameless = auto()
     Translucent = auto()
+
+class ZStyle(IntEnum):
+    Default = auto()
+    Flat = auto()
 
 class ZState(IntEnum):
     Idle = auto()

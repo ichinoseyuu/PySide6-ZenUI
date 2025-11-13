@@ -1,8 +1,11 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal, Slot, QEvent, QTimer
-from PySide6.QtGui import QMouseEvent, QEnterEvent, QFont
+from PySide6.QtGui import QMouseEvent, QEnterEvent
 from ZenWidgets.core import ZState,ZStyle
 from ZenWidgets.component.base.widget import ZWidget
+from  typing import TYPE_CHECKING,Optional
+if TYPE_CHECKING:
+    from ZenWidgets.component.base.group import ZButtonGroup
 # region ABCButton
 class ABCButton(ZWidget):
     entered = Signal()
@@ -72,12 +75,19 @@ class ABCButton(ZWidget):
 
     def mouseMoveEvent(self, event: QMouseEvent):
         super().mouseMoveEvent(event)
-        if self.rect().contains(event.position().toPoint()):
+        is_inside = self.rect().contains(event.position().toPoint())
+        if self._state != ZState.Pressed and is_inside:
             self._state = ZState.Hover
             self.entered.emit()
-        else:
+        elif self._state != ZState.Pressed and not is_inside:
             self._state = ZState.Idle
             self.leaved.emit()
+        elif self._state == ZState.Pressed and not is_inside:
+            self._state = ZState.Idle
+            self.released.emit()
+            self.leaved.emit()
+        else:
+            self._state = ZState.Pressed
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         super().mouseReleaseEvent(event)
@@ -113,6 +123,7 @@ class ABCToggleButton(ABCButton):
         self._checkable: bool = checkable
         self._checked: bool = checked
         self._is_group_member: bool = is_group_member
+        self._button_group: Optional['ZButtonGroup']= None
 
     # region Slot
     @Slot(bool)
@@ -132,20 +143,25 @@ class ABCToggleButton(ABCButton):
 
     def isGroupMember(self) -> bool: return self._is_group_member
 
-    def setGroupMember(self, b: bool): self._is_group_member = b
+    def setButtonGroup(self, group: 'ZButtonGroup'):
+        self._button_group = group
+        self._is_group_member = True
+
+    def unsetButtonGroup(self):
+        self._button_group = None
+        self._is_group_member = False
 
     # region event
     def mouseReleaseEvent(self, event: QMouseEvent):
         super().mouseReleaseEvent(event)
         if event.button() == Qt.MouseButton.LeftButton and self._checkable:
             if self.rect().contains(event.position().toPoint()):
-                if not self._is_group_member:
-                    self._checked = not self._checked
+                if self._is_group_member:
+                    self._checked = True
                     self.toggled.emit(self._checked)
                 else:
-                    if not self._checked:
-                        self._checked = True
-                        self.toggled.emit(self._checked)
+                    self._checked = not self._checked
+                    self.toggled.emit(self._checked)
 
 # region ABCRepeatButton
 class ABCRepeatButton(ABCButton):
@@ -206,19 +222,14 @@ class ABCRepeatButton(ABCButton):
     def mousePressEvent(self, event: QMouseEvent):
         super().mousePressEvent(event)
         if event.button() == Qt.MouseButton.LeftButton and self._repeatable:
-            #self.setMouseTracking(True)
             self._trigger_delay.start()
 
-    # def mouseMoveEvent(self, event: QMouseEvent):
-    #     super().mouseMoveEvent(event)
-    #     if self._repeatable and self._repeat_timer.isActive():
-    #         if self.rect().contains(event.position().toPoint()):
-    #             # 鼠标回到按钮内，重启计时器
-    #             if not self._repeat_timer.isActive():
-    #                 self._repeat_timer.start()
-    #         else:
-    #             # 鼠标移出按钮，停止计时器
-    #             self._repeat_timer.stop()
+    def mouseMoveEvent(self, event: QMouseEvent):
+        super().mouseMoveEvent(event)
+        if not self.rect().contains(event.position().toPoint()) and self._repeatable:
+            self._trigger_delay.stop()
+            self._trigger_interval.stop()
+            self._repeat_count = 0
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         super().mouseReleaseEvent(event)

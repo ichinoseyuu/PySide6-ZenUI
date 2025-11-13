@@ -41,7 +41,7 @@ class ABCAnimatedColor(QObject):
 
     def getAlphaF(self) -> float: return self._color.alphaF()
 
-    def setAlphaF(self, a: float,/) -> None: self._color.setAlphaF(a); self._update_()
+    def setAlphaF(self, a: float,/) -> None: self._color.setAlphaF(min(1.0,max(.0,a))); self._update_()
 
     alphaF: float = cast(float, Property(float, getAlphaF, setAlphaF, notify=alphaFChanged))
 
@@ -86,12 +86,12 @@ class ABCAnimatedColor(QObject):
         self._anim_alpha.start()
 
     @overload
-    def setAlphaFTo(self, alpha: int | float,/) -> None: ...
+    def setAlphaFTo(self, alpha: float,/) -> None: ...
 
     @overload
-    def setAlphaFTo(self, start: int | float, end: int | float,/) -> None: ...
+    def setAlphaFTo(self, start: float, end: float,/) -> None: ...
 
-    def setAlphaFTo(self, arg1: int | float, arg2: int | float | None = None,/) -> None:
+    def setAlphaFTo(self, arg1: float, arg2: float | None = None,/) -> None:
         self._anim_alpha.stop()
         if arg2 is None:
             self._anim_alpha.setStartValue(self._color.alphaF())
@@ -114,11 +114,11 @@ class ZAnimatedColor(ABCAnimatedColor):
     def __init__(self, parent: QWidget, color: QColor = QColor('#202020')):
         super().__init__(parent, color)
         self._anim = QPropertyAnimation(self, b'color')
-        self._anim.setDuration(500)
-        self._anim.setEasingCurve(QEasingCurve.Type.OutExpo)
+        self._anim.setDuration(250)
+        self._anim.setEasingCurve(QEasingCurve.Type.OutCirc)
         self._anim_alpha = QPropertyAnimation(self, b'alphaF')
         self._anim_alpha.setDuration(250)
-        self._anim_alpha.setEasingCurve(QEasingCurve.Type.OutExpo)
+        self._anim_alpha.setEasingCurve(QEasingCurve.Type.OutCirc)
 
     @property
     def animation(self) -> QPropertyAnimation: return self._anim
@@ -195,10 +195,10 @@ class ZWindowBackGround(ABCAnimatedColor):
         super().__init__(window, color)
         self._anim = QPropertyAnimation(self, b'color')
         self._anim.setDuration(250)
-        self._anim.setEasingCurve(QEasingCurve.Type.OutExpo)
+        self._anim.setEasingCurve(QEasingCurve.Type.OutCirc)
         self._anim_alpha = QPropertyAnimation(self, b'alphaF')
         self._anim_alpha.setDuration(250)
-        self._anim_alpha.setEasingCurve(QEasingCurve.Type.OutExpo)
+        self._anim_alpha.setEasingCurve(QEasingCurve.Type.OutCirc)
 
     @property
     def animation(self) -> QPropertyAnimation: return self._anim

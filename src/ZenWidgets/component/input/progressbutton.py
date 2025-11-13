@@ -1,34 +1,38 @@
-from enum import Enum
-from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
-from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPoint
+from PySide6.QtGui import QPainter,QFont,QPen,QIcon,QPixmap
+from PySide6.QtCore import Qt,QRect,QSize,QRectF,QPoint,QTimer,Signal
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
     ZAnimatedColor,
     QAnimatedFloat,
     ZStyleController,
     ZOpacityEffect,
-    ZWidget,
-    ABCToggleButton
-)
+    ABCButton,
+    ZWidget
+    )
 from ZenWidgets.core import (
     ZDebug,
     ZGlobal,
-    ZPosition,
-    ZStyle
+    ZPosition
 )
-from ZenWidgets.gui import ZToggleButtonStyleData
+from ZenWidgets.gui import ZProgressButtonStyleData
 
-class ZToggleButton(ABCToggleButton):
+class ZProgressButton(ABCButton):
+    progressChanged = Signal(float)
+    progressFinished = Signal()
+
     bodyColorCtrl: ZAnimatedColor
+    progressColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    layerCtrl: ZOpacityEffect
+    progressCtrl: QAnimatedFloat
+    hoverLayerCtrl: ZOpacityEffect
     textColorCtrl: ZAnimatedColor
     iconColorCtrl: ZAnimatedColor
-    styleDataCtrl: ZStyleController[ZToggleButtonStyleData]
+    styleDataCtrl: ZStyleController[ZProgressButtonStyleData]
     __controllers_kwargs__ = {
-        'styleDataCtrl':{'key': 'ZToggleButton'},
+        'styleDataCtrl':{'key': 'ZProgressButton'},
         'radiusCtrl': {'value': 4.0},
+        'progressCtrl': {'value': 0.0},
     }
     def __init__(self,
                  parent: ZWidget | QWidget | None = None,
@@ -37,18 +41,11 @@ class ZToggleButton(ABCToggleButton):
                  icon: QIcon | None = None,
                  icon_size: QSize = QSize(16, 16),
                  spacing: int = 4,
-                 checked: bool = False,
-                 checkable: bool = True,
-                 is_group_member: bool = False,
-                 style: ZStyle = ZStyle.Default,
+                 reset_on_finish: bool = True,
                  objectName: str | None = None,
                  toolTip: str | None = None,
                  ):
         super().__init__(parent=parent,
-                         checked=checked,
-                         checkable=checkable,
-                         is_group_member=is_group_member,
-                         style=style,
                          objectName=objectName,
                          toolTip=toolTip,
                          font=font,
@@ -57,11 +54,11 @@ class ZToggleButton(ABCToggleButton):
         self._icon: QIcon | None = icon
         self._icon_size = icon_size
         self._spacing = spacing
+        self._reset_on_finish = reset_on_finish
         self._init_style_()
         self.resize(self.sizeHint())
 
-
-    # region public method
+    # region public
     def text(self) -> str: return self._text
 
     def setText(self, t: str) -> None:
@@ -86,6 +83,24 @@ class ZToggleButton(ABCToggleButton):
         self._spacing = spacing
         self.update()
 
+    def isResetOnFinish(self) -> bool: return self._reset_on_finish
+
+    def setResetOnFinish(self, r: bool) -> None:
+        self._reset_on_finish = r
+
+    def setProgress(self, value: float,/, animate: bool = True) -> None:
+        value = max(0.0, min(1.0, value))
+        if value == 1.0:
+            self.progressCtrl.setValueTo(1.0) if animate else self.progressCtrl.setValue(1.0)
+            self.progressChanged.emit(1.0)
+            self.progressFinished.emit()
+            if self._reset_on_finish:
+                QTimer.singleShot(150, lambda: self.progressCtrl.setValueTo(.0))
+        else:
+            self.progressCtrl.setValueTo(value) if animate else self.progressCtrl.setValue(value)
+            self.progressChanged.emit(value)
+
+
     def sizeHint(self):
         if self._icon and not self._text:
             size = QSize(30, 30)
@@ -100,70 +115,46 @@ class ZToggleButton(ABCToggleButton):
             self.setMinimumSize(size)
             return size
 
+
     # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
-        color_map = self._get_color_mapping(data, self._checked)
-        self._apply_color_mapping(color_map)
+        self.bodyColorCtrl.color = data.Body
+        self.progressColorCtrl.color = data.Progress
+        self.textColorCtrl.color = data.Text
+        self.iconColorCtrl.color = data.Icon
+        self.borderColorCtrl.color = data.Border
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        color_map = self._get_color_mapping(data, self._checked)
-        self._apply_color_mapping(color_map, anim=True)
-
-    def _get_color_mapping(self, data, is_checked):
-        data = self.styleDataCtrl.data
-        if is_checked:
-            return {
-                'body': data.BodyToggled,
-                'border': data.BodyToggled,
-                'text': data.TextToggled,
-                'icon': data.IconToggled
-            }
-        else:
-            return {
-                'body': data.Body,
-                'border': data.Border,
-                'text': data.Text,
-                'icon': data.Icon
-            }
-
-    def _apply_color_mapping(self, color_map, anim=False):
-        if anim:
-            self.bodyColorCtrl.setColorTo(color_map['body'])
-            self.borderColorCtrl.setColorTo(color_map['border'])
-            self.textColorCtrl.setColorTo(color_map['text'])
-            self.iconColorCtrl.setColorTo(color_map['icon'])
-        else:
-            self.bodyColorCtrl.color = color_map['body']
-            self.borderColorCtrl.color = color_map['border']
-            self.textColorCtrl.color = color_map['text']
-            self.iconColorCtrl.color = color_map['icon']
+        self.bodyColorCtrl.setColorTo(data.Body)
+        self.progressColorCtrl.setColorTo(data.Progress)
+        self.borderColorCtrl.setColorTo(data.Border)
+        self.iconColorCtrl.setColorTo(data.Icon)
+        self.textColorCtrl.setColorTo(data.Text)
 
     # region slot
     def _hover_handler_(self):
-        self.layerCtrl.setAlphaFTo(0.11 if self.isFlat() else 0.06)
+        self.hoverLayerCtrl.setAlphaFTo(0.06)
         if self.toolTip() != '':
-            ZGlobal.tooltip.showTip(text=self.toolTip(),
-                                    target=self,
-                                    position=ZPosition.TopRight,
-                                    offset=QPoint(6, 6)
-                                    )
+            ZGlobal.tooltip.showTip(
+                text=self.toolTip(),
+                target=self,
+                position=ZPosition.TopRight,
+                offset=QPoint(6, 6)
+                )
     def _leave_handler_(self):
-        self.layerCtrl.toTransparent()
+        self.hoverLayerCtrl.toTransparent()
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
-        self.layerCtrl.setAlphaFTo(0.15 if self.isFlat() else 0.11)
+        pass
 
-    def _toggle_handler_(self, checked):
-        self.layerCtrl.setAlphaFTo(0.11 if self.isFlat() else 0.06)
-        data = self.styleDataCtrl.data
-        color_map = self._get_color_mapping(data, checked)
-        self._apply_color_mapping(color_map, anim=True)
+    def _release_handler_(self):
+        self.progressCtrl.setValueTo(0.0)
 
     # region paintEvent
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
         painter.setOpacity(self.opacityCtrl.opacity)
@@ -172,18 +163,27 @@ class ZToggleButton(ABCToggleButton):
             QPainter.RenderHint.TextAntialiasing|
             QPainter.RenderHint.SmoothPixmapTransform
             )
-        rect = self.rect()
+        rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
-        if self._style != ZStyle.Flat or self._checked:
-            if self.bodyColorCtrl.color.alpha() > 0:
-                painter.setPen(Qt.NoPen)
-                painter.setBrush(self.bodyColorCtrl.color)
-                painter.drawRoundedRect(rect, radius, radius)
-            if self.borderColorCtrl.color.alpha() > 0:
-                painter.setPen(QPen(self.borderColorCtrl.color, 1))
-                painter.setBrush(Qt.NoBrush)
-                painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
-        self.layerCtrl.drawOpacityLayer(painter, rect, radius)
+        if self.bodyColorCtrl.color.alpha() > 0:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self.bodyColorCtrl.color)
+            painter.drawRoundedRect(rect, radius, radius)
+
+        if self.borderColorCtrl.color.alpha() > 0:
+            painter.setPen(QPen(self.borderColorCtrl.color, 1))
+            painter.setBrush(Qt.NoBrush)
+            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
+
+        self.hoverLayerCtrl.drawOpacityLayer(painter, rect, radius)
+
+        if self.progressCtrl.value > 0:
+            progress_rect = QRectF(rect).adjusted(1, 1, -1, -1)
+            progress_rect.setWidth(progress_rect.width() * self.progressCtrl.value)
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self.progressColorCtrl.color)
+            painter.drawRoundedRect(progress_rect, radius, radius)
+
 
         if self._icon:
             pixmap = self._icon.pixmap(self._icon_size)
@@ -220,8 +220,6 @@ class ZToggleButton(ABCToggleButton):
             painter.setPen(self.textColorCtrl.color)
             painter.drawText(rect, Qt.AlignCenter, self._text)
 
-
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         painter.end()
         event.accept()
-

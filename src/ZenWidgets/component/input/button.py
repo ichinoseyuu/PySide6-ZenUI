@@ -29,7 +29,7 @@ class ZButton(ABCButton):
     styleDataCtrl: ZStyleController[ZButtonStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZButton'},
-        'radiusCtrl': {'value': 5.0},
+        'radiusCtrl': {'value': 4.0},
     }
     def __init__(self,
                  parent: ZWidget | QWidget | None = None,
@@ -114,10 +114,12 @@ class ZButton(ABCButton):
     def _hover_handler_(self):
         self.hoverLayerCtrl.setAlphaFTo(0.11 if self.isFlat() else 0.06)
         if self.toolTip() != '':
-            ZGlobal.tooltip.showTip(text=self.toolTip(),
-                        target=self,
-                        position=ZPosition.TopRight,
-                        offset=QPoint(6, 6))
+            ZGlobal.tooltip.showTip(
+                text=self.toolTip(),
+                target=self,
+                position=ZPosition.TopRight,
+                offset=QPoint(6, 6)
+                )
     def _leave_handler_(self):
         self.hoverLayerCtrl.toTransparent()
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()

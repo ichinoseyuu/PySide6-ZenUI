@@ -26,7 +26,7 @@ class ABCAnimatedInt(QObject):
     def getValue(self) -> int: return self._value
 
     def setValue(self, value: int) -> None:
-        self._value = value
+        self._value = max(self._min, min(self._max, value))
         self.parent().update()
 
     value: int = cast(int, Property(int, getValue, setValue, notify=valueChanged))
@@ -77,7 +77,7 @@ class ZAnimatedInt(ABCAnimatedInt):
 # region ABCAnimatedFloat
 class ABCAnimatedFloat(QObject):
     valueChanged = Signal()
-    def __init__(self, parent: QWidget, value: int|float = 0.0):
+    def __init__(self, parent: QWidget, value: int|float = .0):
         super().__init__(parent)
         self._value: float = value
         self._anim: ZExpPropertyAnimation|QPropertyAnimation|None = None
@@ -115,7 +115,7 @@ class ABCAnimatedFloat(QObject):
 # region QAnimatedFloat
 class QAnimatedFloat(ABCAnimatedFloat):
     '''具有原生属性动画的浮点数控制器'''
-    def __init__(self, parent: QWidget, value: int|float = 0.0):
+    def __init__(self, parent: QWidget, value: int|float = .0):
         super().__init__(parent, value)
         self._anim = QPropertyAnimation(self, b'value')
         self._anim.setDuration(150)
@@ -123,11 +123,10 @@ class QAnimatedFloat(ABCAnimatedFloat):
 
     @property
     def animation(self) -> QPropertyAnimation: return self._anim
-
 # region ZAnimatedFloat
 class ZAnimatedFloat(ABCAnimatedFloat):
     '''具有原生属性动画的浮点数控制器'''
-    def __init__(self, parent: QWidget, value: int|float = 0.0):
+    def __init__(self, parent: QWidget, value: int|float = .0):
         super().__init__(parent, value)
         self._anim = ZExpPropertyAnimation(self,'value')
         self._anim.setBias(0.05)

@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QSize, QRectF,QRect
 from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen
 from ZenWidgets.component.base import (
+    ZFlashEffect,
     ZAnimatedColor,
     QAnimatedFloat,
     ZStyleController,
@@ -15,11 +16,15 @@ class ZHeadLine(ZWidget):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
+    flashEffectCtrl: ZFlashEffect
     textColorCtrl: ZAnimatedColor
     textBackColorCtrl: ZAnimatedColor
     indicatorColorCtrl: ZAnimatedColor
     styleDataCtrl: ZStyleController[ZHeadLineStyleData]
-    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZHeadLine'}}
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{'key': 'ZHeadLine'},
+        'radiusCtrl': {'value': 4.0}
+    }
 
     def __init__(self,
                  parent: QWidget = None,
@@ -54,7 +59,8 @@ class ZHeadLine(ZWidget):
 
     def text(self) -> str: return self._text
 
-    def setText(self, t: str) -> None:
+    def setText(self, t: str,/,flash: bool = False) -> None:
+        if flash: self.flashEffectCtrl.flash()
         self._text = t
         self.adjustSize()
         self.update()
@@ -122,7 +128,6 @@ class ZHeadLine(ZWidget):
         self.textColorCtrl.color = data.Text
         self.bodyColorCtrl.color = data.Body
         self.borderColorCtrl.color = data.Border
-        self.radiusCtrl.value = 5.0
         self.textBackColorCtrl.color = data.TextBackSectcted
         self.indicatorColorCtrl.color = data.Indicator
 
@@ -209,6 +214,8 @@ class ZHeadLine(ZWidget):
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+
+        self.flashEffectCtrl.drawFlashLayer(painter, rect, radius)
 
         p = self._padding
         fm = self.fontMetrics()

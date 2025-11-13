@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt, QMargins, Slot, QPoint, QSize, QRect, QRectF,Sign
 from PySide6.QtGui import QMouseEvent, QPainter, QIcon , QPixmap, QColor
 from ZenWidgets.component.layout import ZVBoxLayout
 from ZenWidgets.component.base import (
+    ZOpacityEffect,
     ZAnimatedColor,
     ZAnimatedOpacity,
     QAnimatedFloat,
@@ -27,7 +28,7 @@ from ZenWidgets.gui import (
 
 # region ZNavBarButton
 class ZNavBarButton(ABCButton):
-    layerColorCtrl: ZAnimatedColor
+    opacityEffectCtrl: ZOpacityEffect
     iconColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
     opacityCtrl: ZAnimatedOpacity
@@ -69,18 +70,14 @@ class ZNavBarButton(ABCButton):
 
     # region private method
     def _init_style_(self):
-        data = self.styleDataCtrl.data
-        self.layerColorCtrl.color = data.Layer
-        self.iconColorCtrl.color = data.Icon
+        self.iconColorCtrl.color = self.styleDataCtrl.data.Icon
 
     def _style_change_handler_(self):
-        data = self.styleDataCtrl.data
-        self.layerColorCtrl.color = data.Layer
-        self.iconColorCtrl.setColorTo(data.Icon)
+        self.iconColorCtrl.setColorTo(self.styleDataCtrl.data.Icon)
 
     # region slot
     def _hover_handler_(self):
-        self.layerColorCtrl.setAlphaTo(22)
+        self.opacityEffectCtrl.setAlphaFTo(0.08)
         if self.toolTip() != '':
             ZGlobal.tooltip.showTip(
                 text = self.toolTip(),
@@ -91,14 +88,14 @@ class ZNavBarButton(ABCButton):
                 )
 
     def _leave_handler_(self):
-        self.layerColorCtrl.toTransparent()
+        self.opacityEffectCtrl.toTransparent()
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
-        self.layerColorCtrl.setAlphaTo(16)
+        self.opacityEffectCtrl.setAlphaFTo(0.16)
 
     def _release_handler_(self):
-        self.layerColorCtrl.setAlphaTo(22)
+        self.opacityEffectCtrl.setAlphaFTo(0.08)
 
     # region event
     def paintEvent(self, event):
@@ -111,9 +108,9 @@ class ZNavBarButton(ABCButton):
             )
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
-        if self.layerColorCtrl.color.alpha() > 0:
+        if self.opacityEffectCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self.layerColorCtrl.color)
+            painter.setBrush(self.opacityEffectCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
         pixmap = self._icon.pixmap(self._icon_size)
         colored_pixmap = QPixmap(pixmap.size())
@@ -132,7 +129,7 @@ class ZNavBarButton(ABCButton):
 
 # region ZNavBarToggleButton
 class ZNavBarToggleButton(ABCToggleButton):
-    layerColorCtrl: ZAnimatedColor
+    opacityEffectCtrl: ZOpacityEffect
     iconColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
     opacityCtrl: ZAnimatedOpacity
@@ -152,7 +149,7 @@ class ZNavBarToggleButton(ABCToggleButton):
                          objectName=objectName,
                          toolTip=toolTip,
                          )
-        self.setGroupMember(True)
+        self.setButtonGroup(True)
         self._icon = icon
         self._icon_size = QSize(20, 20)
         self._init_style_()
@@ -175,18 +172,15 @@ class ZNavBarToggleButton(ABCToggleButton):
     # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
-        self.layerColorCtrl.color = data.Layer
         if self._checked:
-            self.layerColorCtrl.setAlpha(13)
+            self.opacityEffectCtrl.setAlphaF(0.1)
             self.iconColorCtrl.color = data.IconToggled
         else:
             self.iconColorCtrl.color = data.Icon
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        self.layerColorCtrl.color = data.Layer
         if self._checked:
-            self.layerColorCtrl.setAlphaTo(13)
             self.iconColorCtrl.setColorTo(data.IconToggled)
         else:
             self.iconColorCtrl.setColorTo(data.Icon)
@@ -194,9 +188,9 @@ class ZNavBarToggleButton(ABCToggleButton):
     # region slot
     def _hover_handler_(self):
         if self._checked:
-            self.layerColorCtrl.setAlphaTo(24)
+            self.opacityEffectCtrl.setAlphaFTo(0.12)
         else:
-            self.layerColorCtrl.setAlphaTo(22)
+            self.opacityEffectCtrl.setAlphaFTo(0.08)
         if self.toolTip() != '':
             ZGlobal.tooltip.showTip(
                 text = self.toolTip(),
@@ -208,24 +202,24 @@ class ZNavBarToggleButton(ABCToggleButton):
 
     def _leave_handler_(self):
         if self._checked:
-            self.layerColorCtrl.setAlphaTo(13)
+            self.opacityEffectCtrl.setAlphaFTo(0.1)
         else:
-            self.layerColorCtrl.toTransparent()
+            self.opacityEffectCtrl.toTransparent()
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
     def _press_handler_(self):
         if self._checked:
-            self.layerColorCtrl.setAlphaTo(18)
+            self.opacityEffectCtrl.setAlphaFTo(0.18)
         else:
-            self.layerColorCtrl.setAlphaTo(16)
+            self.opacityEffectCtrl.setAlphaFTo(0.16)
 
     def _toggle_handler_(self, checked):
         data = self.styleDataCtrl.data
         if checked:
-            self.layerColorCtrl.setAlphaTo(24)
+            self.opacityEffectCtrl.setAlphaFTo(0.12)
             self.iconColorCtrl.setColorTo(data.IconToggled)
         else:
-            self.layerColorCtrl.setAlphaTo(22)
+            self.opacityEffectCtrl.setAlphaFTo(0.08)
             self.iconColorCtrl.setColorTo(data.Icon)
 
     # region event
@@ -239,9 +233,9 @@ class ZNavBarToggleButton(ABCToggleButton):
             )
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
-        if self.layerColorCtrl.color.alpha() > 0:
+        if self.opacityEffectCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self.layerColorCtrl.color)
+            painter.setBrush(self.opacityEffectCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
         if self._checked:
             pixmap = self._icon.pixmap(self._icon_size, QIcon.Mode.Normal, QIcon.State.On)

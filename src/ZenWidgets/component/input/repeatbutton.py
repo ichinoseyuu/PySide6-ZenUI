@@ -30,7 +30,7 @@ class ZRepeatButton(ABCRepeatButton):
     styleDataCtrl: ZStyleController[ZRepeatButtonStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZRepeatButton'},
-        'radiusCtrl': {'value': 5.0},
+        'radiusCtrl': {'value': 4.0},
     }
 
     def __init__(self,
@@ -122,18 +122,18 @@ class ZRepeatButton(ABCRepeatButton):
     def _hover_handler_(self):
         self.hoverLayerCtrl.setAlphaFTo(0.11 if self.isFlat() else 0.06)
         if self.toolTip() != '':
-            ZGlobal.tooltip.showTip(text=self.toolTip(),
-                        target=self,
-                        position=ZPosition.TopRight,
-                        offset=QPoint(6, 6))
+            ZGlobal.tooltip.showTip(
+                text=self.toolTip(),
+                target=self,
+                position=ZPosition.TopRight,
+                offset=QPoint(6, 6)
+                )
     def _leave_handler_(self):
         self.hoverLayerCtrl.toTransparent()
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
-    def _release_handler_(self):
+    def _click_handler_(self):
         self.flashLayerCtrl.flash()
-
-
 
     # region paintEvent
     def paintEvent(self, event):

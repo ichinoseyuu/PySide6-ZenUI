@@ -40,18 +40,20 @@ class PanelInfo(ZScrollPanel):
         self.headline_2 = ZHeadLine(hcontainer_2, text='显示位置：')
         hcontainer_2.addWidget(self.headline_2)
 
-        self.combobox_1 = ZComboBox(self,text=ZPosition.TopRight.name)
+        self.combobox_1 = ZComboBox(self)
         for pos in ZPosition:
             if pos == ZPosition.Center: break
             self.combobox_1.addOption(pos.name, pos)
+        self.combobox_1.toggleTo(ZPosition.TopRight.name)
         hcontainer_2.addWidget(self.combobox_1)
 
         self.headline_3 = ZHeadLine(hcontainer_2, text='跟随目标：')
         hcontainer_2.addWidget(self.headline_3)
 
-        self.combobox_2 = ZComboBox(self,text=ZToolTip.Mode.TrackMouse.name)
+        self.combobox_2 = ZComboBox(self)
         for mode in ZToolTip.Mode:
             self.combobox_2.addOption(mode.name, mode)
+        self.combobox_2.toggleTo(ZToolTip.Mode.TrackMouse.name)
         hcontainer_2.addWidget(self.combobox_2)
 
         hcontainer_3 = ZHContainer(card)

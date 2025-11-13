@@ -1,9 +1,8 @@
 from PySide6.QtCore import Qt,QSize
 from PySide6.QtGui import QPainter,QIcon,QPixmap
 from ZenWidgets.component.window.titlebar.abctitlebarbutton import ZABCTitleBarButton
-from ZenWidgets.component.base import ZStyleController
 from ZenWidgets.core import ZDebug,ZGlobal
-from ZenWidgets.gui import ZTitleBarButtonStyleData,ZTheme
+from ZenWidgets.gui import ZTheme
 
 class ZChangeThemeButton(ZABCTitleBarButton):
     def __init__(self, parent=None):
@@ -18,33 +17,22 @@ class ZChangeThemeButton(ZABCTitleBarButton):
             state=QIcon.State.On
         )
         self._icon: QIcon = icon
-        self._styleCtrl = ZStyleController[ZTitleBarButtonStyleData](self, 'ZTitleBarButton')
-        self._styleCtrl.styleChanged.connect(self._style_change_handler_)
         self._init_style_()
 
-    def _init_style_(self):
-        data = self._styleCtrl.data
-        self._iconColorCtrl.color = data.Icon
-        self._layerColorCtrl.color = data.Layer
-
-    def _style_change_handler_(self):
-        data = self._styleCtrl.data
-        self._layerColorCtrl.setColor(data.Layer)
-        self._iconColorCtrl.setColorTo(data.Icon)
-
     def hoverHandler(self):
-        self._layerColorCtrl.color = self._styleCtrl.data.Layer
-        self._layerColorCtrl.setAlphaTo(26)
+        self._layerColorCtrl.setAlphaFTo(0.2)
 
     def leaveHandler(self):
-        self._layerColorCtrl.setAlphaTo(0)
+        self._layerColorCtrl.toTransparent()
 
     def pressHandler(self):
-        self._layerColorCtrl.setAlphaTo(18)
+        self._layerColorCtrl.setAlphaFTo(0.4)
 
     def releaseHandler(self):
+        self._layerColorCtrl.setAlphaFTo(0.2)
+
+    def clickHandler(self):
         ZGlobal.themeManager.toggleTheme()
-        self._layerColorCtrl.setAlphaTo(26)
 
     def paintEvent(self, e):
         painter = QPainter(self)

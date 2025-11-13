@@ -5,6 +5,7 @@ from typing import Any,Dict
 from ZenWidgets.component.collections import ZItemView
 from ZenWidgets.component.base import (
     ZOpacityEffect,
+    ZFlashEffect,
     ZAnimatedColor,
     QAnimatedFloat,
     ZAnimatedPointF,
@@ -25,14 +26,15 @@ class ZComboBox(ABCButton):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
-    layerCtrl: ZOpacityEffect
+    opacityLayerCtrl: ZOpacityEffect
+    flashLayerCtrl: ZFlashEffect
     textColorCtrl: ZAnimatedColor
     dropIconColorCtrl: ZAnimatedColor
     dropIconPosCtrl: ZAnimatedPointF
     styleDataCtrl: ZStyleController[ZComboBoxStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZComboBox'},
-        'radiusCtrl': {'value': 5.0},
+        'radiusCtrl': {'value': 4.0},
     }
     def __init__(self,
                  parent: QWidget = None,
@@ -97,6 +99,7 @@ class ZComboBox(ABCButton):
         self._options_view.addItem(key)
         # if key == self._text:
         #     self._options_view.selectItem(key)
+        self.adjustSize()
 
     def addOptions(self, options: Dict[str, Any]| list[tuple[str, Any]]| list[str]) -> None:
         if isinstance(options, dict):
@@ -110,6 +113,7 @@ class ZComboBox(ABCButton):
                     self.addOption(item[0], item[1])
         else:
             raise TypeError(f'addOptions({options}) type error')
+        self.adjustSize()
 
     def removeOption(self, key: str) -> None:
         if key in self._options:
@@ -117,11 +121,28 @@ class ZComboBox(ABCButton):
             self._options_view.removeItem(key)
             if self._text == key:
                 self._text = None
-                self.update()
+        self.adjustSize()
+
+    def toggleTo(self, key: str) -> None:
+        self._options_view.toggleTo(key)
+
+    def adjustSize(self):
+        self.resize(self.sizeHint())
+        self.dropIconPosCtrl.setPos(self._get_drop_icon_pos())
+
 
     def sizeHint(self):
-        text_width = self.fontMetrics().boundingRect(self._text).width() if self._text else 0
-        total_width = text_width + self._drop_icon_size.width() + self._padding.horizontal + self._spacing
+        fm = self.fontMetrics()
+        text_width = fm.horizontalAdvance(self._text) if self._text else 0
+        options_max_width = 0
+        for k in self._options.keys():
+            if k is None:
+                continue
+            w = fm.horizontalAdvance(k)
+            if w > options_max_width:
+                options_max_width = w
+        content_width = max(text_width, options_max_width)
+        total_width = content_width + self._drop_icon_size.width() + self._padding.horizontal + self._spacing
         font_height = self.fontMetrics().height()
         total_height = max(font_height + self._padding.vertical, self._drop_icon_size.height() + 2)
         min_width = 100
@@ -149,23 +170,24 @@ class ZComboBox(ABCButton):
 
     # region slot
     def _hover_handler_(self):
-        self.layerCtrl.setAlphaFTo(0.06)
+        self.opacityLayerCtrl.setAlphaFTo(0.06)
 
     def _leave_handler_(self):
-        self.layerCtrl.toTransparent()
+        self.opacityLayerCtrl.toTransparent()
 
     def _press_handler_(self):
-        self.layerCtrl.setAlphaFTo(0.11)
+        self.opacityLayerCtrl.setAlphaFTo(0.11)
         self.dropIconPosCtrl.moveBy(0, 2)
 
     def _release_handler_(self):
-        self.layerCtrl.setAlphaFTo(0.06)
+        self.opacityLayerCtrl.setAlphaFTo(0.06)
         self.dropIconPosCtrl.moveTo(self._get_drop_icon_pos())
 
     def _click_handler_(self):
         self._options_view.show()
 
     def _select_handler_(self, item: str):
+        self.flashLayerCtrl.flash(0.3)
         if item in self._options:
             self._text = item
             self.optionChanged.emit(item, self._options[item])
@@ -191,7 +213,8 @@ class ZComboBox(ABCButton):
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
-        self.layerCtrl.drawOpacityLayer(painter, rect, radius)
+        self.opacityLayerCtrl.drawOpacityLayer(painter, rect, radius)
+        self.flashLayerCtrl.drawFlashLayer(painter, rect, radius)
 
         if self._text:
             painter.setFont(self.font())

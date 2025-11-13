@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QApplication,QWidget,QVBoxLayout
 from PySide6.QtCore import Signal,QSize,QTimer,QPoint,QPointF,QRectF,Qt,QRect
 from PySide6.QtGui import QFontMetrics,QFont,QMouseEvent,QPainterPath,QPainter,QKeyEvent,QPen,QInputMethodEvent
 from ZenWidgets.component.base import (
+    ZOpacityEffect,
     ZAnimatedColor,
     QAnimatedFloat,
     ZStyleController,
@@ -19,17 +20,17 @@ class ZLineEdit(ZWidget):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
+    opacityEffectCtrl: ZOpacityEffect
     textColorCtrl: ZAnimatedColor
     textBackColorCtrl: ZAnimatedColor
     cursorColorCtrl: ZAnimatedColor
     placeHolderColorCtrl: ZAnimatedColor
     underlineColorCtrl: ZAnimatedColor
     underlineWeightCtrl: QAnimatedFloat
-    layerColorCtrl: ZAnimatedColor
     styleDataCtrl: ZStyleController[ZLineEditStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZLineEdit'},
-        'radiusCtrl': {'value': 5.0},
+        'radiusCtrl': {'value': 4.0},
         'underlineWeightCtrl': {'value': 1.3},
     }
     def __init__(self,
@@ -73,8 +74,8 @@ class ZLineEdit(ZWidget):
         self._undo_timer.timeout.connect(self._commit_undo)
         self._pending_undo = None
 
-        self.cursorColorCtrl.animation.setDuration(500)
-        self.cursorColorCtrl.animation.finished.connect(self._toggle_cursor)
+        self.cursorColorCtrl.animationAlpha.setDuration(500)
+        self.cursorColorCtrl.animationAlpha.finished.connect(self._toggle_cursor)
         self._init_style_()
 
 
@@ -130,8 +131,6 @@ class ZLineEdit(ZWidget):
         self.cursorColorCtrl.color = data.Cursor
         self.placeHolderColorCtrl.color = data.PlaceHolder
         self.underlineColorCtrl.color = data.Underline
-        self.layerColorCtrl.color = data.Layer
-
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
@@ -146,10 +145,6 @@ class ZLineEdit(ZWidget):
         self.borderColorCtrl.setColorTo(data.Border)
         self.textColorCtrl.setColorTo(data.Text)
         self.textBackColorCtrl.setColorTo(data.TextBackSectcted)
-        self.layerColorCtrl.color = data.Layer
-
-
-
 
     def _toggle_cursor(self):
         if self.cursorColorCtrl.color.alpha() > 0:
@@ -416,9 +411,9 @@ class ZLineEdit(ZWidget):
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
-        if self.layerColorCtrl.color.alpha() > 0:
+        if self.opacityEffectCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self.layerColorCtrl.color)
+            painter.setBrush(self.opacityEffectCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
         if self.underlineColorCtrl.color.alpha() > 0:
             underline_h = self.underlineWeightCtrl.value
@@ -644,11 +639,11 @@ class ZLineEdit(ZWidget):
 
     def enterEvent(self, event):
         super().enterEvent(event)
-        self.layerColorCtrl.setAlphaFTo(0.03)
+        self.opacityEffectCtrl.setAlphaFTo(0.04)
 
     def leaveEvent(self, event):
         super().leaveEvent(event)
-        self.layerColorCtrl.toTransparent()
+        self.opacityEffectCtrl.toTransparent()
 
 # import sys
 # if __name__ == '__main__':

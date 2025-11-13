@@ -1,6 +1,6 @@
 from typing import cast
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve,QObject,QRect
+from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve,QObject,QRect,QElapsedTimer
 from PySide6.QtGui import QPainter,QColor
 
 __All__ = ['ZFlashLayer', 'ZOpacityLayer']
@@ -18,7 +18,7 @@ class ABCAnimatedEffect(QObject):
 
     def getAlphaF(self) -> float: return self._color.alphaF()
 
-    def setAlphaF(self, opacity: float): self._color.setAlphaF(opacity); self.parent().update()
+    def setAlphaF(self, opacity: float): self._color.setAlphaF(min(1.0, max(0.0, opacity))); self.parent().update()
 
     alphaF: float = cast(float, Property(float, getAlphaF, setAlphaF))
 
@@ -38,14 +38,18 @@ class ZFlashEffect(ABCAnimatedEffect):
     def __init__(self, parent):
         super().__init__(parent)
         self._anim.setDuration(500)
+        self._cd_timer = QElapsedTimer()
+        self._min_interval = 120
 
-    def flash(self, start: float|int = 0.2,/,duration: int = 500):
+    def flash(self, start: float|int = 0.2,duration: int = 500):
+        if self._cd_timer.isValid() and self._cd_timer.elapsed() < self._min_interval: return
         self._anim.stop()
         self._anim.setDuration(duration)
         if type(start) == int: start = start/255
         self._anim.setStartValue(start)
         self._anim.setEndValue(0.0)
         self._anim.start()
+        self._cd_timer.start()
 
     def drawFlashLayer(self, painter: QPainter, rect: QRect, radius: float,/):
         if self._color.alpha() <= 0: return

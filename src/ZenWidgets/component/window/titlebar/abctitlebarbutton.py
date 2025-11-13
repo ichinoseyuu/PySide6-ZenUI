@@ -1,8 +1,10 @@
 from enum import Enum
 from PySide6.QtCore import Qt,Signal,QEvent,Slot
-from PySide6.QtGui import QMouseEvent,QEnterEvent
+from PySide6.QtGui import QMouseEvent,QEnterEvent,QColor
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import ZAnimatedColor
+from ZenWidgets.component.base import ZStyleController
+from ZenWidgets.gui import ZTitleBarButtonStyleData
 
 class ZABCTitleBarButton(QWidget):
     entered = Signal()
@@ -26,20 +28,23 @@ class ZABCTitleBarButton(QWidget):
         self.released.connect(self.releaseHandler)
         self.clicked.connect(self.clickHandler)
         self._state = self.State.Idle
-        self._layerColorCtrl = ZAnimatedColor(self)
+        self._layerColorCtrl = ZAnimatedColor(self, QColor(140, 140, 140, 0))
         self._iconColorCtrl = ZAnimatedColor(self)
-
+        self._styleCtrl = ZStyleController[ZTitleBarButtonStyleData](self, 'ZTitleBarButton')
+        self._styleCtrl.styleChanged.connect(self._style_change_handler_)
     # region Property
     def state(self) -> State: return self._state
 
     # region Func
     def isPressed(self) -> bool: return self._state == self.State.Pressed
 
-    def _init_style_(self): ...
+    def _init_style_(self):
+        self._iconColorCtrl.color = self._styleCtrl.data.Icon
 
     # region Slot
     @Slot()
-    def _style_change_handler_(self):...
+    def _style_change_handler_(self):
+        self._iconColorCtrl.setColorTo(self._styleCtrl.data.Icon)
 
     @Slot()
     def hoverHandler(self): ...

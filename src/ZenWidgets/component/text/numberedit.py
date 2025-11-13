@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QApplication,QWidget
 from PySide6.QtCore import Signal,QSize,QTimer,QPoint,QPointF,QRectF,Qt
 from PySide6.QtGui import QFontMetrics,QFont,QWheelEvent,QMouseEvent,QPainterPath,QPainter,QKeyEvent,QPen
 from ZenWidgets.component.base import (
+    ZOpacityEffect,
     ZAnimatedColor,
     QAnimatedFloat,
     ZStyleController,
@@ -13,25 +14,25 @@ from ZenWidgets.component.base import (
 )
 from ZenWidgets.core import ZDebug
 
-from ZenWidgets.gui import ZNumberEditStyleData,ZPalette
+from ZenWidgets.gui import ZNumberEditStyleData
 
 class ZNumberEdit(ZWidget):
     editingFinished = Signal()
     textChanged = Signal(str)
 
+    bodyColorCtrl: ZAnimatedColor
+    borderColorCtrl: ZAnimatedColor
+    radiusCtrl: QAnimatedFloat
+    opacityEffectCtrl: ZOpacityEffect
     textColorCtrl: ZAnimatedColor
     textBackColorCtrl: ZAnimatedColor
     cursorColorCtrl: ZAnimatedColor
     underlineColorCtrl: ZAnimatedColor
     underlineWeightCtrl: QAnimatedFloat
-    bodyColorCtrl: ZAnimatedColor
-    borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
-    layerColorCtrl: ZAnimatedColor
     styleDataCtrl: ZStyleController[ZNumberEditStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZNumberEdit'},
-        'radiusCtrl': {'value': 5.0},
+        'radiusCtrl': {'value': 4.0},
         'underlineWeightCtrl': {'value': 1.3},
     }
 
@@ -52,7 +53,7 @@ class ZNumberEdit(ZWidget):
                          minimumSize=minimumSize,
                          font=font
                          )
-        self.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self._text = text
         self._selected_text = ""
         self._allow_decimal = allow_decimal
@@ -73,8 +74,8 @@ class ZNumberEdit(ZWidget):
         self._undo_timer = QTimer(singleShot=True)
         self._undo_timer.timeout.connect(self._commit_undo)
         self._pending_undo = None
-        self.cursorColorCtrl.animation.setDuration(500)
-        self.cursorColorCtrl.animation.finished.connect(self._toggle_cursor)
+        self.cursorColorCtrl.animationAlpha.setDuration(500)
+        self.cursorColorCtrl.animationAlpha.finished.connect(self._toggle_cursor)
         self._init_style_()
 
 
@@ -187,8 +188,6 @@ class ZNumberEdit(ZWidget):
         self.textBackColorCtrl.color = data.TextBackSectcted
         self.cursorColorCtrl.color = data.Cursor
         self.underlineColorCtrl.color = data.Underline
-        self.layerColorCtrl.color = data.Layer
-
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
@@ -202,8 +201,6 @@ class ZNumberEdit(ZWidget):
         self.borderColorCtrl.setColorTo(data.Border)
         self.textColorCtrl.setColorTo(data.Text)
         self.textBackColorCtrl.setColorTo(data.TextBackSectcted)
-        self.layerColorCtrl.color = data.Layer
-
 
     def _validate_text(self, text: str) -> str:
         if not text: return ""
@@ -521,9 +518,9 @@ class ZNumberEdit(ZWidget):
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
-        if self.layerColorCtrl.color.alpha() > 0:
+        if self.opacityEffectCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(self.layerColorCtrl.color)
+            painter.setBrush(self.opacityEffectCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
         if self.underlineColorCtrl.color.alpha() > 0:
             underline_h = self.underlineWeightCtrl.value
@@ -668,19 +665,20 @@ class ZNumberEdit(ZWidget):
 
     def enterEvent(self, event):
         super().enterEvent(event)
-        self.layerColorCtrl.setAlphaFTo(0.03)
+        self.opacityEffectCtrl.setAlphaFTo(0.04)
 
     def leaveEvent(self, event):
         super().leaveEvent(event)
-        self.layerColorCtrl.toTransparent()
+        self.opacityEffectCtrl.toTransparent()
 
     def wheelEvent(self, event: QWheelEvent):
         super().wheelEvent(event)
-        delta = event.angleDelta().y()
-        if delta > 0:
-            self.increase()
-        else:
-            self.decrease()
+        if self.hasFocus():
+            delta = event.angleDelta().y()
+            if delta > 0:
+                self.increase()
+            else:
+                self.decrease()
         event.accept()
 
 # import sys

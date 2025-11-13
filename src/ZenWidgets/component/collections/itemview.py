@@ -1,8 +1,10 @@
+from typing import cast
 from PySide6.QtGui import QPainter,QFont,QPen,QIcon,QPixmap
 from PySide6.QtCore import Qt,QRect,QSize,QRectF,Signal,QMargins,QPoint,QEvent
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.layout import ZVBoxLayout
 from ZenWidgets.component.base import (
+    ZOpacityEffect,
     ZAnimatedColor,
     QAnimatedFloat,
     ZAnimatedOpacity,
@@ -22,15 +24,17 @@ from ZenWidgets.gui import ZItemStyleData, ZItemViewStyleData
 # region ZItem
 class ZItem(ABCToggleButton):
     indicatorWidth = 3
-    layerColorCtrl: ZAnimatedColor
+    opacityEffectCtrl: ZOpacityEffect
     radiusCtrl: QAnimatedFloat
     textColorCtrl: ZAnimatedColor
     iconColorCtrl: ZAnimatedColor
     indicatorColorCtrl: ZAnimatedColor
     opacityCtrl: ZAnimatedOpacity
     styleDataCtrl: ZStyleController[ZItemStyleData]
-    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZItem'}}
-
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{'key': 'ZItem'},
+        'radiusCtrl': {'value': 4.0},
+    }
     def __init__(self,
                  parent: QWidget = None,
                  text: str | None = None,
@@ -103,11 +107,9 @@ class ZItem(ABCToggleButton):
     # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
-        self.layerColorCtrl.color = data.Layer
         self.textColorCtrl.color = data.Text
         self.iconColorCtrl.color = data.Icon
         self.indicatorColorCtrl.color = data.Indicator
-        self.radiusCtrl.value = 5.0
         if self._checked:
             self.indicatorColorCtrl.opaque()
         else:
@@ -116,7 +118,6 @@ class ZItem(ABCToggleButton):
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
         self.indicatorColorCtrl.color = data.Indicator
-        self.layerColorCtrl.color = data.Layer
         self.textColorCtrl.setColorTo(data.Text)
         self.iconColorCtrl.setColorTo(data.Icon)
         if self._checked:
@@ -126,18 +127,19 @@ class ZItem(ABCToggleButton):
 
     # region slot
     def _hover_handler_(self):
-        self.layerColorCtrl.setAlphaTo(16)
+        self.opacityEffectCtrl.setAlphaFTo(0.11)
 
     def _leave_handler_(self):
-        self.layerColorCtrl.setAlphaTo(0)
+        self.opacityEffectCtrl.toTransparent()
 
     def _press_handler_(self):
-        self.layerColorCtrl.setAlphaTo(10)
+        self.opacityEffectCtrl.setAlphaFTo(0.16)
 
     def _release_handler_(self):
-        self.layerColorCtrl.setAlphaTo(16)
+        self.opacityEffectCtrl.setAlphaFTo(0.11)
 
     def _toggle_handler_(self, checked):
+        self.opacityEffectCtrl.toTransparent()
         if checked:
             self.indicatorColorCtrl.toOpaque()
         else:
@@ -156,10 +158,7 @@ class ZItem(ABCToggleButton):
 
         rect = self.rect()
         radius = self.radiusCtrl.value
-        if self.layerColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.layerColorCtrl.color)
-            painter.drawRoundedRect(rect, radius, radius)
+        self.opacityEffectCtrl.drawOpacityLayer(painter, rect, radius)
 
         p = self._padding
         fm = self.fontMetrics()
@@ -221,42 +220,42 @@ class ViewContent(ZWidget):
     borderColorCtrl: ZAnimatedColor
     radiusCtrl: QAnimatedFloat
     styleDataCtrl: ZStyleController[ZItemViewStyleData]
-    __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZItemView'}}
-
+    __controllers_kwargs__ = {
+        'styleDataCtrl':{'key': 'ZItemView'},
+        'radiusCtrl': {'value': 5.0},
+    }
     def __init__(self, parent: QWidget, items: list[str] = None):
         super().__init__(parent)
-        self._items: list[str] = items
+        self._items: list[str] = items or []
         self._layout = ZVBoxLayout(
             parent=self,
             margins=QMargins(4, 4, 4, 4),
             spacing=2)
         self._item_group = ZButtonGroup(self)
-        self._item_group.clicked.connect(self._item_clicked_handler_)
+        self._item_group.toggled.connect(self._item_toggle_handler_)
 
         self._init_style_()
         self._init_items_()
 
-    def items(self) -> list[ZItem]:
-        return self._item_group.buttons()
-
     def addItem(self, text: str):
-        self._items.append(text)
         item = ZItem(self, text=text)
         self._layout.addWidget(item)
-        self._item_group.addButton(item)
+        self._item_group.addButton(item, set_first_checked=False)
+        self._items.append(text)  # 直接在这里添加
         self.resize(self.sizeHint())
 
     def addItems(self, texts: list[str]):
         for text in texts:
-            self._items.append(text)
             item = ZItem(self, text=text)
             self._layout.addWidget(item)
-            self._item_group.addButton(item)
+            self._item_group.addButton(item, set_first_checked=False)
+            self._items.append(text)
         self.resize(self.sizeHint())
 
     def removeItem(self, text: str):
         for item in self._item_group.buttons():
-            if isinstance(item, ZItem) and item.text() == text:
+            item = cast(ZItem, item)
+            if item.text() == text:
                 self._items.remove(text)
                 item.clicked.disconnect()
                 item.deleteLater()
@@ -265,42 +264,31 @@ class ViewContent(ZWidget):
                 break
         self.resize(self.sizeHint())
 
-    def selectItem(self, text: str):
+    def toggleTo(self, text: str):
         for item in self._item_group.buttons():
-            if isinstance(item, ZItem) and item.text() == text:
-                self._item_group.checkedButton().setChecked(False)
+            item = cast(ZItem, item)
+            if item.text() == text:
+                try:self._item_group.checkedButton().setChecked(False)
+                except:pass
                 item.setChecked(True)
+                break
 
     def sizeHint(self):
-        total_height = 0
-        # 加上布局边距
-        total_height += self._layout.contentsMargins().top() + self._layout.contentsMargins().bottom()
-
-        # 加上所有item高度和间距
-        item_count = self._layout.count()
-        for i in range(item_count):
-            item = self._layout.itemAt(i).widget()
-            if isinstance(item, ZItem):
-                total_height += item.sizeHint().height()
-
-        # 加上间距
-        if item_count > 0:
-            total_height += self._layout.spacing() * (item_count - 1)
-
+        total_height = self._layout.contentsMargins().top() + self._layout.contentsMargins().bottom()
+        total_height += sum(cast(ZItem, self._layout.itemAt(i).widget()).sizeHint().height() for i in range(self._layout.count()))
+        if self._layout.count() > 0:
+            total_height += self._layout.spacing() * (self._layout.count() - 1)
         return QSize(self.width(), total_height)
 
     def parent(self) -> 'ZItemView':
         return super().parent()
-
 
     # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
         self.borderColorCtrl.color = data.Border
-        self.radiusCtrl.value = 5.0
         self.update()
-
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
@@ -317,11 +305,9 @@ class ViewContent(ZWidget):
             self._item_group.addButton(item)
         self.resize(self.sizeHint())
 
-
-    def _item_clicked_handler_(self):
-        checked_item = self._item_group.checkedButton()
-        if isinstance(checked_item, ZItem):
-            self.parent().selected.emit(checked_item._text)
+    def _item_toggle_handler_(self):
+        checked_item = cast(ZItem, self._item_group.checkedButton())
+        self.parent().selected.emit(checked_item._text)
         self.parent().windowOpacityCtrl.fadeOut()
 
     # region event
@@ -346,40 +332,17 @@ class ViewContent(ZWidget):
 # region ZItemView
 class ZItemView(ZWidget):
     selected = Signal(str)
-    def __init__(self,target: QWidget = None,items: list[str] = None):
+    def __init__(self, target: QWidget = None,items: list[str] = None):
         super().__init__(f=Qt.WindowType.FramelessWindowHint|Qt.WindowType.Tool|Qt.WindowType.WindowStaysOnTopHint)
         self._target: QWidget = target
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self._content = ViewContent(self, items)
-        self._content.setFixedWidth(self._target.sizeHint().width()+self._content.layout().contentsMargins().left()+ZItem.indicatorWidth)
         self._margin = ZMargin(8, 8, 8, 8)
         self.windowOpacityCtrl.animation.setBias(0.02)
         self.windowOpacityCtrl.animation.setFactor(0.2)
         self.windowOpacityCtrl.completelyHide.connect(self._completely_hide_)
         self.resize(self.sizeHint())
         ZQuickEffect.applyDropShadowOn(widget=self._content,color=(0, 0, 0, 40),blur_radius=12)
-
-    def content(self): return self._content
-
-    def selectedItem(self): return self._content._item_group.checkedButton()
-
-    def getSlectedItem(self): return self._content._item_group.checkedButton()
-
-    def parent(self): return self._target
-
-    def target(self): return self._target
-
-    def sizeHint(self):
-        return self._content.sizeHint() + QSize(self._margin.horizontal, self._margin.vertical)
-
-    def show(self):
-        super().show()
-        self.move(self._get_ancher_position_())
-        self.widgetSizeCtrl.resizeFromTo(QSize(self.width(),0),self.sizeHint())
-        self.setFocus(Qt.FocusReason.PopupFocusReason)
-        self.activateWindow()
-        self.raise_()
-
 
     def addItem(self, text: str):
         self._content.addItem(text)
@@ -393,9 +356,22 @@ class ZItemView(ZWidget):
         self._content.removeItem(text)
         self.resize(self.sizeHint())
 
-    def selectItem(self, text: str):
-        self._content.selectItem(text)
+    def toggleTo(self, text: str):
+        self._content.toggleTo(text)
 
+    def parent(self): return self._target
+
+    def sizeHint(self):
+        return self._content.sizeHint() + QSize(self._margin.horizontal, self._margin.vertical)
+
+    def show(self):
+        self._content.setFixedWidth(self._target.sizeHint().width()+self._content.layout().contentsMargins().left()+ZItem.indicatorWidth)
+        super().show()
+        self.move(self._get_ancher_position_())
+        self.widgetSizeCtrl.resizeFromTo(QSize(self.width(),0),self.sizeHint())
+        self.setFocus(Qt.FocusReason.PopupFocusReason)
+        self.activateWindow()
+        self.raise_()
 
     # region event
     def resizeEvent(self, event):
@@ -421,13 +397,11 @@ class ZItemView(ZWidget):
         """获取锚点位置"""
         target = self._target
         checked_item = self._content._item_group.checkedButton()
-        offset = QPoint(
-            self._margin.left + ZItem.indicatorWidth,
-            self._margin.top - (target.height() - checked_item.height())//2
-            )
+        offset = QPoint(self._margin.left + ZItem.indicatorWidth,self._margin.top - target.height())
+        if not checked_item: return target.mapToGlobal(target.rect().topLeft()) - offset
+        offset += QPoint(0, (target.height() + checked_item.height())//2)
         parent_pos = target.mapToGlobal(target.rect().topLeft())
         return parent_pos - checked_item.geometry().topLeft() - offset
 
     def _completely_hide_(self):
         self.hide()
-        self.close()

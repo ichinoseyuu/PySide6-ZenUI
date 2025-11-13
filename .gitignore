@@ -4,6 +4,7 @@ __pycache__/
 test/
 src/ZenWidgets.egg-info
 src/_legacy/
+MouseClickSimulator/
 zen_bieganmao/bieganmao.jpg
 zen_bieganmao/image.qrc
 zen_widget_gallery/image

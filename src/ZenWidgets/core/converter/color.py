@@ -13,18 +13,19 @@ class ColorConverter:
             return ColorConverter._normalize_array(color)
 
         if isinstance(color, QColor):
+            new_color = QColor(color)
             return numpy.array([
-                color.alpha(),
-                color.red(),
-                color.green(),
-                color.blue()
+                new_color.alpha(),
+                new_color.red(),
+                new_color.green(),
+                new_color.blue()
             ], dtype=numpy.int16)
 
         if isinstance(color, (tuple, list)):
             return ColorConverter._normalize_array(numpy.array(color))
 
         if isinstance(color, str):
-            if not ColorConverter.is_valid(color):
+            if not ColorConverter.isValid(color):
                 raise ValueError(f"Invalid color string: {color}")
             code = color.lstrip('#')
             if len(code) == 6:  # RGB -> ARGB
@@ -176,7 +177,7 @@ class ColorConverter:
         return cls._to_output(result, output_type)
 
     @classmethod
-    def set_alpha(
+    def setAlpha(
         cls,
         color: Union[str, QColor, numpy.ndarray, tuple, list],
         alpha: Union[float, int],
@@ -190,6 +191,6 @@ class ColorConverter:
         return cls._to_output(arr, output_type)
 
     @staticmethod
-    def is_valid(color: str) -> bool:
+    def isValid(color: str) -> bool:
         """验证颜色字符串格式"""
         return bool(re.match(r"^#([0-9a-fA-F]{8}|[0-9a-fA-F]{6})$", color))

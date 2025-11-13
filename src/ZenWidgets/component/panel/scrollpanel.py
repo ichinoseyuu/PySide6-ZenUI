@@ -184,9 +184,7 @@ class ZScrollPanel(ZWidget):
                  objectName: str | None = None,
                  ):
         super().__init__(parent,
-                         objectName=objectName,
-                         focusPolicy=Qt.FocusPolicy.WheelFocus
-                         )
+                         objectName=objectName)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._content = ScrollContent(self)
         self._last_v_handle_pos: float = 0.0
@@ -263,7 +261,6 @@ class ZScrollPanel(ZWidget):
 
 
     def wheelEvent(self, event: QWheelEvent):
-        if not self.hasFocus(): return
         current_x = -self._content.x()
         current_y = -self._content.y()
         if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:

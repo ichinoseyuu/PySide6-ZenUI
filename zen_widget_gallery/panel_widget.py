@@ -47,7 +47,7 @@ class PanelWidget(ZScrollPanel):
                 )
             )
 
-        self.btn_2 = ZButton(container, icon=btn_icon)
+        self.btn_2 = ZButton(container, text='保存', style=ZStyle.Flat)
         container.addWidget(self.btn_2, spacing=16)
         self.btn_2.clicked.connect(
             lambda: ZGlobal.tooltip.showTip(
@@ -60,7 +60,7 @@ class PanelWidget(ZScrollPanel):
                 )
             )
 
-        self.btn_3 = ZButton(container, icon=btn_icon, text='保存')
+        self.btn_3 = ZButton(container, icon=btn_icon, text='保存', style=ZStyle.Flat)
         container.addWidget(self.btn_3, spacing=16)
         self.btn_3.clicked.connect(
             lambda: ZGlobal.tooltip.showTip(
@@ -73,7 +73,7 @@ class PanelWidget(ZScrollPanel):
                 )
             )
 
-        self.btn_4 = ZButton(container, text='保存')
+        self.btn_4 = ZButton(container, icon=btn_icon)
         container.addWidget(self.btn_4, spacing=16)
         self.btn_4.clicked.connect(
             lambda: ZGlobal.tooltip.showTip(
@@ -85,6 +85,62 @@ class PanelWidget(ZScrollPanel):
                 hide_delay=800
                 )
             )
+
+        self.btn_5 = ZButton(container, icon=btn_icon, text='保存')
+        container.addWidget(self.btn_5, spacing=16)
+        self.btn_5.clicked.connect(
+            lambda: ZGlobal.tooltip.showTip(
+                text='保存成功',
+                target=self.btn_5,
+                mode=ZToolTip.Mode.TrackTarget,
+                position=ZPosition.Top,
+                offset=QPoint(0, 6),
+                hide_delay=800
+                )
+            )
+
+        self.btn_6 = ZButton(container, text='保存')
+        container.addWidget(self.btn_6, spacing=16)
+        self.btn_6.clicked.connect(
+            lambda: ZGlobal.tooltip.showTip(
+                text='保存成功',
+                target=self.btn_6,
+                mode=ZToolTip.Mode.TrackTarget,
+                position=ZPosition.Top,
+                offset=QPoint(0, 6),
+                hide_delay=800
+                )
+            )
+
+        # region ZToggleButton
+        card = ZCard(self)
+        self.layout().addWidget(card, stretch=0)
+
+        title = ZHeadLine(card, text= 'ZToggleButton')
+        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
+        card.layout().addWidget(title)
+
+        container = ZHContainer(card)
+        card.layout().addWidget(container)
+
+        self.toggle_btn_1 = ZToggleButton(container, icon=btn_icon, style=ZStyle.Flat)
+        container.addWidget(self.toggle_btn_1, spacing=16)
+
+        self.toggle_btn_2 = ZToggleButton(container, text='自动保存', style=ZStyle.Flat)
+        container.addWidget(self.toggle_btn_2, spacing=16)
+
+        self.toggle_btn_3 = ZToggleButton(container, icon=btn_icon, text='自动保存', style=ZStyle.Flat)
+        container.addWidget(self.toggle_btn_3, spacing=16)
+
+        self.toggle_btn_4 = ZToggleButton(container, icon=btn_icon)
+        self.toggle_btn_4.setToolTip('自动保存')
+        container.addWidget(self.toggle_btn_4, spacing=16)
+
+        self.toggle_btn_5 = ZToggleButton(container, icon=btn_icon, text='自动保存')
+        container.addWidget(self.toggle_btn_5, spacing=16)
+
+        self.toggle_btn_6 = ZToggleButton(container, text='自动保存')
+        container.addWidget(self.toggle_btn_6, spacing=16)
 
         # region ZRepeatButton
         card = ZCard(self)
@@ -100,15 +156,24 @@ class PanelWidget(ZScrollPanel):
         info_repeat = ZHeadLine(container, text= '连续点击次数: 0')
         container.addWidget(info_repeat)
 
-        self.repeat_btn_1 = ZRepeatButton(container, text='长按连点')
+        self.repeat_btn_1 = ZRepeatButton(container, text='长按连点',style=ZStyle.Flat)
         container.addWidget(self.repeat_btn_1)
         self.repeat_btn_1.clicked.connect(
             lambda: info_repeat.setText(f'连续点击次数: {self.repeat_btn_1.repeatCount()}',flash=True)
             )
 
+        self.repeat_btn_2 = ZRepeatButton(container, text='长按连点')
+        container.addWidget(self.repeat_btn_2)
+        self.repeat_btn_2.clicked.connect(
+            lambda: info_repeat.setText(f'连续点击次数: {self.repeat_btn_2.repeatCount()}',flash=True)
+            )
+
         # region ZLongPressButton
+        layout = ZHBoxLayout(margins=QMargins(0, 0, 0, 0), spacing=30)
+        self.layout().addLayout(layout)
+
         card = ZCard(self)
-        self.layout().addWidget(card)
+        layout.addWidget(card)
 
         title = ZHeadLine(card, text= 'ZLongPressButton')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
@@ -128,7 +193,7 @@ class PanelWidget(ZScrollPanel):
 
         # region ZProgressButton
         card = ZCard(self)
-        self.layout().addWidget(card)
+        layout.addWidget(card)
 
         title = ZHeadLine(card, text= 'ZProgressButton')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
@@ -145,34 +210,12 @@ class PanelWidget(ZScrollPanel):
         self.progress_btn.progressChanged.connect(lambda x: info_progress.setText(f"进度: {x*100:.2f} %",flash=True))
         container.addWidget(self.progress_btn)
 
-
-        # region ZToggleButton
-        card = ZCard(self)
-        self.layout().addWidget(card, stretch=0)
-
-        title = ZHeadLine(card, text= 'ZToggleButton')
-        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
-        card.layout().addWidget(title)
-
-        container = ZHContainer(card)
-        card.layout().addWidget(container)
-
-        self.toggle_btn_1 = ZToggleButton(container, icon=btn_icon,style=ZStyle.Flat)
-        container.addWidget(self.toggle_btn_1, spacing=16)
-
-        self.toggle_btn_2 = ZToggleButton(container, icon=btn_icon)
-        self.toggle_btn_2.setToolTip('自动保存')
-        container.addWidget(self.toggle_btn_2, spacing=16)
-
-        self.toggle_btn_3 = ZToggleButton(container, icon=btn_icon, text='自动保存')
-        container.addWidget(self.toggle_btn_3, spacing=16)
-
-        self.toggle_btn_4 = ZToggleButton(container, text='自动保存')
-        container.addWidget(self.toggle_btn_4, spacing=16)
-
         # region ZSwitch
+        layout = ZHBoxLayout(margins=QMargins(0, 0, 0, 0), spacing=30)
+        self.layout().addLayout(layout)
+
         card = ZCard(self)
-        self.layout().addWidget(card)
+        layout.addWidget(card)
 
         title = ZHeadLine(card, text= 'ZSwitch')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
@@ -193,7 +236,7 @@ class PanelWidget(ZScrollPanel):
 
         # region ZComboBox
         card = ZCard(self)
-        self.layout().addWidget(card)
+        layout.addWidget(card)
 
         title = ZHeadLine(card, text= 'ZComboBox')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
@@ -253,8 +296,11 @@ class PanelWidget(ZScrollPanel):
         container.addWidget(self.lineedit_4)
 
         # region ZLoginEdit
+        layout = ZHBoxLayout(margins=QMargins(0, 0, 0, 0), spacing=30)
+        self.layout().addLayout(layout)
+
         card = ZCard(self)
-        self.layout().addWidget(card, stretch=0)
+        layout.addWidget(card, stretch=0)
 
         title = ZHeadLine(card, text= 'ZLoginEdit')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
@@ -283,7 +329,7 @@ class PanelWidget(ZScrollPanel):
 
         # region ZNumberEdit
         card = ZCard(self)
-        self.layout().addWidget(card, stretch=0)
+        layout.addWidget(card, stretch=0)
 
         title = ZHeadLine(card, text= 'ZNumberEdit')
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))

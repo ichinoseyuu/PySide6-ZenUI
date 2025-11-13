@@ -67,10 +67,10 @@ class PanelInfo(ZScrollPanel):
         self.headline_5 = ZHeadLine(hcontainer_3, text='位置偏移：')
         hcontainer_3.addWidget(self.headline_5)
 
-        self.numberedit_2 = ZNumberEdit(hcontainer_3,integer_digits=2,step=1,allow_negative=True,minimumSize=QSize(100, 30))
+        self.numberedit_2 = ZNumberEdit(hcontainer_3,text='6',integer_digits=2,step=1,allow_negative=True,minimumSize=QSize(100, 30))
         hcontainer_3.addWidget(self.numberedit_2)
 
-        self.numberedit_3 = ZNumberEdit(hcontainer_3,integer_digits=2,step=1,allow_negative=True,minimumSize=QSize(100, 30))
+        self.numberedit_3 = ZNumberEdit(hcontainer_3,text='6',integer_digits=2,step=1,allow_negative=True,minimumSize=QSize(100, 30))
         hcontainer_3.addWidget(self.numberedit_3)
 
         hcontainer_4 = ZHContainer(card)

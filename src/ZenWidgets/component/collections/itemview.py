@@ -6,26 +6,25 @@ from ZenWidgets.component.layout import ZVBoxLayout
 from ZenWidgets.component.base import (
     ZOpacityEffect,
     ZAnimatedColor,
-    QAnimatedFloat,
+    ZAnimatedFloat,
     ZAnimatedOpacity,
     ZStyleController,
     ZWidget,
     ZButtonGroup,
-    ZPadding,
-    ZMargin,
     ABCToggleButton
 )
 from ZenWidgets.core import (
     ZDebug,
-    ZQuickEffect,
+    ZMargin,
+    ZPadding
 )
-from ZenWidgets.gui import ZItemStyleData, ZItemViewStyleData
+from ZenWidgets.gui import ZItemStyleData, ZItemViewStyleData,ZWidgetEffect
 
 # region ZItem
 class ZItem(ABCToggleButton):
     indicatorWidth = 3
     opacityEffectCtrl: ZOpacityEffect
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
     textColorCtrl: ZAnimatedColor
     iconColorCtrl: ZAnimatedColor
     indicatorColorCtrl: ZAnimatedColor
@@ -57,34 +56,63 @@ class ZItem(ABCToggleButton):
         self._init_style_()
         self.resize(self.sizeHint())
 
+    # region private method
+    def _init_style_(self):
+        data = self.styleDataCtrl.data
+        self.textColorCtrl.color = data.Text
+        self.iconColorCtrl.color = data.Icon
+        self.indicatorColorCtrl.color = data.Indicator
+        self.indicatorColorCtrl.opaque() if self._checked else self.indicatorColorCtrl.transparent()
+
+    def _style_change_handler_(self):
+        data = self.styleDataCtrl.data
+        self.indicatorColorCtrl.color = data.Indicator
+        self.textColorCtrl.setColorTo(data.Text)
+        self.iconColorCtrl.setColorTo(data.Icon)
+        self.indicatorColorCtrl.toOpaque() if self._checked else self.indicatorColorCtrl.toTransparent()
+
+    def _mouse_enter_(self): self.opacityEffectCtrl.setAlphaFTo(0.11)
+
+    def _mouse_leave_(self): self.opacityEffectCtrl.toTransparent()
+
+    def _mouse_press_(self): self.opacityEffectCtrl.setAlphaFTo(0.16)
+
+    def _mouse_release_(self): self.opacityEffectCtrl.setAlphaFTo(0.11)
+
+    def _button_toggle_(self):
+        self.opacityEffectCtrl.toTransparent()
+        self.indicatorColorCtrl.toOpaque() if self._checked else self.indicatorColorCtrl.toTransparent()
+
     # region public method
     def text(self) -> str: return self._text
 
-    def setText(self, t: str) -> None:
-        self._text = t
-        self.update()
+    def icon(self) -> QIcon: return QIcon(self._icon)
 
-    def icon(self) -> QIcon: return self._icon
-
-    def setIcon(self, i: QIcon) -> None:
-        self._icon = i
-        self.update()
-
-    def iconSize(self) -> QSize: return self._icon_size
-
-    def setIconSize(self, s: QSize) -> None:
-        self._icon_size = s
-        self.update()
+    def iconSize(self) -> QSize: return QSize(self._icon_size)
 
     def spacing(self) -> int: return self._spacing
 
+    def padding(self) -> ZPadding: return self._padding
+
+    def setText(self, t: str) -> None:
+        if self._text == t: return
+        self._text = t
+        self.update()
+
+    def setIcon(self, i: QIcon) -> None: self._icon = i; self.update()
+
+    def setIconSize(self, s: QSize) -> None:
+        if self._icon_size == s: return
+        self._icon_size = s
+        self.update()
+
     def setSpacing(self, s: int) -> None:
+        if self._spacing == s: return
         self._spacing = s
         self.update()
 
-    def padding(self) -> ZPadding: return self._padding
-
     def setPadding(self, p: ZPadding) -> None:
+        if self._padding == p: return
         self._padding = p
         self.update()
 
@@ -102,48 +130,6 @@ class ZItem(ABCToggleButton):
         min_height = 26
         total_height = max(total_height, min_height)
         return QSize(self.width(), total_height)
-
-
-    # region private method
-    def _init_style_(self):
-        data = self.styleDataCtrl.data
-        self.textColorCtrl.color = data.Text
-        self.iconColorCtrl.color = data.Icon
-        self.indicatorColorCtrl.color = data.Indicator
-        if self._checked:
-            self.indicatorColorCtrl.opaque()
-        else:
-            self.indicatorColorCtrl.transparent()
-
-    def _style_change_handler_(self):
-        data = self.styleDataCtrl.data
-        self.indicatorColorCtrl.color = data.Indicator
-        self.textColorCtrl.setColorTo(data.Text)
-        self.iconColorCtrl.setColorTo(data.Icon)
-        if self._checked:
-            self.indicatorColorCtrl.toOpaque()
-        else:
-            self.indicatorColorCtrl.toTransparent()
-
-    # region slot
-    def _hover_handler_(self):
-        self.opacityEffectCtrl.setAlphaFTo(0.11)
-
-    def _leave_handler_(self):
-        self.opacityEffectCtrl.toTransparent()
-
-    def _press_handler_(self):
-        self.opacityEffectCtrl.setAlphaFTo(0.16)
-
-    def _release_handler_(self):
-        self.opacityEffectCtrl.setAlphaFTo(0.11)
-
-    def _toggle_handler_(self, checked):
-        self.opacityEffectCtrl.toTransparent()
-        if checked:
-            self.indicatorColorCtrl.toOpaque()
-        else:
-            self.indicatorColorCtrl.toTransparent()
 
    # region event
     def paintEvent(self, event):
@@ -218,7 +204,7 @@ class ZItem(ABCToggleButton):
 class ViewContent(ZWidget):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
     styleDataCtrl: ZStyleController[ZItemViewStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZItemView'},
@@ -332,17 +318,15 @@ class ViewContent(ZWidget):
 # region ZItemView
 class ZItemView(ZWidget):
     selected = Signal(str)
-    def __init__(self, target: QWidget = None,items: list[str] = None):
-        super().__init__(f=Qt.WindowType.FramelessWindowHint|Qt.WindowType.Tool|Qt.WindowType.WindowStaysOnTopHint)
-        self._target: QWidget = target
+    def __init__(self, target: ZWidget | QWidget | None = None, items: list[str] = None):
+        super().__init__(f=Qt.WindowType.FramelessWindowHint|Qt.WindowType.WindowStaysOnTopHint|Qt.WindowType.Tool)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setAttribute(Qt.WidgetAttribute.WA_ShowModal)
+        self._target: ZWidget|QWidget|None = target
         self._content = ViewContent(self, items)
         self._margin = ZMargin(8, 8, 8, 8)
-        self.windowOpacityCtrl.animation.setBias(0.02)
-        self.windowOpacityCtrl.animation.setFactor(0.2)
-        self.windowOpacityCtrl.completelyHide.connect(self._completely_hide_)
-        self.resize(self.sizeHint())
-        ZQuickEffect.applyDropShadowOn(widget=self._content,color=(0, 0, 0, 40),blur_radius=12)
+        self.windowOpacityCtrl.completelyHide.connect(self.hide)
+        ZWidgetEffect.applyDropShadowOn(widget=self._content,color=(0, 0, 0, 40),blur_radius=12)
 
     def addItem(self, text: str):
         self._content.addItem(text)
@@ -358,8 +342,6 @@ class ZItemView(ZWidget):
 
     def toggleTo(self, text: str):
         self._content.toggleTo(text)
-
-    def parent(self): return self._target
 
     def sizeHint(self):
         return self._content.sizeHint() + QSize(self._margin.horizontal, self._margin.vertical)
@@ -402,6 +384,3 @@ class ZItemView(ZWidget):
         offset += QPoint(0, (target.height() + checked_item.height())//2)
         parent_pos = target.mapToGlobal(target.rect().topLeft())
         return parent_pos - checked_item.geometry().topLeft() - offset
-
-    def _completely_hide_(self):
-        self.hide()

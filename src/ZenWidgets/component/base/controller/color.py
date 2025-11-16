@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ZenWidgets.component.window.framelesswindow import ZFramelessWindow
 
-__All__ = [
+__all__ = [
     'ABCAnimatedColor',
     'ZAnimatedColor',
     'ZAnimatedLinearGradient',
@@ -111,7 +111,7 @@ class ABCAnimatedColor(QObject):
 # region ZAnimatedColor
 class ZAnimatedColor(ABCAnimatedColor):
     '''具有原生属性动画的颜色控制器'''
-    def __init__(self, parent: QWidget, color: QColor = QColor('#202020')):
+    def __init__(self, parent: QWidget, color: QColor = QColor('#909090')):
         super().__init__(parent, color)
         self._anim = QPropertyAnimation(self, b'color')
         self._anim.setDuration(250)
@@ -135,7 +135,7 @@ class ZAnimatedColor(ABCAnimatedColor):
 # region ZAnimatedLinearGradient
 class ZAnimatedLinearGradient(QObject):
     '''具有原生属性动画的线性渐变颜色控制器'''
-    def __init__(self, parent: QWidget, startColor: QColor = QColor('#202020'), endColor: QColor = QColor('#202020')):
+    def __init__(self, parent: QWidget, startColor: QColor = QColor('#909090'), endColor: QColor = QColor('#909090')):
         super().__init__(parent)
         self._start = ZAnimatedColor(parent, startColor)
         self._end = ZAnimatedColor(parent, endColor)

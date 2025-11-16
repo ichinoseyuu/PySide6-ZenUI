@@ -6,13 +6,11 @@ from PySide6.QtGui import QFontMetrics,QFont,QWheelEvent,QMouseEvent,QPainterPat
 from ZenWidgets.component.base import (
     ZOpacityEffect,
     ZAnimatedColor,
-    QAnimatedFloat,
+    ZAnimatedFloat,
     ZStyleController,
-    ZWidget,
-    ZPadding,
-    ZTextCommand
+    ZWidget
 )
-from ZenWidgets.core import ZDebug
+from ZenWidgets.core import ZDebug,ZPadding,ZTextSnapshot
 
 from ZenWidgets.gui import ZNumberEditStyleData
 
@@ -22,13 +20,13 @@ class ZNumberEdit(ZWidget):
 
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
     opacityEffectCtrl: ZOpacityEffect
     textColorCtrl: ZAnimatedColor
     textBackColorCtrl: ZAnimatedColor
     cursorColorCtrl: ZAnimatedColor
     underlineColorCtrl: ZAnimatedColor
-    underlineWeightCtrl: QAnimatedFloat
+    underlineWeightCtrl: ZAnimatedFloat
     styleDataCtrl: ZStyleController[ZNumberEditStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZNumberEdit'},
@@ -68,8 +66,8 @@ class ZNumberEdit(ZWidget):
         self._focus_select_complete = False
         self._padding = ZPadding(6, 6, 6, 6)
         self._alignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
-        self._undo_stack: list[ZTextCommand] = []
-        self._redo_stack: list[ZTextCommand] = []
+        self._undo_stack: list[ZTextSnapshot] = []
+        self._redo_stack: list[ZTextSnapshot] = []
         self._max_undo = 20
         self._undo_timer = QTimer(singleShot=True)
         self._undo_timer.timeout.connect(self._commit_undo)
@@ -297,7 +295,7 @@ class ZNumberEdit(ZWidget):
 
     # region cut/copy/paste
     def _push_undo(self, old_text: str, new_text: str, old_pos: int, new_pos: int):
-        self._undo_stack.append(ZTextCommand(old_text, new_text, old_pos, new_pos))
+        self._undo_stack.append(ZTextSnapshot(old_text, new_text, old_pos, new_pos))
         if len(self._undo_stack) > self._max_undo:
             self._undo_stack.pop(0)
 
@@ -367,7 +365,7 @@ class ZNumberEdit(ZWidget):
         if not self._undo_stack:
             return
         cmd = self._undo_stack.pop()
-        self._redo_stack.append(ZTextCommand(cmd.old_text, self._text, cmd.old_pos, self._cursor_pos))
+        self._redo_stack.append(ZTextSnapshot(cmd.old_text, self._text, cmd.old_pos, self._cursor_pos))
         self._text = cmd.old_text
         self._cursor_pos = cmd.old_pos
         self._clear_selection()
@@ -381,7 +379,7 @@ class ZNumberEdit(ZWidget):
         if not self._redo_stack:
             return
         cmd = self._redo_stack.pop()
-        self._undo_stack.append(ZTextCommand(self._text, cmd.new_text, self._cursor_pos, cmd.new_pos))
+        self._undo_stack.append(ZTextSnapshot(self._text, cmd.new_text, self._cursor_pos, cmd.new_pos))
         self._text = cmd.new_text
         self._cursor_pos = cmd.new_pos
         self._clear_selection()

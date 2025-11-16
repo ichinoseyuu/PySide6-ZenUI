@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget,QSizePolicy
 from PySide6.QtCore import Qt,QRectF,QMargins
 from PySide6.QtGui import QPainter,QPen,QPainterPath
-from ZenWidgets.component.base import ZAnimatedColor,QAnimatedFloat,ZStyleController,ZWidget
+from ZenWidgets.component.base import ZAnimatedColor,ZAnimatedFloat,ZStyleController,ZWidget
 from ZenWidgets.component.layout import ZVBoxLayout,ZHBoxLayout
 from ZenWidgets.core import ZDebug
 from ZenWidgets.gui import ZCardStyleData
@@ -9,9 +9,9 @@ from ZenWidgets.gui import ZCardStyleData
 class ZCard(ZWidget):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
     shadowColorCtrl: ZAnimatedColor
-    shadowWidthCtrl: QAnimatedFloat
+    shadowWidthCtrl: ZAnimatedFloat
     styleDataCtrl: ZStyleController[ZCardStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZCard'},

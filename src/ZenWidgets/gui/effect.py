@@ -2,8 +2,10 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 
-class ZQuickEffect:
-    '''特效类，方便快速设置特效'''
+__all__ = ['ZWidgetEffect']
+
+class ZWidgetEffect:
+    '''特效类，方便快速设置 ZWidget 特效'''
     @staticmethod
     def applyDropShadowOn(widget: QWidget,
                           color: tuple[int, int, int, int]|None=None,

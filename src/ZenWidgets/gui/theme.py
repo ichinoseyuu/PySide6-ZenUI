@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication
 from enum import IntEnum
 from ZenWidgets.core.utils import Singleton
 
-__All__ = [
+__all__ = [
     'ZTheme',
     'ZThemeMode',
     'ZThemeManager'

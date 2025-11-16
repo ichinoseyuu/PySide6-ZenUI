@@ -9,7 +9,7 @@ if TYPE_CHECKING: from main import ZenBieGanMao
 class PopupMessage(ZWidget):
     bodyColorCtrl: ZAnimatedColor
     textColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
     def __init__(self,
                  backgroundColor: QColor,
                  text: str,
@@ -23,7 +23,7 @@ class PopupMessage(ZWidget):
         self.color_timer = QTimer(self)
         self.color_timer.timeout.connect(self.change_color)
         self.color_timer.start(1000)
-        ZQuickEffect.applyDropShadowOn(widget=self,color=(0, 0, 0, 40),blur_radius=12)
+        ZWidgetEffect.applyDropShadowOn(widget=self,color=(0, 0, 0, 40),blur_radius=12)
 
     def change_color(self):
         colors = self.parent().light_bg_color if ZGlobal.themeManager.getThemeName() == 'Light' else self.parent().dark_bg_color

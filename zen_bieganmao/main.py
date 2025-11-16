@@ -63,7 +63,7 @@ class ZenBieGanMao(ZStandardFramelessWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    mainwindow = ZenBieGanMao()
-    mainwindow.showFullScreen()
-    mainwindow.show()
+    window = ZenBieGanMao()
+    window.showFullScreen()
+    window.show()
     app.exec()

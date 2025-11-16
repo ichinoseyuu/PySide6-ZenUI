@@ -1,40 +1,251 @@
-# coding:utf-8
-from PySide6.QtCore import QEvent, Qt, QPoint
-from PySide6.QtGui import QIcon,QPainter
+from PySide6.QtCore import QEvent,Qt,QLineF,QPoint,QPointF,QSize
+from PySide6.QtGui import QPainter,QPen,QColor,QPainterPath,QIcon,QPixmap
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
-from ZenWidgets.component.text import ZHeadLine
 from ZenWidgets.component.window.win32utils import startSystemMove,toggleWindowState
-from ZenWidgets.component.window.titlebar.abctitlebarbutton import ZABCTitleBarButton
-from ZenWidgets.component.window.titlebar.closebutton import ZCloseButton
-from ZenWidgets.component.window.titlebar.maximizebutton import ZMaximizeButton
-from ZenWidgets.component.window.titlebar.minimizebutton import ZMinimizeButton
-from ZenWidgets.component.window.titlebar.themebutton import ZChangeThemeButton
-from ZenWidgets.core import ZDebug
+from ZenWidgets.component.base.abstract import ABCButton
+from ZenWidgets.component.base.controller import ZAnimatedColor,ZStyleController
+from ZenWidgets.component.text import ZHeadLine
+from ZenWidgets.core import ZDebug,ZGlobal,ZPosition
+from ZenWidgets.gui import ZTitleBarButtonStyleData,ZTheme
+
+__all__ = [
+    'ZTitleBarButton',
+    'CloseButton',
+    'MaximizeButton',
+    'MinimizeButton',
+    'ToggleThemeButton',
+    'ZTitleBarBase',
+    'ZTitleBar'
+]
+
+# region ZTitleBarButton
+class ZTitleBarButton(ABCButton):
+    bodyColorCtrl: ZAnimatedColor
+    iconColorCtrl: ZAnimatedColor
+    styleDataCtrl: ZStyleController[ZTitleBarButtonStyleData]
+    __controllers_kwargs__ = {
+        'styleDataCtrl': {'key': 'ZTitleBarButton'}
+        }
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAttribute(Qt.WidgetAttribute.WA_NoMousePropagation) # 防止鼠标事件传播到父组件
+        self.setFixedSize(46, 32)
+
+    def _init_style_(self):
+        self.bodyColorCtrl.setColor(QColor(140, 140, 140, 0))
+        self.iconColorCtrl.color = self.styleDataCtrl.data.Icon
+
+    def _style_change_handler_(self): self.iconColorCtrl.setColorTo(self.styleDataCtrl.data.Icon)
+
+    def _show_tooltip_(self):
+        if self.toolTip() != '':
+            ZGlobal.tooltip.showTip(
+                text=self.toolTip(),
+                target=self,
+                mode=ZGlobal.tooltip.Mode.TrackTarget,
+                position=ZPosition.Bottom,
+                offset=QPoint(6, 6)
+                )
+
+    def _hide_tooltip_(self):
+        if self.toolTip() != '': ZGlobal.tooltip.hideTip()
+
+    def enterEvent(self, event):
+        super().enterEvent(event)
+        self._show_tooltip_()
+
+    def leaveEvent(self, event):
+        super().leaveEvent(event)
+        self._hide_tooltip_()
+
+# region CloseButton
+class CloseButton(ZTitleBarButton):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._init_style_()
+
+    def _init_style_(self):
+        self.bodyColorCtrl.setColor(QColor('#00E81B23'))
+        self.iconColorCtrl.color = self.styleDataCtrl.data.Icon
+
+    def _mouse_enter_(self): self.bodyColorCtrl.setAlphaFTo(1.0)
+
+    def _mouse_leave_(self): self.bodyColorCtrl.toTransparent()
+
+    def _mouse_press_(self): self.bodyColorCtrl.setAlphaFTo(0.6)
+
+    def _mouse_release_(self): self.bodyColorCtrl.setAlphaFTo(1.0)
+
+    def paintEvent(self, e):
+        painter = QPainter(self)
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.setPen(Qt.NoPen)
+        painter.drawRect(self.rect().adjusted(0, 1, -1, 0))
+        r =self.devicePixelRatioF()
+        pen = QPen(self.iconColorCtrl.color, 1.2 * 1/r)
+        pen.setCapStyle(Qt.RoundCap)
+        pen.setJoinStyle(Qt.RoundJoin)
+        pen.setCosmetic(True)
+        painter.setPen(pen)
+        painter.setBrush(Qt.NoBrush)
+        w, h = self.width(), self.height()
+        iw = ih = 10
+        x = w/2 - iw/2
+        y = h/2 - ih/2
+        lines = [
+            QLineF(x, y, x + iw, y + ih),
+            QLineF(x + iw, y, x, y + ih)
+        ]
+        painter.drawLines(lines)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()
+        e.accept()
+
+# region MaximizeButton
+class MaximizeButton(ZTitleBarButton):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._init_style_()
+
+    def _mouse_enter_(self): self.bodyColorCtrl.setAlphaFTo(0.2)
+
+    def _mouse_leave_(self): self.bodyColorCtrl.toTransparent()
+
+    def _mouse_press_(self): self.bodyColorCtrl.setAlphaFTo(0.4)
+
+    def _mouse_release_(self): self.bodyColorCtrl.setAlphaFTo(0.2)
+
+    def paintEvent(self, e):
+        painter = QPainter(self)
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.setPen(Qt.NoPen)
+        painter.drawRect(self.rect().adjusted(0, 1, 0, 0))
+        painter.setBrush(Qt.NoBrush)
+        pen = QPen(self.iconColorCtrl.color, 1)
+        pen.setCosmetic(True)
+        painter.setPen(pen)
+        r = self.devicePixelRatioF()
+        painter.scale(1/r, 1/r)
+        if not self.window().isMaximized():
+            painter.drawRect(int(18*r), int(11*r), int(10*r), int(10*r))
+        else:
+            painter.drawRect(int(18*r), int(13*r), int(8*r), int(8*r))
+            x0 = int(18*r)+int(2*r)
+            y0 = 13*r
+            dw = int(2*r)
+            path = QPainterPath(QPointF(x0, y0))
+            path.lineTo(x0, y0-dw)
+            path.lineTo(x0+8*r, y0-dw)
+            path.lineTo(x0+8*r, y0-dw+8*r)
+            path.lineTo(x0+8*r-dw, y0-dw+8*r)
+            painter.drawPath(path)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()
+
+# region MinimizeButton
+class MinimizeButton(ZTitleBarButton):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._init_style_()
+
+    def _mouse_enter_(self): self.bodyColorCtrl.setAlphaFTo(0.2)
+
+    def _mouse_leave_(self): self.bodyColorCtrl.toTransparent()
+
+    def _mouse_press_(self): self.bodyColorCtrl.setAlphaFTo(0.4)
+
+    def _mouse_release_(self): self.bodyColorCtrl.setAlphaFTo(0.2)
+
+    def paintEvent(self, e):
+        painter = QPainter(self)
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.setPen(Qt.NoPen)
+        painter.drawRect(self.rect().adjusted(0, 1, 0, 0))
+        painter.setBrush(Qt.NoBrush)
+        pen = QPen(self.iconColorCtrl.color, 1)
+        pen.setCosmetic(True)
+        painter.setPen(pen)
+        painter.drawLine(18, 16, 28, 16)
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()
+        e.accept()
 
 
+# region ToggleThemeButton
+class ToggleThemeButton(ZTitleBarButton):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        icon = QIcon()
+        icon.addPixmap(
+            ZGlobal.iconPack.toPixmap("ic_fluent_weather_moon_filled"),
+            state=QIcon.State.Off
+        )
+        icon.addPixmap(
+            ZGlobal.iconPack.toPixmap("ic_fluent_weather_sunny_filled"),
+            state=QIcon.State.On
+        )
+        self._icon: QIcon = icon
+        self._init_style_()
+
+    def _mouse_enter_(self): self.bodyColorCtrl.setAlphaFTo(0.2)
+
+    def _mouse_leave_(self): self.bodyColorCtrl.toTransparent()
+
+    def _mouse_press_(self): self.bodyColorCtrl.setAlphaFTo(0.4)
+
+    def _mouse_release_(self): self.bodyColorCtrl.setAlphaFTo(0.2)
+
+    def _mouse_click_(self): ZGlobal.themeManager.toggleTheme()
+
+    def paintEvent(self, e):
+        painter = QPainter(self)
+        painter.setRenderHints(QPainter.RenderHint.SmoothPixmapTransform)
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.setPen(Qt.NoPen)
+        painter.drawRect(self.rect().adjusted(0, 1, 0, 0))
+        if ZGlobal.themeManager.getTheme() is ZTheme.Dark:
+            pixmap = self._icon.pixmap(QSize(16, 16), state=QIcon.State.On)
+        else:
+            pixmap = self._icon.pixmap(QSize(16, 16), state=QIcon.State.Off)
+        colored_pixmap = QPixmap(pixmap.size())
+        colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF()) # 适配高DPI
+        colored_pixmap.fill(Qt.transparent)
+        painter_pix = QPainter(colored_pixmap)
+        painter_pix.drawPixmap(0, 0, pixmap)
+        painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
+        painter_pix.fillRect(colored_pixmap.rect(), self.iconColorCtrl.color)
+        painter_pix.end()
+        painter.drawPixmap(
+            (46 - 16) // 2,
+            (32 - 16) // 2,
+            colored_pixmap
+        )
+        if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
+        painter.end()
+        e.accept()
+
+# region ZTitleBarBase
 class ZTitleBarBase(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        self.themeBtn = ZChangeThemeButton(parent=self)
-        self.minBtn = ZMinimizeButton(parent=self)
-        self.maxBtn = ZMaximizeButton(parent=self)
-        self.closeBtn = ZCloseButton(parent=self)
+        self.themeBtn = ToggleThemeButton(parent=self)
+        self.minBtn = MinimizeButton(parent=self)
+        self.maxBtn = MaximizeButton(parent=self)
+        self.closeBtn = CloseButton(parent=self)
         self._isDoubleClickEnabled = True
         self._moved = False
         self.dragPosition: QPoint = None
         self.setFixedHeight(32)
 
-        # connect signal to slot
         self.minBtn.clicked.connect(self.window().showMinimized)
         self.maxBtn.clicked.connect(self.__toggleMaxState)
         self.closeBtn.clicked.connect(self.window().close)
-
         self.window().installEventFilter(self)
 
     def eventFilter(self, obj, event):
         if obj is self.window():
             if event.type() == QEvent.Type.WindowStateChange:
-                self.maxBtn.toggleMaxState()
+                self.maxBtn.update()
                 return False
         return super().eventFilter(obj, event)
 
@@ -54,28 +265,20 @@ class ZTitleBarBase(QWidget):
         toggleWindowState(self.window())
         self._releaseMouseLeftButton()
 
-
     def _releaseMouseLeftButton(self):
         from ..win32utils import releaseMouseLeftButton
         releaseMouseLeftButton(self.window().winId())
 
-    # def _isDragRegion(self, pos):
-    #     # 如果鼠标在任何按钮区域内，则不可拖动
-    #     for button in self.findChildren(ZABCTitleBarButton):
-    #         if button.isVisible() and button.geometry().contains(pos):
-    #             return False
-    #     return True
-
     def _isDragRegion(self, pos):
         width = 0
-        for button in self.findChildren(ZABCTitleBarButton):
+        for button in self.findChildren(ZTitleBarButton):
             if button.isVisible():
                 width += button.width()
 
         return 0 < pos.x() < self.width() - width
 
     def _hasButtonPressed(self):
-        return any(btn.isPressed() for btn in self.findChildren(ZABCTitleBarButton))
+        return any(btn.isPressed() for btn in self.findChildren(ZTitleBarButton))
 
     def canDrag(self, pos):
         return self._isDragRegion(pos) and not self._hasButtonPressed()
@@ -88,8 +291,9 @@ class ZTitleBarBase(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
         painter.end()
+        event.accept()
 
-
+# region ZTitleBar
 class ZTitleBar(ZTitleBarBase):
     def __init__(self, parent):
         super().__init__(parent)
@@ -121,11 +325,11 @@ class ZTitleBar(ZTitleBarBase):
         self.iconLabel.setPixmap(QIcon(icon).pixmap(20, 20))
         self.iconLabel.setFixedSize(20, 20)
 
-    def setIconVisible(self, isVisible: bool):
-        self.iconLabel.setVisible(isVisible)
+    def setIconVisible(self, v: bool):
+        self.iconLabel.setVisible(v)
 
-    def setThemeBtnVisible(self, isVisible: bool):
-        self.themeBtn.setVisible(isVisible)
+    def setThemeBtnVisible(self, v: bool):
+        self.themeBtn.setVisible(v)
 
-    def setMaxBtnVisible(self, isVisible: bool):
-        self.maxBtn.setVisible(isVisible)
+    def setMaxBtnVisible(self, v: bool):
+        self.maxBtn.setVisible(v)

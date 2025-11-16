@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Property, QRect, Signal,QSize
 from ZenWidgets.core import ZExpPropertyAnimation
 
-__All__ = [
+__all__ = [
     'ABCAnimatedRect',
     'ZWidgetRect',
     'ZAnimatedRect'

@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPoint
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
     ZAnimatedColor,
-    QAnimatedFloat,
+    ZAnimatedFloat,
     ZStyleController,
     ZOpacityEffect,
     ZFlashEffect,
@@ -22,8 +22,8 @@ from ZenWidgets.gui import ZRepeatButtonStyleData
 class ZRepeatButton(ABCRepeatButton):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
-    hoverLayerCtrl: ZOpacityEffect
+    radiusCtrl: ZAnimatedFloat
+    opacityLayerCtrl: ZOpacityEffect
     flashLayerCtrl: ZFlashEffect
     textColorCtrl: ZAnimatedColor
     iconColorCtrl: ZAnimatedColor
@@ -63,29 +63,63 @@ class ZRepeatButton(ABCRepeatButton):
         self._init_style_()
         self.resize(self.sizeHint())
 
+    # region private method
+    def _init_style_(self):
+        data = self.styleDataCtrl.data
+        self.bodyColorCtrl.color = data.Body
+        self.textColorCtrl.color = data.Text
+        self.iconColorCtrl.color = data.Icon
+        self.borderColorCtrl.color = data.Border
+
+    def _style_change_handler_(self):
+        data = self.styleDataCtrl.data
+        self.bodyColorCtrl.setColorTo(data.Body)
+        self.borderColorCtrl.setColorTo(data.Border)
+        self.iconColorCtrl.setColorTo(data.Icon)
+        self.textColorCtrl.setColorTo(data.Text)
+
+    def _show_tooltip_(self):
+        if self.toolTip() != '':
+            ZGlobal.tooltip.showTip(
+                text=self.toolTip(),
+                target=self,
+                position=ZPosition.TopRight,
+                offset=QPoint(6, 6)
+                )
+
+    def _hide_tooltip_(self):
+        if self.toolTip() != '': ZGlobal.tooltip.hideTip()
+
+    def _mouse_enter_(self): self.opacityLayerCtrl.setAlphaFTo(0.11 if self.isFlat() else 0.06)
+
+    def _mouse_leave_(self): self.opacityLayerCtrl.toTransparent()
+
+    def _mouse_click_(self): self.flashLayerCtrl.flash()
+
     # region public method
     def text(self) -> str: return self._text
 
-    def setText(self, t: str) -> None:
-        self._text = t
-        self.update()
+    def icon(self) -> QIcon: return QIcon(self._icon)
 
-    def icon(self) -> QIcon: return self._icon
-
-    def setIcon(self, i: QIcon) -> None:
-        self._icon = i
-        self.update()
-
-    def iconSize(self) -> QSize: return self._icon_size
-
-    def setIconSize(self, s: QSize) -> None:
-        self._icon_size = s
-        self.update()
+    def iconSize(self) -> QSize: return QSize(self._icon_size)
 
     def spacing(self) -> int: return self._spacing
 
-    def setSpacing(self, spacing: int) -> None:
-        self._spacing = spacing
+    def setText(self, t: str) -> None:
+        if self._text == t: return
+        self._text = t
+        self.update()
+
+    def setIcon(self, i: QIcon) -> None: self._icon = i; self.update()
+
+    def setIconSize(self, s: QSize) -> None:
+        if self._icon_size == s: return
+        self._icon_size = s
+        self.update()
+
+    def setSpacing(self, s: int) -> None:
+        if self._spacing == s: return
+        self._spacing = s
         self.update()
 
     def sizeHint(self):
@@ -102,40 +136,15 @@ class ZRepeatButton(ABCRepeatButton):
             self.setMinimumSize(size)
             return size
 
+    # region event
+    def enterEvent(self, event):
+        super().enterEvent(event)
+        self._show_tooltip_()
 
-    # region private method
-    def _init_style_(self):
-        data = self.styleDataCtrl.data
-        self.bodyColorCtrl.color = data.Body
-        self.textColorCtrl.color = data.Text
-        self.iconColorCtrl.color = data.Icon
-        self.borderColorCtrl.color = data.Border
+    def leaveEvent(self, event):
+        super().leaveEvent(event)
+        self._hide_tooltip_()
 
-    def _style_change_handler_(self):
-        data = self.styleDataCtrl.data
-        self.bodyColorCtrl.setColorTo(data.Body)
-        self.borderColorCtrl.setColorTo(data.Border)
-        self.iconColorCtrl.setColorTo(data.Icon)
-        self.textColorCtrl.setColorTo(data.Text)
-
-    # region slot
-    def _hover_handler_(self):
-        self.hoverLayerCtrl.setAlphaFTo(0.11 if self.isFlat() else 0.06)
-        if self.toolTip() != '':
-            ZGlobal.tooltip.showTip(
-                text=self.toolTip(),
-                target=self,
-                position=ZPosition.TopRight,
-                offset=QPoint(6, 6)
-                )
-    def _leave_handler_(self):
-        self.hoverLayerCtrl.toTransparent()
-        if self.toolTip() != '': ZGlobal.tooltip.hideTip()
-
-    def _click_handler_(self):
-        self.flashLayerCtrl.flash()
-
-    # region paintEvent
     def paintEvent(self, event):
         if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
@@ -158,7 +167,7 @@ class ZRepeatButton(ABCRepeatButton):
                 painter.setBrush(Qt.NoBrush)
                 painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
 
-        self.hoverLayerCtrl.drawOpacityLayer(painter, rect, radius)
+        self.opacityLayerCtrl.drawOpacityLayer(painter, rect, radius)
         self.flashLayerCtrl.drawFlashLayer(painter, rect, radius)
 
         if self._icon:

@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Property, QPoint, QPointF,Signal
 from ZenWidgets.core import ZExpPropertyAnimation
 
-__All__ = [
+__all__ = [
     'ABCAnimatedPoint',
     'ZWidgetPosition',
     'ZAnimatedPoint',

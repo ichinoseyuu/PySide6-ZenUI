@@ -1,9 +1,7 @@
 from PySide6.QtGui import QColor
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QWidget
-
-class PlaceHolderWidget(QWidget):
-    pass
+from ZenWidgets.component.base import PlaceHolderWidget
 
 class ABCDenseContainer(QWidget):
     def __init__(self, *args, **kwargs):

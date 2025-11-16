@@ -3,8 +3,12 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QPropertyAnimation,Property,QEasingCurve,QObject,QRect,QElapsedTimer
 from PySide6.QtGui import QPainter,QColor
 
-__All__ = ['ZFlashLayer', 'ZOpacityLayer']
+__all__ = [
+    'ZFlashEffect',
+    'ZOpacityEffect'
+]
 
+# region ABCAnimatedEffect
 class ABCAnimatedEffect(QObject):
     def __init__(self, parent: QWidget):
         super().__init__(parent)
@@ -32,7 +36,7 @@ class ABCAnimatedEffect(QObject):
 
     def stopAnimation(self) -> None: self._anim.stop()
 
-
+# region ZFlashEffect
 class ZFlashEffect(ABCAnimatedEffect):
     '''用于控件按下或刷新时的反馈动画'''
     def __init__(self, parent):
@@ -59,7 +63,7 @@ class ZFlashEffect(ABCAnimatedEffect):
         painter.drawRoundedRect(rect, radius, radius)
         painter.restore()
 
-
+# region ZOpacityEffect
 class ZOpacityEffect(ABCAnimatedEffect):
     '''用于鼠标悬停或按下时控件的透明度反馈动画'''
     def setAlphaTo(self, end: int,/):

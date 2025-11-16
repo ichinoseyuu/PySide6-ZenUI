@@ -1,14 +1,14 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QRectF
 from PySide6.QtGui import QPainter,QPen,QColor
-from ZenWidgets.component.base import ZAnimatedColor,QAnimatedFloat,ZStyleController,ZWidget
+from ZenWidgets.component.base import ZAnimatedColor,ZAnimatedFloat,ZStyleController,ZWidget
 from ZenWidgets.core import ZDebug
 from ZenWidgets.gui import ZPanelStyleData
 
 class ZPanel(ZWidget):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
     styleDataCtrl: ZStyleController[ZPanelStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZPanel'},

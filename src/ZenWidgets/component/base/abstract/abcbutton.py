@@ -3,16 +3,31 @@ from PySide6.QtCore import Qt, Signal, Slot, QEvent, QTimer
 from PySide6.QtGui import QMouseEvent, QEnterEvent
 from ZenWidgets.core import ZState,ZStyle
 from ZenWidgets.component.base.widget import ZWidget
+from ZenWidgets.component.base.controller import ZAnimatedFloat
 from  typing import TYPE_CHECKING,Optional
 if TYPE_CHECKING:
     from ZenWidgets.component.base.group import ZButtonGroup
+
+__All__ = [
+    'ABCButton',
+    'ABCToggleButton',
+    'ABCRepeatButton',
+    'ABCLongPressButton',
+    'ABCProgressButton'
+]
+
 # region ABCButton
 class ABCButton(ZWidget):
     entered = Signal()
+    '''鼠标进入信号'''
     leaved = Signal()
+    '''鼠标离开信号'''
     pressed = Signal()
+    '''鼠标按下信号'''
     released = Signal()
+    '''鼠标释放信号'''
     clicked = Signal()
+    '''鼠标点击信号'''
     def __init__(self,
                  parent: QWidget | ZWidget | None = None,
                  *args,
@@ -28,49 +43,46 @@ class ABCButton(ZWidget):
                          toolTip=toolTip,
                          **kwargs
                          )
-        self.entered.connect(self._hover_handler_)
-        self.leaved.connect(self._leave_handler_)
-        self.pressed.connect(self._press_handler_)
-        self.released.connect(self._release_handler_)
-        self.clicked.connect(self._click_handler_)
 
+    # private method
+    def _mouse_enter_(self) -> None:
+        '''鼠标进入效果'''
+        ...
 
-    # region slot
-    @Slot()
-    def _hover_handler_(self):
-        '''鼠标进入时的槽函数'''
+    def _mouse_leave_(self):
+        '''鼠标离开效果'''
+        ...
 
-    @Slot()
-    def _leave_handler_(self):
-        '''鼠标离开时的槽函数'''
+    def _mouse_press_(self):
+        '''鼠标按下效果'''
+        ...
 
-    @Slot()
-    def _press_handler_(self):
-        '''鼠标按下时的槽函数'''
+    def _mouse_release_(self):
+        '''鼠标释放效果'''
+        ...
 
-    @Slot()
-    def _release_handler_(self):
-        '''鼠标释放时的槽函数'''
+    def _mouse_click_(self):
+        '''鼠标点击效果'''
+        ...
 
-    @Slot()
-    def _click_handler_(self):
-        '''鼠标成功点击时的槽函数'''
-
-    # region event
+    # event
     def enterEvent(self, event: QEnterEvent):
         super().enterEvent(event)
         self._state = ZState.Hover
+        self._mouse_enter_()
         self.entered.emit()
 
     def leaveEvent(self, event: QEvent):
         super().leaveEvent(event)
         self._state = ZState.Idle
+        self._mouse_leave_()
         self.leaved.emit()
 
     def mousePressEvent(self, event: QMouseEvent):
         super().mousePressEvent(event)
         if event.button() == Qt.MouseButton.LeftButton:
             self._state = ZState.Pressed
+            self._mouse_press_()
             self.pressed.emit()
 
     def mouseMoveEvent(self, event: QMouseEvent):
@@ -78,13 +90,17 @@ class ABCButton(ZWidget):
         is_inside = self.rect().contains(event.position().toPoint())
         if self._state != ZState.Pressed and is_inside:
             self._state = ZState.Hover
+            self._mouse_enter_()
             self.entered.emit()
         elif self._state != ZState.Pressed and not is_inside:
             self._state = ZState.Idle
+            self._mouse_leave_()
             self.leaved.emit()
         elif self._state == ZState.Pressed and not is_inside:
             self._state = ZState.Idle
+            self._mouse_release_()
             self.released.emit()
+            self._mouse_leave_()
             self.leaved.emit()
         else:
             self._state = ZState.Pressed
@@ -92,9 +108,14 @@ class ABCButton(ZWidget):
     def mouseReleaseEvent(self, event: QMouseEvent):
         super().mouseReleaseEvent(event)
         if event.button() == Qt.MouseButton.LeftButton:
+            self._mouse_release_()
             self.released.emit()
             if self.rect().contains(event.position().toPoint()):
+                self._state = ZState.Hover
+                self._mouse_click_()
                 self.clicked.emit()
+            else:
+                self._state = ZState.Idle
 
 
 
@@ -119,22 +140,23 @@ class ABCToggleButton(ABCButton):
                          toolTip=toolTip,
                          **kwargs
                          )
-        self.toggled.connect(self._toggle_handler_)
         self._checkable: bool = checkable
         self._checked: bool = checked
         self._is_group_member: bool = is_group_member
         self._button_group: Optional['ZButtonGroup']= None
 
-    # region Slot
-    @Slot(bool)
-    def _toggle_handler_(self, c: bool):
-        '''按钮状态改变时的槽函数'''
+    # private method
+    def _button_toggle_(self):
+        '''按钮切换效果'''
+        ...
 
-    # region public method
+    # public method
     def isChecked(self) -> bool: return self._checked
 
     def setChecked(self, c: bool):
+        if c == self._checked: return
         self._checked = c
+        self._button_toggle_()
         self.toggled.emit(self._checked)
 
     def isCheckable(self) -> bool: return self._checkable
@@ -151,17 +173,14 @@ class ABCToggleButton(ABCButton):
         self._button_group = None
         self._is_group_member = False
 
-    # region event
+    # event
     def mouseReleaseEvent(self, event: QMouseEvent):
         super().mouseReleaseEvent(event)
         if event.button() == Qt.MouseButton.LeftButton and self._checkable:
             if self.rect().contains(event.position().toPoint()):
-                if self._is_group_member:
-                    self._checked = True
-                    self.toggled.emit(self._checked)
-                else:
-                    self._checked = not self._checked
-                    self.toggled.emit(self._checked)
+                self._checked = True if self._is_group_member else not self._checked
+                self._button_toggle_()
+                self.toggled.emit(self._checked)
 
 # region ABCRepeatButton
 class ABCRepeatButton(ABCButton):
@@ -188,7 +207,7 @@ class ABCRepeatButton(ABCButton):
 
         self._trigger_interval = QTimer(self) # 触发间隔
         self._trigger_interval.setInterval(interval)
-        self._trigger_interval.timeout.connect(self._repeat_click_handler_)
+        self._trigger_interval.timeout.connect(self._mouse_repeat_click_handler_)
 
         self._trigger_delay = QTimer(self) # 触发延迟
         self._trigger_delay.setSingleShot(True)
@@ -196,19 +215,20 @@ class ABCRepeatButton(ABCButton):
         self._trigger_delay.timeout.connect(self._trigger_interval.start)
 
 
-    # region slot
+    # slot
     @Slot()
-    def _repeat_click_handler_(self):
+    def _mouse_repeat_click_handler_(self):
         '''重复点击时的槽函数'''
         self._repeat_count += 1
+        self._mouse_click_()
         self.clicked.emit()
 
-    # region Property
-    def isRepeatable(self) -> bool: return self._repeatable
+    # public method
+    def isRepeatable(self) -> bool: return bool(self._repeatable)
 
     def setRepeatable(self, r: bool): self._repeatable = r
 
-    def repeatCount(self) -> int: return self._repeat_count
+    def repeatCount(self) -> int: return int(self._repeat_count)
 
     def triggerInterval(self) -> int: return self._trigger_interval.interval()
 
@@ -218,7 +238,7 @@ class ABCRepeatButton(ABCButton):
 
     def setTriggerDelay(self, d: int): self._trigger_delay.setInterval(d)
 
-    # region event
+    # event
     def mousePressEvent(self, event: QMouseEvent):
         super().mousePressEvent(event)
         if event.button() == Qt.MouseButton.LeftButton and self._repeatable:
@@ -237,3 +257,101 @@ class ABCRepeatButton(ABCButton):
             self._trigger_delay.stop()
             self._trigger_interval.stop()
             self._repeat_count = 0
+
+# region ABCLongPressButton
+class ABCLongPressButton(ABCButton):
+    longPressClicked = Signal()
+    '''长按信号'''
+
+    progressCtrl: ZAnimatedFloat
+    def __init__(self,
+                 parent: QWidget | ZWidget | None = None,
+                 *args,
+                 style: ZStyle = ZStyle.Default,
+                 objectName: str | None = None,
+                 toolTip: str | None = None,
+                 **kwargs
+                 ):
+        super().__init__(parent,
+                         *args,
+                         style=style,
+                         objectName=objectName,
+                         toolTip=toolTip,
+                         **kwargs
+                         )
+        self._pressed_timer = QTimer(self)
+        self._pressed_timer.setInterval(1000 // 60)
+        self._pressed_timer.timeout.connect(self._long_press_handler_)
+
+    # private method
+    def _mouse_press_(self):
+        self._pressed_timer.start()
+
+    def _mouse_release_(self):
+        self._reset_progress_()
+
+    def _step_length_(self) -> float:
+        '''计算进度条每次增加的步长'''
+        remaining = 1.0 - self.progressCtrl.value
+        return min(remaining, max(0.01, remaining / 16 + 0.005))
+
+    def _reset_progress_(self):
+        '''重置进度条'''
+        self._pressed_timer.stop()
+        QTimer.singleShot(150, lambda: self.progressCtrl.setValueTo(0.0))
+
+    def _long_press_handler_(self):
+        '''鼠标按压时的进度更新逻辑'''
+        if not self.isPressed(): return
+        progress = self.progressCtrl.value + self._step_length_()
+        if progress >= 1.0:
+            progress = 1.0
+            self.progressCtrl.setValue(progress)
+            self._reset_progress_()
+            self.longPressClicked.emit()
+        else:
+            self.progressCtrl.setValue(progress)
+
+# region ABCProgressButton
+class ABCProgressButton(ABCButton):
+    progressChanged = Signal(float)
+    '''进度改变信号'''
+    progressFinished = Signal()
+    '''进度完成信号'''
+
+    progressCtrl: ZAnimatedFloat
+    def __init__(self,
+                 parent: QWidget | ZWidget | None = None,
+                 *args,
+                 reset_on_finish: bool = True,
+                 style: ZStyle = ZStyle.Default,
+                 objectName: str | None = None,
+                 toolTip: str | None = None,
+                 **kwargs
+                 ):
+        super().__init__(parent,
+                         *args,
+                         style=style,
+                         objectName=objectName,
+                         toolTip=toolTip,
+                         **kwargs
+                         )
+        self._reset_on_finish = reset_on_finish
+
+
+    # public method
+    def isResetOnFinish(self) -> bool: return self._reset_on_finish
+
+    def setResetOnFinish(self, r: bool) -> None: self._reset_on_finish = r
+
+    def setProgress(self, value: float,/, animate: bool = True) -> None:
+        value = max(0.0, min(1.0, value))
+        if value == 1.0:
+            self.progressCtrl.setValueTo(1.0) if animate else self.progressCtrl.setValue(1.0)
+            self.progressChanged.emit(1.0)
+            self.progressFinished.emit()
+            if self._reset_on_finish:
+                QTimer.singleShot(150, lambda: self.progressCtrl.setValueTo(.0))
+        else:
+            self.progressCtrl.setValueTo(value) if animate else self.progressCtrl.setValue(value)
+            self.progressChanged.emit(value)

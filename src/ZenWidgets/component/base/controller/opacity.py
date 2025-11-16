@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QObject, Property, Signal
 from ZenWidgets.core import ZExpPropertyAnimation
 
-__All__ = [
+__all__ = [
     "ABCAnimatedOpacity",
     "ZAnimatedOpacity",
     "ZWindowOpacity"
@@ -37,10 +37,10 @@ class ABCAnimatedOpacity(QObject):
     def fadeTo(self, arg1: float, arg2: float | None = None) -> None:
         self._anim.stop()
         if arg2 is None:
-            self._anim.setEndValue(max(min(arg1, 1.0), 0))
+            self._anim.setEndValue(arg1)
         else:
-            self._anim.setStartValue(max(min(arg1, 1.0), 0))
-            self._anim.setEndValue(max(min(arg2, 1.0), 0))
+            self._anim.setStartValue(arg1)
+            self._anim.setEndValue(arg2)
         self._anim.start()
 
     def fadeIn(self) -> None:
@@ -50,7 +50,7 @@ class ABCAnimatedOpacity(QObject):
 
     def fadeOut(self) -> None:
         self._anim.stop()
-        self._anim.setEndValue(0)
+        self._anim.setEndValue(.0)
         self._anim.start()
 
     def _on_finished_(self) -> None:
@@ -99,6 +99,6 @@ class ZWindowOpacity(ABCAnimatedOpacity):
 
     def getOpacity(self) -> float: return self.parent().windowOpacity()
 
-    def setOpacity(self, opacity: float) -> None: self.parent().setWindowOpacity(max(min(opacity, 1.0), 0))
+    def setOpacity(self, opacity: float) -> None: self.parent().setWindowOpacity(opacity)
 
     opacity: float = cast(float, Property(float, getOpacity, setOpacity, notify=ABCAnimatedOpacity.opacityChanged))

@@ -1,10 +1,9 @@
-from enum import Enum
 from PySide6.QtGui import QPainter, QFont, QPen, QIcon, QPixmap
 from PySide6.QtCore import Qt, QRect, QSize, QRectF, QPoint
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
     ZAnimatedColor,
-    QAnimatedFloat,
+    ZAnimatedFloat,
     ZStyleController,
     ZOpacityEffect,
     ZWidget,
@@ -21,8 +20,8 @@ from ZenWidgets.gui import ZToggleButtonStyleData
 class ZToggleButton(ABCToggleButton):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
-    layerCtrl: ZOpacityEffect
+    radiusCtrl: ZAnimatedFloat
+    opacityLayerCtrl: ZOpacityEffect
     textColorCtrl: ZAnimatedColor
     iconColorCtrl: ZAnimatedColor
     styleDataCtrl: ZStyleController[ZToggleButtonStyleData]
@@ -59,46 +58,6 @@ class ZToggleButton(ABCToggleButton):
         self._spacing = spacing
         self._init_style_()
         self.resize(self.sizeHint())
-
-
-    # region public method
-    def text(self) -> str: return self._text
-
-    def setText(self, t: str) -> None:
-        self._text = t
-        self.update()
-
-    def icon(self) -> QIcon: return self._icon
-
-    def setIcon(self, i: QIcon) -> None:
-        self._icon = i
-        self.update()
-
-    def iconSize(self) -> QSize: return self._icon_size
-
-    def setIconSize(self, s: QSize) -> None:
-        self._icon_size = s
-        self.update()
-
-    def spacing(self) -> int: return self._spacing
-
-    def setSpacing(self, spacing: int) -> None:
-        self._spacing = spacing
-        self.update()
-
-    def sizeHint(self):
-        if self._icon and not self._text:
-            size = QSize(30, 30)
-            self.setMinimumSize(size)
-            return size
-        elif not self._icon and self._text:
-            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 40, 30)
-            self.setMinimumSize(size)
-            return size
-        else:
-            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 60, 30)
-            self.setMinimumSize(size)
-            return size
 
     # region private method
     def _init_style_(self):
@@ -140,29 +99,82 @@ class ZToggleButton(ABCToggleButton):
             self.textColorCtrl.color = color_map['text']
             self.iconColorCtrl.color = color_map['icon']
 
-    # region slot
-    def _hover_handler_(self):
-        self.layerCtrl.setAlphaFTo(0.11 if self.isFlat() else 0.06)
+    def _show_tooltip_(self):
         if self.toolTip() != '':
-            ZGlobal.tooltip.showTip(text=self.toolTip(),
-                                    target=self,
-                                    position=ZPosition.TopRight,
-                                    offset=QPoint(6, 6)
-                                    )
-    def _leave_handler_(self):
-        self.layerCtrl.toTransparent()
+            ZGlobal.tooltip.showTip(
+                text=self.toolTip(),
+                target=self,
+                position=ZPosition.TopRight,
+                offset=QPoint(6, 6)
+                )
+
+    def _hide_tooltip_(self):
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
-    def _press_handler_(self):
-        self.layerCtrl.setAlphaFTo(0.15 if self.isFlat() else 0.11)
+    def _mouse_enter_(self): self.opacityLayerCtrl.setAlphaFTo(0.11 if self.isFlat() else 0.06)
 
-    def _toggle_handler_(self, checked):
-        self.layerCtrl.setAlphaFTo(0.11 if self.isFlat() else 0.06)
+    def _mouse_leave_(self): self.opacityLayerCtrl.toTransparent()
+
+    def _mouse_press_(self): self.opacityLayerCtrl.setAlphaFTo(0.15 if self.isFlat() else 0.11)
+
+    def _mouse_release_(self): self.opacityLayerCtrl.setAlphaFTo(0.11 if self.isFlat() else 0.06)
+
+    def _button_toggle_(self):
         data = self.styleDataCtrl.data
-        color_map = self._get_color_mapping(data, checked)
+        color_map = self._get_color_mapping(data, self._checked)
         self._apply_color_mapping(color_map, anim=True)
 
+    # region public method
+    def text(self) -> str: return self._text
+
+    def icon(self) -> QIcon: return QIcon(self._icon)
+
+    def iconSize(self) -> QSize: return QSize(self._icon_size)
+
+    def spacing(self) -> int: return self._spacing
+
+    def setText(self, t: str) -> None:
+        if self._text == t: return
+        self._text = t
+        self.update()
+
+    def setIcon(self, i: QIcon) -> None: self._icon = i; self.update()
+
+    def setIconSize(self, s: QSize) -> None:
+        if self._icon_size == s: return
+        self._icon_size = s
+        self.update()
+
+    def setSpacing(self, s: int) -> None:
+        if self._spacing == s: return
+        self._spacing = s
+        self.update()
+
+    def sizeHint(self):
+        if self._icon and not self._text:
+            size = QSize(30, 30)
+            self.setMinimumSize(size)
+            return size
+        elif not self._icon and self._text:
+            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 40, 30)
+            self.setMinimumSize(size)
+            return size
+        else:
+            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 60, 30)
+            self.setMinimumSize(size)
+            return size
+
+    # region private method
+
     # region paintEvent
+    def enterEvent(self, event):
+        super().enterEvent(event)
+        self._show_tooltip_()
+
+    def leaveEvent(self, event):
+        super().leaveEvent(event)
+        self._hide_tooltip_()
+
     def paintEvent(self, event):
         if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
@@ -183,7 +195,7 @@ class ZToggleButton(ABCToggleButton):
                 painter.setPen(QPen(self.borderColorCtrl.color, 1))
                 painter.setBrush(Qt.NoBrush)
                 painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
-        self.layerCtrl.drawOpacityLayer(painter, rect, radius)
+        self.opacityLayerCtrl.drawOpacityLayer(painter, rect, radius)
 
         if self._icon:
             pixmap = self._icon.pixmap(self._icon_size)

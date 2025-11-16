@@ -3,11 +3,12 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from ZenWidgets.component.base import (
     ZAnimatedColor,
-    QAnimatedFloat,
+    ZAnimatedFloat,
     ZStyleController,
     ZWidget
 )
 from ZenWidgets.core import (
+    ZGlobal,
     ZDebug,
     ZExpPropertyAnimation,
     ZDirection,
@@ -29,7 +30,7 @@ class ScrollContent(ZWidget):
 class ScrollHandle(ZWidget):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
 
     def __init__(self,parent: QWidget = None, direction = ZDirection.Vertical):
         super().__init__(parent)
@@ -175,7 +176,7 @@ class ScrollHandle(ZWidget):
 class ZScrollPanel(ZWidget):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
     styleDataCtrl: ZStyleController[ZScrollPanelStyleData]
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZScrollPanel'}}
 
@@ -263,6 +264,7 @@ class ZScrollPanel(ZWidget):
     def wheelEvent(self, event: QWheelEvent):
         current_x = -self._content.x()
         current_y = -self._content.y()
+        ZGlobal.tooltip.windowFadeOut()
         if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
             delta = event.angleDelta().x() if event.angleDelta().x() != 0 else event.angleDelta().y()
             step = delta / 120 * 100

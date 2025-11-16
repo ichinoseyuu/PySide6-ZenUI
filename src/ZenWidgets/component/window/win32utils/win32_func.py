@@ -16,21 +16,17 @@ def getSystemAccentColor() -> QColor:
     DwmGetColorizationColor = windll.dwmapi.DwmGetColorizationColor
     DwmGetColorizationColor.restype = c_ulong
     DwmGetColorizationColor.argtypes = [POINTER(c_ulong), POINTER(c_bool)]
-
     color = c_ulong()
     code = DwmGetColorizationColor(byref(color), byref(c_bool()))
-
     if code != 0:
         logging.warning("Unable to obtain system accent color.")
         return QColor()
-
     return QColor(color.value)
 
 
 def isSystemBorderAccentEnabled() -> bool:
     """ 检查是否启用了边框强调色 """
     if not isGreaterEqualWin11(): return False
-
     try:
         key = OpenKey(HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\DWM", 0, KEY_READ)
         value, _ = QueryValueEx(key, "ColorPrevalence")
@@ -43,32 +39,24 @@ def isSystemBorderAccentEnabled() -> bool:
 def isMaximized(hWnd) -> bool:
     """ 判断窗口是否最大化"""
     windowPlacement = win32gui.GetWindowPlacement(hWnd)
-
     if not windowPlacement: return False
     return windowPlacement[1] == win32con.SW_MAXIMIZE
 
-
 def isFullScreen(hWnd):
     """ 判断窗口是否全屏"""
-    if not hWnd: return False
-
     hWnd = int(hWnd)
     winRect = win32gui.GetWindowRect(hWnd)
     if not winRect: return False
-
     monitorInfo = getMonitorInfo(hWnd, win32con.MONITOR_DEFAULTTOPRIMARY)
     if not monitorInfo: return False
-
     monitorRect = monitorInfo["Monitor"]
     return all(i == j for i, j in zip(winRect, monitorRect))
-
 
 def isCompositionEnabled() -> bool:
     """ 检测是否启用了DWM合成 """
     bResult = c_int(0)
     windll.dwmapi.DwmIsCompositionEnabled(byref(bResult))
     return bool(bResult.value)
-
 
 def getMonitorInfo(hWnd, dwFlags):
     """ 获取显示器信息,如果失败则返回 None
@@ -79,27 +67,20 @@ def getMonitorInfo(hWnd, dwFlags):
     """
     monitor = win32api.MonitorFromWindow(hWnd, dwFlags)
     if not monitor: return
-
     return win32api.GetMonitorInfo(monitor)
-
 
 def getResizeBorderThickness(hWnd, horizontal=True):
     """ 获取窗口边框厚度
-    
+
     Args:
         hWnd (int or `sip.voidptr`): 窗口句柄
         horizontal (bool, optional): 是否水平边框. Defaults to True.
     """
     window = findWindow(hWnd)
-    if not window:
-        return 0
-
+    if not window: return 0
     frame = win32con.SM_CXSIZEFRAME if horizontal else win32con.SM_CYSIZEFRAME
     result = getSystemMetrics(hWnd, frame, horizontal) + getSystemMetrics(hWnd, 92, horizontal)
-
-    if result > 0:
-        return result
-
+    if result > 0: return result
     thickness = 8 if isCompositionEnabled() else 4
     return round(thickness*window.devicePixelRatio())
 
@@ -108,7 +89,6 @@ def getSystemMetrics(hWnd, index, horizontal):
     """ 获取系统度量值 """
     if not hasattr(windll.user32, 'GetSystemMetricsForDpi'):
         return win32api.GetSystemMetrics(index)
-
     dpi = getDpiForWindow(hWnd, horizontal)
     return windll.user32.GetSystemMetricsForDpi(index, dpi)
 
@@ -124,11 +104,9 @@ def getDpiForWindow(hWnd, horizontal=True):
         windll.user32.GetDpiForWindow.argtypes = [HWND]
         windll.user32.GetDpiForWindow.restype = UINT
         return windll.user32.GetDpiForWindow(hWnd)
-
     hdc = win32gui.GetDC(hWnd)
     if not hdc:
         return 96
-
     dpiX = win32print.GetDeviceCaps(hdc, win32con.LOGPIXELSX)
     dpiY = win32print.GetDeviceCaps(hdc, win32con.LOGPIXELSY)
     win32gui.ReleaseDC(hWnd, hdc)
@@ -141,15 +119,12 @@ def getDpiForWindow(hWnd, horizontal=True):
 
 def findWindow(hWnd):
     """ 根据句柄查找窗口，如果未找到则返回 None
-    
+
     Args:
         hWnd (int or `sip.voidptr`): 窗口句柄
     """
-    if not hWnd: return
-
     windows = QGuiApplication.topLevelWindows()
     if not windows: return
-
     hWnd = int(hWnd)
     for window in windows:
         if window and int(window.winId()) == hWnd: return window
@@ -226,20 +201,27 @@ def toggleWindowState(window):
     Args:
         window (QWidget): 窗口
     """
-    hWnd = int(window.winId())
-    style = win32gui.GetWindowLong(hWnd, win32con.GWL_STYLE)
-    if style & win32con.WS_MAXIMIZE:
-        win32gui.ShowWindow(hWnd, win32con.SW_RESTORE)
+    hwnd = int(window.winId())
+    style = win32gui.GetWindowLong(hwnd, win32con.GWL_STYLE)
+    is_fullscreen = (style & (win32con.WS_CAPTION | win32con.WS_THICKFRAME)) == 0
+    if is_fullscreen:
+        win32gui.SetWindowLong(
+            hwnd,
+            win32con.GWL_STYLE,
+            style | win32con.WS_CAPTION | win32con.WS_THICKFRAME | win32con.WS_MAXIMIZEBOX
+        )
+        win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
     else:
-        win32gui.ShowWindow(hWnd, win32con.SW_MAXIMIZE)
-
+        if style & win32con.WS_MAXIMIZE:
+            win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+        else:
+            win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
 
 def isWindowTopLevel(window):
     """获取窗口层级状态"""
     hwnd = int(window.winId())
     ex_style = win32api.GetWindowLong(hwnd, win32con.GWL_EXSTYLE)
     return bool(ex_style & win32con.WS_EX_TOPMOST)
-
 
 def setWindowTopLevel(window, topmost=False):
     """设置窗口层级状态

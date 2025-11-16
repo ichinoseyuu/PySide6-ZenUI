@@ -71,10 +71,10 @@ class ZenUIGallery(ZStandardFramelessWindow):
 
 if __name__ == '__main__':
     # enable dpi scale
-    QApplication.setHighDpiScaleFactorRoundingPolicy( #  设置高DPI缩放因子的舍入策略为直接传递，不进行任何处理
-         Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    # QApplication.setHighDpiScaleFactorRoundingPolicy(
+    #      Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     app = QApplication(sys.argv)
-    app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings) #  设置应用程序属性，禁止创建原生小部件的兄弟组件，以提高性能和避免潜在的问题
-    mainwindow = ZenUIGallery()
-    mainwindow.show()
+    # app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
+    window = ZenUIGallery()
+    window.show()
     app.exec()

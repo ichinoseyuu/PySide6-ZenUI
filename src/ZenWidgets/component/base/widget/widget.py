@@ -1,5 +1,4 @@
 import inspect
-import logging
 from typing import TypeVar, cast, get_origin, overload, Any
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QEvent,QPoint,QSize,Signal,Slot
@@ -9,10 +8,12 @@ from ZenWidgets.core import make_getter,ZState,ZStyle
 
 T = TypeVar('T')
 
+class PlaceHolderWidget(QWidget):
+    '''占位组件'''
+    pass
+
 class ZWidget(QWidget):
-    '''
-    ZenWidgets 组件的基类
-    '''
+    '''ZenWidgets 组件的基类'''
     __controllers_types__ = (
         ZAnimatedColor,
         ZAnimatedOpacity,
@@ -20,17 +21,18 @@ class ZWidget(QWidget):
         ZAnimatedPointF,
         ZAnimatedSize,
         ZAnimatedRect,
-        QAnimatedFloat,
         ZAnimatedFloat,
         ZAnimatedLinearGradient,
         ZStyleController,
         ZFlashEffect,
         ZOpacityEffect,
-        QAnimatedInt,
         ZAnimatedInt,
     )
+    '''控制器类型'''
     __controllers_kwargs__: dict[str, Any] = {}
+    '''控制器参数'''
     dragged = Signal(QPoint)
+    '''拖拽信号'''
     def __init__(self,
                  parent: QWidget | None = None,
                  *args,
@@ -59,8 +61,25 @@ class ZWidget(QWidget):
         self._opacityCtrl: ZAnimatedOpacity = ZAnimatedOpacity(self)
         self._create_controllers_()
 
+    # region property
+    @property
+    def windowOpacityCtrl(self) -> ZWindowOpacity: return self._windowOpacityCtrl
+
+    @property
+    def widgetSizeCtrl(self) -> ZWidgetSize: return self._widgetSizeCtrl
+
+    @property
+    def widgetPositionCtrl(self) -> ZWidgetPosition: return self._widgetPositionCtrl
+
+    @property
+    def widgetRectCtrl(self) -> ZWidgetRect: return self._widgetRectCtrl
+
+    @property
+    def opacityCtrl(self) -> ZAnimatedOpacity: return self._opacityCtrl
+
+    # region private method
     def _create_controllers_(self) -> None:
-        '''创建控制器'''
+        '''创建控制器，不需要子类重写'''
         allowed_types = self.__controllers_types__
         controllers_kwargs: dict[str, Any] = {}
         annotations: dict[str, Any] = {}
@@ -94,26 +113,20 @@ class ZWidget(QWidget):
 
     def _init_style_(self) -> None:
         '''初始化样式'''
+        ...
 
     @Slot()
     def _style_change_handler_(self) -> None:
-        '''样式改变时的槽函数'''
+        '''样式变化槽函数'''
+        ...
 
-    # region property
-    @property
-    def windowOpacityCtrl(self) -> ZWindowOpacity: return self._windowOpacityCtrl
+    def _show_tooltip_(self) -> None:
+        '''显示提示框'''
+        ...
 
-    @property
-    def widgetSizeCtrl(self) -> ZWidgetSize: return self._widgetSizeCtrl
-
-    @property
-    def widgetPositionCtrl(self) -> ZWidgetPosition: return self._widgetPositionCtrl
-
-    @property
-    def widgetRectCtrl(self) -> ZWidgetRect: return self._widgetRectCtrl
-
-    @property
-    def opacityCtrl(self) -> ZAnimatedOpacity: return self._opacityCtrl
+    def _hide_tooltip_(self) -> None:
+        '''隐藏提示框'''
+        ...
 
     # region public method
     def state(self) -> ZState: return self._state
@@ -164,8 +177,7 @@ class ZWidget(QWidget):
     @overload
     def moveTo(self, pos: QPoint) -> None: ...
 
-    def moveTo(self, *args):
-        self.widgetPositionCtrl.moveTo(*args)
+    def moveTo(self, *args): self.widgetPositionCtrl.moveTo(*args)
 
     @overload
     def resizeTo(self, w: int, h: int) -> None: ...
@@ -181,9 +193,7 @@ class ZWidget(QWidget):
     @overload
     def move(self, pos: QPoint) -> None: ...
 
-    def move(self, *args):
-        point = QPoint(*args) - self._move_anchor
-        super().move(point)
+    def move(self, *args): super().move(QPoint(*args) - self._move_anchor)
 
     def fadeIn(self) -> None:
         self.opacityCtrl.fadeIn()
@@ -205,8 +215,7 @@ class ZWidget(QWidget):
 
     # region event
     def event(self, event: QEvent) -> bool:
-        if event.type() == QEvent.Type.ToolTip:
-            return True
+        if event.type() == QEvent.Type.ToolTip: return True
         return super().event(event)
 
     def mousePressEvent(self, event: QMouseEvent):

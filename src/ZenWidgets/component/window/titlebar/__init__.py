@@ -1,1 +1,1 @@
-from .titlebar import ZTitleBar
+from .titlebar import *

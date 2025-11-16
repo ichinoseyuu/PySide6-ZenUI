@@ -6,7 +6,7 @@ from PySide6.QtGui import QColor
 from ZenWidgets.core import SingletonMeta,NonInstantiableMeta,ColorConverter
 from ZenWidgets.gui.theme import ZThemeManager
 
-__All__ = [
+__all__ = [
     'ZPaletteKey',
     'ZStyleDataKey',
     'ZPalette',
@@ -34,7 +34,7 @@ __All__ = [
     'ZNavigationBarStyleData',
     'ZNavBarButtonStyleData',
     'ZNavBarToggleButtonStyleData',
-    'ZStyleDataT'
+    'StyleDataT'
 ]
 
 # region ZPaletteKey
@@ -133,9 +133,9 @@ dark_palette = {
     ZPaletteKey.Body: '#1C1C1C',
     ZPaletteKey.BodyLighter: '#212121',
     ZPaletteKey.BodyNeutral: '#505050',
-    ZPaletteKey.Shadow: '#303030',
-    ZPaletteKey.Border: '#2B2B2B',
-    ZPaletteKey.BorderMuted: '#242424',
+    ZPaletteKey.Shadow: '#242424',
+    ZPaletteKey.Border: '#212121',
+    ZPaletteKey.BorderMuted: '#1D1D1D',
     ZPaletteKey.Text: '#F2F2F2',
     ZPaletteKey.TextMuted: '#D9D9D9',
     ZPaletteKey.TextMutedMore: '#9F9F9F',
@@ -342,7 +342,7 @@ style_data_map={
         },
         'ZSwitch':{
             ZStyleDataKey.Body: lambda: ZPalette.Primary,
-            ZStyleDataKey.Border: lambda: ZPalette.Border,
+            ZStyleDataKey.Border: lambda: ZPalette.BodyNeutral,
             ZStyleDataKey.Handle: ZPalette.Black_67,
             ZStyleDataKey.HandleToggled: lambda: ZPalette.BodyLighter
         },
@@ -411,14 +411,14 @@ style_data_map={
         },
         ('ZButton','ZRepeatButton','ZComboBox','ZItem'): {
             ZStyleDataKey.Body: lambda: ZPalette.Body,
-            ZStyleDataKey.Border: lambda: ZPalette.BorderMuted,
+            ZStyleDataKey.Border: lambda: ZPalette.Border,
             ZStyleDataKey.Text: lambda: ZPalette.Text,
             ZStyleDataKey.Icon: lambda: ZPalette.IconMuted,
             ZStyleDataKey.Indicator: lambda: ZPalette.Primary
         },
         'ZLongPressButton': {
             ZStyleDataKey.Body: lambda: ZPalette.Body,
-            ZStyleDataKey.Border: lambda: ZPalette.BorderMuted,
+            ZStyleDataKey.Border: lambda: ZPalette.Border,
             ZStyleDataKey.Text: lambda: ZPalette.Text,
             ZStyleDataKey.Icon: lambda: ZPalette.IconMuted,
             ZStyleDataKey.Indicator: lambda: ZPalette.Primary,
@@ -426,7 +426,7 @@ style_data_map={
         },
         'ZProgressButton': {
             ZStyleDataKey.Body: lambda: ZPalette.Body,
-            ZStyleDataKey.Border: lambda: ZPalette.BorderMuted,
+            ZStyleDataKey.Border: lambda: ZPalette.Border,
             ZStyleDataKey.Text: lambda: ZPalette.TextMuted,
             ZStyleDataKey.Icon: lambda: ZPalette.IconMuted,
             ZStyleDataKey.Indicator: lambda: ZPalette.Primary,
@@ -435,7 +435,7 @@ style_data_map={
         'ZToggleButton': {
             ZStyleDataKey.Body: lambda: ZPalette.Body,
             ZStyleDataKey.BodyToggled: lambda: ZPalette.Primary,
-            ZStyleDataKey.Border: lambda: ZPalette.BorderMuted,
+            ZStyleDataKey.Border: lambda: ZPalette.Border,
             ZStyleDataKey.Text: lambda: ZPalette.TextMuted,
             ZStyleDataKey.TextToggled: lambda: ZPalette.TextMuted,
             ZStyleDataKey.Icon: lambda: ZPalette.IconMuted,
@@ -443,13 +443,13 @@ style_data_map={
         },
         'ZSwitch':{
             ZStyleDataKey.Body: lambda: ZPalette.Primary,
-            ZStyleDataKey.Border: lambda: ZPalette.Border,
+            ZStyleDataKey.Border: lambda: ZPalette.BodyNeutral,
             ZStyleDataKey.Handle: ZPalette.Black_67,
             ZStyleDataKey.HandleToggled: ZPalette.Black_67
         },
         'ZSlider': {
             ZStyleDataKey.Track: lambda: ZPalette.BodyLighter,
-            ZStyleDataKey.TrackBorder: lambda: ZPalette.BorderMuted,
+            ZStyleDataKey.TrackBorder: lambda: ZPalette.Border,
             ZStyleDataKey.FillAreaStart: lambda: ZPalette.Primary,
             ZStyleDataKey.FillAreaEnd: lambda: ZPalette.Secondary,
             ZStyleDataKey.FillAreaBorder: lambda: ZPalette.Primary,

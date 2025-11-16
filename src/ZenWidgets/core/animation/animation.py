@@ -3,8 +3,13 @@ import numpy
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 
-__all__ = ['ZExpAnimation','AnimationGroup','ExpAccelerateAnim',
-           'SqrExpAnimation','CounterAnimation']
+__all__ = [
+    'ZExpAnimation',
+    'AnimationGroup',
+    'ExpAccelerateAnim',
+    'SqrExpAnimation',
+    'CounterAnimation'
+]
 
 global_fps = 60
 

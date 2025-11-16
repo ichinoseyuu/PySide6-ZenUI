@@ -24,16 +24,6 @@ class PanelTest(ZScrollPanel):
         title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
         card.layout().addWidget(title)
 
-        # container = ZHContainer(card)
-        # card.layout().addWidget(container)
-
-        # self.progress_btn = ZProgressButton(card, text="随机进度")
-        # import random
-        # self.progress_btn.clicked.connect(lambda: self.progress_btn.setProgress(random.random()))
-        # self.progress_btn.progressChanged.connect(lambda x: print(f"progress: {x}"))
-        # self.progress_btn.progressFinished.connect(lambda: print("finished"))
-        # container.addWidget(self.progress_btn)
-
         container = ZFlowContainer(card)
         card.layout().addWidget(container)
         # container.setColumns(3)
@@ -50,3 +40,15 @@ class PanelTest(ZScrollPanel):
             container.addWidget(m)
             container.regDraggableWidget(m)
             i += 1
+
+        container = ZHContainer(card)
+        card.layout().addWidget(container)
+
+        self.test_btn = ZButton(card, text="打开对话框")
+        self.test_btn.clicked.connect(self.open_dialog)
+        container.addWidget(self.test_btn)
+
+
+    def open_dialog(self):
+        self.dialog = ZDialog(self.test_btn)
+        self.dialog.show()

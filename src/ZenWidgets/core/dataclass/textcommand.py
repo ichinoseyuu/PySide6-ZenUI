@@ -1,4 +1,4 @@
-class ZTextCommand:
+class ZTextSnapshot(object):
     def __init__(self, old_text: str, new_text: str, old_pos: int, new_pos: int):
         self.old_text = old_text
         self.new_text = new_text

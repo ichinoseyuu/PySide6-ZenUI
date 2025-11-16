@@ -1,1 +1,2 @@
+from .titlebar import ZTitleBar
 from .framelesswindow import ZFramelessWindow,ZStandardFramelessWindow

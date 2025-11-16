@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
     ZAnimatedColor,
     ZAnimatedOpacity,
-    QAnimatedFloat,
+    ZAnimatedFloat,
     ZStyleController,
     ZWidget,
     ABCToggleButton
@@ -24,7 +24,7 @@ class SwitchStyle:
 # region SwitchHandle
 class SwitchHandle(ZWidget):
     bodyCtrl: ZAnimatedColor
-    scaleCtrl: QAnimatedFloat
+    scaleCtrl: ZAnimatedFloat
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self.scale_nomal = 0.85
@@ -61,7 +61,7 @@ class ZSwitch(ABCToggleButton):
                  parent: QWidget = None,
                  tun_on: bool = False,
                  is_group_member: bool = False,
-                 style: Style = Style.Standard,
+                 switch_style: Style = Style.Standard,
                  objectName: str | None = None,
                  ):
         super().__init__(parent,
@@ -69,24 +69,13 @@ class ZSwitch(ABCToggleButton):
                          is_group_member=is_group_member,
                          objectName=objectName,
                          )
-        self._style = style
+        self._switch_style: ZSwitch.Style = switch_style
         self._handle = SwitchHandle(self)
         self._init_style_()
 
-
-    # region public
-    def isTurnOn(self) -> bool: return self._checked
-
-    def switchStyle(self): return self._style
-
-    def setSwitchStyle(self, v: Style):
-        if v == self._style: return
-        self._style = v
-        self.update()
-
-    # region private
+    # private method
     def _init_style_(self):
-        style = self._style.value
+        style = self._switch_style.value
         self.setFixedSize(style.Width, style.Height)
         self._handle.setFixedSize(style.HandleDiameter, style.HandleDiameter)
         self._handle.move(style.Margin, style.Margin)
@@ -110,31 +99,37 @@ class ZSwitch(ABCToggleButton):
             self._handle.bodyCtrl.setColorTo(data.Handle)
         self.borderColorCtrl.setColorTo(data.Border)
 
+    def _mouse_enter_(self): self._handle.scaleCtrl.setValueTo(self._handle.scale_hover)
 
-    # region slot
-    def _hover_handler_(self):
-        self._handle.scaleCtrl.setValueTo(self._handle.scale_hover)
+    def _mouse_leave_(self): self._handle.scaleCtrl.setValueTo(self._handle.scale_nomal)
 
-    def _leave_handler_(self):
-        self._handle.scaleCtrl.setValueTo(self._handle.scale_nomal)
-
-
-    def _toggle_handler_(self, checked):
+    def _button_toggle_(self):
         data = self.styleDataCtrl.data
-        if checked:
+        if self._checked:
             self.bodyColorCtrl.toOpaque()
             self._handle.bodyCtrl.setColorTo(data.HandleToggled)
         else:
             self.bodyColorCtrl.toTransparent()
             self._handle.bodyCtrl.setColorTo(data.Handle)
-        style = self._style.value
+        style = self._switch_style.value
         handle_width = self._handle.width()
         margin = style.Margin
-        target_x = self.width() - handle_width - margin if checked else margin
+        target_x = self.width() - handle_width - margin if self._checked else margin
         target_y = margin
         self._handle.widgetPositionCtrl.moveTo(target_x, target_y)
 
-    # region paintEvent
+    # public method
+    def isTurnOn(self) -> bool: return self._checked
+
+    def switchStyle(self): return self._switch_style
+
+    def setSwitchStyle(self, v: Style):
+        if v == self._switch_style: return
+        self._button_toggle_()
+        self._switch_style = v
+        self.update()
+
+    # event
     def paintEvent(self, event):
         if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)

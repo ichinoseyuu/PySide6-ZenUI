@@ -2,8 +2,7 @@
 
 ## preview
 
-![深色主题预览](https://cdn.jsdelivr.net/gh/ichinoseyuu/Image/202508100210398.png)
-![浅色主题预览](https://cdn.jsdelivr.net/gh/ichinoseyuu/Image/202508100210401.png)
+![预览](https://cdn.jsdelivr.net/gh/ichinoseyuu/Image/202511141737733.png)
 
 ## initialization
 

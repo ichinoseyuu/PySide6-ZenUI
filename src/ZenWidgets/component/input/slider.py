@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
     ZAnimatedColor,
     ZAnimatedLinearGradient,
-    QAnimatedFloat,
+    ZAnimatedFloat,
     ZStyleController,
     ZWidget
 )
@@ -22,7 +22,7 @@ from ZenWidgets.gui import ZSliderStyleData
 class SliderFill(ZWidget):
     bodyColorCtrl: ZAnimatedLinearGradient
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
 
     def paintEvent(self, event) -> None:
         if self.opacityCtrl.opacity == 0: return
@@ -60,7 +60,7 @@ class SliderFill(ZWidget):
 class SliderTrack(ZWidget):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
 
     def paintEvent(self, event):
         if self.opacityCtrl.opacity == 0: return
@@ -86,8 +86,8 @@ class SliderHandle(ZWidget):
     innerColorCtrl: ZAnimatedColor
     outerColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    innerScaleCtrl: QAnimatedFloat
-    outerScaleCtrl: QAnimatedFloat
+    innerScaleCtrl: ZAnimatedFloat
+    outerScaleCtrl: ZAnimatedFloat
 
     def __init__(self, parent: QWidget = None, radius: int = 6):
         super().__init__(parent)
@@ -133,17 +133,6 @@ class SliderHandle(ZWidget):
             painter.drawEllipse(center, border_radius, border_radius)
         painter.end()
 
-    def _show_handle_tooltip(self):
-        parent = self.parent()
-        pos = ZPosition.Top if parent.isHorizontal() else ZPosition.Left
-        ZGlobal.tooltip.showTip(
-            text=parent.displayValue(),
-            target=self,
-            mode=ZGlobal.tooltip.Mode.TrackTarget,
-            position=pos,
-            hide_delay=1000
-        )
-
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
         self.innerScaleCtrl.setValueTo(self._inner_scale_pressed)
@@ -161,7 +150,7 @@ class SliderHandle(ZWidget):
         else:
             y = int(max(0, min(local_pos.y(), slider._track_length)))
             slider.setValue(slider._max_value - y / max(1, slider._track_length) * slider._max_value)
-        self._show_handle_tooltip()
+        self.parent()._show_tooltip()
 
     def mouseReleaseEvent(self, event):
         super().mouseReleaseEvent(event)
@@ -173,14 +162,14 @@ class SliderHandle(ZWidget):
         super().enterEvent(event)
         self.innerScaleCtrl.setValueTo(self._inner_scale_hover)
         self.outerScaleCtrl.setValueTo(self._outer_scale_hover)
-        self._show_handle_tooltip()
+        self.parent()._show_tooltip()
 
     def leaveEvent(self, event):
         super().leaveEvent(event)
         self.innerScaleCtrl.setValueTo(self._inner_scale_normal)
         self.outerScaleCtrl.setValueTo(self._outer_scale_normal)
-        self.parent().clearFocus()
         ZGlobal.tooltip.hideTipDelayed(500)
+        self.clearFocus()
 
 @dataclass
 class SliderStyle:
@@ -463,8 +452,7 @@ class ZSlider(ZWidget):
             text=self.displayValue(),
             target=self._handle,
             mode=ZGlobal.tooltip.Mode.TrackTarget,
-            position=pos,
-            hide_delay=1000
+            position=pos
         )
     # region event
     def resizeEvent(self, event):
@@ -504,7 +492,7 @@ class ZSlider(ZWidget):
                 percent = 1 - (y - start) / length
                 value = self._min_value + percent * (self._max_value - self._min_value)
             self.setValue(value)
-            self._handle.enterEvent(None)
+            self._show_tooltip()
 
     def wheelEvent(self, event: QWheelEvent):
         super().wheelEvent(event)
@@ -518,5 +506,5 @@ class ZSlider(ZWidget):
 
     def leaveEvent(self, event):
         super().leaveEvent(event)
-        self._handle.leaveEvent(None)
+        ZGlobal.tooltip.hideTipDelayed(500)
         self.clearFocus()

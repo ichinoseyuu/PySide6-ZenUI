@@ -4,18 +4,18 @@ from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen
 from ZenWidgets.component.base import (
     ZFlashEffect,
     ZAnimatedColor,
-    QAnimatedFloat,
+    ZAnimatedFloat,
     ZStyleController,
-    ZPadding,
     ZWidget
 )
-from ZenWidgets.core import ZDebug
+
+from ZenWidgets.core import ZDebug,ZPadding
 from ZenWidgets.gui import ZHeadLineStyleData
 
 class ZHeadLine(ZWidget):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
     flashEffectCtrl: ZFlashEffect
     textColorCtrl: ZAnimatedColor
     textBackColorCtrl: ZAnimatedColor

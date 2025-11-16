@@ -119,6 +119,7 @@ class ZButtonGroup(QObject):
         if self._checked_key is not None and self._checked_key in self._buttons:
             old_button = self._buttons[self._checked_key]
             old_button.setChecked(False)
+            old_button._mouse_leave_()
             old_button.leaved.emit()
         # 设置新选中
         new_button = self._buttons[key]
@@ -137,6 +138,7 @@ class ZButtonGroup(QObject):
         if self._checked_key is not None and self._checked_key in self._buttons:
             old_button = self._buttons[self._checked_key]
             old_button.setChecked(False)
+            old_button._mouse_leave_()
             old_button.leaved.emit()
         self._checked_button_last = self._checked_key
         self._checked_key = key

@@ -3,12 +3,10 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QPropertyAnimation,QObject,Property,QEasingCurve,Signal
 from ZenWidgets.core import ZExpPropertyAnimation
 
-__All__ = [
+__all__ = [
     'ABCAnimatedInt',
-    'QAnimatedInt',
     'ZAnimatedInt',
     'ABCAnimatedFloat',
-    'QAnimatedFloat',
     'ZAnimatedFloat'
 ]
 
@@ -50,8 +48,8 @@ class ABCAnimatedInt(QObject):
     def parent(self) -> QWidget:
         return super().parent()
 
-# region QAnimatedInt
-class QAnimatedInt(ABCAnimatedInt):
+# region ZAnimatedInt
+class ZAnimatedInt(ABCAnimatedInt):
     '''具有原生属性动画的整数控制器'''
     def __init__(self, parent: QWidget, value: int = 0):
         super().__init__(parent, value)
@@ -61,18 +59,6 @@ class QAnimatedInt(ABCAnimatedInt):
 
     @property
     def animation(self) -> QPropertyAnimation: return self._anim
-
-# region ZAnimatedInt
-class ZAnimatedInt(ABCAnimatedInt):
-    '''具有原生属性动画的整数控制器'''
-    def __init__(self, parent: QWidget, value: int = 0):
-        super().__init__(parent, value)
-        self._anim = ZExpPropertyAnimation(self, 'value')
-        self._anim.setBias(1)
-        self._anim.setFactor(0.2)
-
-    @property
-    def animation(self) -> ZExpPropertyAnimation: return self._anim
 
 # region ABCAnimatedFloat
 class ABCAnimatedFloat(QObject):
@@ -112,8 +98,8 @@ class ABCAnimatedFloat(QObject):
     def parent(self) -> QWidget:
         return super().parent()
 
-# region QAnimatedFloat
-class QAnimatedFloat(ABCAnimatedFloat):
+# region ZAnimatedFloat
+class ZAnimatedFloat(ABCAnimatedFloat):
     '''具有原生属性动画的浮点数控制器'''
     def __init__(self, parent: QWidget, value: int|float = .0):
         super().__init__(parent, value)
@@ -123,14 +109,3 @@ class QAnimatedFloat(ABCAnimatedFloat):
 
     @property
     def animation(self) -> QPropertyAnimation: return self._anim
-# region ZAnimatedFloat
-class ZAnimatedFloat(ABCAnimatedFloat):
-    '''具有原生属性动画的浮点数控制器'''
-    def __init__(self, parent: QWidget, value: int|float = .0):
-        super().__init__(parent, value)
-        self._anim = ZExpPropertyAnimation(self,'value')
-        self._anim.setBias(0.05)
-        self._anim.setFactor(0.2)
-
-    @property
-    def animation(self) -> ZExpPropertyAnimation: return self._anim

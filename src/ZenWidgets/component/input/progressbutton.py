@@ -1,12 +1,12 @@
 from PySide6.QtGui import QPainter,QFont,QPen,QIcon,QPixmap
-from PySide6.QtCore import Qt,QRect,QSize,QRectF,QPoint,QTimer,Signal
+from PySide6.QtCore import Qt,QRect,QSize,QRectF,QPoint
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
     ZAnimatedColor,
-    QAnimatedFloat,
+    ZAnimatedFloat,
     ZStyleController,
     ZOpacityEffect,
-    ABCButton,
+    ABCProgressButton,
     ZWidget
     )
 from ZenWidgets.core import (
@@ -16,15 +16,11 @@ from ZenWidgets.core import (
 )
 from ZenWidgets.gui import ZProgressButtonStyleData
 
-class ZProgressButton(ABCButton):
-    progressChanged = Signal(float)
-    progressFinished = Signal()
-
+class ZProgressButton(ABCProgressButton):
     bodyColorCtrl: ZAnimatedColor
     progressColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
-    progressCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
     hoverLayerCtrl: ZOpacityEffect
     textColorCtrl: ZAnimatedColor
     iconColorCtrl: ZAnimatedColor
@@ -58,64 +54,6 @@ class ZProgressButton(ABCButton):
         self._init_style_()
         self.resize(self.sizeHint())
 
-    # region public
-    def text(self) -> str: return self._text
-
-    def setText(self, t: str) -> None:
-        self._text = t
-        self.update()
-
-    def icon(self) -> QIcon: return self._icon
-
-    def setIcon(self, i: QIcon) -> None:
-        self._icon = i
-        self.update()
-
-    def iconSize(self) -> QSize: return self._icon_size
-
-    def setIconSize(self, s: QSize) -> None:
-        self._icon_size = s
-        self.update()
-
-    def spacing(self) -> int: return self._spacing
-
-    def setSpacing(self, spacing: int) -> None:
-        self._spacing = spacing
-        self.update()
-
-    def isResetOnFinish(self) -> bool: return self._reset_on_finish
-
-    def setResetOnFinish(self, r: bool) -> None:
-        self._reset_on_finish = r
-
-    def setProgress(self, value: float,/, animate: bool = True) -> None:
-        value = max(0.0, min(1.0, value))
-        if value == 1.0:
-            self.progressCtrl.setValueTo(1.0) if animate else self.progressCtrl.setValue(1.0)
-            self.progressChanged.emit(1.0)
-            self.progressFinished.emit()
-            if self._reset_on_finish:
-                QTimer.singleShot(150, lambda: self.progressCtrl.setValueTo(.0))
-        else:
-            self.progressCtrl.setValueTo(value) if animate else self.progressCtrl.setValue(value)
-            self.progressChanged.emit(value)
-
-
-    def sizeHint(self):
-        if self._icon and not self._text:
-            size = QSize(30, 30)
-            self.setMinimumSize(size)
-            return size
-        elif not self._icon and self._text:
-            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 40, 30)
-            self.setMinimumSize(size)
-            return size
-        else:
-            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 60, 30)
-            self.setMinimumSize(size)
-            return size
-
-
     # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
@@ -133,9 +71,7 @@ class ZProgressButton(ABCButton):
         self.iconColorCtrl.setColorTo(data.Icon)
         self.textColorCtrl.setColorTo(data.Text)
 
-    # region slot
-    def _hover_handler_(self):
-        self.hoverLayerCtrl.setAlphaFTo(0.06)
+    def _show_tooltip_(self):
         if self.toolTip() != '':
             ZGlobal.tooltip.showTip(
                 text=self.toolTip(),
@@ -143,17 +79,54 @@ class ZProgressButton(ABCButton):
                 position=ZPosition.TopRight,
                 offset=QPoint(6, 6)
                 )
-    def _leave_handler_(self):
-        self.hoverLayerCtrl.toTransparent()
+
+    def _hide_tooltip_(self):
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
-    def _press_handler_(self):
-        pass
+    def _mouse_enter_(self): self.hoverLayerCtrl.setAlphaFTo(0.06)
 
-    def _release_handler_(self):
-        self.progressCtrl.setValueTo(0.0)
+    def _mouse_leave_(self): self.hoverLayerCtrl.toTransparent()
 
-    # region paintEvent
+    # region public method
+    def text(self) -> str: return self._text
+
+    def spacing(self) -> int: return self._spacing
+
+    def icon(self) -> QIcon: return self._icon
+
+    def iconSize(self) -> QSize: return self._icon_size
+
+    def setText(self, t: str) -> None: self._text = t; self.update()
+
+    def setIcon(self, i: QIcon) -> None: self._icon = i; self.update()
+
+    def setIconSize(self, s: QSize) -> None: self._icon_size = s; self.update()
+
+    def setSpacing(self, spacing: int) -> None: self._spacing = spacing; self.update()
+
+    def sizeHint(self):
+        if self._icon and not self._text:
+            size = QSize(30, 30)
+            self.setMinimumSize(size)
+            return size
+        elif not self._icon and self._text:
+            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 40, 30)
+            self.setMinimumSize(size)
+            return size
+        else:
+            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 60, 30)
+            self.setMinimumSize(size)
+            return size
+
+    # region event
+    def enterEvent(self, event):
+        super().enterEvent(event)
+        self._show_tooltip_()
+
+    def leaveEvent(self, event):
+        super().leaveEvent(event)
+        self._hide_tooltip_()
+
     def paintEvent(self, event) -> None:
         if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
@@ -175,8 +148,6 @@ class ZProgressButton(ABCButton):
             painter.setBrush(Qt.NoBrush)
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
 
-        self.hoverLayerCtrl.drawOpacityLayer(painter, rect, radius)
-
         if self.progressCtrl.value > 0:
             progress_rect = QRectF(rect).adjusted(1, 1, -1, -1)
             progress_rect.setWidth(progress_rect.width() * self.progressCtrl.value)
@@ -184,6 +155,7 @@ class ZProgressButton(ABCButton):
             painter.setBrush(self.progressColorCtrl.color)
             painter.drawRoundedRect(progress_rect, radius, radius)
 
+        self.hoverLayerCtrl.drawOpacityLayer(painter, rect, radius)
 
         if self._icon:
             pixmap = self._icon.pixmap(self._icon_size)

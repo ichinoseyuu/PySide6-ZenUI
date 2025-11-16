@@ -1,12 +1,12 @@
 from PySide6.QtGui import QPainter,QFont,QPen,QIcon,QPixmap
-from PySide6.QtCore import Qt,QRect,QSize,QRectF,QPoint,QTimer,Signal
+from PySide6.QtCore import Qt,QRect,QSize,QRectF,QPoint
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
     ZAnimatedColor,
-    QAnimatedFloat,
+    ZAnimatedFloat,
     ZStyleController,
     ZOpacityEffect,
-    ABCButton,
+    ABCLongPressButton,
     ZWidget
     )
 from ZenWidgets.core import (
@@ -16,14 +16,11 @@ from ZenWidgets.core import (
 )
 from ZenWidgets.gui import ZLongPressButtonStyleData
 
-class ZLongPressButton(ABCButton):
-    longPress = Signal() # 长按信号，达到100%进度时触发
-
+class ZLongPressButton(ABCLongPressButton):
     bodyColorCtrl: ZAnimatedColor
     progressColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
-    progressCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
     hoverLayerCtrl: ZOpacityEffect
     textColorCtrl: ZAnimatedColor
     iconColorCtrl: ZAnimatedColor
@@ -52,51 +49,8 @@ class ZLongPressButton(ABCButton):
         self._icon: QIcon | None = icon
         self._icon_size = icon_size
         self._spacing = spacing
-        self._pressed_timer = QTimer(self)
-        self._pressed_timer.setInterval(1000 // 60)
-        self._pressed_timer.timeout.connect(self._on_mouse_pressed_)
         self._init_style_()
         self.resize(self.sizeHint())
-
-    # region public
-    def text(self) -> str: return self._text
-
-    def setText(self, t: str) -> None:
-        self._text = t
-        self.update()
-
-    def icon(self) -> QIcon: return self._icon
-
-    def setIcon(self, i: QIcon) -> None:
-        self._icon = i
-        self.update()
-
-    def iconSize(self) -> QSize: return self._icon_size
-
-    def setIconSize(self, s: QSize) -> None:
-        self._icon_size = s
-        self.update()
-
-    def spacing(self) -> int: return self._spacing
-
-    def setSpacing(self, spacing: int) -> None:
-        self._spacing = spacing
-        self.update()
-
-    def sizeHint(self):
-        if self._icon and not self._text:
-            size = QSize(30, 30)
-            self.setMinimumSize(size)
-            return size
-        elif not self._icon and self._text:
-            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 40, 30)
-            self.setMinimumSize(size)
-            return size
-        else:
-            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 60, 30)
-            self.setMinimumSize(size)
-            return size
-
 
     # region private method
     def _init_style_(self):
@@ -115,9 +69,7 @@ class ZLongPressButton(ABCButton):
         self.iconColorCtrl.setColorTo(data.Icon)
         self.textColorCtrl.setColorTo(data.Text)
 
-    # region slot
-    def _hover_handler_(self):
-        self.hoverLayerCtrl.setAlphaFTo(0.06)
+    def _show_tooltip_(self):
         if self.toolTip() != '':
             ZGlobal.tooltip.showTip(
                 text=self.toolTip(),
@@ -125,35 +77,54 @@ class ZLongPressButton(ABCButton):
                 position=ZPosition.TopRight,
                 offset=QPoint(6, 6)
                 )
-    def _leave_handler_(self):
-        self.hoverLayerCtrl.toTransparent()
+
+    def _hide_tooltip_(self):
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
-    def _press_handler_(self):
-        self._pressed_timer.start()
+    def _mouse_enter_(self): self.hoverLayerCtrl.setAlphaFTo(0.06)
 
-    def _release_handler_(self):
-        self._pressed_timer.stop()
-        self.progressCtrl.setValueTo(0.0)
+    def _mouse_leave_(self): self.hoverLayerCtrl.toTransparent()
 
-    def _step_length_(self) -> float:
-        remaining = 1.0 - self.progressCtrl.value
-        return min(remaining, max(0.01, remaining / 16 + 0.005))
+    # region public method
+    def text(self) -> str: return self._text
 
-    def _on_mouse_pressed_(self):
-        '''鼠标按压时的进度更新逻辑'''
-        if not self.isPressed(): return
-        progress = self.progressCtrl.value + self._step_length_()
-        if progress >= 1.0:
-            progress = 1.0
-            self.progressCtrl.setValue(progress)
-            self._pressed_timer.stop()
-            self.longPress.emit()
-            QTimer.singleShot(150, lambda: self.progressCtrl.setValueTo(0.0))
+    def spacing(self) -> int: return self._spacing
+
+    def icon(self) -> QIcon: return self._icon
+
+    def iconSize(self) -> QSize: return self._icon_size
+
+    def setText(self, t: str) -> None: self._text = t; self.update()
+
+    def setIcon(self, i: QIcon) -> None: self._icon = i; self.update()
+
+    def setIconSize(self, s: QSize) -> None: self._icon_size = s; self.update()
+
+    def setSpacing(self, spacing: int) -> None: self._spacing = spacing; self.update()
+
+    def sizeHint(self):
+        if self._icon and not self._text:
+            size = QSize(30, 30)
+            self.setMinimumSize(size)
+            return size
+        elif not self._icon and self._text:
+            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 40, 30)
+            self.setMinimumSize(size)
+            return size
         else:
-            self.progressCtrl.setValue(progress)
+            size = QSize(self.fontMetrics().boundingRect(self._text).width() + 60, 30)
+            self.setMinimumSize(size)
+            return size
 
-    # region paintEvent
+    # region event
+    def enterEvent(self, event):
+        super().enterEvent(event)
+        self._show_tooltip_()
+
+    def leaveEvent(self, event):
+        super().leaveEvent(event)
+        self._hide_tooltip_()
+
     def paintEvent(self, event) -> None:
         if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)

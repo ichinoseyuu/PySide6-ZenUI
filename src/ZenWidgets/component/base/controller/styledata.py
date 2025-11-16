@@ -6,7 +6,7 @@ from PySide6.QtGui import QColor
 from ZenWidgets.core import ZGlobal
 from ZenWidgets.gui import StyleDataT,ZStyleDataKey
 
-__All__ = ['ZStyleController']
+__all__ = ['ZStyleController']
 
 class ZStyleController(QObject, Generic[StyleDataT]):
     '''样式管理器

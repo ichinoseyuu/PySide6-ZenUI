@@ -187,7 +187,7 @@ class PanelWidget(ZScrollPanel):
 
         self.long_press_btn_1 = ZLongPressButton(container, text='长按以确认')
         container.addWidget(self.long_press_btn_1)
-        self.long_press_btn_1.longPress.connect(
+        self.long_press_btn_1.longPressClicked.connect(
             lambda: info_confirm.setText(f'删除成功', flash=True)
             )
 
@@ -225,13 +225,13 @@ class PanelWidget(ZScrollPanel):
         container.setAlignment(Qt.AlignmentFlag.AlignBottom)
         card.layout().addWidget(container)
 
-        self.switch_1 = ZSwitch(container, style= ZSwitch.Style.Compact)
+        self.switch_1 = ZSwitch(container, switch_style= ZSwitch.Style.Compact)
         container.addWidget(self.switch_1, spacing=16)
 
-        self.switch_2 = ZSwitch(container, style= ZSwitch.Style.Standard)
+        self.switch_2 = ZSwitch(container, switch_style= ZSwitch.Style.Standard)
         container.addWidget(self.switch_2, spacing=16)
 
-        self.switch_3 = ZSwitch(container, style= ZSwitch.Style.Comfortable)
+        self.switch_3 = ZSwitch(container, switch_style= ZSwitch.Style.Comfortable)
         container.addWidget(self.switch_3, spacing=16)
 
         # region ZComboBox
@@ -250,98 +250,6 @@ class PanelWidget(ZScrollPanel):
         self.combo_box_1 = ZComboBox(self, text='请选择')
         self.combo_box_1.addOptions(options)
         container.addWidget(self.combo_box_1)
-
-        # region ZLineEdit
-        card = ZCard(self)
-        self.layout().addWidget(card, stretch=0)
-
-        card.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
-
-        title = ZHeadLine(card, text= 'ZLineEdit')
-        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
-        card.layout().addWidget(title)
-
-        container = ZVContainer(card)
-        card.layout().addWidget(container)
-
-        self.lineedit_1 = ZLineEdit(
-            parent=container,
-            minimumSize=QSize(300, 30)
-        )
-        container.addWidget(self.lineedit_1)
-
-        self.lineedit_2 = ZLineEdit(
-            parent=container,
-            placeholder='带有提示文字的编辑框',
-            minimumSize=QSize(300, 30)
-        )
-        container.addWidget(self.lineedit_2)
-
-        self.lineedit_3 = ZLineEdit(
-            parent=container,
-            text='不能修改的编辑框',
-            read_only=True,
-            selectable=False,
-            minimumSize=QSize(300, 30)
-        )
-        container.addWidget(self.lineedit_3)
-
-        self.lineedit_4 = ZLineEdit(
-            parent=container,
-            text='不能修改但可以选中编辑框',
-            read_only=True,
-            selectable=True,
-            minimumSize=QSize(300, 30)
-        )
-        container.addWidget(self.lineedit_4)
-
-        # region ZLoginEdit
-        layout = ZHBoxLayout(margins=QMargins(0, 0, 0, 0), spacing=30)
-        self.layout().addLayout(layout)
-
-        card = ZCard(self)
-        layout.addWidget(card, stretch=0)
-
-        title = ZHeadLine(card, text= 'ZLoginEdit')
-        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
-        card.layout().addWidget(title)
-
-        container = ZVContainer(card)
-        card.layout().addWidget(container)
-
-        container_sub = ZHContainer(container)
-        container.addWidget(container_sub)
-
-        title_account = ZHeadLine(card, text= '账号:')
-        container_sub.addWidget(title_account)
-
-        self.login_edit_1 = ZLoginEdit(card, allow_characters=False)
-        container_sub.addWidget(self.login_edit_1)
-
-        container_sub = ZHContainer(container)
-        container.addWidget(container_sub)
-
-        title_password = ZHeadLine(card, text= '密码:')
-        container_sub.addWidget(title_password)
-
-        self.login_edit_2 = ZLoginEdit(card, is_masked=True)
-        container_sub.addWidget(self.login_edit_2)
-
-        # region ZNumberEdit
-        card = ZCard(self)
-        layout.addWidget(card, stretch=0)
-
-        title = ZHeadLine(card, text= 'ZNumberEdit')
-        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
-        card.layout().addWidget(title)
-
-        container = ZVContainer(card)
-        card.layout().addWidget(container)
-        self.number_edit_1 = ZNumberEdit(card)
-        container.addWidget(self.number_edit_1)
-
-        self.number_edit_2 = ZNumberEdit(card, allow_negative=True, allow_decimal=True)
-        container.addWidget(self.number_edit_2)
 
         # region ZSlider
         card = ZCard(self)
@@ -467,3 +375,94 @@ class PanelWidget(ZScrollPanel):
         self.headline_3.setText('可选中的标题')
         container.addWidget(self.headline_3)
 
+        # region ZLineEdit
+        card = ZCard(self)
+        self.layout().addWidget(card, stretch=0)
+
+        card.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        title = ZHeadLine(card, text= 'ZLineEdit')
+        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
+        card.layout().addWidget(title)
+
+        container = ZVContainer(card)
+        card.layout().addWidget(container)
+
+        self.lineedit_1 = ZLineEdit(
+            parent=container,
+            minimumSize=QSize(300, 30)
+        )
+        container.addWidget(self.lineedit_1)
+
+        self.lineedit_2 = ZLineEdit(
+            parent=container,
+            placeholder='带有提示文字的编辑框',
+            minimumSize=QSize(300, 30)
+        )
+        container.addWidget(self.lineedit_2)
+
+        self.lineedit_3 = ZLineEdit(
+            parent=container,
+            text='不能修改的编辑框',
+            read_only=True,
+            selectable=False,
+            minimumSize=QSize(300, 30)
+        )
+        container.addWidget(self.lineedit_3)
+
+        self.lineedit_4 = ZLineEdit(
+            parent=container,
+            text='不能修改但可以选中编辑框',
+            read_only=True,
+            selectable=True,
+            minimumSize=QSize(300, 30)
+        )
+        container.addWidget(self.lineedit_4)
+
+        # region ZLoginEdit
+        layout = ZHBoxLayout(margins=QMargins(0, 0, 0, 0), spacing=30)
+        self.layout().addLayout(layout)
+
+        card = ZCard(self)
+        layout.addWidget(card, stretch=0)
+
+        title = ZHeadLine(card, text= 'ZLoginEdit')
+        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
+        card.layout().addWidget(title)
+
+        container = ZVContainer(card)
+        card.layout().addWidget(container)
+
+        container_sub = ZHContainer(container)
+        container.addWidget(container_sub)
+
+        title_account = ZHeadLine(card, text= '账号:')
+        container_sub.addWidget(title_account)
+
+        self.login_edit_1 = ZLoginEdit(card, allow_characters=False)
+        container_sub.addWidget(self.login_edit_1)
+
+        container_sub = ZHContainer(container)
+        container.addWidget(container_sub)
+
+        title_password = ZHeadLine(card, text= '密码:')
+        container_sub.addWidget(title_password)
+
+        self.login_edit_2 = ZLoginEdit(card, is_masked=True)
+        container_sub.addWidget(self.login_edit_2)
+
+        # region ZNumberEdit
+        card = ZCard(self)
+        layout.addWidget(card, stretch=0)
+
+        title = ZHeadLine(card, text= 'ZNumberEdit')
+        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
+        card.layout().addWidget(title)
+
+        container = ZVContainer(card)
+        card.layout().addWidget(container)
+        self.number_edit_1 = ZNumberEdit(card)
+        container.addWidget(self.number_edit_1)
+
+        self.number_edit_2 = ZNumberEdit(card, allow_negative=True, allow_decimal=True)
+        container.addWidget(self.number_edit_2)

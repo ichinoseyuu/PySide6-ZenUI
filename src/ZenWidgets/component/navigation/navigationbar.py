@@ -7,7 +7,7 @@ from ZenWidgets.component.base import (
     ZOpacityEffect,
     ZAnimatedColor,
     ZAnimatedOpacity,
-    QAnimatedFloat,
+    ZAnimatedFloat,
     ZStyleController,
     ZButtonGroup,
     ZWidget,
@@ -30,7 +30,7 @@ from ZenWidgets.gui import (
 class ZNavBarButton(ABCButton):
     opacityEffectCtrl: ZOpacityEffect
     iconColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
     opacityCtrl: ZAnimatedOpacity
     styleDataCtrl: ZStyleController[ZNavBarButtonStyleData]
     __controllers_kwargs__ = {
@@ -54,30 +54,14 @@ class ZNavBarButton(ABCButton):
         self._init_style_()
         self.setFixedSize(fixed_size)
 
-
-    # region public method
-    def icon(self) -> QIcon: return self._icon
-
-    def setIcon(self, i: QIcon) -> None:
-        self._icon = i
-        self.update()
-
-    def iconSize(self) -> QSize: return self._icon_size
-
-    def setIconSize(self, s: QSize) -> None:
-        self._icon_size = s
-        self.update()
-
-    # region private method
+    # private method
     def _init_style_(self):
         self.iconColorCtrl.color = self.styleDataCtrl.data.Icon
 
     def _style_change_handler_(self):
         self.iconColorCtrl.setColorTo(self.styleDataCtrl.data.Icon)
 
-    # region slot
-    def _hover_handler_(self):
-        self.opacityEffectCtrl.setAlphaFTo(0.08)
+    def _show_tooltip_(self):
         if self.toolTip() != '':
             ZGlobal.tooltip.showTip(
                 text = self.toolTip(),
@@ -87,17 +71,38 @@ class ZNavBarButton(ABCButton):
                 offset = QPoint(10, 0)
                 )
 
-    def _leave_handler_(self):
-        self.opacityEffectCtrl.toTransparent()
+    def _hide_tooltip_(self):
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
-    def _press_handler_(self):
-        self.opacityEffectCtrl.setAlphaFTo(0.16)
+    def _mouse_enter_(self): self.opacityEffectCtrl.setAlphaFTo(0.08)
 
-    def _release_handler_(self):
-        self.opacityEffectCtrl.setAlphaFTo(0.08)
+    def _mouse_leave_(self): self.opacityEffectCtrl.toTransparent()
 
-    # region event
+    def _mouse_press_(self): self.opacityEffectCtrl.setAlphaFTo(0.16)
+
+    def _mouse_release_(self): self.opacityEffectCtrl.setAlphaFTo(0.08)
+
+    # public method
+    def icon(self) -> QIcon: return QIcon(self._icon)
+
+    def iconSize(self) -> QSize: return QSize(self._icon_size)
+
+    def setIcon(self, i: QIcon) -> None: self._icon = i; self.update()
+
+    def setIconSize(self, s: QSize) -> None:
+        if self._icon_size == s: return
+        self._icon_size = s
+        self.update()
+
+    # event
+    def enterEvent(self, event):
+        super().enterEvent(event)
+        self._show_tooltip_()
+
+    def leaveEvent(self, event):
+        super().leaveEvent(event)
+        self._hide_tooltip_()
+
     def paintEvent(self, event):
         if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
@@ -131,7 +136,7 @@ class ZNavBarButton(ABCButton):
 class ZNavBarToggleButton(ABCToggleButton):
     opacityEffectCtrl: ZOpacityEffect
     iconColorCtrl: ZAnimatedColor
-    radiusCtrl: QAnimatedFloat
+    radiusCtrl: ZAnimatedFloat
     opacityCtrl: ZAnimatedOpacity
     styleDataCtrl: ZStyleController[ZNavBarToggleButtonStyleData]
     __controllers_kwargs__ = {
@@ -155,21 +160,7 @@ class ZNavBarToggleButton(ABCToggleButton):
         self._init_style_()
         self.setFixedSize(fixed_size)
 
-
-    # region private method
-    def icon(self) -> QIcon: return self._icon
-
-    def setIcon(self, i: QIcon) -> None:
-        self._icon = i
-        self.update()
-
-    def iconSize(self) -> QSize: return self._icon_size
-
-    def setIconSize(self, s: QSize) -> None:
-        self._icon_size = s
-        self.update()
-
-    # region private method
+    # private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
         if self._checked:
@@ -185,12 +176,7 @@ class ZNavBarToggleButton(ABCToggleButton):
         else:
             self.iconColorCtrl.setColorTo(data.Icon)
 
-    # region slot
-    def _hover_handler_(self):
-        if self._checked:
-            self.opacityEffectCtrl.setAlphaFTo(0.12)
-        else:
-            self.opacityEffectCtrl.setAlphaFTo(0.08)
+    def _show_tooltip_(self):
         if self.toolTip() != '':
             ZGlobal.tooltip.showTip(
                 text = self.toolTip(),
@@ -200,29 +186,47 @@ class ZNavBarToggleButton(ABCToggleButton):
                 offset = QPoint(10, 0)
                 )
 
-    def _leave_handler_(self):
-        if self._checked:
-            self.opacityEffectCtrl.setAlphaFTo(0.1)
-        else:
-            self.opacityEffectCtrl.toTransparent()
+    def _hide_tooltip_(self):
         if self.toolTip() != '': ZGlobal.tooltip.hideTip()
 
-    def _press_handler_(self):
-        if self._checked:
-            self.opacityEffectCtrl.setAlphaFTo(0.18)
-        else:
-            self.opacityEffectCtrl.setAlphaFTo(0.16)
+    def _mouse_enter_(self): self.opacityEffectCtrl.setAlphaFTo(0.12 if self._checked else 0.08)
 
-    def _toggle_handler_(self, checked):
+    def _mouse_leave_(self): self.opacityEffectCtrl.setAlphaFTo(0.1 if self._checked else .0)
+
+    def _mouse_press_(self): self.opacityEffectCtrl.setAlphaFTo(0.18 if self._checked else 0.16)
+
+    def _mouse_release_(self): self.opacityEffectCtrl.setAlphaFTo(0.08)
+
+    def _button_toggle_(self):
         data = self.styleDataCtrl.data
-        if checked:
+        if self._checked:
             self.opacityEffectCtrl.setAlphaFTo(0.12)
             self.iconColorCtrl.setColorTo(data.IconToggled)
         else:
             self.opacityEffectCtrl.setAlphaFTo(0.08)
             self.iconColorCtrl.setColorTo(data.Icon)
 
-    # region event
+    # private method
+    def icon(self) -> QIcon: return QIcon(self._icon)
+
+    def iconSize(self) -> QSize: return QSize(self._icon_size)
+
+    def setIcon(self, i: QIcon) -> None: self._icon = i; self.update()
+
+    def setIconSize(self, s: QSize) -> None:
+        if self._icon_size == s: return
+        self._icon_size = s
+        self.update()
+
+    # event
+    def enterEvent(self, event):
+        super().enterEvent(event)
+        self._show_tooltip_()
+
+    def leaveEvent(self, event):
+        super().leaveEvent(event)
+        self._hide_tooltip_()
+
     def paintEvent(self, event):
         if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)

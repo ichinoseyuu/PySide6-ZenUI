@@ -9,3 +9,4 @@ from .input import *
 from .text import *
 from .navigation import *
 from .media import *
+from .dialogs import *

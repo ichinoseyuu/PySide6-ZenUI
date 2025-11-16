@@ -2,8 +2,8 @@ import random
 from PySide6.QtWidgets import QWidget,QSizePolicy
 from PySide6.QtCore import QTimer,QPoint,QRectF,QSize
 from PySide6.QtGui import QPainter
-from ZenWidgets.component.base import ZWidget,ZMargin
-from ZenWidgets.core import ZDebug
+from ZenWidgets.component.base import ZWidget
+from ZenWidgets.core import ZDebug,ZMargin
 
 class ABCFlowContainer(QWidget):
     def __init__(self, parent=None):

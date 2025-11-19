@@ -2,7 +2,7 @@ from typing import overload
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QMargins, Slot, QPoint, QSize, QRect, QRectF,Signal
 from PySide6.QtGui import QMouseEvent, QPainter, QIcon , QPixmap, QColor
-from ZenWidgets.component.layout import ZVBoxLayout
+from ZenWidgets.component.layouts import ZVBoxLayout
 from ZenWidgets.component.base import (
     ZOpacityEffect,
     ZAnimatedColor,
@@ -130,7 +130,7 @@ class ZNavBarButton(ABCButton):
         icon_y = (self.height() - self._icon_size.height()) // 2
         painter.drawPixmap(icon_x, icon_y, colored_pixmap)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
+        event.accept()
 
 # region ZNavBarToggleButton
 class ZNavBarToggleButton(ABCToggleButton):
@@ -257,7 +257,7 @@ class ZNavBarToggleButton(ABCToggleButton):
         icon_y = (self.height() - self._icon_size.height()) // 2
         painter.drawPixmap(icon_x, icon_y, colored_pixmap)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
+        event.accept()
 
 
 # region Panel
@@ -301,7 +301,7 @@ class Panel(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
-        painter.end()
+        event.accept()
 
 # region FooterPanel
 class FooterPanel(QWidget):
@@ -316,7 +316,7 @@ class FooterPanel(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
-        painter.end()
+        event.accept()
 
 # region Indicator
 class Indicator(ZWidget):
@@ -332,7 +332,7 @@ class Indicator(ZWidget):
             painter.setPen(Qt.NoPen)
             painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
-        painter.end()
+        event.accept()
 
 # region ZNavigationBar
 class ZNavigationBar(ZWidget):
@@ -439,7 +439,7 @@ class ZNavigationBar(ZWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
-        painter.end()
+        event.accept()
 
     # region private
     def _init_style_(self):

@@ -34,7 +34,6 @@ class ScrollHandle(ZWidget):
 
     def __init__(self,parent: QWidget = None, direction = ZDirection.Vertical):
         super().__init__(parent)
-        self._state: ZState = ZState.Idle
         if direction not in (ZDirection.Horizontal, ZDirection.Vertical): raise ValueError('Invalid direction')
         self._dir: ZDirection = direction
         self._dragging: bool = False
@@ -129,7 +128,7 @@ class ScrollHandle(ZWidget):
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
             painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
-        painter.end()
+        event.accept()
 
     # region mouseEvent
     def mousePressEvent(self, event: QMouseEvent):
@@ -248,7 +247,7 @@ class ZScrollPanel(ZWidget):
                 radius, radius
                 )
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
+        event.accept()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
@@ -334,6 +333,7 @@ class ZScrollPanel(ZWidget):
         content= self._content.size()
         self._update_vertical_handle(content.height(), viewport.height())
         self._update_horizontal_handle(content.width(), viewport.width())
+        print("update handles and content")
 
 
     def _update_vertical_handle(self, ch, vh):

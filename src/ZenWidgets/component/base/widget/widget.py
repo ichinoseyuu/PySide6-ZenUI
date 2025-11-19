@@ -1,16 +1,39 @@
 import inspect
-from typing import TypeVar, cast, get_origin, overload, Any
+from typing import TypeVar,cast,get_origin,overload,Any,Union,Optional,TYPE_CHECKING
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt,QEvent,QPoint,QSize,Signal,Slot
+from PySide6.QtCore import Qt,QEvent,QPoint,QSize,Signal
 from PySide6.QtGui import QMouseEvent
 from ZenWidgets.component.base.controller import *
 from ZenWidgets.core import make_getter,ZState,ZStyle
+if TYPE_CHECKING:
+    from ZenWidgets.component.layouts.layout import ZBoxLayout
 
 T = TypeVar('T')
 
-class PlaceHolderWidget(QWidget):
+class ZPlaceHolderWidget(QWidget):
     '''占位组件'''
-    pass
+
+    def parentWidget(self) -> Optional['ZWidget']:
+        return super().parentWidget()
+
+    def layout(self) -> Optional['ZBoxLayout']:
+        return super().layout()
+
+    def heightHint(self) -> int: return self.sizeHint().height()
+
+    def widthHint(self) -> int: return self.sizeHint().width()
+
+class ZContentWidget(QWidget):
+    '''内容组件'''
+    def parentWidget(self) -> Optional['ZWidget']:
+        return super().parentWidget()
+
+    def layout(self) -> Optional['ZBoxLayout']:
+        return super().layout()
+
+    def heightHint(self) -> int: return self.sizeHint().height()
+
+    def widthHint(self) -> int: return self.sizeHint().width()
 
 class ZWidget(QWidget):
     '''ZenWidgets 组件的基类'''
@@ -115,7 +138,6 @@ class ZWidget(QWidget):
         '''初始化样式'''
         ...
 
-    @Slot()
     def _style_change_handler_(self) -> None:
         '''样式变化槽函数'''
         ...
@@ -193,7 +215,7 @@ class ZWidget(QWidget):
     @overload
     def move(self, pos: QPoint) -> None: ...
 
-    def move(self, *args): super().move(QPoint(*args) - self._move_anchor)
+    def move(self, *args): point = QPoint(*args); super().move(point - self._move_anchor)
 
     def fadeIn(self) -> None:
         self.opacityCtrl.fadeIn()
@@ -212,6 +234,16 @@ class ZWidget(QWidget):
         if e: self.opacityCtrl.fadeTo(1.0)
         else: self.opacityCtrl.fadeTo(0.3)
         super().setEnabled(e)
+
+    def parentWidget(self) -> Optional['ZWidget']:
+        return super().parentWidget()
+
+    def layout(self) -> Optional['ZBoxLayout']:
+        return super().layout()
+
+    def heightHint(self) -> int: return self.sizeHint().height()
+
+    def widthHint(self) -> int: return self.sizeHint().width()
 
     # region event
     def event(self, event: QEvent) -> bool:

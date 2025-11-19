@@ -53,6 +53,5 @@ class ZPanel(ZWidget):
             painter.drawRoundedRect(border_rect, radius, radius)
 
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
         event.accept()
 

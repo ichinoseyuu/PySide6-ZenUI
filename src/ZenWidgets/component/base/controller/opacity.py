@@ -70,7 +70,7 @@ class ZAnimatedOpacity(ABCAnimatedOpacity):
         self._opacity = opacity
         self._anim = ZExpPropertyAnimation(self, "opacity")
         self._anim.finished.connect(self._on_finished_)
-        self._anim.setBias(0.02)
+        self._anim.setBias(0.01)
         self._anim.setFactor(0.2)
 
     @property
@@ -91,7 +91,7 @@ class ZWindowOpacity(ABCAnimatedOpacity):
         super().__init__(parent)
         self._anim = ZExpPropertyAnimation(self, "opacity")
         self._anim.finished.connect(self._on_finished_)
-        self._anim.setBias(0.02)
+        self._anim.setBias(0.01)
         self._anim.setFactor(0.2)
 
     @property

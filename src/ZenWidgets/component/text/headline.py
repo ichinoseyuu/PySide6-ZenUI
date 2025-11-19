@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, QSize, QRectF,QRect
-from PySide6.QtGui import QPainter, QFont, QFontMetrics,QPen
+from PySide6.QtCore import Qt,QSize,QRectF
+from PySide6.QtGui import QPainter,QFont,QFontMetrics,QPen
 from ZenWidgets.component.base import (
     ZFlashEffect,
     ZAnimatedColor,
@@ -8,7 +8,6 @@ from ZenWidgets.component.base import (
     ZStyleController,
     ZWidget
 )
-
 from ZenWidgets.core import ZDebug,ZPadding
 from ZenWidgets.gui import ZHeadLineStyleData
 
@@ -52,7 +51,7 @@ class ZHeadLine(ZWidget):
         self._is_selecting = False
 
         self._init_style_()
-        self.setMinimumSize(self._padding.horizontal, 24)
+        self.setMinimumSize(self._padding.horizontal(), 24)
 
     # region public
     def selectedText(self) -> str: return self._selected_text
@@ -107,16 +106,16 @@ class ZHeadLine(ZWidget):
     def sizeHint(self):
         p = self._padding
         if not self._text:
-            base_width = p.horizontal
+            base_width = p.horizontal()
             if self._isdisplay_indicator:
                 base_width += self._indicator_width + self._spacing
             return QSize(base_width, self.minimumHeight())
 
         fm = QFontMetrics(self.font())
-        text_width = fm.horizontalAdvance(self._text) + p.horizontal + 1
+        text_width = fm.horizontalAdvance(self._text) + p.horizontal() + 1
         if self._isdisplay_indicator:
             text_width += self._indicator_width + self._spacing
-        height = max(fm.height() + p.vertical, self.minimumHeight())
+        height = max(fm.height() + p.vertical(), self.minimumHeight())
         return QSize(text_width, height)
 
     def adjustSize(self):
@@ -255,7 +254,6 @@ class ZHeadLine(ZWidget):
         painter.drawText(QRectF(text_rect), flags, self._text)
 
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
         event.accept()
 
     # region keyPressEvent

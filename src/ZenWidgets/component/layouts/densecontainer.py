@@ -1,8 +1,15 @@
 from PySide6.QtGui import QColor
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QWidget
-from ZenWidgets.component.base import PlaceHolderWidget
+from ZenWidgets.component.base import ZPlaceHolderWidget
 
+__all__ = [
+    'ABCDenseContainer',
+    'ZHDenseContainer',
+    'ZVDenseContainer'
+]
+
+# region ABCDenseContainer
 class ABCDenseContainer(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -48,7 +55,7 @@ class ABCDenseContainer(QWidget):
     def get_widget_except_placeholders(widgets):
         no_placeholders = []
         for widget in widgets:
-            if isinstance(widget, PlaceHolderWidget) is False:
+            if isinstance(widget, ZPlaceHolderWidget) is False:
                 no_placeholders.append(widget)
         return no_placeholders
 
@@ -58,8 +65,8 @@ class ABCDenseContainer(QWidget):
     def __exit__(self, *args, **kwargs):
         self.adjustSize()  # 使用 with 语句时，自动调节大小
 
-
-class ZDenseHContainer(ABCDenseContainer):
+# region ZHDenseContainer
+class ZHDenseContainer(ABCDenseContainer):
     """一个可以水平方向紧密靠左或靠右堆叠控件的容器"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -69,7 +76,7 @@ class ZDenseHContainer(ABCDenseContainer):
 
     def addPlaceholder(self, length, side="left", index=10000):
         """添加占位符"""
-        new_label = PlaceHolderWidget(self)
+        new_label = ZPlaceHolderWidget(self)
         new_label.setVisible(False)
         new_label.resize(length, 0)
         self.addWidget(new_label, side=side, index=index)
@@ -218,7 +225,8 @@ class ZDenseHContainer(ABCDenseContainer):
         self.resize(preferred_w, preferred_h)
 
 
-class ZDenseVContainer(ABCDenseContainer):
+# region ZVDenseContainer
+class ZVDenseContainer(ABCDenseContainer):
     """一个可以竖直方向紧密靠上或靠下堆叠控件的容器"""
 
     def __init__(self, *args, **kwargs):
@@ -229,7 +237,7 @@ class ZDenseVContainer(ABCDenseContainer):
 
     def addPlaceholder(self, length, side="top", index=10000):
         """添加占位符"""
-        new_label = PlaceHolderWidget(self)
+        new_label = ZPlaceHolderWidget(self)
         new_label.setVisible(False)
         new_label.resize(0, length)
         self.addWidget(new_label, side=side, index=index)

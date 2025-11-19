@@ -41,7 +41,6 @@ class SwitchHandle(ZWidget):
             painter.setBrush(self.bodyCtrl.color)
             scaled_radius = radius * self.scaleCtrl.value
             painter.drawEllipse(center, scaled_radius, scaled_radius)
-        painter.end()
         event.accept()
 
 # region ZSwitch
@@ -137,14 +136,15 @@ class ZSwitch(ABCToggleButton):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         rect = QRectF(self.rect())
         radius = self.height() / 2
-        if self.borderColorCtrl.color.alpha() > 0:
-            painter.setPen(QPen(self.borderColorCtrl.color, 1))
-            painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
-        if self.bodyColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyColorCtrl.color)
-            painter.drawRoundedRect(rect, radius, radius)
+
+        painter.setPen(QPen(self.borderColorCtrl.color, 1))
+        painter.setBrush(Qt.NoBrush)
+        painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
+
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.drawRoundedRect(rect, radius, radius)
+
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
+        event.accept()
 

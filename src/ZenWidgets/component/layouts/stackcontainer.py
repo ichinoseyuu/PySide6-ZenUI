@@ -2,8 +2,11 @@ from PySide6.QtGui import QPainter, QPen, QResizeEvent
 from PySide6.QtCore import Qt, QPoint
 from PySide6.QtWidgets import QWidget
 from typing import overload
-from ZenWidgets.component.panel import ZPanel,ZScrollPanel
+from ZenWidgets.component.layouts.panel import ZPanel
+from ZenWidgets.component.layouts.scrollpanel import ZScrollPanel
 from ZenWidgets.core import ZDebug
+
+__all__ = ['ZStackContainer']
 
 class ZStackContainer(QWidget):
     def __init__(self,
@@ -158,4 +161,4 @@ class ZStackContainer(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
-        painter.end()
+        event.accept()

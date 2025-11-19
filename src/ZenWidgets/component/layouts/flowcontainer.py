@@ -5,6 +5,13 @@ from PySide6.QtGui import QPainter
 from ZenWidgets.component.base import ZWidget
 from ZenWidgets.core import ZDebug,ZMargin
 
+__all__ = [
+    "ABCFlowContainer",
+    "ZFlowContainer",
+    "ZMasonryContainer"
+]
+
+# region ABCFlowContainer
 class ABCFlowContainer(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent,sizePolicy=QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding))
@@ -120,8 +127,9 @@ class ABCFlowContainer(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         rect = QRectF(self.rect())
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
+        event.accept()
 
+# region ZFlowContainer
 class ZFlowContainer(ABCFlowContainer):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -176,6 +184,7 @@ class ZFlowContainer(ABCFlowContainer):
         self.adjustSize()
 
 
+# region ZMasonryContainer
 class ZMasonryContainer(ABCFlowContainer):
     def __init__(self, parent=None):
         super().__init__(parent)

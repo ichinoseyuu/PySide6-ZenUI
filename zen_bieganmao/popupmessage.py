@@ -23,7 +23,7 @@ class PopupMessage(ZWidget):
         self.color_timer = QTimer(self)
         self.color_timer.timeout.connect(self.change_color)
         self.color_timer.start(1000)
-        ZWidgetEffect.applyDropShadowOn(widget=self,color=(0, 0, 0, 40),blur_radius=12)
+        ZWidgetEffect.applyGraphicsShadow(self)
 
     def change_color(self):
         colors = self.parent().light_bg_color if ZGlobal.themeManager.getThemeName() == 'Light' else self.parent().dark_bg_color

@@ -113,8 +113,8 @@ class ZLineEdit(ZWidget):
     def sizeHint(self) -> QSize:
         fm = QFontMetrics(self.font())
         display = self._display_text()
-        return QSize(max(fm.horizontalAdvance(display) + self._padding.horizontal, self.minimumWidth()),
-                     max(fm.height() + self._padding.vertical, self.minimumHeight()))
+        return QSize(max(fm.horizontalAdvance(display) + self._padding.horizontal(), self.minimumWidth()),
+                     max(fm.height() + self._padding.vertical(), self.minimumHeight()))
 
     def adjustSize(self):
         self.resize(self.sizeHint())
@@ -323,8 +323,8 @@ class ZLineEdit(ZWidget):
         r = QRectF(self.rect())
         return QRectF(r.left() + self._padding.left,
                       r.top() + self._padding.top,
-                      r.width() - (self._padding.horizontal),
-                      r.height() - (self._padding.vertical))
+                      r.width() - (self._padding.horizontal()),
+                      r.height() - (self._padding.vertical()))
 
     def _get_layout_y(self, text_rect: QRectF, fm: QFontMetrics) -> float:
         line_h = fm.height()
@@ -401,14 +401,12 @@ class ZLineEdit(ZWidget):
         clip.addRoundedRect(rect, radius, radius)
         painter.setClipPath(clip)
 
-        # 背景/边框/下划线
-        if self.bodyColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.fillRect(rect, self.bodyColorCtrl.color)
-        if self.borderColorCtrl.color.alpha() > 0:
-            painter.setPen(QPen(self.borderColorCtrl.color, 1))
-            painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+        painter.setPen(Qt.NoPen)
+        painter.fillRect(rect, self.bodyColorCtrl.color)
+
+        painter.setPen(QPen(self.borderColorCtrl.color, 1))
+        painter.setBrush(Qt.NoBrush)
+        painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
         if self.opacityEffectCtrl.color.alpha() > 0:
             painter.setPen(Qt.NoPen)
             painter.setBrush(self.opacityEffectCtrl.color)
@@ -464,7 +462,6 @@ class ZLineEdit(ZWidget):
             painter.drawLine(QPointF(cursor_x, cursor_top), QPointF(cursor_x, cursor_bottom))
 
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
         event.accept()
 
     # region keyPressEvent

@@ -9,10 +9,12 @@ class ZDebug:
 
     @staticmethod
     def drawRect(painter:QPainter, rect: QRect):
+        painter.save()
         painter.setOpacity(0.8)
         painter.setPen(QPen(Qt.GlobalColor.red, 1, Qt.PenStyle.SolidLine))
-        painter.setBrush(Qt.NoBrush)
+        painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawRect(rect)
+        painter.restore()
 
     @staticmethod
     def disableLogging():

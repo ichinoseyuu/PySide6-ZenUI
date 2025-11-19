@@ -138,15 +138,15 @@ class ZProgressButton(ABCProgressButton):
             )
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
-        if self.bodyColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyColorCtrl.color)
-            painter.drawRoundedRect(rect, radius, radius)
 
-        if self.borderColorCtrl.color.alpha() > 0:
-            painter.setPen(QPen(self.borderColorCtrl.color, 1))
-            painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.drawRoundedRect(rect, radius, radius)
+
+
+        painter.setPen(QPen(self.borderColorCtrl.color, 1))
+        painter.setBrush(Qt.NoBrush)
+        painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
 
         if self.progressCtrl.value > 0:
             progress_rect = QRectF(rect).adjusted(1, 1, -1, -1)
@@ -193,5 +193,4 @@ class ZProgressButton(ABCProgressButton):
             painter.drawText(rect, Qt.AlignCenter, self._text)
 
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
         event.accept()

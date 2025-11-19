@@ -19,7 +19,7 @@ class PanelSettings(ZPanel):
         self.layout().addWidget(self.text)
 
         self.hcontainer = ZHContainer(self)
-        self.hcontainer.margins = QMargins(10, 10, 10, 10)
+        self.hcontainer.margin = QMargins(10, 10, 10, 10)
         self.hcontainer.alignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
         self.layout().addWidget(self.hcontainer)
 

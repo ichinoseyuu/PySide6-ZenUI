@@ -1,1 +1,1 @@
-from .widget import ZWidget,PlaceHolderWidget
+from .widget import ZWidget,ZPlaceHolderWidget,ZContentWidget

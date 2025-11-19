@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import overload
 from PySide6.QtCore import QPoint,QPointF,QRect,QRectF,QSize,Qt,Signal
-from PySide6.QtGui import QPainter,QPen,QLinearGradient,QPainterPath,QKeyEvent,QMouseEvent,QWheelEvent
+from PySide6.QtGui import QPainter,QPen,QLinearGradient,QKeyEvent,QMouseEvent,QWheelEvent
 from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
     ZAnimatedColor,
@@ -28,11 +28,9 @@ class SliderFill(ZWidget):
         if self.opacityCtrl.opacity == 0: return
         painter = QPainter(self)
         painter.setOpacity(self.opacityCtrl.opacity)
-        painter.setRenderHint(QPainter.Antialiasing)
-        rect = QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5)
-        radius = max(0.0, float(self.radiusCtrl.value))
-        path = QPainterPath()
-        path.addRoundedRect(rect, radius, radius)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        rect = self.rect()
+        radius = self.radiusCtrl.value
 
         x1, y1, x2, y2 = self.bodyColorCtrl.linearPoints
         gradient = QLinearGradient(
@@ -47,14 +45,14 @@ class SliderFill(ZWidget):
         else:
             gradient.setColorAt(0.0, self.bodyColorCtrl.end.color)
             gradient.setColorAt(1.0, self.bodyColorCtrl.start.color)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(gradient)
+        painter.drawRoundedRect(rect, radius, radius)
 
-        painter.fillPath(path, gradient)
-
-        if self.borderColorCtrl.color.alpha() > 0:
-            painter.setPen(QPen(self.borderColorCtrl.color, 1.0))
-            painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(rect, radius, radius)
-        painter.end()
+        painter.setPen(QPen(self.borderColorCtrl.color, 1))
+        painter.setBrush(Qt.NoBrush)
+        painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+        event.accept()
 
 # region SliderTrack
 class SliderTrack(ZWidget):
@@ -67,19 +65,17 @@ class SliderTrack(ZWidget):
         painter = QPainter(self)
         painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(QPainter.Antialiasing)
-        rect = QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5)
-        radius = max(0.0, float(self.radiusCtrl.value))
+        rect = self.rect()
+        radius = self.radiusCtrl.value
 
-        if self.bodyColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyColorCtrl.color)
-            painter.drawRoundedRect(rect, radius, radius)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.drawRoundedRect(rect, radius, radius)
 
-        if self.borderColorCtrl.color.alpha() > 0:
-            painter.setPen(QPen(self.borderColorCtrl.color, 1.0))
-            painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(rect, radius, radius)
-        painter.end()
+        painter.setPen(QPen(self.borderColorCtrl.color, 1.0))
+        painter.setBrush(Qt.NoBrush)
+        painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+        event.accept()
 
 # region SliderHandle
 class SliderHandle(ZWidget):
@@ -92,16 +88,12 @@ class SliderHandle(ZWidget):
     def __init__(self, parent: QWidget = None, radius: int = 6):
         super().__init__(parent)
         self._radius = radius
-        self._inner_scale_normal = 0.4
-        self._inner_scale_hover = 0.6
-        self._inner_scale_pressed = 0.5
-        self._inner_scale_released = 0.6
-        self._outer_scale_normal = 0.8
-        self._outer_scale_hover = 1.0
-        self._outer_scale_pressed = 1.0
-        self._outer_scale_released = 1.0
-        self.innerScaleCtrl.setValue(self._inner_scale_normal)
-        self.outerScaleCtrl.setValue(self._outer_scale_normal)
+        self._scales = {
+            'inner': {'normal': 0.4, 'hover': 0.6, 'pressed': 0.5, 'released': 0.6},
+            'outer': {'normal': 0.8, 'hover': 1.0, 'pressed': 1.0, 'released': 1.0}
+        }
+        self.innerScaleCtrl.setValue(self._scales['inner']['normal'])
+        self.outerScaleCtrl.setValue(self._scales['outer']['normal'])
         self.setFixedSize(2 * radius, 2 * radius)
 
     def parent(self) -> 'ZSlider':
@@ -113,29 +105,26 @@ class SliderHandle(ZWidget):
         painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(QPainter.Antialiasing)
         center = QPointF(self.width() * 0.5, self.height() * 0.5)
-        base_radius = max(0.0, min(self.width(), self.height()) * 0.5 - 1.0)
+        base_radius = min(self.width(), self.height()) * 0.5 - 1.0
 
-        if self.outerColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.outerColorCtrl.color)
-            outer_radius = base_radius * float(self.outerScaleCtrl.value)
-            painter.drawEllipse(center, outer_radius, outer_radius)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(self.outerColorCtrl.color)
+        outer_radius = base_radius * self.outerScaleCtrl.value
+        painter.drawEllipse(center, outer_radius, outer_radius)
 
-        if self.innerColorCtrl.color.alpha() > 0:
-            inner_radius = base_radius * float(self.innerScaleCtrl.value)
-            painter.setBrush(self.innerColorCtrl.color)
-            painter.drawEllipse(center, inner_radius, inner_radius)
+        inner_radius = base_radius * self.innerScaleCtrl.value
+        painter.setBrush(self.innerColorCtrl.color)
+        painter.drawEllipse(center, inner_radius, inner_radius)
 
-        if self.borderColorCtrl.color.alpha() > 0:
-            painter.setPen(QPen(self.borderColorCtrl.color, 1.0))
-            border_radius = base_radius * float(self.outerScaleCtrl.value)
-            painter.setBrush(Qt.NoBrush)
-            painter.drawEllipse(center, border_radius, border_radius)
-        painter.end()
+        painter.setPen(QPen(self.borderColorCtrl.color, 1))
+        border_radius = base_radius * self.outerScaleCtrl.value
+        painter.setBrush(Qt.NoBrush)
+        painter.drawEllipse(center, border_radius, border_radius)
+        event.accept()
 
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
-        self.innerScaleCtrl.setValueTo(self._inner_scale_pressed)
+        self.innerScaleCtrl.setValueTo(self._scales['inner']['pressed'])
         self.outerColorCtrl.setAlphaTo(150)
         self.borderColorCtrl.setAlphaTo(150)
 
@@ -150,24 +139,24 @@ class SliderHandle(ZWidget):
         else:
             y = int(max(0, min(local_pos.y(), slider._track_length)))
             slider.setValue(slider._max_value - y / max(1, slider._track_length) * slider._max_value)
-        self.parent()._show_tooltip()
+        self.parent()._show_tooltip_()
 
     def mouseReleaseEvent(self, event):
         super().mouseReleaseEvent(event)
-        self.innerScaleCtrl.setValueTo(self._inner_scale_released)
+        self.innerScaleCtrl.setValueTo(self._scales['inner']['released'])
         self.outerColorCtrl.setAlphaTo(255)
         self.borderColorCtrl.setAlphaTo(255)
 
     def enterEvent(self, event):
         super().enterEvent(event)
-        self.innerScaleCtrl.setValueTo(self._inner_scale_hover)
-        self.outerScaleCtrl.setValueTo(self._outer_scale_hover)
-        self.parent()._show_tooltip()
+        self.innerScaleCtrl.setValueTo(self._scales['inner']['hover'])
+        self.outerScaleCtrl.setValueTo(self._scales['outer']['hover'])
+        self.parent()._show_tooltip_()
 
     def leaveEvent(self, event):
         super().leaveEvent(event)
-        self.innerScaleCtrl.setValueTo(self._inner_scale_normal)
-        self.outerScaleCtrl.setValueTo(self._outer_scale_normal)
+        self.innerScaleCtrl.setValueTo(self._scales['inner']['normal'])
+        self.outerScaleCtrl.setValueTo(self._scales['outer']['normal'])
         ZGlobal.tooltip.hideTipDelayed(500)
         self.clearFocus()
 
@@ -334,9 +323,7 @@ class ZSlider(ZWidget):
             new_value = self._value + args[0] * self._step * args[1]
             self.setValue(new_value)
 
-    def adjustSize(self):
-        self.resize(self.sizeHint())
-
+    def adjustSize(self): self.resize(self.sizeHint())
 
     def sizeHint(self) -> QSize:
         if self.isHorizontal():
@@ -397,7 +384,6 @@ class ZSlider(ZWidget):
         else:
             return max(self._min_length, self.height() - self._handle_radius * 2)
 
-
     def _update_track_radius(self):
         self._track.radiusCtrl.value = self._track_width / 2
         self._fill.radiusCtrl.value = self._track_width / 2
@@ -446,7 +432,7 @@ class ZSlider(ZWidget):
                              self._track_width, self._track_length - self._handle.y())
             self._fill.setGeometry(geo_fill)
 
-    def _show_tooltip(self):
+    def _show_tooltip_(self):
         pos = ZPosition.Top if self.isHorizontal() else ZPosition.Left
         ZGlobal.tooltip.showTip(
             text=self.displayValue(),
@@ -458,13 +444,13 @@ class ZSlider(ZWidget):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self._update_track()
-        self.adjustSize()
+        self.resize(self.sizeHint())
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
-        painter.end()
+        event.accept()
 
     def keyPressEvent(self, event: QKeyEvent):
         super().keyPressEvent(event)
@@ -474,7 +460,7 @@ class ZSlider(ZWidget):
         elif self.isVertical() and (event.key() == Qt.Key.Key_Up or event.key() == Qt.Key.Key_Down):
             step = 1 if event.key() == Qt.Key.Key_Up else -1
             self.stepValue(step)
-        self._show_tooltip()
+        self._show_tooltip_()
         event.accept()
 
     def mousePressEvent(self, event: QMouseEvent):
@@ -492,13 +478,13 @@ class ZSlider(ZWidget):
                 percent = 1 - (y - start) / length
                 value = self._min_value + percent * (self._max_value - self._min_value)
             self.setValue(value)
-            self._show_tooltip()
+            self._show_tooltip_()
 
     def wheelEvent(self, event: QWheelEvent):
         super().wheelEvent(event)
         steps = event.angleDelta().y() / 120
         self.stepValue(steps)
-        self._show_tooltip()
+        self._show_tooltip_()
         event.accept()
 
     def enterEvent(self, event):

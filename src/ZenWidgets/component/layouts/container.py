@@ -1,57 +1,64 @@
-from PySide6.QtGui import QPainter, QPen
-from PySide6.QtCore import QMargins, QSize, Qt, QEvent
+from PySide6.QtGui import QPainter
+from PySide6.QtCore import QSize, Qt, QEvent
 from PySide6.QtWidgets import QWidget, QSizePolicy
+from ZenWidgets.core.dataclass import ZMargin
 from ZenWidgets.core.debug import ZDebug
 
+__all__ = [
+    'ZHContainer',
+    'ZVContainer'
+]
 # region - ZHContainer
 class ZHContainer(QWidget):
     """水平方向对齐的容器控件，支持不同间距设置和子控件同高功能"""
     def __init__(self,
-                 parent: QWidget = None,
+                 parent: QWidget|None = None,
+                 margin: ZMargin = ZMargin(0, 0, 0, 0),
+                 spacing: int = 10,
                  objectName: str | None = None,
-                 sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
                  ):
         super().__init__(parent,
                          objectName=objectName,
-                         sizePolicy=sizePolicy
+                         sizePolicy=QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
                          )
-        self._widgets: list[QWidget] = []
-        self._alignment: Qt.AlignmentFlag = Qt.AlignLeft | Qt.AlignVCenter
-        self._spacings: list[int] = []
-        self._default_spacing = 10
+        self._alignment: Qt.AlignmentFlag = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+        self._margin = margin
+        self._spacing = spacing
         self._batch_updating = False
-        self._layout_pending = False
         self._height_expand = False
         self._uniform_height = False
         self._shrinking = False
-        self._margins = QMargins(0, 0, 0, 0)
+        self._widgets: list[QWidget] = []
+        self._spacings: list[int] = []
 
     def widgets(self):
         return self._widgets.copy()
 
-    def margins(self):
-        return self._margins
+    def margin(self):
+        return self._margin
 
-    def setMargins(self, margins: QMargins):
-        if self._margins != margins:
-            self._margins = margins
+    def setMargin(self, margin: ZMargin):
+        if self._margin != margin:
+            self._margin = margin
             self.arrangeWidgets()
 
     def alignment(self):
         return self._alignment
 
     def setAlignment(self, align: Qt.AlignmentFlag):
-        valid_alignments = (Qt.AlignLeft | Qt.AlignRight | Qt.AlignHCenter | Qt.AlignJustify |
-                           Qt.AlignTop | Qt.AlignBottom | Qt.AlignVCenter)
+        valid_alignments = (Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignRight |
+                            Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignJustify |
+                            Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignBottom |
+                            Qt.AlignmentFlag.AlignVCenter)
         self._alignment = align & valid_alignments
         self.arrangeWidgets()
 
     def defaultSpacing(self):
-        return self._default_spacing
+        return self._spacing
 
     def setDefaultSpacing(self, spacing: int):
         if spacing >= 0:
-            self._default_spacing = spacing
+            self._spacing = spacing
             self.arrangeWidgets()
 
     def isHeightExpand(self):
@@ -92,7 +99,7 @@ class ZHContainer(QWidget):
 
         # manage spacings list: there are always n-1 spacings for n widgets
         if len(self._widgets) > 1:
-            new_spacing = spacing if spacing is not None else self._default_spacing
+            new_spacing = spacing if spacing is not None else self._spacing
             # spacing sits between widget[w_index-1] and widget[w_index]; insert at w_index-1
             if w_index == 0:
                 # inserted at head -> insert spacing after the new head (between new and old head)
@@ -146,7 +153,7 @@ class ZHContainer(QWidget):
         self.resize(preferred_w, preferred_h)
 
     def sizeHint(self):
-        width_used = self._margins.left() + self._margins.right()
+        width_used = self._margin.horizontal()
         heights = []
         for obj in self._widgets:
             hint = obj.sizeHint()
@@ -158,38 +165,23 @@ class ZHContainer(QWidget):
                 heights.append(hint.height())
         width_used += sum(self._spacings)
         max_height = max(heights) if heights else 0
-        max_height += self._margins.top() + self._margins.bottom()
+        max_height += self._margin.vertical()
         return QSize(width_used, max_height)
 
     def getUsedSpace(self):
-        width_used = self._margins.left() + self._margins.right()
+        width_used = self._margin.horizontal()
         for obj in self._widgets:
             width_used += obj.width()
         width_used += sum(self._spacings)
         return width_used
 
     def getSpareSpace(self):
-        total_available = self.width() - (self._margins.left() + self._margins.right())
+        total_available = self.width() - (self._margin.horizontal())
         used = sum(w.width() for w in self._widgets) + sum(self._spacings)
         return max(0, total_available - used)
 
-    def startBatchUpdate(self):
-        self._batch_updating = True
-        self._layout_pending = False
-
-    def endBatchUpdate(self):
-        self._batch_updating = False
-        if self._layout_pending:
-            self.adjustSize()
-            self.arrangeWidgets()
-            self._layout_pending = False
-
     def arrangeWidgets(self):
         """根据对齐方式、间距和边距排列控件"""
-        if self._batch_updating:
-            self._layout_pending = True
-            return
-
         widget_count = len(self._widgets)
         if widget_count == 0:
             return
@@ -197,17 +189,17 @@ class ZHContainer(QWidget):
         spare_space = self.getSpareSpace()
 
         # 计算起始X坐标（根据水平对齐方式）+ 左边距
-        if self._alignment & Qt.AlignLeft:
-            left_used = self._margins.left()
-        elif self._alignment & Qt.AlignRight:
-            left_used = self._margins.left() + spare_space
-        elif self._alignment & Qt.AlignHCenter:
-            left_used = self._margins.left() + (spare_space // 2)
+        if self._alignment & Qt.AlignmentFlag.AlignLeft:
+            left_used = self._margin.left
+        elif self._alignment & Qt.AlignmentFlag.AlignRight:
+            left_used = self._margin.left + spare_space
+        elif self._alignment & Qt.AlignmentFlag.AlignHCenter:
+            left_used = self._margin.left + (spare_space // 2)
         else:
-            left_used = self._margins.left()
+            left_used = self._margin.left
 
         # 可用高度 = 容器高度 - 上下边距
-        available_height = self.height() - (self._margins.top() + self._margins.bottom())
+        available_height = self.height() - (self._margin.vertical())
 
         # 计算子控件的最大高度（如果需要基于子控件最大高度统一设置）
         max_child_height = 0
@@ -223,14 +215,14 @@ class ZHContainer(QWidget):
                     obj.setFixedHeight(available_height)
 
             # 垂直对齐计算（基于可用高度）
-            if self._alignment & Qt.AlignTop:
-                y = self._margins.top()
-            elif self._alignment & Qt.AlignVCenter:
-                y = self._margins.top() + (available_height - obj.height()) // 2
-            elif self._alignment & Qt.AlignBottom:
-                y = self.height() - self._margins.bottom() - obj.height()
+            if self._alignment & Qt.AlignmentFlag.AlignTop:
+                y = self._margin.top
+            elif self._alignment & Qt.AlignmentFlag.AlignVCenter:
+                y = self._margin.top + (available_height - obj.height()) // 2
+            elif self._alignment & Qt.AlignmentFlag.AlignBottom:
+                y = self.height() - self._margin.bottom - obj.height()
             else:
-                y = self._margins.top()
+                y = self._margin.top
 
             # 设置控件位置
             obj.move(left_used, y)
@@ -238,11 +230,10 @@ class ZHContainer(QWidget):
             # 累加宽度和间距（最后一个控件不需要加间距）
             left_used += obj.width()
             if i < widget_count - 1:
-                left_used += self._spacings[i] if i < len(self._spacings) else self._default_spacing
+                left_used += self._spacings[i] if i < len(self._spacings) else self._spacing
 
-    # event filter: listen child resize/show/hide -> rearrange
     def eventFilter(self, watched, event):
-        if watched in self._widgets and event.type() in (QEvent.Resize, QEvent.Show, QEvent.Hide):
+        if watched in self._widgets and event.type() in (QEvent.Type.Resize, QEvent.Type.Show, QEvent.Type.Hide):
             self.arrangeWidgets()
         return super().eventFilter(watched, event)
 
@@ -254,50 +245,59 @@ class ZHContainer(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
-        painter.end()
+        event.accept()
 
 # region - ZVContainer
 class ZVContainer(QWidget):
     """垂直方向对齐的容器控件，支持不同间距设置和子控件同宽功能"""
-    def __init__(self, parent: QWidget = None):
-        super().__init__(parent,sizePolicy=QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding))
-        self._widgets: list[QWidget] = []
-        self._alignment: Qt.AlignmentFlag = Qt.AlignLeft | Qt.AlignTop
-        self._spacings: list[int] = []
-        self._default_spacing = 10
+    def __init__(self,
+                 parent: QWidget|None = None,
+                 margin: ZMargin = ZMargin(0, 0, 0, 0),
+                 spacing: int = 10,
+                 objectName: str | None = None
+                 ):
+        super().__init__(parent,
+                         objectName=objectName,
+                         sizePolicy=QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+                         )
+        self._alignment: Qt.AlignmentFlag = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
+        self._margin = margin
+        self._spacing = spacing
         self._batch_updating = False
-        self._layout_pending = False
         self._width_expand = False
         self._uniform_width = False
         self._shrinking = False
-        self._margins = QMargins(0, 0, 0, 0)
+        self._widgets: list[QWidget] = []
+        self._spacings: list[int] = []
 
     def widgets(self):
         return self._widgets.copy()
 
-    def margins(self):
-        return self._margins
+    def margin(self):
+        return self._margin
 
-    def setMargins(self, margins: QMargins):
-        if self._margins != margins:
-            self._margins = margins
+    def setMargin(self, margin: ZMargin):
+        if self._margin != margin:
+            self._margin = margin
             self.arrangeWidgets()
 
     def alignment(self):
         return self._alignment
 
     def setAlignment(self, align: Qt.AlignmentFlag):
-        valid_alignments = (Qt.AlignLeft | Qt.AlignRight | Qt.AlignHCenter | Qt.AlignJustify |
-                           Qt.AlignTop | Qt.AlignBottom | Qt.AlignVCenter)
+        valid_alignments = (Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignRight |
+                            Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignJustify |
+                            Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignBottom |
+                            Qt.AlignmentFlag.AlignVCenter)
         self._alignment = align & valid_alignments
         self.arrangeWidgets()
 
     def defaultSpacing(self):
-        return self._default_spacing
+        return self._spacing
 
     def setDefaultSpacing(self, spacing: int):
         if spacing >= 0:
-            self._default_spacing = spacing
+            self._spacing = spacing
             self.arrangeWidgets()
 
     def isWidthExpand(self):
@@ -330,7 +330,7 @@ class ZVContainer(QWidget):
         widget.installEventFilter(self)
 
         if len(self._widgets) > 1:
-            new_spacing = spacing if spacing is not None else self._default_spacing
+            new_spacing = spacing if spacing is not None else self._spacing
             if w_index == 0:
                 self._spacings.insert(0, new_spacing)
             else:
@@ -376,7 +376,7 @@ class ZVContainer(QWidget):
         self.resize(preferred_w, preferred_h)
 
     def sizeHint(self):
-        height_used = self._margins.top() + self._margins.bottom()
+        height_used = self._margin.vertical()
         widths = []
         for obj in self._widgets:
             hint = obj.sizeHint()
@@ -388,53 +388,38 @@ class ZVContainer(QWidget):
                 widths.append(hint.width())
         height_used += sum(self._spacings)
         max_width = max(widths) if widths else 0
-        max_width += self._margins.left() + self._margins.right()
+        max_width += self._margin.horizontal()
         return QSize(max_width, height_used)
 
     def getUsedSpace(self):
-        height_used = self._margins.top() + self._margins.bottom()
+        height_used = self._margin.horizontal()
         for obj in self._widgets:
             height_used += obj.height()
         height_used += sum(self._spacings)
         return height_used
 
     def getSpareSpace(self):
-        total_available = self.height() - (self._margins.top() + self._margins.bottom())
+        total_available = self.height() - (self._margin.vertical())
         used = sum(w.height() for w in self._widgets) + sum(self._spacings)
         return max(0, total_available - used)
 
-    def startBatchUpdate(self):
-        self._batch_updating = True
-        self._layout_pending = False
-
-    def endBatchUpdate(self):
-        self._batch_upating = False
-        if self._layout_pending:
-            self.adjustSize()
-            self.arrangeWidgets()
-            self._layout_pending = False
-
     def arrangeWidgets(self):
-        if self._batch_updating:
-            self._layout_pending = True
-            return
-
         widget_count = len(self._widgets)
         if widget_count == 0:
             return
 
         spare_space = self.getSpareSpace()
 
-        if self._alignment & Qt.AlignTop:
-            top_used = self._margins.top()
-        elif self._alignment & Qt.AlignBottom:
-            top_used = self._margins.top() + spare_space
-        elif self._alignment & Qt.AlignVCenter:
-            top_used = self._margins.top() + (spare_space // 2)
+        if self._alignment & Qt.AlignmentFlag.AlignTop:
+            top_used = self._margin.top
+        elif self._alignment & Qt.AlignmentFlag.AlignBottom:
+            top_used = self._margin.top + spare_space
+        elif self._alignment & Qt.AlignmentFlag.AlignVCenter:
+            top_used = self._margin.top + (spare_space // 2)
         else:
-            top_used = self._margins.top()
+            top_used = self._margin.top
 
-        available_width = self.width() - (self._margins.left() + self._margins.right())
+        available_width = self.width() - (self._margin.horizontal())
 
         max_child_width = 0
         if self._width_expand and self._uniform_width:
@@ -447,23 +432,23 @@ class ZVContainer(QWidget):
                 else:
                     obj.resize(available_width, obj.height())
 
-            if self._alignment & Qt.AlignLeft:
-                x = self._margins.left()
-            elif self._alignment & Qt.AlignHCenter:
-                x = self._margins.left() + (available_width - obj.width()) // 2
-            elif self._alignment & Qt.AlignRight:
-                x = self.width() - self._margins.right() - obj.width()
+            if self._alignment & Qt.AlignmentFlag.AlignLeft:
+                x = self._margin.left
+            elif self._alignment & Qt.AlignmentFlag.AlignHCenter:
+                x = self._margin.left + (available_width - obj.width()) // 2
+            elif self._alignment & Qt.AlignmentFlag.AlignRight:
+                x = self.width() - self._margin.right - obj.width()
             else:
-                x = self._margins.left()
+                x = self._margin.left
 
             obj.move(x, top_used)
 
             top_used += obj.height()
             if i < widget_count - 1:
-                top_used += self._spacings[i] if i < len(self._spacings) else self._default_spacing
+                top_used += self._spacings[i] if i < len(self._spacings) else self._spacing
 
     def eventFilter(self, watched, event):
-        if watched in self._widgets and event.type() in (QEvent.Resize, QEvent.Show, QEvent.Hide):
+        if watched in self._widgets and event.type() in (QEvent.Type.Resize, QEvent.Type.Show, QEvent.Type.Hide):
             self.arrangeWidgets()
         return super().eventFilter(watched, event)
 
@@ -475,4 +460,4 @@ class ZVContainer(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, self.rect())
-        painter.end()
+        event.accept()

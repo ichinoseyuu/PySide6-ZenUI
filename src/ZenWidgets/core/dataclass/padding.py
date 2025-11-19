@@ -1,5 +1,7 @@
 from typing import overload, Any
+from PySide6.QtCore import QSize, QSizeF, QPoint, QPointF, QRect, QRectF
 
+# region ZPadding
 class ZPadding(object):
 
     @overload
@@ -146,17 +148,13 @@ class ZPadding(object):
     @bottom.setter
     def bottom(self, bottom: int, /) -> None: self._bottom = bottom
 
-    @property
     def vertical(self, /) -> int: return self._top + self._bottom
 
-    @vertical.setter
-    def vertical(self, vertical: int, /) -> None: self._top = self._bottom = vertical
-
-    @property
     def horizontal(self, /) -> int: return self._left + self._right
 
-    @horizontal.setter
-    def horizontal(self, horizontal: int, /) -> None: self._left = self._right = horizontal
+    def size(self, /) -> QSize: return QSize(self._left + self._right, self._top + self._bottom)
+
+    def topLeft(self, /) -> QPoint: return QPoint(self._left, self._top)
 
     def setLeft(self, left: int, /) -> None: self._left = left
 
@@ -201,6 +199,7 @@ class ZPadding(object):
     def __copy__(self, /) -> 'ZPadding': return ZPadding(self)
 
 
+# region ZPadding
 class ZPaddingF(object):
 
     @overload
@@ -347,17 +346,13 @@ class ZPaddingF(object):
     @bottom.setter
     def bottom(self, bottom: float, /) -> None: self._bottom = bottom
 
-    @property
     def vertical(self, /) -> float: return self._top + self._bottom
 
-    @vertical.setter
-    def vertical(self, vertical: float, /) -> None: self._top = self._bottom = vertical
-
-    @property
     def horizontal(self, /) -> float: return self._left + self._right
 
-    @horizontal.setter
-    def horizontal(self, horizontal: float, /) -> None: self._left = self._right = horizontal
+    def size(self, /) -> QSizeF: return QSizeF(self._left + self._right, self._top + self._bottom)
+
+    def topLeft(self, /) -> QPointF: return QPointF(self._left, self._top)
 
     def setLeft(self, left: float, /) -> None: self._left = left
 
@@ -406,10 +401,3 @@ class ZPaddingF(object):
         )
 
     def __copy__(self, /) -> 'ZPaddingF': return ZPaddingF(self)
-
-if __name__ == '__main__':
-    a = ZPaddingF(1, 2, 3, 4)
-    b = ZPaddingF(1, 2, 3, 4)
-    c = ZPadding(1, 2, 3, 4)
-    d = ZPadding(1, 2, 3, 4)
-    print(a.bottom, a.top, a.left, a.right, a.vertical, a.horizontal)

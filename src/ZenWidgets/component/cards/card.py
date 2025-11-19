@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QWidget,QSizePolicy
 from PySide6.QtCore import Qt,QRectF,QMargins
 from PySide6.QtGui import QPainter,QPen,QPainterPath
 from ZenWidgets.component.base import ZAnimatedColor,ZAnimatedFloat,ZStyleController,ZWidget
-from ZenWidgets.component.layout import ZVBoxLayout,ZHBoxLayout
+from ZenWidgets.component.layouts import ZVBoxLayout,ZHBoxLayout
 from ZenWidgets.core import ZDebug
 from ZenWidgets.gui import ZCardStyleData
 
@@ -66,10 +66,8 @@ class ZCard(ZWidget):
         clip = QPainterPath()
         clip.addRoundedRect(rect, radius, radius)
         painter.setClipPath(clip)
-
-        if self.bodyColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.fillRect(rect, self.bodyColorCtrl.color)
+        painter.setPen(Qt.NoPen)
+        painter.fillRect(rect, self.bodyColorCtrl.color)
 
         if self._display_border and self.borderColorCtrl.color.alpha() > 0:
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
@@ -81,6 +79,5 @@ class ZCard(ZWidget):
             painter.fillRect(QRectF(rect.left(), rect.bottom() - shadow_w, rect.width(), shadow_w),
                              self.shadowColorCtrl.color)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
         event.accept()
 

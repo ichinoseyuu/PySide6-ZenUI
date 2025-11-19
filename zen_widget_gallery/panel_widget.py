@@ -347,7 +347,7 @@ class PanelWidget(ZScrollPanel):
         container2.addWidget(self.vslider_3)
 
 
-        # region Text
+        # region ZHeadLine
         title = ZHeadLine(self, text= '文本显示组件', display_indicator=True)
         title.setFont(QFont('Microsoft YaHei', 14, QFont.Weight.Bold))
         title.setPadding(ZPadding(6, 6, 6, 6))
@@ -374,6 +374,29 @@ class PanelWidget(ZScrollPanel):
         self.headline_3 = ZHeadLine(container, selectable=True)
         self.headline_3.setText('可选中的标题')
         container.addWidget(self.headline_3)
+
+        # region ZTextBlock
+        card = ZCard(self)
+        self.layout().addWidget(card)
+
+        title = ZHeadLine(card, text= 'ZTextBlock')
+        title.setFont(QFont('Microsoft YaHei', 10, QFont.Weight.Bold))
+        card.layout().addWidget(title)
+
+        container = ZVContainer(card)
+        card.layout().addWidget(container)
+
+        text= '''ZenWidgets 是一款为追求极致用户体验的开发者打造的现代化风格的组件库，它基于 PySide6 中的 QWidget 架构设计而成，在保持界面简洁的同时，融入了流畅的交互动画。与 QWidget 不同，ZenWidgets 支持动态切换主题和自定义主题配色，通过舍弃对 QSS 样式表的依赖，采用完全自定义的绘制逻辑，让UI具有流畅的交互动画且风格更符合现代审美。目前，ZenWidgets 已提供覆盖基础界面开发需求的核心组件。ZenWidgets 组件库正处于持续进化中，未来计划加入更多实用模块，致力于为 PySide6 开发者提供一套既美观又高效的界面解决方案，在 QWidget 界面开发上变得更简单快捷。'''
+
+        self.textblock_1 = ZTextBlock(container)
+        self.textblock_1.setMaximumWidth(600)
+        self.textblock_1.setText(text)
+        container.addWidget(self.textblock_1)
+
+        self.textblock_2 = ZTextBlock(container, selectable=True)
+        self.textblock_2.setMaximumWidth(600)
+        self.textblock_2.setText(text)
+        container.addWidget(self.textblock_2)
 
         # region ZLineEdit
         card = ZCard(self)

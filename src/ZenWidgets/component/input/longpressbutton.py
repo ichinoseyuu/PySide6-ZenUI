@@ -136,17 +136,14 @@ class ZLongPressButton(ABCLongPressButton):
             )
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
-        if self.bodyColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyColorCtrl.color)
-            painter.drawRoundedRect(rect, radius, radius)
 
-        if self.borderColorCtrl.color.alpha() > 0:
-            painter.setPen(QPen(self.borderColorCtrl.color, 1))
-            painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.drawRoundedRect(rect, radius, radius)
 
-        self.hoverLayerCtrl.drawOpacityLayer(painter, rect, radius)
+        painter.setPen(QPen(self.borderColorCtrl.color, 1))
+        painter.setBrush(Qt.NoBrush)
+        painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
 
         if self.progressCtrl.value > 0:
             progress_rect = QRectF(rect).adjusted(1, 1, -1, -1)
@@ -155,6 +152,7 @@ class ZLongPressButton(ABCLongPressButton):
             painter.setBrush(self.progressColorCtrl.color)
             painter.drawRoundedRect(progress_rect, radius, radius)
 
+        self.hoverLayerCtrl.drawOpacityLayer(painter, rect, radius)
 
         if self._icon:
             pixmap = self._icon.pixmap(self._icon_size)
@@ -192,5 +190,4 @@ class ZLongPressButton(ABCLongPressButton):
             painter.drawText(rect, Qt.AlignCenter, self._text)
 
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
         event.accept()

@@ -9,9 +9,9 @@ class ZWidgetEffect:
     '''特效类，方便快速设置 ZWidget 特效'''
     @staticmethod
     def applyGraphicsShadow(widget: QWidget,
-                            color: QColor = QColor(0, 0, 0, 40),
+                            color: QColor = QColor(0, 0, 0, 50),
                             offset: QPoint = QPoint(0, 0),
-                            blur: int = 16):
+                            blur: int = 12):
         shadow = QGraphicsDropShadowEffect(widget)
         shadow.setColor(color)
         shadow.setOffset(offset)
@@ -23,9 +23,9 @@ class ZWidgetEffect:
     def drawGraphicsShadow(painter: QPainter,
                         rect: QRect,
                         radius: float,
-                        blur: int = 16,
+                        blur: int = 12,
                         offset: QPoint = QPoint(0, 0),
-                        color: QColor = QColor(0, 0, 0, 40)):
+                        color: QColor = QColor(0, 0, 0, 50)):
         shadow_rect = QRectF(rect).translated(offset)
         # 控制初始透明度的比例
         max_alpha_ratio = 0.12

@@ -4,32 +4,35 @@ from PySide6.QtGui import QPainter,QPen,QPainterPath
 from ZenWidgets.component.base import ZAnimatedColor,ZAnimatedFloat,ZStyleController,ZWidget
 from ZenWidgets.component.layouts import ZVBoxLayout,ZHBoxLayout
 from ZenWidgets.core import ZDebug
-from ZenWidgets.gui import ZCardStyleData
+from ZenWidgets.gui import ZCardStyleData,ZWidgetEffect
 
 class ZCard(ZWidget):
     bodyColorCtrl: ZAnimatedColor
     borderColorCtrl: ZAnimatedColor
     radiusCtrl: ZAnimatedFloat
-    shadowColorCtrl: ZAnimatedColor
-    shadowWidthCtrl: ZAnimatedFloat
+    underlineColorCtrl: ZAnimatedColor
+    underlineWeightCtrl: ZAnimatedFloat
     styleDataCtrl: ZStyleController[ZCardStyleData]
     __controllers_kwargs__ = {
         'styleDataCtrl':{'key': 'ZCard'},
         'radiusCtrl': {'value': 8.0},
-        'shadowWidthCtrl': {'value': 1.5},
+        'underlineWeightCtrl': {'value': 1.5},
     }
     def __init__(self,
                  parent: ZWidget | QWidget | None = None,
                  display_border: bool = True,
-                 display_shadow: bool = True,
+                 display_underline: bool = True,
+                 display_shadow: bool = False,
                  objectName: str | None = None,
                  ):
         super().__init__(parent=parent, objectName=objectName)
         self._display_border = display_border
+        self._display_underline = display_underline
         self._display_shadow = display_shadow
         self._init_style_()
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.setLayout(ZVBoxLayout(self,margins=QMargins(16,16,16,16),spacing=16))
+        if self._display_shadow: ZWidgetEffect.applyGraphicsShadow(self)
 
     def layout(self)-> ZVBoxLayout | ZHBoxLayout:
         return super().layout()
@@ -47,13 +50,13 @@ class ZCard(ZWidget):
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.color = data.Body
         self.borderColorCtrl.color = data.Border
-        self.shadowColorCtrl.color = data.Shadow
+        self.underlineColorCtrl.color = data.Underline
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
         self.bodyColorCtrl.setColorTo(data.Body)
         self.borderColorCtrl.setColorTo(data.Border)
-        self.shadowColorCtrl.setColorTo(data.Shadow)
+        self.underlineColorCtrl.setColorTo(data.Underline)
 
     # region event
     def paintEvent(self, event):
@@ -65,19 +68,22 @@ class ZCard(ZWidget):
         radius = self.radiusCtrl.value
         clip = QPainterPath()
         clip.addRoundedRect(rect, radius, radius)
+
         painter.setClipPath(clip)
-        painter.setPen(Qt.NoPen)
+        painter.setPen(Qt.PenStyle.NoPen)
         painter.fillRect(rect, self.bodyColorCtrl.color)
 
-        if self._display_border and self.borderColorCtrl.color.alpha() > 0:
+
+        if self._display_border:
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
-            painter.setBrush(Qt.NoBrush)
+            painter.setBrush(Qt.BrushStyle.NoBrush)
             painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
 
-        if self._display_shadow and self.shadowColorCtrl.color.alpha() > 0:
-            shadow_w = self.shadowWidthCtrl.value
+        if self._display_underline:
+            shadow_w = self.underlineWeightCtrl.value
             painter.fillRect(QRectF(rect.left(), rect.bottom() - shadow_w, rect.width(), shadow_w),
-                             self.shadowColorCtrl.color)
+                             self.underlineColorCtrl.color)
+
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         event.accept()
 

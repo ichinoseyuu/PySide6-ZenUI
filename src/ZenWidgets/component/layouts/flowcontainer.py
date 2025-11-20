@@ -13,7 +13,7 @@ __all__ = [
 
 # region ABCFlowContainer
 class ABCFlowContainer(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent: ZWidget | None = None):
         super().__init__(parent,sizePolicy=QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding))
         self._widgets:list[ZWidget] = []
         self._dragging_widget:ZWidget = None
@@ -131,7 +131,7 @@ class ABCFlowContainer(QWidget):
 
 # region ZFlowContainer
 class ZFlowContainer(ABCFlowContainer):
-    def __init__(self, parent=None):
+    def __init__(self, parent: ZWidget | None = None):
         super().__init__(parent)
         self._line_height = 32
         self._preferred_height = 0
@@ -149,8 +149,8 @@ class ZFlowContainer(ABCFlowContainer):
                        all_fade_in: bool = False,
                        fade_in_delay: int = 200,
                        fade_in_delay_cumulate_rate: int = 10,
-                       no_arrange_exceptions: list[QWidget]|None = None,
-                       no_ani_exceptions: list[QWidget]|None = None):
+                       no_arrange_exceptions: list[ZWidget]|None = None,
+                       no_ani_exceptions: list[ZWidget]|None = None):
         used_width = self._margin.left
         used_height = self._margin.top
         delay_counter = 0
@@ -186,7 +186,7 @@ class ZFlowContainer(ABCFlowContainer):
 
 # region ZMasonryContainer
 class ZMasonryContainer(ABCFlowContainer):
-    def __init__(self, parent=None):
+    def __init__(self, parent: ZWidget | None = None):
         super().__init__(parent)
         self._columns = 2
         self._column_width = 160
@@ -203,8 +203,8 @@ class ZMasonryContainer(ABCFlowContainer):
         self._column_width = max(1, width)
 
     def arrangeWidgets(self, ani=True,
-                       no_arrange_exceptions: list[QWidget]|None = None,
-                       no_ani_exceptions: list[QWidget]|None = None,
+                       no_arrange_exceptions: list[ZWidget]|None = None,
+                       no_ani_exceptions: list[ZWidget]|None = None,
                        adjust_size: bool = True):
         columns = max(1, int(self._columns))
         used_height = [self._margin.top for _ in range(columns)]

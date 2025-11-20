@@ -28,6 +28,7 @@ class ZTextBlock(ZWidget):
                  font: QFont = QFont('Microsoft YaHei', 9),
                  wrap_mode: ZWrapMode = ZWrapMode.WordWrap,
                  selectable: bool = False,
+                 stretchable: bool = True,
                  objectName: str | None = None,
                  ):
         super().__init__(parent=parent,
@@ -41,14 +42,13 @@ class ZTextBlock(ZWidget):
         self._wrap_mode = wrap_mode
         self._alignment = Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter
         self._selectable = selectable
+        self._stretchable = stretchable
         self._selection_start = -1
         self._selection_end = -1
         self._is_selecting = False
         self._select_start_pos: QPoint | None = None
-
         self._init_style_()
         self.setMinimumSize(self._padding.horizontal(), 24)
-
 
     # region public
     def selectedText(self) -> str: return self._selected_text
@@ -71,6 +71,14 @@ class ZTextBlock(ZWidget):
         self.adjustSize()
         self.update()
 
+    def isStretchable(self) -> bool: return self._stretchable
+
+    def setStretchable(self, stretchable: bool) -> None:
+        if self._stretchable == stretchable: return
+        self._stretchable = stretchable
+        self.adjustSize()
+        self.update()
+
     def wrapMode(self) ->ZWrapMode: return self._wrap_mode
 
     def setWrapMode(self, mode: ZWrapMode) -> None:
@@ -88,8 +96,7 @@ class ZTextBlock(ZWidget):
     def alignment(self) -> Qt.AlignmentFlag: return self._alignment
 
     def setAlignment(self, a: Qt.AlignmentFlag) -> None:
-        align = a & Qt.AlignmentFlag.AlignHorizontal_Mask
-        self._alignment = align
+        self._alignment = a
         self.update()
 
     def sizeHint(self):
@@ -107,17 +114,10 @@ class ZTextBlock(ZWidget):
         height = self.heightForWidth(width)
         return QSize(width, height)
 
-    def resizeEvent(self, event):
-        if self.hasHeightForWidth():
-            new_height = self.heightForWidth(event.size().width())
-            if new_height != event.size().height():
-                self.resize(event.size().width(), new_height)
-        super().resizeEvent(event)
-
-    def adjustSize(self):
-        self.resize(self.sizeHint())
+    def adjustSize(self): self.resize(self.sizeHint())
 
     def hasHeightForWidth(self):
+        if self._stretchable: return False
         if self._wrap_mode == ZWrapMode.NoWrap: return False
         return True
 
@@ -144,7 +144,6 @@ class ZTextBlock(ZWidget):
             line.setLineWidth(available_width)
             total_height += line.height()
         layout.endLayout()
-
         return max(total_height + m.vertical(), self.minimumHeight())
 
     # region private
@@ -337,18 +336,12 @@ class ZTextBlock(ZWidget):
             QPainter.RenderHint.TextAntialiasing|
             QPainter.RenderHint.Antialiasing
             )
-        rect = self.rect()
+        rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
 
-        if self.bodyColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyColorCtrl.color)
-            painter.drawRoundedRect(rect, radius, radius)
-
-        if self.borderColorCtrl.color.alpha() > 0:
-            painter.setPen(QPen(self.borderColorCtrl.color, 1))
-            painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius,radius)
+        painter.setPen(QPen(self.borderColorCtrl.color, 1))
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
 
         m = self._padding
         text_rect = rect.adjusted(m.left, m.top, -m.right, -m.bottom)
@@ -366,22 +359,21 @@ class ZTextBlock(ZWidget):
         text_flags = self._get_text_flag()
         painter.drawText(text_rect, text_flags, self._text)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
-        painter.end()
-
+        event.accept()
 
     # region keyPressEvent
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
         if not self._selectable: return
 
-        if event.key() == Qt.Key_C and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+        if event.key() == Qt.Key.Key_C and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
             if self._is_selection() and self._selected_text:
                 from PySide6.QtWidgets import QApplication
                 clipboard = QApplication.clipboard()
                 clipboard.setText(self._selected_text)
             return
 
-        elif event.key() == Qt.Key_A and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+        elif event.key() == Qt.Key.Key_A and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
             if self._text:
                 self._selection_start = 0
                 self._selection_end = len(self._text)
@@ -423,3 +415,10 @@ class ZTextBlock(ZWidget):
     def focusOutEvent(self, event):
         super().focusOutEvent(event)
         if self._selectable: self._clear_selection()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if not self._stretchable and self.hasHeightForWidth():
+            new_height = self.heightForWidth(event.size().width())
+            if new_height != event.size().height():
+                self.resize(event.size().width(), new_height)

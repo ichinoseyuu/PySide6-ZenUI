@@ -249,30 +249,11 @@ class ZTitleBarBase(QWidget):
         self.maxBtn = MaximizeButton(parent=self)
         self.closeBtn = CloseButton(parent=self)
         self.minBtn.clicked.connect(self.window().showMinimized)
-        self.maxBtn.clicked.connect(self.__toggleMaxState)
+        self.maxBtn.clicked.connect(self._toggleMaxState)
         self.closeBtn.clicked.connect(self.window().close)
         self.window().installEventFilter(self)
 
-    def eventFilter(self, obj, event):
-        if obj is self.window():
-            if event.type() == QEvent.Type.WindowStateChange:
-                self.maxBtn.update()
-                return False
-        return super().eventFilter(obj, event)
-
-    def mouseDoubleClickEvent(self, event):
-        if event.button() != Qt.MouseButton.LeftButton or not self._isDoubleClickEnabled:
-            return
-        self.__toggleMaxState()
-
-    def mouseMoveEvent(self, event):
-        if not self.canDrag(event.pos()): return
-        startSystemMove(self.window())
-
-    def mousePressEvent(self, event):
-        if not self.canDrag(event.pos()): return
-
-    def __toggleMaxState(self):
+    def _toggleMaxState(self):
         toggleWindowState(self.window())
         self._releaseMouseLeftButton()
 
@@ -296,6 +277,24 @@ class ZTitleBarBase(QWidget):
 
     def setDoubleClickEnabled(self, isEnabled):
         self._isDoubleClickEnabled = isEnabled
+
+    def eventFilter(self, obj, event):
+        if obj is self.window():
+            if event.type() == QEvent.Type.WindowStateChange:
+                self.maxBtn.update()
+                return False
+        return super().eventFilter(obj, event)
+
+    def mouseDoubleClickEvent(self, event):
+        if event.button() != Qt.MouseButton.LeftButton or not self._isDoubleClickEnabled: return
+        self._toggleMaxState()
+
+    def mouseMoveEvent(self, event):
+        if not self.canDrag(event.pos()): return
+        startSystemMove(self.window())
+
+    def mousePressEvent(self, event):
+        if not self.canDrag(event.pos()): return
 
     def paintEvent(self, event):
         painter = QPainter(self)

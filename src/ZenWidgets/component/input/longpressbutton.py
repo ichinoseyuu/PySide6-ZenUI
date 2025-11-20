@@ -31,7 +31,7 @@ class ZLongPressButton(ABCLongPressButton):
         'progressCtrl': {'value': 0.0},
     }
     def __init__(self,
-                 parent: ZWidget | QWidget | None = None,
+                 parent: ZWidget | None = None,
                  text: str | None = None,
                  font: QFont = QFont('Microsoft YaHei', 9),
                  icon: QIcon | None = None,
@@ -137,18 +137,14 @@ class ZLongPressButton(ABCLongPressButton):
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
 
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(self.bodyColorCtrl.color)
-        painter.drawRoundedRect(rect, radius, radius)
-
         painter.setPen(QPen(self.borderColorCtrl.color, 1))
-        painter.setBrush(Qt.NoBrush)
-        painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
 
         if self.progressCtrl.value > 0:
-            progress_rect = QRectF(rect).adjusted(1, 1, -1, -1)
+            progress_rect = rect.adjusted(1, 1, -1, -1)
             progress_rect.setWidth(progress_rect.width() * self.progressCtrl.value)
-            painter.setPen(Qt.NoPen)
+            painter.setPen(Qt.PenStyle.NoPen)
             painter.setBrush(self.progressColorCtrl.color)
             painter.drawRoundedRect(progress_rect, radius, radius)
 
@@ -161,7 +157,7 @@ class ZLongPressButton(ABCLongPressButton):
             colored_pixmap.fill(Qt.transparent)
             with QPainter(colored_pixmap) as painter_pix:
                 painter_pix.drawPixmap(0, 0, pixmap)
-                painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
+                painter_pix.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
                 painter_pix.fillRect(colored_pixmap.rect(), self.iconColorCtrl.color)
             if self._text:
                 total_width = self._icon_size.width() + self._spacing + self.fontMetrics().boundingRect(self._text).width()
@@ -175,7 +171,7 @@ class ZLongPressButton(ABCLongPressButton):
                 painter.setPen(self.textColorCtrl.color)
                 painter.drawText(
                     QRect(start_x + self._icon_size.width() + self._spacing, 0, rect.width(), rect.height()),
-                    Qt.AlignLeft | Qt.AlignVCenter,
+                    Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
                     self._text
                 )
             else:
@@ -187,7 +183,7 @@ class ZLongPressButton(ABCLongPressButton):
         elif self._text:
             painter.setFont(self.font())
             painter.setPen(self.textColorCtrl.color)
-            painter.drawText(rect, Qt.AlignCenter, self._text)
+            painter.drawText(rect, Qt.AlignmentFlag.AlignCenter, self._text)
 
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         event.accept()

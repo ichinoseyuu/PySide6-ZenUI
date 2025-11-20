@@ -41,11 +41,13 @@ __all__ = [
 
 # region ZPaletteKey
 class ZPaletteKey(Enum):
-    Window = 'Window'
-    Panel = 'Panel'
-    Card = 'Card'
+    WindowBackground = 'WindowBackground'
+    PanelBody = 'PanelBody'
+    CardBody = 'CardBody'
+    SwitchHandle = 'SwitchHandle'
+    SliderHandle = 'SliderHandle'
+    ScrollHandle = 'ScrollHandle'
     Underline = 'Underline'
-    Shadow = 'Shadow'
     BodyDarker = 'BodyDarker'
     Body = 'Body'
     BodyLighter = 'BodyLighter'
@@ -111,16 +113,18 @@ class ZStyleDataKey(Enum):
 
 # region light_palette
 light_palette = {
-    ZPaletteKey.Window: '#F2F2F2',
-    ZPaletteKey.Panel: '#FFFFFF',
-    ZPaletteKey.Card: '#FDFDFD',
+    ZPaletteKey.WindowBackground: '#F2F2F2',
+    ZPaletteKey.PanelBody: '#FFFFFF',
+    ZPaletteKey.CardBody: '#FDFDFD',
+    ZPaletteKey.SwitchHandle: '#BFBFBF',
+    ZPaletteKey.SliderHandle: '#FFFFFF',
+    ZPaletteKey.ScrollHandle: '#CFCFCF',
     ZPaletteKey.Underline: '#DFDFDF',
-    ZPaletteKey.Shadow: '#BFBFBF',
     ZPaletteKey.BodyDarker: '#F6F6F6',
     ZPaletteKey.Body: '#F9F9F9',
     ZPaletteKey.BodyLighter: '#FCFCFC',
     ZPaletteKey.BodyNeutral: '#BFBFBF',
-    ZPaletteKey.BorderEmphasized: '#E0E0E0',
+    ZPaletteKey.BorderEmphasized: '#DBDBDB',
     ZPaletteKey.Border: '#E0E0E0',
     ZPaletteKey.BorderMuted: '#EBEBEB',
     ZPaletteKey.BorderNeutral: '#BFBFBF',
@@ -143,19 +147,21 @@ light_palette = {
 
 # region dark_palette
 dark_palette = {
-    ZPaletteKey.Window: '#101010',
-    ZPaletteKey.Panel: '#151515',
-    ZPaletteKey.Card: '#181818',
+    ZPaletteKey.WindowBackground: '#101010',
+    ZPaletteKey.PanelBody: '#151515',
+    ZPaletteKey.CardBody: '#181818',
+    ZPaletteKey.SwitchHandle: '#A0A0A0',
+    ZPaletteKey.SliderHandle: '#181818',
+    ZPaletteKey.ScrollHandle: '#505050',
     ZPaletteKey.Underline: '#242424',
-    ZPaletteKey.Shadow: '#101010',
     ZPaletteKey.BodyDarker: '#171717',
     ZPaletteKey.Body: '#1C1C1C',
     ZPaletteKey.BodyLighter: '#212121',
     ZPaletteKey.BodyNeutral: '#909090',
-    ZPaletteKey.BorderEmphasized: '#272727',
-    ZPaletteKey.Border: '#242424',
-    ZPaletteKey.BorderMuted: '#212121',
-    ZPaletteKey.BorderNeutral: '#909090',
+    ZPaletteKey.BorderEmphasized: '#323232',
+    ZPaletteKey.Border: '#272727',
+    ZPaletteKey.BorderMuted: '#242424',
+    ZPaletteKey.BorderNeutral: '#505050',
     ZPaletteKey.TextEmphasized: '#EFEFEF',
     ZPaletteKey.Text: '#D9D9D9',
     ZPaletteKey.TextMuted: '#B3B3B3',
@@ -164,8 +170,8 @@ dark_palette = {
     ZPaletteKey.Icon: '#CCCCCC',
     ZPaletteKey.IconMuted: '#B3B3B3',
     ZPaletteKey.IconNeutral: '#B3B3B3',
-    ZPaletteKey.Primary: '#675496',
-    ZPaletteKey.Secondary: '#C8B3FD',
+    ZPaletteKey.Primary: "#785496",
+    ZPaletteKey.Secondary: "#4F66CA",
     ZPaletteKey.Accent: '#FE9ADD',
     ZPaletteKey.Info: '#75738C',
     ZPaletteKey.Success: '#7FB464',
@@ -176,11 +182,13 @@ dark_palette = {
 # region ZPalette
 class ZPalette(metaclass=NonInstantiableMeta):
     """全局唯一的调色板"""
-    Window: QColor
-    Panel: QColor
-    Card: QColor
+    WindowBackground: QColor
+    PanelBody: QColor
+    CardBody: QColor
+    SwitchHandle: QColor
+    SliderHandle: QColor
+    ScrollHandle: QColor
     Underline: QColor
-    Shadow: QColor
     BodyDarker: QColor
     Body: QColor
     BodyLighter: QColor
@@ -289,26 +297,26 @@ class ZPalette(metaclass=NonInstantiableMeta):
 style_data_map={
     'Light': {
         'ZFramelessWindow': {
-            ZStyleDataKey.Body: lambda: ZPalette.Window
+            ZStyleDataKey.Body: lambda: ZPalette.WindowBackground
         },
         'ZTitleBarButton': {
             ZStyleDataKey.Icon: '#333333'
         },
         'ZToolTip': {
-            ZStyleDataKey.Body: lambda: ZPalette.Panel,
+            ZStyleDataKey.Body: lambda: ZPalette.PanelBody,
             ZStyleDataKey.Border: lambda: ZPalette.Border,
             ZStyleDataKey.Text: lambda: ZPalette.Text
         },
         ('ZPanel','ZScrollPanel','ZComboBoxView'): {
-            ZStyleDataKey.Body: lambda: ZPalette.Panel,
+            ZStyleDataKey.Body: lambda: ZPalette.PanelBody,
             ZStyleDataKey.Border: lambda: ZPalette.Border,
-            ZStyleDataKey.Handle: lambda: ZPalette.BodyNeutral,
-            ZStyleDataKey.HandleBorder: lambda: ZPalette.BodyNeutral
+            ZStyleDataKey.Handle: lambda: ZPalette.ScrollHandle,
+            ZStyleDataKey.HandleBorder: lambda: ZPalette.ScrollHandle
         },
         'ZCard': {
-            ZStyleDataKey.Body: lambda: ZPalette.Card,
+            ZStyleDataKey.Body: lambda: ZPalette.CardBody,
             ZStyleDataKey.Border: lambda: ZPalette.Border,
-            ZStyleDataKey.Shadow: lambda: ZPalette.Shadow
+            ZStyleDataKey.Underline: lambda: ZPalette.Underline
         },
         ('ZButton','ZRepeatButton','ZComboBox','ZComboBoxItem'): {
             ZStyleDataKey.Body: lambda: ZPalette.Body,
@@ -345,8 +353,8 @@ style_data_map={
         'ZSwitch':{
             ZStyleDataKey.Body: lambda: ZPalette.Primary,
             ZStyleDataKey.Border: lambda: ZPalette.BorderNeutral,
-            ZStyleDataKey.Handle: lambda: ZPalette.BodyNeutral,
-            ZStyleDataKey.HandleToggled: lambda: ZPalette.BodyLighter
+            ZStyleDataKey.Handle: lambda: ZPalette.SwitchHandle,
+            ZStyleDataKey.HandleToggled: ZPalette.White
         },
         'ZSlider': {
             ZStyleDataKey.Track: lambda: ZPalette.BodyDarker,
@@ -355,12 +363,12 @@ style_data_map={
             ZStyleDataKey.FillAreaEnd: lambda: ZPalette.Secondary,
             ZStyleDataKey.FillAreaBorder: lambda: ZPalette.Primary,
             ZStyleDataKey.HandleInner: lambda: ZPalette.Secondary,
-            ZStyleDataKey.HandleOuter:lambda: ZPalette.BodyLighter,
-            ZStyleDataKey.HandleBorder: lambda: ZPalette.Border
+            ZStyleDataKey.HandleOuter:lambda: ZPalette.SliderHandle,
+            ZStyleDataKey.HandleBorder: lambda: ZPalette.BorderEmphasized
         },
         ('ZLineEdit','ZLoginEdit','ZNumberEdit'): {
             ZStyleDataKey.Body: lambda: ZPalette.Body,
-            ZStyleDataKey.BodyFocused: lambda: ZPalette.Panel,
+            ZStyleDataKey.BodyFocused: lambda: ZPalette.PanelBody,
             ZStyleDataKey.Border: lambda: ZPalette.Border,
             ZStyleDataKey.Text: lambda: ZPalette.Text,
             ZStyleDataKey.PlaceHolder: lambda: ZPalette.TextMuted,
@@ -377,7 +385,7 @@ style_data_map={
             ZStyleDataKey.Indicator: lambda: ZPalette.Primary
         },
         'ZDialog': {
-            ZStyleDataKey.Body: lambda: ZPalette.Panel,
+            ZStyleDataKey.Body: lambda: ZPalette.PanelBody,
             ZStyleDataKey.RegionFooter: lambda: ZPalette.Body,
             ZStyleDataKey.Border: lambda: ZPalette.Border,
         },
@@ -395,26 +403,26 @@ style_data_map={
     # region -----------------------
     'Dark': {
         'ZFramelessWindow': {
-            ZStyleDataKey.Body: lambda: ZPalette.Window
+            ZStyleDataKey.Body: lambda: ZPalette.WindowBackground
         },
         'ZTitleBarButton': {
             ZStyleDataKey.Icon: '#DCDCDC'
         },
         'ZToolTip': {
-            ZStyleDataKey.Body: lambda: ZPalette.Panel,
+            ZStyleDataKey.Body: lambda: ZPalette.PanelBody,
             ZStyleDataKey.Border: lambda: ZPalette.Border,
             ZStyleDataKey.Text: lambda: ZPalette.Text
         },
         ('ZPanel','ZScrollPanel','ZComboBoxView'): {
-            ZStyleDataKey.Body: lambda: ZPalette.Panel,
+            ZStyleDataKey.Body: lambda: ZPalette.PanelBody,
             ZStyleDataKey.Border: lambda: ZPalette.Border,
-            ZStyleDataKey.Handle: lambda: ZPalette.BodyNeutral,
-            ZStyleDataKey.HandleBorder: lambda: ZPalette.BodyNeutral
+            ZStyleDataKey.Handle: lambda: ZPalette.ScrollHandle,
+            ZStyleDataKey.HandleBorder: lambda: ZPalette.ScrollHandle
         },
         'ZCard': {
-            ZStyleDataKey.Body: lambda: ZPalette.Card,
+            ZStyleDataKey.Body: lambda: ZPalette.CardBody,
             ZStyleDataKey.Border: lambda: ZPalette.Border,
-            ZStyleDataKey.Shadow: lambda: ZPalette.Shadow
+            ZStyleDataKey.Underline: lambda: ZPalette.Underline
         },
         ('ZButton','ZRepeatButton','ZComboBox','ZComboBoxItem'): {
             ZStyleDataKey.Body: lambda: ZPalette.Body,
@@ -451,8 +459,8 @@ style_data_map={
         'ZSwitch':{
             ZStyleDataKey.Body: lambda: ZPalette.Primary,
             ZStyleDataKey.Border: lambda: ZPalette.BorderNeutral,
-            ZStyleDataKey.Handle: lambda: ZPalette.BodyNeutral,
-            ZStyleDataKey.HandleToggled: lambda: ZPalette.BodyNeutral,
+            ZStyleDataKey.Handle: lambda: ZPalette.SwitchHandle,
+            ZStyleDataKey.HandleToggled: ZPalette.Black_78,
         },
         'ZSlider': {
             ZStyleDataKey.Track: lambda: ZPalette.BodyLighter,
@@ -461,12 +469,12 @@ style_data_map={
             ZStyleDataKey.FillAreaEnd: lambda: ZPalette.Secondary,
             ZStyleDataKey.FillAreaBorder: lambda: ZPalette.Primary,
             ZStyleDataKey.HandleInner: lambda: ZPalette.Secondary,
-            ZStyleDataKey.HandleOuter:lambda: ZPalette.BodyLighter,
-            ZStyleDataKey.HandleBorder: lambda: ZPalette.Border
+            ZStyleDataKey.HandleOuter:lambda: ZPalette.SliderHandle,
+            ZStyleDataKey.HandleBorder: lambda: ZPalette.BorderEmphasized
         },
         ('ZLineEdit','ZLoginEdit','ZNumberEdit'): {
             ZStyleDataKey.Body: lambda: ZPalette.BodyDarker,
-            ZStyleDataKey.BodyFocused: lambda: ZPalette.Panel,
+            ZStyleDataKey.BodyFocused: lambda: ZPalette.PanelBody,
             ZStyleDataKey.Border: lambda: ZPalette.Border,
             ZStyleDataKey.Text: lambda: ZPalette.Text,
             ZStyleDataKey.PlaceHolder: lambda: ZPalette.TextMuted,
@@ -483,7 +491,7 @@ style_data_map={
             ZStyleDataKey.Indicator: lambda: ZPalette.Primary
         },
         'ZDialog': {
-            ZStyleDataKey.Body: lambda: ZPalette.Panel,
+            ZStyleDataKey.Body: lambda: ZPalette.PanelBody,
             ZStyleDataKey.RegionFooter: lambda: ZPalette.Body,
             ZStyleDataKey.Border: lambda: ZPalette.Border,
         },
@@ -533,7 +541,7 @@ class ZScrollPanelStyleData:
 class ZCardStyleData:
     Body: QColor
     Border: QColor
-    Shadow: QColor
+    Underline: QColor
 
 # region Button
 @dataclass

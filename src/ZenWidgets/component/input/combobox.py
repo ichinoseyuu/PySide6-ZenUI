@@ -227,7 +227,7 @@ class ZComboBoxView(ZWidget):
     def __init__(self, target: ZWidget | None = None, items: list[str] = None):
         super().__init__(f=Qt.WindowType.FramelessWindowHint|Qt.WindowType.WindowStaysOnTopHint|Qt.WindowType.Tool)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self._target: ZWidget|None = target
+        self._target: ZWidget | None = target
         self._margin = ZMargin(8, 8, 8, 8)
         self._content = ZContentWidget(self)
         self._content.setLayout(ZVBoxLayout(self, margins=QMargins(4, 4, 4, 4), spacing=2))
@@ -388,7 +388,7 @@ class ZComboBox(ABCButton):
         'radiusCtrl': {'value': 4.0},
     }
     def __init__(self,
-                 parent: QWidget | None = None,
+                 parent: ZWidget | None = None,
                  options: Dict[str, Any]= None,
                  text: str = None,
                  font: QFont = QFont("Microsoft YaHei", 9),
@@ -556,16 +556,13 @@ class ZComboBox(ABCButton):
             QPainter.RenderHint.TextAntialiasing|
             QPainter.RenderHint.SmoothPixmapTransform
             )
-        rect = self.rect()
+        rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
 
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(self.bodyColorCtrl.color)
-        painter.drawRoundedRect(rect, radius, radius)
-
         painter.setPen(QPen(self.borderColorCtrl.color, 1))
-        painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+
         self.opacityLayerCtrl.drawOpacityLayer(painter, rect, radius)
         self.flashLayerCtrl.drawFlashLayer(painter, rect, radius)
 
@@ -574,17 +571,17 @@ class ZComboBox(ABCButton):
             painter.setPen(self.textColorCtrl.color)
             painter.drawText(
                 rect.adjusted(self._padding.left, 0, 0, 0),
-                Qt.AlignLeft|Qt.AlignVCenter,
+                Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter,
                 self._text
                 )
 
         pixmap = self._drop_icon.pixmap(self._drop_icon_size)
         colored_pixmap = QPixmap(pixmap.size())
         colored_pixmap.setDevicePixelRatio(self.devicePixelRatioF())
-        colored_pixmap.fill(Qt.transparent)
+        colored_pixmap.fill(Qt.GlobalColor.transparent)
         painter_pix = QPainter(colored_pixmap)
         painter_pix.drawPixmap(0, 0, pixmap)
-        painter_pix.setCompositionMode(QPainter.CompositionMode_SourceIn)
+        painter_pix.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
         painter_pix.fillRect(colored_pixmap.rect(), self.dropIconColorCtrl.color)
         painter_pix.end()
         painter.drawPixmap(self.dropIconPosCtrl.pos, colored_pixmap)

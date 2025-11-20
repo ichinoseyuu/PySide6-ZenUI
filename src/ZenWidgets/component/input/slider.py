@@ -3,7 +3,6 @@ from enum import Enum
 from typing import overload
 from PySide6.QtCore import QPoint,QPointF,QRect,QRectF,QSize,Qt,Signal
 from PySide6.QtGui import QPainter,QPen,QLinearGradient,QKeyEvent,QMouseEvent,QWheelEvent
-from PySide6.QtWidgets import QWidget
 from ZenWidgets.component.base import (
     ZAnimatedColor,
     ZAnimatedLinearGradient,
@@ -29,7 +28,7 @@ class SliderFill(ZWidget):
         painter = QPainter(self)
         painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        rect = self.rect()
+        rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
 
         x1, y1, x2, y2 = self.bodyColorCtrl.linearPoints
@@ -45,13 +44,9 @@ class SliderFill(ZWidget):
         else:
             gradient.setColorAt(0.0, self.bodyColorCtrl.end.color)
             gradient.setColorAt(1.0, self.bodyColorCtrl.start.color)
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(gradient)
-        painter.drawRoundedRect(rect, radius, radius)
-
         painter.setPen(QPen(self.borderColorCtrl.color, 1))
-        painter.setBrush(Qt.NoBrush)
-        painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+        painter.setBrush(gradient)
+        painter.drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
         event.accept()
 
 # region SliderTrack
@@ -65,16 +60,11 @@ class SliderTrack(ZWidget):
         painter = QPainter(self)
         painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(QPainter.Antialiasing)
-        rect = self.rect()
+        rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
-
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(self.bodyColorCtrl.color)
-        painter.drawRoundedRect(rect, radius, radius)
-
         painter.setPen(QPen(self.borderColorCtrl.color, 1.0))
-        painter.setBrush(Qt.NoBrush)
-        painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
         event.accept()
 
 # region SliderHandle
@@ -85,7 +75,7 @@ class SliderHandle(ZWidget):
     innerScaleCtrl: ZAnimatedFloat
     outerScaleCtrl: ZAnimatedFloat
 
-    def __init__(self, parent: QWidget = None, radius: int = 6):
+    def __init__(self, parent: ZWidget | None = None, radius: int = 6):
         super().__init__(parent)
         self._radius = radius
         self._scales = {
@@ -107,7 +97,7 @@ class SliderHandle(ZWidget):
         center = QPointF(self.width() * 0.5, self.height() * 0.5)
         base_radius = min(self.width(), self.height()) * 0.5 - 1.0
 
-        painter.setPen(Qt.NoPen)
+        painter.setPen(QPen(self.borderColorCtrl.color, 1))
         painter.setBrush(self.outerColorCtrl.color)
         outer_radius = base_radius * self.outerScaleCtrl.value
         painter.drawEllipse(center, outer_radius, outer_radius)
@@ -116,10 +106,6 @@ class SliderHandle(ZWidget):
         painter.setBrush(self.innerColorCtrl.color)
         painter.drawEllipse(center, inner_radius, inner_radius)
 
-        painter.setPen(QPen(self.borderColorCtrl.color, 1))
-        border_radius = base_radius * self.outerScaleCtrl.value
-        painter.setBrush(Qt.NoBrush)
-        painter.drawEllipse(center, border_radius, border_radius)
         event.accept()
 
     def mousePressEvent(self, event):
@@ -178,7 +164,7 @@ class ZSlider(ZWidget):
         Thick = SliderStyle(TrackWidth=8, HandleRadius=12)
 
     def __init__(self,
-                 parent: QWidget = None,
+                 parent: ZWidget | None = None,
                  direction: ZDirection = ZDirection.Horizontal,
                  style: Style = Style.Normal,
                  scope: tuple[int, int] | tuple[float, float] = (0, 100),

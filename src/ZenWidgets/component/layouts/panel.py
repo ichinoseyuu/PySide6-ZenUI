@@ -1,6 +1,5 @@
-from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt,QRectF
-from PySide6.QtGui import QPainter,QPen,QColor
+from PySide6.QtGui import QPainter,QPen
 from ZenWidgets.component.base import ZAnimatedColor,ZAnimatedFloat,ZStyleController,ZWidget
 from ZenWidgets.core import ZDebug
 from ZenWidgets.gui import ZPanelStyleData
@@ -15,7 +14,7 @@ class ZPanel(ZWidget):
         'radiusCtrl': {'value': 5.0},
     }
     def __init__(self,
-                 parent: ZWidget | QWidget | None = None,
+                 parent: ZWidget | None = None,
                  objectName: str | None = None,
                  ):
         super().__init__(parent=parent, objectName=objectName)

@@ -30,7 +30,7 @@ class ZToggleButton(ABCToggleButton):
         'radiusCtrl': {'value': 4.0},
     }
     def __init__(self,
-                 parent: ZWidget | QWidget | None = None,
+                 parent: ZWidget | None = None,
                  text: str | None = None,
                  font: QFont = QFont('Microsoft YaHei', 9),
                  icon: QIcon | None = None,
@@ -62,42 +62,27 @@ class ZToggleButton(ABCToggleButton):
     # region private method
     def _init_style_(self):
         data = self.styleDataCtrl.data
-        color_map = self._get_color_mapping(data, self._checked)
-        self._apply_color_mapping(color_map)
+        if self._checked:
+            self.bodyColorCtrl.setColor(data.BodyToggled)
+            self.textColorCtrl.setColor(data.TextToggled)
+            self.iconColorCtrl.setColor(data.IconToggled)
+        else:
+            self.bodyColorCtrl.setAlphaF(.0) if self.isFlat() else self.bodyColorCtrl.setColor(data.Body)
+            self.textColorCtrl.setColor(data.Text)
+            self.iconColorCtrl.setColor(data.Icon)
+        self.borderColorCtrl.setColor(data.Border)
 
     def _style_change_handler_(self):
         data = self.styleDataCtrl.data
-        color_map = self._get_color_mapping(data, self._checked)
-        self._apply_color_mapping(color_map, anim=True)
-
-    def _get_color_mapping(self, data, is_checked):
-        data = self.styleDataCtrl.data
-        if is_checked:
-            return {
-                'body': data.BodyToggled,
-                'border': data.BodyToggled,
-                'text': data.TextToggled,
-                'icon': data.IconToggled
-            }
+        if self._checked:
+            self.bodyColorCtrl.setColorTo(data.BodyToggled)
+            self.textColorCtrl.setColorTo(data.TextToggled)
+            self.iconColorCtrl.setColorTo(data.IconToggled)
         else:
-            return {
-                'body': data.Body,
-                'border': data.Border,
-                'text': data.Text,
-                'icon': data.Icon
-            }
-
-    def _apply_color_mapping(self, color_map, anim=False):
-        if anim:
-            self.bodyColorCtrl.setColorTo(color_map['body'])
-            self.borderColorCtrl.setColorTo(color_map['border'])
-            self.textColorCtrl.setColorTo(color_map['text'])
-            self.iconColorCtrl.setColorTo(color_map['icon'])
-        else:
-            self.bodyColorCtrl.color = color_map['body']
-            self.borderColorCtrl.color = color_map['border']
-            self.textColorCtrl.color = color_map['text']
-            self.iconColorCtrl.color = color_map['icon']
+            self.bodyColorCtrl.setAlphaF(.0) if self.isFlat() else self.bodyColorCtrl.setColorTo(data.Body)
+            self.textColorCtrl.setColorTo(data.Text)
+            self.iconColorCtrl.setColorTo(data.Icon)
+        self.borderColorCtrl.setColorTo(data.Border)
 
     def _show_tooltip_(self):
         if self.toolTip() != '':
@@ -121,8 +106,10 @@ class ZToggleButton(ABCToggleButton):
 
     def _button_toggle_(self):
         data = self.styleDataCtrl.data
-        color_map = self._get_color_mapping(data, self._checked)
-        self._apply_color_mapping(color_map, anim=True)
+        if self._checked:
+            self.bodyColorCtrl.setColorTo(data.BodyToggled)
+        else:
+            self.bodyColorCtrl.setColorTo(data.Body) if not self.isFlat() else self.bodyColorCtrl.setAlphaFTo(0.0)
 
     # region public method
     def text(self) -> str: return self._text
@@ -184,16 +171,16 @@ class ZToggleButton(ABCToggleButton):
             QPainter.RenderHint.TextAntialiasing|
             QPainter.RenderHint.SmoothPixmapTransform
             )
-        rect = self.rect()
+        rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
-        if self._style != ZStyle.Flat or self._checked:
-            painter.setPen(Qt.NoPen)
+        if self._checked or self._style == ZStyle.Flat:
+            painter.setPen(Qt.PenStyle.NoPen)
             painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
-
+        elif not self._checked and self._style != ZStyle.Flat:
             painter.setPen(QPen(self.borderColorCtrl.color, 1))
-            painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
+            painter.setBrush(self.bodyColorCtrl.color)
+            painter.drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
 
         self.opacityLayerCtrl.drawOpacityLayer(painter, rect, radius)
 

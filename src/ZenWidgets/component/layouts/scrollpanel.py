@@ -5,7 +5,8 @@ from ZenWidgets.component.base import (
     ZAnimatedColor,
     ZAnimatedFloat,
     ZStyleController,
-    ZWidget
+    ZWidget,
+    ZContentWidget
 )
 from ZenWidgets.core import (
     ZGlobal,
@@ -15,29 +16,18 @@ from ZenWidgets.core import (
     ZState
 )
 from ZenWidgets.gui import ZScrollPanelStyleData
-# region ScrollContent
-class ScrollContent(ZWidget):
-    resized = Signal()
-
-    def __init__(self, parent: QWidget = None):
-        super().__init__(parent)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-    def resizeEvent(self, event: QResizeEvent) -> None:
-        self.resized.emit()
 
 # region ScrollHandle
 class ScrollHandle(ZWidget):
     bodyColorCtrl: ZAnimatedColor
-    borderColorCtrl: ZAnimatedColor
     radiusCtrl: ZAnimatedFloat
 
-    def __init__(self,parent: QWidget = None, direction = ZDirection.Vertical):
+    def __init__(self, parent: ZWidget|None = None, direction = ZDirection.Vertical):
         super().__init__(parent)
         if direction not in (ZDirection.Horizontal, ZDirection.Vertical): raise ValueError('Invalid direction')
         self._dir: ZDirection = direction
-        self._dragging: bool = False
-        self._drag_start_pos: QPoint = QPoint()
+        self._is_scroll_dragging: bool = False
+        self._scroll_drag_start_pos: QPoint = QPoint()
         self._handle_width: int = 2
         self._handle_width_min: int = 2
         self._handle_width_max: int = 6
@@ -55,7 +45,6 @@ class ScrollHandle(ZWidget):
         # init style
         self.radiusCtrl.value = self._handle_width / 2
         self.bodyColorCtrl.transparent()
-        self.borderColorCtrl.transparent()
 
     # region property
     def getHandleLength(self): return self.height() if self._dir == ZDirection.Vertical else self.width()
@@ -89,22 +78,18 @@ class ScrollHandle(ZWidget):
 
     def toTransparent(self):
         self.bodyColorCtrl.toTransparent()
-        self.borderColorCtrl.toTransparent()
         self._trans_timer.stop()
 
     def transparent(self):
         self.bodyColorCtrl.transparent()
-        self.borderColorCtrl.transparent()
         self._trans_timer.stop()
 
     def toOpaque(self):
         self.bodyColorCtrl.toOpaque()
-        self.borderColorCtrl.toOpaque()
         self._trans_timer.start(1200)
 
     def opaque(self):
         self.bodyColorCtrl.opaque()
-        self.borderColorCtrl.opaque()
         self._trans_timer.start(1200)
 
     def parent(self) -> 'ZScrollPanel':
@@ -121,11 +106,11 @@ class ScrollHandle(ZWidget):
             rect = QRectF(3, self.height()-self._handle_width+.5, self.width()-3, self._handle_width-1)
         radius = self.radiusCtrl.value
         if self._state == ZState.Idle:
-            painter.setPen(QPen(self.borderColorCtrl.color, 1))
-            painter.setBrush(Qt.NoBrush)
+            painter.setPen(QPen(self.bodyColorCtrl.color, 1))
+            painter.setBrush(Qt.BrushStyle.NoBrush)
             painter.drawRoundedRect(rect, radius, radius)
         elif self._state == ZState.Hover:
-            painter.setPen(QPen(self.borderColorCtrl.color, 1))
+            painter.setPen(QPen(self.bodyColorCtrl.color, 1))
             painter.setBrush(self.bodyColorCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
         event.accept()
@@ -133,14 +118,14 @@ class ScrollHandle(ZWidget):
     # region mouseEvent
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
-            self._dragging = True
-            self._drag_start_pos = event.globalPos() - self.pos()
-            self.setCursor(Qt.ClosedHandCursor)
+            self._is_scroll_dragging = True
+            self._scroll_drag_start_pos = event.globalPos() - self.pos()
+            self.setCursor(Qt.CursorShape.ClosedHandCursor)
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        if not self._dragging: return
+        if not self._is_scroll_dragging: return
         panel = self.parent()
-        new_pos = event.globalPos() - self._drag_start_pos
+        new_pos = event.globalPos() - self._scroll_drag_start_pos
         if self._dir == ZDirection.Vertical:
             y = max(0, min(new_pos.y(), panel.height() - panel._handle_h.height() - self.height()))
             percentage = y / (panel.height() - panel._handle_h.height() - self.height())
@@ -156,17 +141,18 @@ class ScrollHandle(ZWidget):
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
-            self._dragging = False
-            self.setCursor(Qt.ArrowCursor)
+            self._is_scroll_dragging = False
+            self.setCursor(Qt.CursorShape.ArrowCursor)
 
     def enterEvent(self, event):
+        super().enterEvent(event)
         self._state = ZState.Hover
         self._trans_timer.stop()
         self.bodyColorCtrl.opaque()
-        self.borderColorCtrl.opaque()
         self.setHandleWidthTo(self._handle_width_max)
 
     def leaveEvent(self, event):
+        super().leaveEvent(event)
         self._state = ZState.Idle
         self.setHandleWidthTo(self._handle_width_min)
         self._trans_timer.start(1200)
@@ -180,13 +166,13 @@ class ZScrollPanel(ZWidget):
     __controllers_kwargs__ = {'styleDataCtrl':{'key': 'ZScrollPanel'}}
 
     def __init__(self,
-                 parent: ZWidget | QWidget | None = None,
+                 parent: ZWidget | None = None,
                  objectName: str | None = None,
                  ):
         super().__init__(parent,
                          objectName=objectName)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self._content = ScrollContent(self)
+        self._content = ZContentWidget(self)
         self._last_v_handle_pos: float = 0.0
         self._last_v_handle_len: float = 0.0
         self._last_h_handle_pos: float = 0.0
@@ -285,8 +271,6 @@ class ZScrollPanel(ZWidget):
         self.radiusCtrl.value = 5.0
         self._handle_h.bodyColorCtrl.color = data.Handle
         self._handle_v.bodyColorCtrl.color = data.Handle
-        self._handle_h.borderColorCtrl.color = data.HandleBorder
-        self._handle_v.borderColorCtrl.color = data.HandleBorder
 
 
     def _style_change_handler_(self):
@@ -295,8 +279,6 @@ class ZScrollPanel(ZWidget):
         self.borderColorCtrl.setColorTo(data.Border)
         self._handle_h.bodyColorCtrl.setColorTo(data.Handle)
         self._handle_v.bodyColorCtrl.setColorTo(data.Handle)
-        self._handle_h.borderColorCtrl.setColorTo(data.HandleBorder)
-        self._handle_v.borderColorCtrl.setColorTo(data.HandleBorder)
         self._handle_h._trans_timer.start(1200)
         self._handle_v._trans_timer.start(1200)
 
@@ -333,7 +315,6 @@ class ZScrollPanel(ZWidget):
         content= self._content.size()
         self._update_vertical_handle(content.height(), viewport.height())
         self._update_horizontal_handle(content.width(), viewport.width())
-        print("update handles and content")
 
 
     def _update_vertical_handle(self, ch, vh):

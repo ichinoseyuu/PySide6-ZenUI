@@ -114,7 +114,7 @@ class ZNavBarButton(ABCButton):
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
         if self.opacityEffectCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
+            painter.setPen(Qt.PenStyle.NoPen)
             painter.setBrush(self.opacityEffectCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
         pixmap = self._icon.pixmap(self._icon_size)
@@ -238,7 +238,7 @@ class ZNavBarToggleButton(ABCToggleButton):
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
         if self.opacityEffectCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
+            painter.setPen(Qt.PenStyle.NoPen)
             painter.setBrush(self.opacityEffectCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
         if self._checked:

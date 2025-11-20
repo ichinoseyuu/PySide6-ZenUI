@@ -25,7 +25,7 @@ class SwitchStyle:
 class SwitchHandle(ZWidget):
     bodyCtrl: ZAnimatedColor
     scaleCtrl: ZAnimatedFloat
-    def __init__(self, parent: QWidget = None):
+    def __init__(self, parent: ZWidget | None = None):
         super().__init__(parent)
         self.scale_nomal = 0.85
         self.scale_hover = 1.0
@@ -36,11 +36,10 @@ class SwitchHandle(ZWidget):
         painter.setRenderHint(QPainter.Antialiasing)
         center = QPointF(self.width()/2, self.height()/2)
         radius = self.height()/2
-        if self.bodyCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyCtrl.color)
-            scaled_radius = radius * self.scaleCtrl.value
-            painter.drawEllipse(center, scaled_radius, scaled_radius)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(self.bodyCtrl.color)
+        scaled_radius = radius * self.scaleCtrl.value
+        painter.drawEllipse(center, scaled_radius, scaled_radius)
         event.accept()
 
 # region ZSwitch
@@ -57,7 +56,7 @@ class ZSwitch(ABCToggleButton):
         Comfortable = SwitchStyle(Height=28, Width=56, HandleDiameter=22 , Margin=3)
 
     def __init__(self,
-                 parent: QWidget = None,
+                 parent: ZWidget | None = None,
                  tun_on: bool = False,
                  is_group_member: bool = False,
                  switch_style: Style = Style.Standard,
@@ -135,16 +134,15 @@ class ZSwitch(ABCToggleButton):
         painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         rect = QRectF(self.rect())
-        radius = self.height() / 2
-
-        painter.setPen(QPen(self.borderColorCtrl.color, 1))
-        painter.setBrush(Qt.NoBrush)
-        painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5),radius, radius)
-
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(self.bodyColorCtrl.color)
-        painter.drawRoundedRect(rect, radius, radius)
-
+        radius = self.height()/2
+        if self._checked:
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(self.bodyColorCtrl.color)
+            painter.drawRoundedRect(rect, radius, radius)
+        else:
+            painter.setPen(QPen(self.borderColorCtrl.color, 1))
+            painter.setBrush(self.bodyColorCtrl.color)
+            painter.drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
         if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
         event.accept()
 

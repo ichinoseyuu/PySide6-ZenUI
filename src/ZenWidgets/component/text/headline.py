@@ -30,6 +30,7 @@ class ZHeadLine(ZWidget):
                  text: str = "",
                  font: QFont = QFont('Microsoft YaHei', 9),
                  display_indicator: bool = False,
+                 indicator_is_leading: bool = False,
                  selectable: bool = False,
                  objectName: str | None = None,
                  ):
@@ -43,6 +44,7 @@ class ZHeadLine(ZWidget):
         self._spacing = 6
         self._indicator_width = 4
         self._isdisplay_indicator = display_indicator
+        self._indicator_is_leading = indicator_is_leading
         self._padding = ZPadding(4, 4, 4, 4)
         self._alignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
         self._selectable = selectable
@@ -64,6 +66,20 @@ class ZHeadLine(ZWidget):
         self.adjustSize()
         self.update()
 
+    def isDisplayIndicator(self) -> bool: return self._isdisplay_indicator
+
+    def setDisplayIndicator(self, v: bool) -> None:
+        self._isdisplay_indicator = v
+        self.adjustSize()
+        self.update()
+
+    def isIndicatorLeading(self) -> bool: return self._indicator_is_leading
+
+    def setIndicatorLeading(self, v: bool) -> None:
+        self._indicator_is_leading = v
+        self.adjustSize()
+        self.update()
+
     def isSelectable(self) -> bool: return self._selectable
 
     def setSelectable(self, v: bool) -> None:
@@ -72,13 +88,6 @@ class ZHeadLine(ZWidget):
         else:
             self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
             self._clear_selection()
-        self.adjustSize()
-        self.update()
-
-    def isDisplayIndicator(self) -> bool: return self._isdisplay_indicator
-
-    def setDisplayIndicator(self, v: bool) -> None:
-        self._isdisplay_indicator = v
         self.adjustSize()
         self.update()
 
@@ -99,24 +108,17 @@ class ZHeadLine(ZWidget):
     def alignment(self) -> Qt.AlignmentFlag: return self._alignment
 
     def setAlignment(self, a: Qt.AlignmentFlag) -> None:
-        align = a & Qt.AlignmentFlag.AlignHorizontal_Mask
-        self._alignment = align
+        self._alignment = a
         self.update()
 
     def sizeHint(self):
         p = self._padding
-        if not self._text:
-            base_width = p.horizontal()
-            if self._isdisplay_indicator:
-                base_width += self._indicator_width + self._spacing
-            return QSize(base_width, self.minimumHeight())
-
         fm = QFontMetrics(self.font())
-        text_width = fm.horizontalAdvance(self._text) + p.horizontal() + 1
-        if self._isdisplay_indicator:
-            text_width += self._indicator_width + self._spacing
-        height = max(fm.height() + p.vertical(), self.minimumHeight())
-        return QSize(text_width, height)
+        fixed_height = max(fm.height() + p.vertical(), self.minimumHeight())
+        text_width = fm.horizontalAdvance(self._text) if self._text else 0
+        base_width = text_width + p.horizontal()
+        if self._isdisplay_indicator: base_width += self._indicator_width + self._spacing
+        return QSize(max(base_width, self.minimumWidth()), fixed_height)
 
     def adjustSize(self):
         self.resize(self.sizeHint())
@@ -163,8 +165,7 @@ class ZHeadLine(ZWidget):
     def _get_char_position_at_point(self, point):
         """根据 x 位置返回字符索引"""
         if not self._text: return -1
-        p = self._padding
-        text_rect = self.rect().adjusted(p.left, p.top, -p.right, -p.bottom)
+        text_rect = self._get_actual_text_rect()
         fm = QFontMetrics(self.font())
         line_y = text_rect.top() + (text_rect.height() - fm.height()) / 2
         if point.y() < line_y or point.y() > line_y + fm.height(): return -1
@@ -177,6 +178,50 @@ class ZHeadLine(ZWidget):
             acc += w
         return len(self._text)
 
+    def _get_actual_text_rect(self) -> QRectF:
+        """计算实际的文本绘制区域（先算文字，考虑指示器占位）"""
+        p = self._padding
+        content_rect = self.rect().adjusted(p.left, p.top, -p.right, -p.bottom)
+        fm = QFontMetrics(self.font())
+        text_width = fm.horizontalAdvance(self._text) if self._text else 0
+        text_height = fm.height()
+
+        indicator_offset = 0
+        if self._isdisplay_indicator: indicator_offset = self._indicator_width + self._spacing
+
+        text_x = content_rect.left() + indicator_offset
+        if self._alignment & Qt.AlignmentFlag.AlignRight:
+            text_x += content_rect.width() - text_width - indicator_offset
+        elif self._alignment & Qt.AlignmentFlag.AlignHCenter:
+            text_x += (content_rect.width() - text_width) / 2 - indicator_offset
+
+        text_y = content_rect.top()
+        if self._alignment & Qt.AlignmentFlag.AlignVCenter:
+            text_y += (content_rect.height() - text_height) / 2
+        elif self._alignment & Qt.AlignmentFlag.AlignBottom:
+            text_y += (content_rect.height() - text_height)
+
+        return QRectF(text_x, text_y, text_width, text_height)
+
+    def _get_indicator_rect(self, text_rect: QRectF, fm: QFontMetrics) -> QRectF:
+        """基于文字区域推导计算指示器区域"""
+        indicator_w = self._indicator_width
+        text_height = fm.height()
+        indicator_h = max(2.0, min(text_rect.height(), text_height - fm.descent()))
+
+        if self._indicator_is_leading:
+            indicator_x = self.rect().left() + self._padding.left
+        else:
+            indicator_x = text_rect.left() - self._spacing - indicator_w
+
+        if self._alignment & Qt.AlignmentFlag.AlignTop:
+            indicator_y = text_rect.top()
+        elif self._alignment & Qt.AlignmentFlag.AlignBottom:
+            indicator_y = text_rect.bottom() - indicator_h
+        else:  # AlignVCenter
+            indicator_y = text_rect.center().y() - indicator_h / 2
+
+        return QRectF(indicator_x, indicator_y, indicator_w, indicator_h)
 
     def _draw_selection_background(self, painter: QPainter, text_rect: QRectF, fm: QFontMetrics):
         if not (self._selectable and self._is_selection()): return
@@ -198,63 +243,45 @@ class ZHeadLine(ZWidget):
         painter = QPainter(self)
         painter.setOpacity(self.opacityCtrl.opacity)
         painter.setRenderHint(
-            QPainter.RenderHint.TextAntialiasing|
+            QPainter.RenderHint.TextAntialiasing |
             QPainter.RenderHint.Antialiasing
-            )
+        )
         rect = QRectF(self.rect())
         radius = self.radiusCtrl.value
 
-        if self.bodyColorCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.bodyColorCtrl.color)
-            painter.drawRoundedRect(rect, radius, radius)
-
-        if self.borderColorCtrl.color.alpha() > 0:
-            painter.setPen(QPen(self.borderColorCtrl.color, 1))
-            painter.setBrush(Qt.NoBrush)
-            painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+        painter.setPen(QPen(self.borderColorCtrl.color, 1))
+        painter.setBrush(self.bodyColorCtrl.color)
+        painter.drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
 
         self.flashEffectCtrl.drawFlashLayer(painter, rect, radius)
 
         p = self._padding
         fm = self.fontMetrics()
-        text_height = fm.height()
-        indicator_w = self._indicator_width
-        spacing = self._spacing
         content_rect = rect.adjusted(p.left, p.top, -p.right, -p.bottom)
-        text_rect = QRectF(content_rect)
-        if self._isdisplay_indicator and self.indicatorColorCtrl.color.alpha() > 0:
-            text_width = fm.horizontalAdvance(self._text)
-            indicator_h = max(2.0, min(content_rect.height(), text_height - fm.descent()))
-            indicator_y = content_rect.center().y() - indicator_h / 2
-            if self._alignment & Qt.AlignmentFlag.AlignRight:
-                indicator_x = content_rect.right() - indicator_w
-                text_rect = QRectF(content_rect.adjusted(0, 0, -(indicator_w + spacing), 0))
-            elif self._alignment & Qt.AlignmentFlag.AlignHCenter:
-                total_w = indicator_w + spacing + text_width
-                start_x = content_rect.left() + (content_rect.width() - total_w) / 2
-                indicator_x = start_x
-                text_rect = QRectF(start_x + indicator_w + spacing, content_rect.top(), text_width, content_rect.height())
-            else:
-                indicator_x = content_rect.left()
-                text_rect = QRectF(content_rect.adjusted(indicator_w + spacing, 0, 0, 0))
 
-            indicator_rect = QRectF(indicator_x, indicator_y, indicator_w, indicator_h)
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(self.indicatorColorCtrl.color)
-            painter.drawRoundedRect(indicator_rect, indicator_w / 2, indicator_w / 2)
-
+        text_rect = self._get_actual_text_rect()
         self._update_selected_text()
-
         if self._selectable and self._is_selection() and self._text:
-            self._draw_selection_background(painter, QRectF(text_rect), fm)
+            self._draw_selection_background(painter, text_rect, fm)
+
         painter.setFont(self.font())
         painter.setPen(self.textColorCtrl.color)
-        flags = int(Qt.TextFlag.TextSingleLine | self._alignment)
-        painter.drawText(QRectF(text_rect), flags, self._text)
+        flags = Qt.TextFlag.TextSingleLine | self._alignment
+        painter.drawText(text_rect, flags, self._text)
 
-        if ZDebug.draw_rect: ZDebug.drawRect(painter, rect)
+        if self._isdisplay_indicator and self.indicatorColorCtrl.color.alpha() > 0:
+            indicator_rect = self._get_indicator_rect(text_rect, fm)  # 第二步：基于文字区域算指示器
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self.indicatorColorCtrl.color)
+            painter.drawRoundedRect(indicator_rect, indicator_rect.width() / 2, indicator_rect.width() / 2)
+
+        if ZDebug.draw_rect:
+            ZDebug.drawRect(painter, rect)
+            ZDebug.drawRect(painter, content_rect, Qt.red,penStyle=Qt.PenStyle.DashLine)
+            ZDebug.drawRect(painter, text_rect, Qt.blue,penStyle=Qt.PenStyle.DashLine)
+            if self._isdisplay_indicator: ZDebug.drawRect(painter, indicator_rect, Qt.green,penStyle=Qt.PenStyle.DashLine)
         event.accept()
+
 
     # region keyPressEvent
     def keyPressEvent(self, event):

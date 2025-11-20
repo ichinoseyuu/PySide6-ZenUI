@@ -400,21 +400,21 @@ class ZLineEdit(ZWidget):
         clip = QPainterPath()
         clip.addRoundedRect(rect, radius, radius)
         painter.setClipPath(clip)
-
-        painter.setPen(Qt.NoPen)
+        painter.setPen(Qt.PenStyle.NoPen)
         painter.fillRect(rect, self.bodyColorCtrl.color)
 
         painter.setPen(QPen(self.borderColorCtrl.color, 1))
-        painter.setBrush(Qt.NoBrush)
-        painter.drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), radius, radius)
+
         if self.opacityEffectCtrl.color.alpha() > 0:
-            painter.setPen(Qt.NoPen)
+            painter.setPen(Qt.PenStyle.NoPen)
             painter.setBrush(self.opacityEffectCtrl.color)
             painter.drawRoundedRect(rect, radius, radius)
-        if self.underlineColorCtrl.color.alpha() > 0:
-            underline_h = self.underlineWeightCtrl.value
-            painter.fillRect(QRectF(rect.left(), rect.bottom() - underline_h, rect.width(), underline_h),
-                             self.underlineColorCtrl.color)
+
+        underline_h = self.underlineWeightCtrl.value
+        painter.fillRect(QRectF(rect.left(), rect.bottom() - underline_h, rect.width(), underline_h),
+                            self.underlineColorCtrl.color)
 
         # 文本区域
         painter.setFont(self.font())

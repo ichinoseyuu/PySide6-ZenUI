@@ -67,7 +67,7 @@ class ZToolTip(ZWidget):
         self.windowOpacityCtrl.animation.init(factor=0.2, bias=0.02, current_value=0)
         self.windowOpacityCtrl.completelyHide.connect(self.hide)
 
-        self.widgetSizeCtrl.animation.init(factor=0.2, bias=1)
+        self.widgetSizeCtrl.animation.init(factor=0.15, bias=1)
         self.widgetPositionCtrl.animation.init(factor=0.1, bias=1)
         self._init_style_()
         self.resize(self.sizeHint())
@@ -260,7 +260,7 @@ class ZToolTip(ZWidget):
         else:
             new_pos = self._get_pos_should_be_move()
             if (new_pos - self.pos()).manhattanLength() > 200:
-                self.resize(self.sizeHint())
+                self.widgetSizeCtrl.resizeFromTo(self.minimumSize(), self.sizeHint())
                 self.move(self._get_initial_pos())
                 self._tracker_timer.start()
                 self.windowOpacityCtrl.fadeTo(.0, 1.0)

@@ -50,5 +50,5 @@ class PanelTest(ZScrollPanel):
 
 
     def open_dialog(self):
-        self.dialog = ZDialog(self.test_btn)
-        self.dialog.show()
+        dialog = ZDialog(self.test_btn, title="基尼钛煤！", message='再多看一眼就会爆炸！')
+        print(dialog.exec())

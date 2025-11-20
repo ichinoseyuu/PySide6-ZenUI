@@ -1,5 +1,5 @@
 import logging
-from PySide6.QtGui import QPainter, QPen,QIcon
+from PySide6.QtGui import QPainter, QPen,QIcon,QColor
 from PySide6.QtCore import Qt, QRect
 
 __All__ = ['ZDebug']
@@ -8,10 +8,18 @@ class ZDebug:
     draw_rect = False
 
     @staticmethod
-    def drawRect(painter:QPainter, rect: QRect):
+    def drawRect(painter:QPainter,
+                 rect: QRect,
+                 color: QColor | Qt.GlobalColor = Qt.GlobalColor.red,
+                 alpha: float = 0.8,
+                 width: float = 1.0,
+                 penStyle: Qt.PenStyle = Qt.PenStyle.SolidLine,
+                 penCapStyle: Qt.PenCapStyle = Qt.PenCapStyle.RoundCap,
+                 penJoinStyle: Qt.PenJoinStyle = Qt.PenJoinStyle.RoundJoin
+                 ):
         painter.save()
-        painter.setOpacity(0.8)
-        painter.setPen(QPen(Qt.GlobalColor.red, 1, Qt.PenStyle.SolidLine))
+        painter.setOpacity(alpha)
+        painter.setPen(QPen(color, width, penStyle, penCapStyle, penJoinStyle))
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawRect(rect)
         painter.restore()

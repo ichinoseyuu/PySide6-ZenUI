@@ -56,8 +56,12 @@ class ZWidget(QWidget):
     '''控制器参数'''
     dragged = Signal(QPoint)
     '''拖拽信号'''
+    moved = Signal(QPoint)
+    '''移动信号'''
+    resized = Signal(QSize)
+    '''调整大小信号'''
     def __init__(self,
-                 parent: QWidget | None = None,
+                 parent: Optional['ZWidget'] = None,
                  *args,
                  style: ZStyle = ZStyle.Default,
                  dragable: bool = False,
@@ -250,6 +254,14 @@ class ZWidget(QWidget):
         if event.type() == QEvent.Type.ToolTip: return True
         return super().event(event)
 
+    def moveEvent(self, event):
+        super().moveEvent(event)
+        self.moved.emit(self.pos())
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.resized.emit(self.size())
+
     def mousePressEvent(self, event: QMouseEvent):
         super().mousePressEvent(event)
         if self._draggable and event.button() == Qt.MouseButton.LeftButton:
@@ -261,3 +273,13 @@ class ZWidget(QWidget):
             delta = event.pos() - self._drag_pos
             if delta.manhattanLength() >= 5:
                 self.dragged.emit(delta)
+
+
+class ZPlaceHolderWidget(ZWidget):
+    '''占位组件'''
+    pass
+
+
+class ZContentWidget(ZWidget):
+    '''内容组件'''
+    pass

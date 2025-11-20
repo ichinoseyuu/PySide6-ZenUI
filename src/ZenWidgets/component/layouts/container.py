@@ -1,6 +1,7 @@
 from PySide6.QtGui import QPainter
 from PySide6.QtCore import QSize, Qt, QEvent
 from PySide6.QtWidgets import QWidget, QSizePolicy
+from ZenWidgets.component.base import ZWidget
 from ZenWidgets.core.dataclass import ZMargin
 from ZenWidgets.core.debug import ZDebug
 
@@ -12,7 +13,7 @@ __all__ = [
 class ZHContainer(QWidget):
     """水平方向对齐的容器控件，支持不同间距设置和子控件同高功能"""
     def __init__(self,
-                 parent: QWidget|None = None,
+                 parent: ZWidget | None = None,
                  margin: ZMargin = ZMargin(0, 0, 0, 0),
                  spacing: int = 10,
                  objectName: str | None = None,
@@ -28,7 +29,7 @@ class ZHContainer(QWidget):
         self._height_expand = False
         self._uniform_height = False
         self._shrinking = False
-        self._widgets: list[QWidget] = []
+        self._widgets: list[ZWidget] = []
         self._spacings: list[int] = []
 
     def widgets(self):
@@ -77,7 +78,7 @@ class ZHContainer(QWidget):
             self._uniform_height = value
             self.arrangeWidgets()
 
-    def addWidget(self, widget: QWidget, index: int = -1, spacing: int = None):
+    def addWidget(self, widget: ZWidget, index: int = -1, spacing: int = None):
         """
         添加控件到容器
         index 为插入位置（-1 表示末尾）
@@ -110,7 +111,7 @@ class ZHContainer(QWidget):
         # ensure layout updated
         self.arrangeWidgets()
 
-    def removeWidget(self, widget: QWidget):
+    def removeWidget(self, widget: ZWidget):
         """从容器移除控件"""
         if widget in self._widgets:
             index = self._widgets.index(widget)
@@ -251,7 +252,7 @@ class ZHContainer(QWidget):
 class ZVContainer(QWidget):
     """垂直方向对齐的容器控件，支持不同间距设置和子控件同宽功能"""
     def __init__(self,
-                 parent: QWidget|None = None,
+                 parent: ZWidget | None = None,
                  margin: ZMargin = ZMargin(0, 0, 0, 0),
                  spacing: int = 10,
                  objectName: str | None = None
@@ -267,7 +268,7 @@ class ZVContainer(QWidget):
         self._width_expand = False
         self._uniform_width = False
         self._shrinking = False
-        self._widgets: list[QWidget] = []
+        self._widgets: list[ZWidget] = []
         self._spacings: list[int] = []
 
     def widgets(self):
@@ -316,7 +317,7 @@ class ZVContainer(QWidget):
             self._uniform_width = value
             self.arrangeWidgets()
 
-    def addWidget(self, widget: QWidget, index: int = -1, spacing: int = None):
+    def addWidget(self, widget: ZWidget, index: int = -1, spacing: int = None):
         if widget in self._widgets:
             return
 
@@ -338,7 +339,7 @@ class ZVContainer(QWidget):
 
         self.arrangeWidgets()
 
-    def removeWidget(self, widget: QWidget):
+    def removeWidget(self, widget: ZWidget):
         if widget in self._widgets:
             index = self._widgets.index(widget)
             try:
